@@ -20,7 +20,7 @@ import {Button} from '@/components/ui/button';
 // TODO: replace?
 // Validation schema
 const loginSchema = z.object({
-	email: z.string()
+	email: z
 		.email('Please enter a valid email address')
 		.min(3, 'Email is required'),
 	password: z.string()
