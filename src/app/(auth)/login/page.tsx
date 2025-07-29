@@ -61,6 +61,7 @@ const LoginPage = () => {
 			await new Promise(resolve => setTimeout(resolve, 1500));
 
 			// TODO: add MFA
+			// TODO: Should be form reseted after submit?
 			// Simulate MFA requirement
 			console.log(data)
 			setShowMFA(true);
@@ -120,7 +121,7 @@ const LoginPage = () => {
 										key={method}
 										onClick={() => setMfaMethod(method as MfaMethod)}
 										className={clsx(
-											'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+											'px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer',
 											mfaMethod === method
 												? 'bg-blue-600 text-white'
 												: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -158,7 +159,7 @@ const LoginPage = () => {
 							<button
 								type="submit"
 								disabled={mfaCode.length !== 6 || isLoading}
-								className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus-visible:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+								className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus-visible:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
 							>
 								{isLoading ? 'Verifying...' : 'Verify & Sign In'}
 							</button>
@@ -167,7 +168,7 @@ const LoginPage = () => {
 						<div className="mt-4 text-center">
 							<button
 								onClick={() => setShowMFA(false)}
-								className="text-sm text-blue-600 hover:text-blue-700"
+								className="text-sm text-blue-600 hover:text-blue-700 cursor-pointer"
 							>
 								Back to login
 							</button>
