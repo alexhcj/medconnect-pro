@@ -56,7 +56,7 @@ const PrivacyPolicyPage = () => {
 			<div className="border border-gray-200 rounded-lg mb-4">
 				<button
 					onClick={() => toggleSection(id)}
-					className="w-full px-6 py-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg flex justify-between items-center"
+					className="w-full px-6 py-4 text-left bg-gray-50 hover:bg-gray-100 rounded-t-lg flex justify-between items-center cursor-pointer"
 				>
 					<h3 className="text-lg font-semibold text-gray-900">{title}</h3>
 					<span className={clsx("transform transition-transform", isExpanded ? "rotate-180" : "")}>
