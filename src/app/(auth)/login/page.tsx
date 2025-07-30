@@ -1,6 +1,7 @@
 'use client'
 
 import React, {useState} from 'react';
+import {useRouter} from "next/navigation";
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
@@ -35,6 +36,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 type MfaMethod = 'sms' | 'email' | 'app';
 
 const LoginPage = () => {
+	const router = useRouter();
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [showMFA, setShowMFA] = useState(false);
@@ -95,6 +97,7 @@ const LoginPage = () => {
 	};
 
 	const handleForgotPassword = () => {
+		router.push('/password-reset');
 		toast.success('Password reset instructions have been sent to your email.');
 	};
 
