@@ -290,7 +290,7 @@ const LoginPage = () => {
 										{...register('rememberMe')}
 										id="rememberMe"
 										type="checkbox"
-										className="h-4 w-4 text-blue-600 focus-visible:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:ring-blue-500 border-gray-300 rounded"
+										className="h-4 w-4 text-blue-600 focus-visible:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300 rounded"
 									/>
 									<label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
 										Remember me
