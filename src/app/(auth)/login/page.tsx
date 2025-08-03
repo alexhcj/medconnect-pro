@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useRouter} from "next/navigation";
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -9,6 +9,7 @@ import {
 	CheckCircleIcon,
 	ChevronDownIcon,
 	ChevronUpIcon,
+	ClockIcon,
 	ComputerDesktopIcon,
 	DevicePhoneMobileIcon,
 	DocumentDuplicateIcon,
@@ -49,6 +50,16 @@ interface MfaState {
 	sessionToken?: string;
 }
 
+interface MfaAttemptState {
+	attempts: number;
+	maxAttempts: number;
+	isLocked: boolean;
+	lockoutUntil: Date | null;
+	nextAttemptAllowedAt: Date | null;
+	currentDelay: number; // in seconds
+	message: string;
+}
+
 interface AuditLog {
 	timestamp: Date;
 	action: string;
@@ -70,12 +81,35 @@ const LoginPage = () => {
 		methods: ['app', 'sms', 'email', 'backup']
 	});
 
+	// MFA attempt tracking
+	const [mfaAttemptState, setMfaAttemptState] = useState<MfaAttemptState>({
+		attempts: 0,
+		maxAttempts: 5,
+		isLocked: false,
+		lockoutUntil: null,
+		nextAttemptAllowedAt: null,
+		currentDelay: 0,
+		message: ''
+	});
+
+	const [backupAttemptState, setBackupAttemptState] = useState<MfaAttemptState>({
+		attempts: 0,
+		maxAttempts: 3,
+		isLocked: false,
+		lockoutUntil: null,
+		nextAttemptAllowedAt: null,
+		currentDelay: 0,
+		message: ''
+	});
+
+	// Timer states for countdown display
+	const [timeRemaining, setTimeRemaining] = useState<number>(0);
+	const [showCountdown, setShowCountdown] = useState(false);
+
 	// MFA-specific states
 	const [mfaCode, setMfaCode] = useState('');
 	const [backupCode, setBackupCode] = useState('');
 	const [mfaMethod, setMfaMethod] = useState<MfaMethod>('app');
-	const [mfaAttempts, setMfaAttempts] = useState(0);
-	const [backupAttempts, setBackupAttempts] = useState(0);
 	const [showAdvanced, setShowAdvanced] = useState(false);
 	const [showBackupHelp, setShowBackupHelp] = useState(false);
 	const [trustDevice, setTrustDevice] = useState(false);
@@ -108,6 +142,115 @@ const LoginPage = () => {
 		'3X9Y-5Z2A', '6B4C-8D1E', '2F7G-9H3I', '5J8K-1L4M'
 	];
 	const mockSecret = 'JBSWY3DPEHPK3PXP';
+
+	// Progressive delay calculation (30s → 1min → 5min)
+	const calculateDelay = (attempts: number): number => {
+		if (attempts === 1) return 30; // 30 seconds
+		if (attempts === 2) return 60; // 1 minute
+		if (attempts >= 3) return 300; // 5 minutes
+		return 0;
+	};
+
+	// Countdown timer effect
+	useEffect(() => {
+		let interval: NodeJS.Timeout;
+
+		if (showCountdown && timeRemaining > 0) {
+			interval = setInterval(() => {
+				setTimeRemaining(prev => {
+					if (prev <= 1) {
+						setShowCountdown(false);
+						// Clear the delay when countdown finishes
+						const currentState = mfaMethod === 'backup' ? backupAttemptState : mfaAttemptState;
+						const setter = mfaMethod === 'backup' ? setBackupAttemptState : setMfaAttemptState;
+						setter(prev => ({
+							...prev,
+							nextAttemptAllowedAt: null,
+							currentDelay: 0
+						}));
+						return 0;
+					}
+					return prev - 1;
+				});
+			}, 1000);
+		}
+
+		return () => {
+			if (interval) clearInterval(interval);
+		};
+	}, [showCountdown, timeRemaining, mfaMethod, backupAttemptState, mfaAttemptState]);
+
+	// Format time remaining for display
+	const formatTimeRemaining = (seconds: number): string => {
+		const minutes = Math.floor(seconds / 60);
+		const remainingSeconds = seconds % 60;
+		if (minutes > 0) {
+			return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+		}
+		return `${remainingSeconds}s`;
+	};
+
+	// Check if attempt is allowed
+	const isAttemptAllowed = (attemptState: MfaAttemptState): boolean => {
+		if (attemptState.isLocked) return false;
+		if (attemptState.nextAttemptAllowedAt && new Date() < attemptState.nextAttemptAllowedAt) return false;
+		return true;
+	};
+
+	// Handle failed MFA attempt
+	const handleFailedAttempt = (method: MfaMethod) => {
+		const isBackup = method === 'backup';
+		const currentState = isBackup ? backupAttemptState : mfaAttemptState;
+		const setter = isBackup ? setBackupAttemptState : setMfaAttemptState;
+		const newAttempts = currentState.attempts + 1;
+
+		// Calculate delay for this attempt
+		const delay = calculateDelay(newAttempts);
+		const nextAttemptTime = delay > 0 ? new Date(Date.now() + delay * 1000) : null;
+
+		// Check if account should be locked (after 5 attempts for regular, 3 for backup)
+		const shouldLock = newAttempts >= currentState.maxAttempts;
+		const lockoutDuration = shouldLock ? (15 + Math.random() * 15) * 60 * 1000 : 0; // 15-30 min
+		const lockoutUntil = shouldLock ? new Date(Date.now() + lockoutDuration) : null;
+
+		// Generate appropriate message
+		let message = '';
+		if (shouldLock) {
+			const lockoutMinutes = Math.ceil(lockoutDuration / 60000);
+			message = `Account temporarily locked. Try again in ${lockoutMinutes} minutes`;
+		} else {
+			const remaining = currentState.maxAttempts - newAttempts;
+			message = `Invalid ${isBackup ? 'backup ' : ''}code. ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining`;
+		}
+
+		// Update state
+		setter({
+			attempts: newAttempts,
+			maxAttempts: currentState.maxAttempts,
+			isLocked: shouldLock,
+			lockoutUntil,
+			nextAttemptAllowedAt: nextAttemptTime,
+			currentDelay: delay,
+			message
+		});
+
+		// Start countdown timer if there's a delay
+		if (delay > 0) {
+			setTimeRemaining(delay);
+			setShowCountdown(true);
+		}
+
+		// Show toast with error message
+		toast.error(message);
+
+		// Log the event
+		logAuditEvent(isBackup ? 'BACKUP_CODE_VERIFICATION' : 'MFA_VERIFICATION', method, false);
+
+		// Log account lockout separately if applicable
+		if (shouldLock) {
+			logAuditEvent('ACCOUNT_LOCKED', method, false);
+		}
+	};
 
 	// TODO: replace to utils
 	// Format backup code input
@@ -258,6 +401,27 @@ const LoginPage = () => {
 					sessionToken: mockApiResponse.sessionToken
 				});
 
+				// Reset attempt states when starting fresh MFA flow
+				setMfaAttemptState({
+					attempts: 0,
+					maxAttempts: 5,
+					isLocked: false,
+					lockoutUntil: null,
+					nextAttemptAllowedAt: null,
+					currentDelay: 0,
+					message: ''
+				});
+
+				setBackupAttemptState({
+					attempts: 0,
+					maxAttempts: 3,
+					isLocked: false,
+					lockoutUntil: null,
+					nextAttemptAllowedAt: null,
+					currentDelay: 0,
+					message: ''
+				});
+
 				toast.success(
 					mockApiResponse.isFirstTime
 						? 'Credentials verified. Please setup multi-factor authentication.'
@@ -285,6 +449,16 @@ const LoginPage = () => {
 
 		if (mfaCode.length !== 6) {
 			toast.error('Please enter a valid 6-digit code');
+			return;
+		}
+
+		// Check if attempt is allowed
+		if (!isAttemptAllowed(mfaAttemptState)) {
+			if (mfaAttemptState.isLocked) {
+				toast.error('Account is temporarily locked. Please wait before trying again.');
+			} else {
+				toast.error('Please wait before your next attempt.');
+			}
 			return;
 		}
 
@@ -324,19 +498,12 @@ const LoginPage = () => {
 					router.push('/dashboard');
 				}
 			} else {
-				logAuditEvent('MFA_VERIFICATION', mfaMethod, false);
-				setMfaAttempts(prev => prev + 1);
+				handleFailedAttempt(mfaMethod);
 				setMfaCode('');
-
-				// Check for account lockout
-				if (remainingAttempts <= 1) {
-					logAuditEvent('ACCOUNT_LOCKED', mfaMethod, false);
-				}
-
-				throw new Error('Invalid code');
 			}
 		} catch (error) {
-			toast.error('Invalid verification code. Please try again.');
+			handleFailedAttempt(mfaMethod);
+			setMfaCode('');
 		} finally {
 			setIsLoading(false);
 		}
@@ -347,6 +514,16 @@ const LoginPage = () => {
 
 		if (!isValidBackupCodeFormat(backupCode)) {
 			toast.error('Please enter a valid backup code in format XXXX-XXXX');
+			return;
+		}
+
+		// Check if attempt is allowed
+		if (!isAttemptAllowed(backupAttemptState)) {
+			if (backupAttemptState.isLocked) {
+				toast.error('Account is temporarily locked. Please wait before trying again.');
+			} else {
+				toast.error('Please wait before your next attempt.');
+			}
 			return;
 		}
 
@@ -384,19 +561,12 @@ const LoginPage = () => {
 				toast.success('Backup code verified! Redirecting to dashboard...');
 				router.push('/dashboard');
 			} else {
-				logAuditEvent('BACKUP_CODE_VERIFICATION', 'backup', false);
-				setBackupAttempts(prev => prev + 1);
+				handleFailedAttempt('backup');
 				setBackupCode('');
-
-				// Check for account lockout on backup codes
-				if (remainingBackupAttempts <= 1) {
-					logAuditEvent('ACCOUNT_LOCKED', 'backup', false);
-				}
-
-				throw new Error('Invalid backup code');
 			}
 		} catch (error) {
-			toast.error('Invalid backup code. Please try again.');
+			handleFailedAttempt('backup');
+			setBackupCode('');
 		} finally {
 			setIsLoading(false);
 		}
@@ -433,14 +603,13 @@ const LoginPage = () => {
 		setMfaMethod(newMethod);
 		setMfaCode('');
 		setBackupCode('');
-		setMfaAttempts(0);
-		setBackupAttempts(0);
+		// Note: We keep attempt counters when switching methods as they should persist
 	};
 
-	const maxAttempts = 5;
-	const maxBackupAttempts = 3;
-	const remainingAttempts = maxAttempts - mfaAttempts;
-	const remainingBackupAttempts = maxBackupAttempts - backupAttempts;
+	// Get current attempt state based on method
+	const getCurrentAttemptState = () => {
+		return mfaMethod === 'backup' ? backupAttemptState : mfaAttemptState;
+	};
 
 	// MFA Setup Complete Screen
 	if (mfaState.show && mfaState.isFirstTime && setupComplete) {
@@ -538,6 +707,8 @@ const LoginPage = () => {
 
 	// MFA Verification/Setup Screen
 	if (mfaState.show) {
+		const currentAttemptState = getCurrentAttemptState();
+
 		return (
 			<div
 				className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
@@ -571,19 +742,50 @@ const LoginPage = () => {
 						</div>
 
 						{/* Status Indicators */}
-						{(mfaAttempts > 0 || backupAttempts > 0) && (
+						{currentAttemptState.attempts > 0 && (
 							<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
 								<div className="flex items-center">
 									<ExclamationTriangleIcon className="w-4 h-4 text-red-600 mr-2"/>
-									<div className="text-sm text-red-800">
-										<p>Invalid {mfaMethod === 'backup' ? 'backup code' : 'verification code'}.
-											{' '}{mfaMethod === 'backup' ? remainingBackupAttempts : remainingAttempts} attempts remaining</p>
-										{((mfaMethod === 'backup' && remainingBackupAttempts <= 1) ||
-											(mfaMethod !== 'backup' && remainingAttempts <= 2)) && (
+									<div className="text-sm text-red-800 flex-1">
+										<p className="font-medium">{currentAttemptState.message}</p>
+										{currentAttemptState.attempts <= 2 && (
 											<p className="text-xs mt-1">
-												Account will be temporarily locked after maximum failed attempts
+												Account will be temporarily locked after {currentAttemptState.maxAttempts} failed attempts
 											</p>
 										)}
+									</div>
+								</div>
+							</div>
+						)}
+
+						{/* Account Lockout Warning */}
+						{currentAttemptState.isLocked && (
+							<div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg">
+								<div className="flex items-center">
+									<LockClosedIcon className="w-4 h-4 text-red-700 mr-2"/>
+									<div className="text-sm text-red-800">
+										<p className="font-medium">Account Temporarily Locked</p>
+										<p className="text-xs mt-1">
+											{currentAttemptState.lockoutUntil &&
+												`Try again after ${currentAttemptState.lockoutUntil.toLocaleTimeString()}`
+											}
+										</p>
+									</div>
+								</div>
+							</div>
+						)}
+
+						{/* Progressive Delay Warning */}
+						{showCountdown && timeRemaining > 0 && (
+							<div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+								<div className="flex items-center">
+									<ClockIcon className="w-4 h-4 text-amber-600 mr-2"/>
+									<div className="text-sm text-amber-800 flex-1">
+										<p className="font-medium">Please wait before your next attempt</p>
+										<p className="text-xs mt-1">
+											Next attempt allowed in: <span
+											className="font-mono font-bold">{formatTimeRemaining(timeRemaining)}</span>
+										</p>
 									</div>
 								</div>
 							</div>
@@ -596,10 +798,7 @@ const LoginPage = () => {
 									<button
 										key={method}
 										onClick={() => handleMethodSwitch(method)}
-										disabled={
-											(mfaMethod !== 'backup' && remainingAttempts === 0) ||
-											(mfaMethod === 'backup' && remainingBackupAttempts === 0)
-										}
+										disabled={currentAttemptState.isLocked}
 										className={clsx(
 											'px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
 											mfaMethod === method
@@ -687,7 +886,7 @@ const LoginPage = () => {
 													: 'border-gray-300 bg-white'
 										)}
 										maxLength={9}
-										disabled={remainingBackupAttempts === 0}
+										disabled={!isAttemptAllowed(backupAttemptState)}
 										aria-label="Enter backup code"
 										aria-describedby="backup-code-help"
 									/>
@@ -709,7 +908,7 @@ const LoginPage = () => {
 									placeholder="000000"
 									className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-2xl font-mono tracking-widest focus-visible:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 									maxLength={6}
-									disabled={remainingAttempts === 0}
+									disabled={!isAttemptAllowed(mfaAttemptState)}
 									aria-label="Enter verification code"
 								/>
 							)}
@@ -798,9 +997,10 @@ const LoginPage = () => {
 							onClick={handleMFASubmit}
 							disabled={
 								isLoading ||
+								!isAttemptAllowed(currentAttemptState) ||
 								(mfaMethod === 'backup' ?
-										(!isValidBackupCodeFormat(backupCode) || remainingBackupAttempts === 0) :
-										(mfaCode.length !== 6 || remainingAttempts === 0)
+										!isValidBackupCodeFormat(backupCode) :
+										mfaCode.length !== 6
 								)
 							}
 							className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus-visible:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -811,6 +1011,8 @@ const LoginPage = () => {
 										className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
 									Verifying...
 								</div>
+							) : !isAttemptAllowed(currentAttemptState) ? (
+								currentAttemptState.isLocked ? 'Account Locked' : `Wait ${formatTimeRemaining(timeRemaining)}`
 							) : (
 								mfaState.isFirstTime ? 'Complete Setup' : 'Verify & Sign In'
 							)}
@@ -831,6 +1033,12 @@ const LoginPage = () => {
 							<div className="text-xs text-gray-500 text-center space-y-1">
 								<p>🔒 All authentication attempts are logged for security</p>
 								<p>Having trouble? Contact support: security@healthcare-app.com</p>
+								{/* Display attempt information */}
+								{currentAttemptState.attempts > 0 && (
+									<p className="text-red-600 font-medium">
+										{currentAttemptState.attempts}/{currentAttemptState.maxAttempts} failed attempts
+									</p>
+								)}
 							</div>
 						</div>
 					</div>
