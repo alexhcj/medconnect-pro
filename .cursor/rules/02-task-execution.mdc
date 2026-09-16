@@ -40,5 +40,6 @@ After coding:
 - inspect loading/empty/error states;
 - inspect accessibility;
 - inspect authorization/tenant boundaries;
-- report changed files and any deviations;
+- classify SemVer impact and bump `package.json` / changelog per `.cursor/rules/05-versioning.mdc`;
+- report changed files, the version bump (old → new), and any deviations;
 - update task completion information.

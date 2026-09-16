@@ -27,6 +27,10 @@ Update or propose documentation changes when:
 - a new architectural decision is introduced;
 - task acceptance criteria change.
 
+When architecture, API/data contracts, or security boundaries ship in the same change, also bump
+the application version and add a `CHANGELOG.md` entry per `.cursor/rules/05-versioning.mdc` and
+ADR-007.
+
 Create an ADR when a decision has meaningful long-term architectural consequences.
 
 Never put secrets, tokens, credentials, API keys or real patient information in `/docs`.

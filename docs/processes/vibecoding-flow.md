@@ -18,6 +18,8 @@ Tests
       ↓
 Diff review
       ↓
+Version bump (see docs/workflows/versioning.md)
+      ↓
 Commit
 
 ### Example

@@ -1,0 +1,51 @@
+---
+description: Classify completed work and bump the app version per SemVer (0.x until explicit 1.0.0)
+alwaysApply: true
+---
+
+# Semantic Versioning
+
+Follow [ADR-007](../../docs/decisions/ADR-007-semantic-versioning.md) and
+[docs/workflows/versioning.md](../../docs/workflows/versioning.md).
+
+`package.json` `version` is canonical. Keep the root `version` in `package-lock.json` in lockstep.
+
+## When to bump
+
+Bump once when a task, feature, or fix is **completed** and leaves the tree in a shippable state.
+
+Do **not** bump for:
+
+- plan-only or read-only work;
+- incomplete WIP;
+- formatting or comments only;
+- documentation that does not ship a product change.
+
+If one completed slice mixes change types, apply the **highest** mapped bump.
+
+## Classification
+
+While `MAJOR == 0`:
+
+- **PATCH** — backward-compatible bug fix or internal refactor with no API/UX contract change.
+- **MINOR** — new capability, new public UI/API surface, or breaking contract/auth/security-model
+  change.
+- **MAJOR** — never automatic. Only when the user explicitly requests `1.0.0`.
+
+After `1.0.0`, use SemVer 2.0.0: compatible fix → PATCH, compatible feature → MINOR, breaking →
+MAJOR.
+
+This version is the application/demo artifact, not API URL versioning (`/v1`). Breaking API
+contracts still bump MINOR on 0.x (MAJOR after 1.0.0) and must update `docs/contracts/` in the same
+change.
+
+## How to bump
+
+1. Read the current version from `package.json`.
+2. Apply one increment.
+3. Write `package.json` and the lockfile root `version`, or run
+   `npm version <patch|minor|major> --no-git-tag-version`.
+4. Prepend a `CHANGELOG.md` entry: `## [x.y.z] - YYYY-MM-DD` with Added / Changed / Fixed /
+   Breaking as applicable.
+5. Do not create git tags or commits unless the user asks.
+6. In the completion summary, report old → new version and the classification rationale.

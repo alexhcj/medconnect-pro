@@ -10,6 +10,8 @@
 8. Validate authorization and tenant boundaries.
 9. Update documentation when architecture/contracts change.
 10. Run lint/type-check/tests/build.
-11. Open PR.
-12. Update Plane operational status.
-13. Mark task complete only after acceptance criteria are verified.
+11. Classify SemVer impact and bump version plus changelog per [versioning.md](versioning.md)
+    (before opening the PR).
+12. Open PR.
+13. Update Plane operational status.
+14. Mark task complete only after acceptance criteria are verified.

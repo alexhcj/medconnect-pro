@@ -25,7 +25,7 @@ implementation tasks, roadmaps and development workflows.
 - `tasks/` — implementation work.
 - `roadmap/` — sequencing and delivery milestones.
 - `decisions/` — ADRs.
-- `workflows/` — repeatable engineering processes.
+- `workflows/` — repeatable engineering processes, including [versioning](workflows/versioning.md).
 - `mocks/` — synthetic demo data and mock-data conventions.
 
 ## Documentation rules

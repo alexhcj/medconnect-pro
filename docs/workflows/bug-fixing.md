@@ -9,4 +9,6 @@
 7. Validate adjacent workflows.
 8. Check security/accessibility implications.
 9. Update documentation if the fix reveals a contract or architectural issue.
-10. Close task only after verification.
+10. Apply a PATCH version bump and changelog entry per [versioning.md](versioning.md) after the
+    fix is verified (MINOR if the fix ships a breaking contract change on 0.x).
+11. Close task only after verification.
