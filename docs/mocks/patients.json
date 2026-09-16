@@ -16,7 +16,23 @@
       "conditions": [
         "Hypertension"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "100 Demo Oak Lane",
+        "city": "Springfield",
+        "state": "IL",
+        "postalCode": "62701"
+      },
+      "emergencyContact": {
+        "name": "Robin Carter",
+        "relationship": "Spouse",
+        "phone": "+1-555-010-2000"
+      },
+      "insurance": {
+        "provider": "Demo Health Partners",
+        "policyNumber": "DEM-100001",
+        "groupNumber": "GRP-DEMO-01"
+      }
     },
     {
       "id": "demo-patient-002",
@@ -32,7 +48,23 @@
       "conditions": [
         "Type 2 diabetes"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "210 Sample Cedar Ave",
+        "city": "Riverton",
+        "state": "OR",
+        "postalCode": "97001"
+      },
+      "emergencyContact": {
+        "name": "Casey Brooks",
+        "relationship": "Sibling",
+        "phone": "+1-555-010-2001"
+      },
+      "insurance": {
+        "provider": "Northwind Mutual",
+        "policyNumber": "NOR-100002",
+        "groupNumber": "GRP-DEMO-02"
+      }
     },
     {
       "id": "demo-patient-003",
@@ -48,7 +80,23 @@
       "conditions": [
         "Asthma"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "318 Fixture Maple Dr",
+        "city": "Fairview",
+        "state": "TX",
+        "postalCode": "75069"
+      },
+      "emergencyContact": {
+        "name": "Pat Morgan",
+        "relationship": "Parent",
+        "phone": "+1-555-010-2002"
+      },
+      "insurance": {
+        "provider": "Summit Care Alliance",
+        "policyNumber": "SUM-100003",
+        "groupNumber": "GRP-DEMO-03"
+      }
     },
     {
       "id": "demo-patient-004",
@@ -64,7 +112,23 @@
       "conditions": [
         "Migraine"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "422 Example Pine Ct",
+        "city": "Lakeside",
+        "state": "WA",
+        "postalCode": "98001"
+      },
+      "emergencyContact": {
+        "name": "Sam Bennett",
+        "relationship": "Friend",
+        "phone": "+1-555-010-2003"
+      },
+      "insurance": {
+        "provider": "Harbor Benefits",
+        "policyNumber": "HAR-100004",
+        "groupNumber": "GRP-DEMO-04"
+      }
     },
     {
       "id": "demo-patient-005",
@@ -80,7 +144,23 @@
       "conditions": [
         "Hyperlipidemia"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "100 Demo Oak Lane",
+        "city": "Springfield",
+        "state": "IL",
+        "postalCode": "62701"
+      },
+      "emergencyContact": {
+        "name": "Robin Carter",
+        "relationship": "Spouse",
+        "phone": "+1-555-010-2004"
+      },
+      "insurance": {
+        "provider": "Demo Health Partners",
+        "policyNumber": "DEM-100005",
+        "groupNumber": "GRP-DEMO-01"
+      }
     },
     {
       "id": "demo-patient-006",
@@ -96,7 +176,23 @@
       "conditions": [
         "Osteoarthritis"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "210 Sample Cedar Ave",
+        "city": "Riverton",
+        "state": "OR",
+        "postalCode": "97001"
+      },
+      "emergencyContact": {
+        "name": "Casey Brooks",
+        "relationship": "Sibling",
+        "phone": "+1-555-010-2005"
+      },
+      "insurance": {
+        "provider": "Northwind Mutual",
+        "policyNumber": "NOR-100006",
+        "groupNumber": "GRP-DEMO-02"
+      }
     },
     {
       "id": "demo-patient-007",
@@ -112,7 +208,23 @@
       "conditions": [
         "Hypothyroidism"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "318 Fixture Maple Dr",
+        "city": "Fairview",
+        "state": "TX",
+        "postalCode": "75069"
+      },
+      "emergencyContact": {
+        "name": "Pat Morgan",
+        "relationship": "Parent",
+        "phone": "+1-555-010-2006"
+      },
+      "insurance": {
+        "provider": "Summit Care Alliance",
+        "policyNumber": "SUM-100007",
+        "groupNumber": "GRP-DEMO-03"
+      }
     },
     {
       "id": "demo-patient-008",
@@ -128,7 +240,23 @@
       "conditions": [
         "Seasonal allergies"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "422 Example Pine Ct",
+        "city": "Lakeside",
+        "state": "WA",
+        "postalCode": "98001"
+      },
+      "emergencyContact": {
+        "name": "Sam Bennett",
+        "relationship": "Friend",
+        "phone": "+1-555-010-2007"
+      },
+      "insurance": {
+        "provider": "Harbor Benefits",
+        "policyNumber": "HAR-100008",
+        "groupNumber": "GRP-DEMO-04"
+      }
     },
     {
       "id": "demo-patient-009",
@@ -144,7 +272,23 @@
       "conditions": [
         "GERD"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "100 Demo Oak Lane",
+        "city": "Springfield",
+        "state": "IL",
+        "postalCode": "62701"
+      },
+      "emergencyContact": {
+        "name": "Robin Carter",
+        "relationship": "Spouse",
+        "phone": "+1-555-010-2008"
+      },
+      "insurance": {
+        "provider": "Demo Health Partners",
+        "policyNumber": "DEM-100009",
+        "groupNumber": "GRP-DEMO-01"
+      }
     },
     {
       "id": "demo-patient-010",
@@ -160,7 +304,23 @@
       "conditions": [
         "No active conditions"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "210 Sample Cedar Ave",
+        "city": "Riverton",
+        "state": "OR",
+        "postalCode": "97001"
+      },
+      "emergencyContact": {
+        "name": "Casey Brooks",
+        "relationship": "Sibling",
+        "phone": "+1-555-010-2009"
+      },
+      "insurance": {
+        "provider": "Northwind Mutual",
+        "policyNumber": "NOR-100010",
+        "groupNumber": "GRP-DEMO-02"
+      }
     },
     {
       "id": "demo-patient-011",
@@ -176,7 +336,23 @@
       "conditions": [
         "Hypertension"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "318 Fixture Maple Dr",
+        "city": "Fairview",
+        "state": "TX",
+        "postalCode": "75069"
+      },
+      "emergencyContact": {
+        "name": "Pat Morgan",
+        "relationship": "Parent",
+        "phone": "+1-555-010-2010"
+      },
+      "insurance": {
+        "provider": "Summit Care Alliance",
+        "policyNumber": "SUM-100011",
+        "groupNumber": "GRP-DEMO-03"
+      }
     },
     {
       "id": "demo-patient-012",
@@ -192,7 +368,23 @@
       "conditions": [
         "Type 2 diabetes"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "422 Example Pine Ct",
+        "city": "Lakeside",
+        "state": "WA",
+        "postalCode": "98001"
+      },
+      "emergencyContact": {
+        "name": "Sam Bennett",
+        "relationship": "Friend",
+        "phone": "+1-555-010-2011"
+      },
+      "insurance": {
+        "provider": "Harbor Benefits",
+        "policyNumber": "HAR-100012",
+        "groupNumber": "GRP-DEMO-04"
+      }
     },
     {
       "id": "demo-patient-013",
@@ -208,7 +400,23 @@
       "conditions": [
         "Asthma"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "100 Demo Oak Lane",
+        "city": "Springfield",
+        "state": "IL",
+        "postalCode": "62701"
+      },
+      "emergencyContact": {
+        "name": "Robin Carter",
+        "relationship": "Spouse",
+        "phone": "+1-555-010-2012"
+      },
+      "insurance": {
+        "provider": "Demo Health Partners",
+        "policyNumber": "DEM-100013",
+        "groupNumber": "GRP-DEMO-01"
+      }
     },
     {
       "id": "demo-patient-014",
@@ -224,7 +432,23 @@
       "conditions": [
         "Migraine"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "210 Sample Cedar Ave",
+        "city": "Riverton",
+        "state": "OR",
+        "postalCode": "97001"
+      },
+      "emergencyContact": {
+        "name": "Casey Brooks",
+        "relationship": "Sibling",
+        "phone": "+1-555-010-2013"
+      },
+      "insurance": {
+        "provider": "Northwind Mutual",
+        "policyNumber": "NOR-100014",
+        "groupNumber": "GRP-DEMO-02"
+      }
     },
     {
       "id": "demo-patient-015",
@@ -240,7 +464,23 @@
       "conditions": [
         "Hyperlipidemia"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "318 Fixture Maple Dr",
+        "city": "Fairview",
+        "state": "TX",
+        "postalCode": "75069"
+      },
+      "emergencyContact": {
+        "name": "Pat Morgan",
+        "relationship": "Parent",
+        "phone": "+1-555-010-2014"
+      },
+      "insurance": {
+        "provider": "Summit Care Alliance",
+        "policyNumber": "SUM-100015",
+        "groupNumber": "GRP-DEMO-03"
+      }
     },
     {
       "id": "demo-patient-016",
@@ -256,7 +496,23 @@
       "conditions": [
         "Osteoarthritis"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "422 Example Pine Ct",
+        "city": "Lakeside",
+        "state": "WA",
+        "postalCode": "98001"
+      },
+      "emergencyContact": {
+        "name": "Sam Bennett",
+        "relationship": "Friend",
+        "phone": "+1-555-010-2015"
+      },
+      "insurance": {
+        "provider": "Harbor Benefits",
+        "policyNumber": "HAR-100016",
+        "groupNumber": "GRP-DEMO-04"
+      }
     },
     {
       "id": "demo-patient-017",
@@ -272,7 +528,23 @@
       "conditions": [
         "Hypothyroidism"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "100 Demo Oak Lane",
+        "city": "Springfield",
+        "state": "IL",
+        "postalCode": "62701"
+      },
+      "emergencyContact": {
+        "name": "Robin Carter",
+        "relationship": "Spouse",
+        "phone": "+1-555-010-2016"
+      },
+      "insurance": {
+        "provider": "Demo Health Partners",
+        "policyNumber": "DEM-100017",
+        "groupNumber": "GRP-DEMO-01"
+      }
     },
     {
       "id": "demo-patient-018",
@@ -288,7 +560,23 @@
       "conditions": [
         "Seasonal allergies"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "210 Sample Cedar Ave",
+        "city": "Riverton",
+        "state": "OR",
+        "postalCode": "97001"
+      },
+      "emergencyContact": {
+        "name": "Casey Brooks",
+        "relationship": "Sibling",
+        "phone": "+1-555-010-2017"
+      },
+      "insurance": {
+        "provider": "Northwind Mutual",
+        "policyNumber": "NOR-100018",
+        "groupNumber": "GRP-DEMO-02"
+      }
     },
     {
       "id": "demo-patient-019",
@@ -304,7 +592,23 @@
       "conditions": [
         "GERD"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "318 Fixture Maple Dr",
+        "city": "Fairview",
+        "state": "TX",
+        "postalCode": "75069"
+      },
+      "emergencyContact": {
+        "name": "Pat Morgan",
+        "relationship": "Parent",
+        "phone": "+1-555-010-2018"
+      },
+      "insurance": {
+        "provider": "Summit Care Alliance",
+        "policyNumber": "SUM-100019",
+        "groupNumber": "GRP-DEMO-03"
+      }
     },
     {
       "id": "demo-patient-020",
@@ -320,7 +624,23 @@
       "conditions": [
         "No active conditions"
       ],
-      "synthetic": true
+      "synthetic": true,
+      "address": {
+        "street": "422 Example Pine Ct",
+        "city": "Lakeside",
+        "state": "WA",
+        "postalCode": "98001"
+      },
+      "emergencyContact": {
+        "name": "Sam Bennett",
+        "relationship": "Friend",
+        "phone": "+1-555-010-2019"
+      },
+      "insurance": {
+        "provider": "Harbor Benefits",
+        "policyNumber": "HAR-100020",
+        "groupNumber": "GRP-DEMO-04"
+      }
     }
   ]
 }

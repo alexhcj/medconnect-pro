@@ -1,0 +1,36 @@
+{
+  "generated_at": "synthetic-demo-fixture",
+  "notice": "All records are fictional and must never be replaced with real patient documents.",
+  "documents": [
+    {
+      "id": "demo-doc-001",
+      "patientId": "demo-patient-001",
+      "name": "Intake summary.pdf",
+      "type": "application/pdf",
+      "category": "intake",
+      "uploadedAt": "2025-07-15T10:40:00Z",
+      "url": "/mock/documents/intake-summary-001.pdf",
+      "synthetic": true
+    },
+    {
+      "id": "demo-doc-002",
+      "patientId": "demo-patient-002",
+      "name": "Insurance card.png",
+      "type": "image/png",
+      "category": "insurance",
+      "uploadedAt": "2025-07-12T15:02:00Z",
+      "url": "/mock/documents/insurance-card-002.png",
+      "synthetic": true
+    },
+    {
+      "id": "demo-doc-003",
+      "patientId": "demo-patient-003",
+      "name": "Pulmonary notes.pdf",
+      "type": "application/pdf",
+      "category": "clinical",
+      "uploadedAt": "2025-07-08T09:35:00Z",
+      "url": "/mock/documents/pulmonary-notes-003.pdf",
+      "synthetic": true
+    }
+  ]
+}

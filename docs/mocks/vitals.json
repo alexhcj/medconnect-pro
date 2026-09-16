@@ -1,0 +1,48 @@
+{
+  "generated_at": "synthetic-demo-fixture",
+  "notice": "All records are fictional and must never be replaced with real clinical data.",
+  "vitals": [
+    {
+      "id": "demo-vital-001",
+      "patientId": "demo-patient-001",
+      "recordedAt": "2025-07-15T10:15:00Z",
+      "systolicMmHg": 128,
+      "diastolicMmHg": 82,
+      "heartRateBpm": 72,
+      "temperatureC": 36.7,
+      "respiratoryRate": 16,
+      "spo2Percent": 98,
+      "weightKg": 72.5,
+      "recordedById": "demo-provider-001",
+      "synthetic": true
+    },
+    {
+      "id": "demo-vital-002",
+      "patientId": "demo-patient-002",
+      "recordedAt": "2025-07-12T14:40:00Z",
+      "systolicMmHg": 134,
+      "diastolicMmHg": 86,
+      "heartRateBpm": 78,
+      "temperatureC": 36.8,
+      "respiratoryRate": 18,
+      "spo2Percent": 97,
+      "weightKg": 88.1,
+      "recordedById": "demo-provider-002",
+      "synthetic": true
+    },
+    {
+      "id": "demo-vital-003",
+      "patientId": "demo-patient-003",
+      "recordedAt": "2025-07-08T09:05:00Z",
+      "systolicMmHg": 118,
+      "diastolicMmHg": 74,
+      "heartRateBpm": 80,
+      "temperatureC": 36.6,
+      "respiratoryRate": 18,
+      "spo2Percent": 96,
+      "weightKg": 64.2,
+      "recordedById": "demo-provider-003",
+      "synthetic": true
+    }
+  ]
+}

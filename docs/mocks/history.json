@@ -1,0 +1,39 @@
+{
+  "generated_at": "synthetic-demo-fixture",
+  "notice": "All records are fictional and must never be replaced with real clinical data.",
+  "history": [
+    {
+      "id": "demo-history-001",
+      "patientId": "demo-patient-001",
+      "type": "visit",
+      "occurredAt": "2025-07-15T10:30:00Z",
+      "title": "Hypertension follow-up",
+      "summary": "Blood pressure stable on current medication. Continue current plan.",
+      "providerId": "demo-provider-001",
+      "status": "completed",
+      "synthetic": true
+    },
+    {
+      "id": "demo-history-002",
+      "patientId": "demo-patient-002",
+      "type": "visit",
+      "occurredAt": "2025-07-12T14:55:00Z",
+      "title": "Diabetes management visit",
+      "summary": "Reviewed glucose log and diet. Continue metformin and lifestyle counseling.",
+      "providerId": "demo-provider-002",
+      "status": "completed",
+      "synthetic": true
+    },
+    {
+      "id": "demo-history-003",
+      "patientId": "demo-patient-003",
+      "type": "consultation",
+      "occurredAt": "2025-07-08T09:20:00Z",
+      "title": "Asthma control review",
+      "summary": "Rescue inhaler used twice in the past month. Review trigger avoidance.",
+      "providerId": "demo-provider-003",
+      "status": "completed",
+      "synthetic": true
+    }
+  ]
+}

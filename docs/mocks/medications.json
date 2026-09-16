@@ -1,0 +1,45 @@
+{
+  "generated_at": "synthetic-demo-fixture",
+  "notice": "All records are fictional and must never be replaced with real clinical data.",
+  "medications": [
+    {
+      "id": "demo-med-001",
+      "patientId": "demo-patient-001",
+      "name": "Lisinopril",
+      "dosage": "10mg",
+      "frequency": "Once daily",
+      "route": "oral",
+      "startDate": "2023-01-10",
+      "prescriberId": "demo-provider-001",
+      "instructions": "Take in the morning with water",
+      "status": "active",
+      "synthetic": true
+    },
+    {
+      "id": "demo-med-002",
+      "patientId": "demo-patient-002",
+      "name": "Metformin",
+      "dosage": "500mg",
+      "frequency": "Twice daily",
+      "route": "oral",
+      "startDate": "2022-06-01",
+      "prescriberId": "demo-provider-002",
+      "instructions": "Take with meals",
+      "status": "active",
+      "synthetic": true
+    },
+    {
+      "id": "demo-med-003",
+      "patientId": "demo-patient-003",
+      "name": "Albuterol",
+      "dosage": "90mcg",
+      "frequency": "As needed",
+      "route": "inhaled",
+      "startDate": "2021-09-15",
+      "prescriberId": "demo-provider-003",
+      "instructions": "Use as a rescue inhaler for shortness of breath",
+      "status": "active",
+      "synthetic": true
+    }
+  ]
+}

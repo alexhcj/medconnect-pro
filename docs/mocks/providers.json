@@ -1,0 +1,42 @@
+{
+  "generated_at": "synthetic-demo-fixture",
+  "notice": "All records are fictional and must never be replaced with real provider data.",
+  "providers": [
+    {
+      "id": "demo-provider-001",
+      "firstName": "Jordan",
+      "lastName": "Ellis",
+      "displayName": "Dr. Jordan Ellis",
+      "specialty": "Family Medicine",
+      "practiceId": "demo-practice-001",
+      "synthetic": true
+    },
+    {
+      "id": "demo-provider-002",
+      "firstName": "Riley",
+      "lastName": "Nguyen",
+      "displayName": "Dr. Riley Nguyen",
+      "specialty": "Internal Medicine",
+      "practiceId": "demo-practice-002",
+      "synthetic": true
+    },
+    {
+      "id": "demo-provider-003",
+      "firstName": "Morgan",
+      "lastName": "Patel",
+      "displayName": "Dr. Morgan Patel",
+      "specialty": "Pulmonology",
+      "practiceId": "demo-practice-003",
+      "synthetic": true
+    },
+    {
+      "id": "demo-provider-004",
+      "firstName": "Casey",
+      "lastName": "Walsh",
+      "displayName": "Dr. Casey Walsh",
+      "specialty": "Neurology",
+      "practiceId": "demo-practice-001",
+      "synthetic": true
+    }
+  ]
+}
