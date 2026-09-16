@@ -1,0 +1,326 @@
+{
+  "generated_at": "synthetic-demo-fixture",
+  "notice": "All records are fictional and must never be replaced with real patient data.",
+  "patients": [
+    {
+      "id": "demo-patient-001",
+      "firstName": "Avery",
+      "lastName": "Carter",
+      "dateOfBirth": "1970-01-01",
+      "gender": "female",
+      "status": "active",
+      "phone": "+1-555-010-1000",
+      "email": "patient001@example.test",
+      "practiceId": "demo-practice-001",
+      "providerId": "demo-provider-001",
+      "conditions": [
+        "Hypertension"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-002",
+      "firstName": "Jordan",
+      "lastName": "Brooks",
+      "dateOfBirth": "1971-02-02",
+      "gender": "male",
+      "status": "active",
+      "phone": "+1-555-010-1001",
+      "email": "patient002@example.test",
+      "practiceId": "demo-practice-002",
+      "providerId": "demo-provider-002",
+      "conditions": [
+        "Type 2 diabetes"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-003",
+      "firstName": "Morgan",
+      "lastName": "Morgan",
+      "dateOfBirth": "1972-03-03",
+      "gender": "non-binary",
+      "status": "active",
+      "phone": "+1-555-010-1002",
+      "email": "patient003@example.test",
+      "practiceId": "demo-practice-003",
+      "providerId": "demo-provider-003",
+      "conditions": [
+        "Asthma"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-004",
+      "firstName": "Taylor",
+      "lastName": "Bennett",
+      "dateOfBirth": "1973-04-04",
+      "gender": "female",
+      "status": "inactive",
+      "phone": "+1-555-010-1003",
+      "email": "patient004@example.test",
+      "practiceId": "demo-practice-001",
+      "providerId": "demo-provider-004",
+      "conditions": [
+        "Migraine"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-005",
+      "firstName": "Riley",
+      "lastName": "Reed",
+      "dateOfBirth": "1974-05-05",
+      "gender": "male",
+      "status": "active",
+      "phone": "+1-555-010-1004",
+      "email": "patient005@example.test",
+      "practiceId": "demo-practice-002",
+      "providerId": "demo-provider-001",
+      "conditions": [
+        "Hyperlipidemia"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-006",
+      "firstName": "Casey",
+      "lastName": "Parker",
+      "dateOfBirth": "1975-06-06",
+      "gender": "non-binary",
+      "status": "active",
+      "phone": "+1-555-010-1005",
+      "email": "patient006@example.test",
+      "practiceId": "demo-practice-003",
+      "providerId": "demo-provider-002",
+      "conditions": [
+        "Osteoarthritis"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-007",
+      "firstName": "Cameron",
+      "lastName": "Hayes",
+      "dateOfBirth": "1976-07-07",
+      "gender": "female",
+      "status": "active",
+      "phone": "+1-555-010-1006",
+      "email": "patient007@example.test",
+      "practiceId": "demo-practice-001",
+      "providerId": "demo-provider-003",
+      "conditions": [
+        "Hypothyroidism"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-008",
+      "firstName": "Quinn",
+      "lastName": "Foster",
+      "dateOfBirth": "1977-08-08",
+      "gender": "male",
+      "status": "inactive",
+      "phone": "+1-555-010-1007",
+      "email": "patient008@example.test",
+      "practiceId": "demo-practice-002",
+      "providerId": "demo-provider-004",
+      "conditions": [
+        "Seasonal allergies"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-009",
+      "firstName": "Drew",
+      "lastName": "Collins",
+      "dateOfBirth": "1978-09-09",
+      "gender": "non-binary",
+      "status": "active",
+      "phone": "+1-555-010-1008",
+      "email": "patient009@example.test",
+      "practiceId": "demo-practice-003",
+      "providerId": "demo-provider-001",
+      "conditions": [
+        "GERD"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-010",
+      "firstName": "Parker",
+      "lastName": "Morris",
+      "dateOfBirth": "1979-10-10",
+      "gender": "female",
+      "status": "active",
+      "phone": "+1-555-010-1009",
+      "email": "patient010@example.test",
+      "practiceId": "demo-practice-001",
+      "providerId": "demo-provider-002",
+      "conditions": [
+        "No active conditions"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-011",
+      "firstName": "Alexis",
+      "lastName": "Turner",
+      "dateOfBirth": "1980-11-11",
+      "gender": "male",
+      "status": "active",
+      "phone": "+1-555-010-1010",
+      "email": "patient011@example.test",
+      "practiceId": "demo-practice-002",
+      "providerId": "demo-provider-003",
+      "conditions": [
+        "Hypertension"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-012",
+      "firstName": "Reese",
+      "lastName": "Cooper",
+      "dateOfBirth": "1981-12-12",
+      "gender": "non-binary",
+      "status": "inactive",
+      "phone": "+1-555-010-1011",
+      "email": "patient012@example.test",
+      "practiceId": "demo-practice-003",
+      "providerId": "demo-provider-004",
+      "conditions": [
+        "Type 2 diabetes"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-013",
+      "firstName": "Jamie",
+      "lastName": "Mitchell",
+      "dateOfBirth": "1982-01-13",
+      "gender": "female",
+      "status": "active",
+      "phone": "+1-555-010-1012",
+      "email": "patient013@example.test",
+      "practiceId": "demo-practice-001",
+      "providerId": "demo-provider-001",
+      "conditions": [
+        "Asthma"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-014",
+      "firstName": "Skyler",
+      "lastName": "Ward",
+      "dateOfBirth": "1983-02-14",
+      "gender": "male",
+      "status": "active",
+      "phone": "+1-555-010-1013",
+      "email": "patient014@example.test",
+      "practiceId": "demo-practice-002",
+      "providerId": "demo-provider-002",
+      "conditions": [
+        "Migraine"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-015",
+      "firstName": "Rowan",
+      "lastName": "Bailey",
+      "dateOfBirth": "1984-03-15",
+      "gender": "non-binary",
+      "status": "active",
+      "phone": "+1-555-010-1014",
+      "email": "patient015@example.test",
+      "practiceId": "demo-practice-003",
+      "providerId": "demo-provider-003",
+      "conditions": [
+        "Hyperlipidemia"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-016",
+      "firstName": "Emerson",
+      "lastName": "Rivera",
+      "dateOfBirth": "1985-04-16",
+      "gender": "female",
+      "status": "inactive",
+      "phone": "+1-555-010-1015",
+      "email": "patient016@example.test",
+      "practiceId": "demo-practice-001",
+      "providerId": "demo-provider-004",
+      "conditions": [
+        "Osteoarthritis"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-017",
+      "firstName": "Finley",
+      "lastName": "Perry",
+      "dateOfBirth": "1986-05-17",
+      "gender": "male",
+      "status": "active",
+      "phone": "+1-555-010-1016",
+      "email": "patient017@example.test",
+      "practiceId": "demo-practice-002",
+      "providerId": "demo-provider-001",
+      "conditions": [
+        "Hypothyroidism"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-018",
+      "firstName": "Hayden",
+      "lastName": "Murphy",
+      "dateOfBirth": "1987-06-18",
+      "gender": "non-binary",
+      "status": "active",
+      "phone": "+1-555-010-1017",
+      "email": "patient018@example.test",
+      "practiceId": "demo-practice-003",
+      "providerId": "demo-provider-002",
+      "conditions": [
+        "Seasonal allergies"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-019",
+      "firstName": "Sage",
+      "lastName": "Kelly",
+      "dateOfBirth": "1988-07-19",
+      "gender": "female",
+      "status": "active",
+      "phone": "+1-555-010-1018",
+      "email": "patient019@example.test",
+      "practiceId": "demo-practice-001",
+      "providerId": "demo-provider-003",
+      "conditions": [
+        "GERD"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-patient-020",
+      "firstName": "Blake",
+      "lastName": "Price",
+      "dateOfBirth": "1989-08-20",
+      "gender": "male",
+      "status": "inactive",
+      "phone": "+1-555-010-1019",
+      "email": "patient020@example.test",
+      "practiceId": "demo-practice-002",
+      "providerId": "demo-provider-004",
+      "conditions": [
+        "No active conditions"
+      ],
+      "synthetic": true
+    }
+  ]
+}

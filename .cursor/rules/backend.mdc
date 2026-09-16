@@ -1,0 +1,28 @@
+---
+description: Backend conventions for the planned NestJS MedConnect backend
+alwaysApply: false
+---
+
+# Backend
+
+The planned backend is a modular NestJS application.
+
+Use clear layers:
+
+controller → application/service → repository/integration → persistence/external service.
+
+Controllers should remain thin.
+
+DTOs validate external input.
+
+RDO/response DTOs define external output.
+
+Domain/application services contain business rules.
+
+Repositories isolate persistence concerns.
+
+Tenant enforcement belongs on the server and should be applied consistently.
+
+Use OpenAPI as the generated/inspectable API contract once the NestJS backend exists.
+
+Do not create frontend-only assumptions about backend authorization.

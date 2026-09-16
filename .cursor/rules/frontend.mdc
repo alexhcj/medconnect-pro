@@ -1,0 +1,40 @@
+---
+description: Frontend implementation conventions for MedConnect Pro
+globs: ["app/**/*.{ts,tsx}", "src/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"]
+alwaysApply: false
+---
+
+# Frontend
+
+Use Next.js App Router and React.
+
+Prefer:
+
+- Server Components by default where appropriate.
+- Client Components only when interactivity/browser APIs require them.
+- TanStack Query for server state.
+- React Hook Form for complex forms.
+- Zod for validation.
+- reusable accessible UI primitives;
+- semantic HTML;
+- keyboard navigation;
+- responsive tablet/mobile clinical workflows.
+
+Do not fetch application data directly in presentational components when a query/data layer exists.
+
+For query defaults, prefer centralized QueryClient configuration over repeating boilerplate in every
+hook.
+
+Handle loading, empty, error and success states intentionally.
+
+Healthcare UI priorities:
+
+1. clarity;
+2. safe information hierarchy;
+3. accessibility;
+4. efficient clinical workflows;
+5. responsive tablet use;
+6. visual polish.
+
+Avoid unnecessary global state. Use Zustand only for genuinely shared client/UI state that benefits
+from a store; do not use it as a replacement for TanStack Query.

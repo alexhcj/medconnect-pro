@@ -1,0 +1,113 @@
+---
+description: MedConnect Pro project identity, scope, architecture and source-of-truth hierarchy
+alwaysApply: true
+---
+
+# MedConnect Pro — Project Context
+
+MedConnect Pro is a feature-rich healthcare SaaS demonstration application created for portfolio,
+technical interviews and potential-client presentations. It demonstrates production-oriented
+engineering patterns without claiming to be a deployed HIPAA-certified production system.
+
+## Primary goals
+
+- Demonstrate healthcare-oriented UX and workflows.
+- Demonstrate secure multi-tenant SaaS architecture.
+- Demonstrate RBAC and resource-level authorization.
+- Demonstrate vertical-slice development.
+- Demonstrate frontend/backend/API/data/infrastructure boundaries.
+- Demonstrate auditability, privacy-by-design and accessibility.
+- Keep the implementation realistic enough to discuss in technical interviews.
+
+## Current frontend
+
+- Next.js App Router
+- React + TypeScript
+- TanStack Query
+- React Hook Form + Zod
+- Tailwind CSS
+- Headless UI where accessible primitives are useful
+- Lucide React for icons
+- Recharts
+- React Big Calendar
+- Daily SDK for the planned telehealth slice
+- Socket.IO client for planned application realtime features
+
+## Planned backend
+
+- Node.js current LTS
+- NestJS current stable major
+- TypeScript
+- REST + OpenAPI
+- WebSockets / Socket.IO where justified
+- PostgreSQL
+- Redis
+- S3 + KMS
+- AWS
+- Docker / ECS Fargate initially
+- Terraform
+- GitHub Actions
+
+## Domain boundaries
+
+- Identity & Access
+- Practice / Provider
+- Patient
+- Scheduling
+- EHR / Clinical Data
+- Telehealth
+- Billing
+- Notifications
+- Audit / Compliance
+
+Do not prematurely split these into independently deployed microservices.
+
+## Security model
+
+The application models:
+
+- OAuth 2.0 / OpenID Connect
+- Authorization Code + PKCE
+- MFA
+- RBAC
+- tenant isolation
+- resource-level authorization
+- audit logging
+- encryption at rest
+- TLS in transit
+- least-privilege access
+- secure secrets handling
+
+The application uses synthetic demo data only. Never introduce real PHI.
+
+## Role model
+
+- SUPER_ADMIN
+- PRACTICE_ADMIN
+- PROVIDER
+- NURSE
+- RECEPTIONIST
+- PATIENT
+
+Authorization follows:
+
+Authentication → identity → tenant/practice → role → permission → resource ownership/assignment.
+
+## Source-of-truth hierarchy
+
+1. ADRs — why major architectural decisions exist.
+2. Product requirements — what/why the product does.
+3. Architecture documents — system structure and technical boundaries.
+4. Contracts — API/data boundaries.
+5. Task specifications — current implementation contracts.
+6. Roadmaps — sequencing and milestones.
+7. Source code — current implementation state.
+
+If sources conflict, do not silently invent a compromise. Identify the conflict and propose the
+appropriate documentation/ADR change.
+
+## Important demo limitation
+
+"Healthcare-grade", "HIPAA-oriented", "HIPAA-like", and "security-focused" describe demonstrated
+engineering patterns. Do not claim the demo itself is HIPAA compliant, certified, or suitable for
+real patient data unless a separate formal assessment establishes that claim.

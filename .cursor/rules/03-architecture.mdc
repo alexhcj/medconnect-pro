@@ -1,0 +1,39 @@
+---
+description: Architecture rules for MedConnect Pro
+alwaysApply: false
+---
+
+# Architecture Rules
+
+Prefer complete vertical slices:
+
+UI → query/data layer → API contract → controller → application/service → repository/integration
+→ database/external service → response DTO → frontend.
+
+Keep domain boundaries explicit.
+
+Do not create microservices merely because the domain has multiple modules. The planned backend
+starts as a modular NestJS application and may extract telehealth, notifications/workers,
+billing/claims workers or audit/event processing only when justified.
+
+Frontend responsibilities:
+
+- presentation and interaction;
+- local UI state;
+- server-state consumption through TanStack Query;
+- form state through React Hook Form;
+- validation through shared schemas where appropriate;
+- API calls through a dedicated API/data layer.
+
+Backend responsibilities:
+
+- authentication;
+- authorization;
+- tenant enforcement;
+- validation;
+- business rules;
+- persistence;
+- integrations;
+- audit events.
+
+Never move security-sensitive authorization decisions into the frontend only.

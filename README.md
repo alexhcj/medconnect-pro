@@ -11,7 +11,7 @@ A modern, HIPAA-compliant healthcare SaaS platform for medical practices.
 
 ## Technical Overview
 
-- Built with Next.js 15.4.4 and React 19.1.0
+- Built with Next.js 16 and React 19
 - TypeScript for type safety
 - Tailwind CSS for responsive UI
 - Authentication via Next-Auth

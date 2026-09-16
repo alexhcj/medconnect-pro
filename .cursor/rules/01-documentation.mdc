@@ -1,0 +1,38 @@
+---
+description: How Cursor must read, update and preserve project documentation
+alwaysApply: true
+---
+
+# Documentation Rules
+
+`/docs` is the canonical repository documentation.
+
+Before non-trivial implementation:
+
+1. Identify the task ID.
+2. Read the task file.
+3. Read all referenced architecture documents.
+4. Read all referenced contracts.
+5. Read all referenced ADRs.
+6. Inspect the existing implementation.
+
+Do not duplicate implementation details in documentation merely for completeness.
+
+Update or propose documentation changes when:
+
+- architecture changes;
+- an API contract changes;
+- a data contract changes;
+- a security boundary changes;
+- a new architectural decision is introduced;
+- task acceptance criteria change.
+
+Create an ADR when a decision has meaningful long-term architectural consequences.
+
+Never put secrets, tokens, credentials, API keys or real patient information in `/docs`.
+
+Task files use YAML front matter for machine-readable metadata and Markdown for the human-readable
+execution contract.
+
+Plane is a project-management projection of tasks. It is not the canonical source for product
+requirements, architecture, ADRs or technical constraints.

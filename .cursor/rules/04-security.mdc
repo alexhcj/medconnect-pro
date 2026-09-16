@@ -1,0 +1,45 @@
+---
+description: Healthcare-oriented security and privacy rules
+alwaysApply: false
+---
+
+# Security Rules
+
+This project is a security-focused demonstration. It is not a claim of HIPAA certification.
+
+Never use real PHI.
+
+All patient data must be synthetic and clearly treated as demo data.
+
+Authorization:
+
+Authentication → user identity → practice/tenant → role → permission → resource check.
+
+Never trust:
+
+- client-supplied practice_id;
+- hidden form fields for authorization;
+- route visibility as authorization;
+- client-side role checks as the only enforcement.
+
+Tenant-owned records must carry or resolve tenant scope server-side.
+
+Sensitive operations should produce audit events where applicable.
+
+Use secure defaults:
+
+- TLS for transport;
+- encrypted storage where infrastructure supports it;
+- secrets outside source control;
+- least privilege;
+- rate limiting;
+- secure cookies where applicable;
+- safe error responses;
+- strict input validation;
+- upload validation.
+
+Do not implement "certificate pinning" in a browser demo as a fake security feature. Document it as
+an infrastructure/client capability that depends on the deployment platform if it is discussed.
+
+Do not claim that using a particular editor, AI coding tool or package makes the application
+HIPAA compliant.

@@ -1,0 +1,25 @@
+---
+description: Testing and validation expectations
+alwaysApply: false
+---
+
+# Testing
+
+A portfolio-quality vertical slice should have the tests appropriate to its risk:
+
+- unit tests for domain logic and permission policies;
+- integration tests for persistence/integrations;
+- API/contract tests for critical endpoints;
+- authorization and tenant-isolation tests;
+- E2E tests for critical user workflows;
+- upload/security tests where applicable.
+
+At minimum for frontend-only work:
+
+- type-check;
+- lint;
+- relevant unit/component tests;
+- E2E tests for critical flows when the feature is user-facing.
+
+Never use real patient information in fixtures.
+Use deterministic synthetic data.

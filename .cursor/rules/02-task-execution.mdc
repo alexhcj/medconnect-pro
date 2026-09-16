@@ -1,0 +1,44 @@
+---
+description: Rules for implementing MedConnect task specifications
+alwaysApply: false
+---
+
+# Task Execution
+
+Treat the selected task specification as the implementation contract.
+
+Before coding:
+
+- verify the task ID;
+- inspect dependencies;
+- inspect referenced ADRs;
+- inspect referenced architecture;
+- inspect API/data contracts;
+- inspect existing code and patterns;
+- identify security and accessibility implications.
+
+During coding:
+
+- do not silently change architectural boundaries;
+- do not bypass authorization because a UI hides an action;
+- do not trust browser-supplied tenant identifiers;
+- do not introduce real PHI;
+- do not add a dependency when an existing project capability is sufficient;
+- keep vertical slices complete across the relevant layers.
+
+If the task conflicts with an ADR or security requirement:
+
+1. stop the conflicting implementation;
+2. explain the conflict;
+3. propose the documentation/ADR change;
+4. continue only after the decision is clear.
+
+After coding:
+
+- verify every acceptance criterion;
+- run appropriate lint/type-check/tests;
+- inspect loading/empty/error states;
+- inspect accessibility;
+- inspect authorization/tenant boundaries;
+- report changed files and any deviations;
+- update task completion information.
