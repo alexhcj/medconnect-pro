@@ -3,7 +3,7 @@
 import {useState} from 'react'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
-import {cn} from '@/lib/utils'
+import {cn} from '@/lib/utils/utils'
 import {Button} from '@/components/ui/button'
 import {Bell, Calendar, CreditCard, LayoutDashboard, Menu, Settings, User, Users, Video, X} from 'lucide-react'
 

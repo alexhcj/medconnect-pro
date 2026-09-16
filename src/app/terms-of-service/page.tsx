@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-	CheckCircleIcon,
-	ChevronDownIcon,
-	DocumentTextIcon,
-	HeartIcon,
-	LockClosedIcon,
-	ShieldCheckIcon,
-	UserCircleIcon
-} from '@heroicons/react/24/outline';
+import {ChevronDown, CircleCheck, CircleUser, FileText, Heart, Lock, ShieldCheck} from 'lucide-react';
 
 interface CollapsibleSectionProps {
 	id: string;
@@ -34,7 +26,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 						<Icon className="h-5 w-5 text-blue-600"/>
 						<h3 className="text-lg font-medium text-gray-900">{title}</h3>
 					</div>
-					<ChevronDownIcon className="h-5 w-5 text-gray-500 transition-transform duration-200 group-open:rotate-180"/>
+					<ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-200 group-open:rotate-180"/>
 				</summary>
 				<div className="px-4 pb-4 border-t border-gray-100">
 					<div className="pt-4 text-gray-700 leading-relaxed">
@@ -56,7 +48,7 @@ const TermsOfServicePage = () => {
 				<div className="text-center mb-8">
 					<div className="flex justify-center mb-4">
 						<div className="p-3 bg-blue-100 rounded-full">
-							<DocumentTextIcon className="h-8 w-8 text-blue-600"/>
+							<FileText className="h-8 w-8 text-blue-600"/>
 						</div>
 					</div>
 					<h1 className="text-3xl font-bold text-gray-900 mb-2">Terms of Service</h1>
@@ -72,17 +64,17 @@ const TermsOfServicePage = () => {
 				{/* Key Highlights */}
 				<div className="grid md:grid-cols-3 gap-4 mb-8">
 					<div className="bg-white p-4 rounded-lg border border-blue-200 shadow-sm">
-						<ShieldCheckIcon className="h-6 w-6 text-blue-600 mb-2"/>
+						<ShieldCheck className="h-6 w-6 text-blue-600 mb-2"/>
 						<h4 className="font-medium text-gray-900 mb-1">HIPAA Compliant</h4>
 						<p className="text-sm text-gray-600">Full compliance with healthcare privacy regulations</p>
 					</div>
 					<div className="bg-white p-4 rounded-lg border border-green-200 shadow-sm">
-						<LockClosedIcon className="h-6 w-6 text-green-600 mb-2"/>
+						<Lock className="h-6 w-6 text-green-600 mb-2"/>
 						<h4 className="font-medium text-gray-900 mb-1">Data Security</h4>
 						<p className="text-sm text-gray-600">AES-256 encryption and secure infrastructure</p>
 					</div>
 					<div className="bg-white p-4 rounded-lg border border-purple-200 shadow-sm">
-						<HeartIcon className="h-6 w-6 text-purple-600 mb-2"/>
+						<Heart className="h-6 w-6 text-purple-600 mb-2"/>
 						<h4 className="font-medium text-gray-900 mb-1">Patient-Centered</h4>
 						<p className="text-sm text-gray-600">Designed with patient privacy and care in mind</p>
 					</div>
@@ -93,7 +85,7 @@ const TermsOfServicePage = () => {
 					<CollapsibleSection
 						id="acceptance"
 						title="Acceptance of Terms"
-						icon={CheckCircleIcon}
+						icon={CircleCheck}
 					>
 						<p className="mb-4">
 							By accessing and using our healthcare platform (&quot;Service&quot;), you accept and agree to be bound by
@@ -110,7 +102,7 @@ const TermsOfServicePage = () => {
 					<CollapsibleSection
 						id="hipaa-privacy"
 						title="HIPAA Privacy & Security"
-						icon={ShieldCheckIcon}
+						icon={ShieldCheck}
 					>
 						<div className="space-y-4">
 							<div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -144,7 +136,7 @@ const TermsOfServicePage = () => {
 					<CollapsibleSection
 						id="data-security"
 						title="Data Security & Technical Safeguards"
-						icon={LockClosedIcon}
+						icon={Lock}
 					>
 						<div className="space-y-4">
 							<p>
@@ -179,7 +171,7 @@ const TermsOfServicePage = () => {
 					<CollapsibleSection
 						id="user-responsibilities"
 						title="User Responsibilities & Account Security"
-						icon={UserCircleIcon}
+						icon={CircleUser}
 					>
 						<div className="space-y-4">
 							<p>
@@ -205,7 +197,7 @@ const TermsOfServicePage = () => {
 					<CollapsibleSection
 						id="service-availability"
 						title="Service Availability & Limitations"
-						icon={HeartIcon}
+						icon={Heart}
 					>
 						<div className="space-y-4">
 							<p>
@@ -233,7 +225,7 @@ const TermsOfServicePage = () => {
 					<CollapsibleSection
 						id="liability"
 						title="Limitation of Liability & Disclaimers"
-						icon={ShieldCheckIcon}
+						icon={ShieldCheck}
 					>
 						<div className="space-y-4">
 							<p>
@@ -256,7 +248,7 @@ const TermsOfServicePage = () => {
 					<CollapsibleSection
 						id="termination"
 						title="Account Termination & Data Retention"
-						icon={DocumentTextIcon}
+						icon={FileText}
 					>
 						<div className="space-y-4">
 							<p>

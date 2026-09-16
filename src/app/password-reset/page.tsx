@@ -5,15 +5,7 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
-import {
-	CheckCircleIcon,
-	ExclamationTriangleIcon,
-	EyeIcon,
-	EyeSlashIcon,
-	KeyIcon,
-	ShieldCheckIcon
-} from '@heroicons/react/24/outline';
-import {ArrowLeft, Loader2, Lock, Mail} from 'lucide-react';
+import {ArrowLeft, CircleCheck, Eye, EyeOff, Key, Loader2, Lock, Mail, ShieldCheck, TriangleAlert} from 'lucide-react';
 
 // Separate schemas for each step
 const emailSchema = z.object({
@@ -190,7 +182,7 @@ const PasswordResetPage = () => {
 				{error && (
 					<div className="rounded-lg bg-red-50 p-4">
 						<div className="flex">
-							<ExclamationTriangleIcon className="h-5 w-5 text-red-400"/>
+							<TriangleAlert className="h-5 w-5 text-red-400"/>
 							<div className="ml-3">
 								<p className="text-sm font-medium text-red-800">{error}</p>
 							</div>
@@ -246,7 +238,7 @@ const PasswordResetPage = () => {
 		<div className="space-y-6">
 			<div className="text-center">
 				<div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-					<KeyIcon className="h-6 w-6 text-green-600"/>
+					<Key className="h-6 w-6 text-green-600"/>
 				</div>
 				<h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
 					Create new password
@@ -276,9 +268,9 @@ const PasswordResetPage = () => {
 							className="absolute right-3 top-3.5"
 						>
 							{showPassword ? (
-								<EyeSlashIcon className="h-5 w-5 text-gray-400"/>
+								<EyeOff className="h-5 w-5 text-gray-400"/>
 							) : (
-								<EyeIcon className="h-5 w-5 text-gray-400"/>
+								<Eye className="h-5 w-5 text-gray-400"/>
 							)}
 						</button>
 					</div>
@@ -324,9 +316,9 @@ const PasswordResetPage = () => {
 							className="absolute right-3 top-3.5"
 						>
 							{showConfirmPassword ? (
-								<EyeSlashIcon className="h-5 w-5 text-gray-400"/>
+								<EyeOff className="h-5 w-5 text-gray-400"/>
 							) : (
-								<EyeIcon className="h-5 w-5 text-gray-400"/>
+								<Eye className="h-5 w-5 text-gray-400"/>
 							)}
 						</button>
 					</div>
@@ -339,26 +331,26 @@ const PasswordResetPage = () => {
 					<h4 className="text-sm font-medium text-blue-900 mb-2">Password requirements:</h4>
 					<ul className="text-xs text-blue-800 space-y-1">
 						<li className={`flex items-center ${password.length >= 8 ? 'text-green-700' : ''}`}>
-							<CheckCircleIcon className={`h-3 w-3 mr-2 ${password.length >= 8 ? 'text-green-600' : 'text-gray-400'}`}/>
+							<CircleCheck className={`h-3 w-3 mr-2 ${password.length >= 8 ? 'text-green-600' : 'text-gray-400'}`}/>
 							At least 8 characters long
 						</li>
 						<li className={`flex items-center ${/[A-Z]/.test(password) ? 'text-green-700' : ''}`}>
-							<CheckCircleIcon
+							<CircleCheck
 								className={`h-3 w-3 mr-2 ${/[A-Z]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}/>
 							One uppercase letter
 						</li>
 						<li className={`flex items-center ${/[a-z]/.test(password) ? 'text-green-700' : ''}`}>
-							<CheckCircleIcon
+							<CircleCheck
 								className={`h-3 w-3 mr-2 ${/[a-z]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}/>
 							One lowercase letter
 						</li>
 						<li className={`flex items-center ${/[0-9]/.test(password) ? 'text-green-700' : ''}`}>
-							<CheckCircleIcon
+							<CircleCheck
 								className={`h-3 w-3 mr-2 ${/[0-9]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}/>
 							One number
 						</li>
 						<li className={`flex items-center ${/[^A-Za-z0-9]/.test(password) ? 'text-green-700' : ''}`}>
-							<CheckCircleIcon
+							<CircleCheck
 								className={`h-3 w-3 mr-2 ${/[^A-Za-z0-9]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}/>
 							One special character
 						</li>
@@ -368,7 +360,7 @@ const PasswordResetPage = () => {
 				{error && (
 					<div className="rounded-lg bg-red-50 p-4">
 						<div className="flex">
-							<ExclamationTriangleIcon className="h-5 w-5 text-red-400"/>
+							<TriangleAlert className="h-5 w-5 text-red-400"/>
 							<div className="ml-3">
 								<p className="text-sm font-medium text-red-800">{error}</p>
 							</div>
@@ -398,7 +390,7 @@ const PasswordResetPage = () => {
 		<div className="space-y-6">
 			<div className="text-center">
 				<div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-					<CheckCircleIcon className="h-6 w-6 text-green-600"/>
+					<CircleCheck className="h-6 w-6 text-green-600"/>
 				</div>
 				<h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
 					{currentStep === 'success' && password ? 'Password reset successfully' : 'Check your email'}
@@ -413,7 +405,7 @@ const PasswordResetPage = () => {
 
 			<div className="bg-green-50 rounded-lg p-4">
 				<div className="flex">
-					<ShieldCheckIcon className="h-5 w-5 text-green-400"/>
+					<ShieldCheck className="h-5 w-5 text-green-400"/>
 					<div className="ml-3">
 						<p className="text-sm font-medium text-green-800">
 							Security Notice
@@ -455,7 +447,7 @@ const PasswordResetPage = () => {
 					{/* HIPAA Compliance Notice */}
 					<div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-3">
 						<div className="flex items-start">
-							<ShieldCheckIcon className="h-4 w-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0"/>
+							<ShieldCheck className="h-4 w-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0"/>
 							<p className="text-xs text-blue-800">
 								<span className="font-semibold">HIPAA Compliant:</span> Your data is encrypted and secure. This password
 								reset process follows healthcare privacy standards.

@@ -2,7 +2,7 @@
 
 import React, {Fragment, useEffect, useState} from 'react';
 import {Dialog, DialogPanel, DialogTitle, Transition, TransitionChild} from '@headlessui/react';
-import {ComputerDesktopIcon, DevicePhoneMobileIcon, ExclamationTriangleIcon} from '@heroicons/react/24/outline';
+import {Monitor, Smartphone, TriangleAlert} from 'lucide-react';
 import {useConcurrentSessions, useTerminateSessions} from '@/lib/hooks/use-session';
 import {useUISelectors} from '@/lib/stores/ui-store';
 
@@ -100,9 +100,9 @@ export function ConcurrentSessionDialog() {
 
 	const getDeviceIcon = (device: string) => {
 		if (device.toLowerCase().includes('mobile') || device.toLowerCase().includes('phone')) {
-			return <DevicePhoneMobileIcon className="h-5 w-5"/>;
+			return <Smartphone className="h-5 w-5"/>;
 		}
-		return <ComputerDesktopIcon className="h-5 w-5"/>;
+		return <Monitor className="h-5 w-5"/>;
 	};
 
 	const formatLastActivity = (timestamp: number) => {
@@ -152,7 +152,7 @@ export function ConcurrentSessionDialog() {
 								className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
 								<div className="flex items-center space-x-3 mb-4">
 									<div className="flex-shrink-0 rounded-full bg-amber-100 p-2">
-										<ExclamationTriangleIcon className="h-6 w-6 text-amber-600"/>
+										<TriangleAlert className="h-6 w-6 text-amber-600"/>
 									</div>
 
 									<div>

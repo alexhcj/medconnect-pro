@@ -6,22 +6,22 @@ import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
 import {
-	CheckCircleIcon,
-	ChevronDownIcon,
-	ChevronUpIcon,
-	ClockIcon,
-	ComputerDesktopIcon,
-	DevicePhoneMobileIcon,
-	DocumentDuplicateIcon,
-	EnvelopeIcon,
-	ExclamationTriangleIcon,
-	EyeIcon,
-	EyeSlashIcon,
-	InformationCircleIcon,
-	KeyIcon,
-	LockClosedIcon,
-	ShieldCheckIcon
-} from '@heroicons/react/24/outline';
+	CircleCheck,
+	ChevronDown,
+	ChevronUp,
+	Clock,
+	Copy,
+	Eye,
+	EyeOff,
+	Info,
+	Key,
+	Lock,
+	Mail,
+	Monitor,
+	ShieldCheck,
+	Smartphone,
+	TriangleAlert,
+} from 'lucide-react';
 import {clsx} from 'clsx';
 import toast, {Toaster} from 'react-hot-toast';
 import {Button} from '@/components/ui/button';
@@ -310,7 +310,7 @@ const LoginPage = () => {
 						success ? 'border-green-200' : 'border-amber-200'
 					)}>
 						<div className="flex items-start">
-							<ShieldCheckIcon className={clsx(
+							<ShieldCheck className={clsx(
 								'w-4 h-4 mt-0.5 mr-2 flex-shrink-0',
 								success ? 'text-green-600' : 'text-amber-600'
 							)}/>
@@ -621,7 +621,7 @@ const LoginPage = () => {
 					<div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
 						<div className="text-center mb-6">
 							<div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-								<CheckCircleIcon className="w-8 h-8 text-green-600"/>
+								<CircleCheck className="w-8 h-8 text-green-600"/>
 							</div>
 							<h2 className="text-2xl font-bold text-gray-900 mb-2">Setup Complete!</h2>
 							<p className="text-gray-600">Your account is now secured with multi-factor authentication</p>
@@ -630,7 +630,7 @@ const LoginPage = () => {
 						{/* Enhanced Security Notice */}
 						<div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
 							<div className="flex items-start">
-								<ShieldCheckIcon className="w-5 h-5 text-green-600 mt-0.5 mr-2 flex-shrink-0"/>
+								<ShieldCheck className="w-5 h-5 text-green-600 mt-0.5 mr-2 flex-shrink-0"/>
 								<div className="text-sm text-green-800">
 									<p className="font-medium mb-1">HIPAA Compliant Security Active</p>
 									<p>Your healthcare data is now protected with:</p>
@@ -646,7 +646,7 @@ const LoginPage = () => {
 
 						<div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
 							<div className="flex items-start">
-								<ExclamationTriangleIcon className="w-5 h-5 text-amber-600 mt-0.5 mr-2 flex-shrink-0"/>
+								<TriangleAlert className="w-5 h-5 text-amber-600 mt-0.5 mr-2 flex-shrink-0"/>
 								<div className="text-sm text-amber-800">
 									<p className="font-medium mb-1">Save Your Backup Codes</p>
 									<p>These codes can be used if you lose access to your primary authentication method.</p>
@@ -668,7 +668,7 @@ const LoginPage = () => {
 								onClick={handleBackupCodeDownload}
 								className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center"
 							>
-								<DocumentDuplicateIcon className="w-4 h-4 mr-2"/>
+								<Copy className="w-4 h-4 mr-2"/>
 								Download Backup Codes
 							</button>
 						</div>
@@ -677,7 +677,7 @@ const LoginPage = () => {
 						{trustDevice && (
 							<div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
 								<div className="flex items-start">
-									<ComputerDesktopIcon className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0"/>
+									<Monitor className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0"/>
 									<div className="text-sm text-blue-800">
 										<p className="font-medium">Trusted Device Registered</p>
 										<p className="text-xs mt-1">
@@ -717,7 +717,7 @@ const LoginPage = () => {
 					<div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
 						<div className="text-center mb-8">
 							<div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-								<ShieldCheckIcon className="w-8 h-8 text-blue-600"/>
+								<ShieldCheck className="w-8 h-8 text-blue-600"/>
 							</div>
 							<h2 className="text-2xl font-bold text-gray-900 mb-2">
 								{mfaState.isFirstTime ? 'Setup Multi-Factor Authentication' : 'Multi-Factor Authentication'}
@@ -732,7 +732,7 @@ const LoginPage = () => {
 						{/* Enhanced Security Context */}
 						<div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
 							<div className="flex items-start">
-								<ShieldCheckIcon className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0"/>
+								<ShieldCheck className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0"/>
 								<div className="text-xs text-blue-800">
 									<p className="font-medium">HIPAA Compliant Security</p>
 									<p>Additional verification protects patient data and ensures regulatory compliance.
@@ -745,7 +745,7 @@ const LoginPage = () => {
 						{currentAttemptState.attempts > 0 && (
 							<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
 								<div className="flex items-center">
-									<ExclamationTriangleIcon className="w-4 h-4 text-red-600 mr-2"/>
+									<TriangleAlert className="w-4 h-4 text-red-600 mr-2"/>
 									<div className="text-sm text-red-800 flex-1">
 										<p className="font-medium">{currentAttemptState.message}</p>
 										{currentAttemptState.attempts <= 2 && (
@@ -762,7 +762,7 @@ const LoginPage = () => {
 						{currentAttemptState.isLocked && (
 							<div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg">
 								<div className="flex items-center">
-									<LockClosedIcon className="w-4 h-4 text-red-700 mr-2"/>
+									<Lock className="w-4 h-4 text-red-700 mr-2"/>
 									<div className="text-sm text-red-800">
 										<p className="font-medium">Account Temporarily Locked</p>
 										<p className="text-xs mt-1">
@@ -779,7 +779,7 @@ const LoginPage = () => {
 						{showCountdown && timeRemaining > 0 && (
 							<div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
 								<div className="flex items-center">
-									<ClockIcon className="w-4 h-4 text-amber-600 mr-2"/>
+									<Clock className="w-4 h-4 text-amber-600 mr-2"/>
 									<div className="text-sm text-amber-800 flex-1">
 										<p className="font-medium">Please wait before your next attempt</p>
 										<p className="text-xs mt-1">
@@ -808,7 +808,7 @@ const LoginPage = () => {
 									>
 										{method === 'app' && (
 											<>
-												<DevicePhoneMobileIcon className="w-4 h-4 inline mr-1"/>
+												<Smartphone className="w-4 h-4 inline mr-1"/>
 												Authenticator
 											</>
 										)}
@@ -816,7 +816,7 @@ const LoginPage = () => {
 										{method === 'email' && 'Email'}
 										{method === 'backup' && (
 											<>
-												<KeyIcon className="w-4 h-4 inline mr-1"/>
+												<Key className="w-4 h-4 inline mr-1"/>
 												Backup Code
 											</>
 										)}
@@ -844,7 +844,7 @@ const LoginPage = () => {
 													className="text-blue-600 hover:text-blue-700"
 													aria-label="Copy secret key to clipboard"
 												>
-													<DocumentDuplicateIcon className="w-4 h-4"/>
+													<Copy className="w-4 h-4"/>
 												</button>
 											</div>
 										</div>
@@ -892,7 +892,7 @@ const LoginPage = () => {
 									/>
 									{backupCode.length > 0 && !isValidBackupCodeFormat(backupCode) && (
 										<p className="mt-1 text-sm text-red-600 flex items-center">
-											<ExclamationTriangleIcon className="w-4 h-4 mr-1"/>
+											<TriangleAlert className="w-4 h-4 mr-1"/>
 											Backup code must be in format XXXX-XXXX
 										</p>
 									)}
@@ -925,7 +925,7 @@ const LoginPage = () => {
 									id="backup-code-help"
 								>
 									<span>What are backup codes?</span>
-									{showBackupHelp ? <ChevronUpIcon className="w-4 h-4"/> : <ChevronDownIcon className="w-4 h-4"/>}
+									{showBackupHelp ? <ChevronUp className="w-4 h-4"/> : <ChevronDown className="w-4 h-4"/>}
 								</button>
 
 								{showBackupHelp && (
@@ -956,7 +956,7 @@ const LoginPage = () => {
 								aria-expanded={showAdvanced}
 							>
 								<span>Advanced Options</span>
-								{showAdvanced ? <ChevronUpIcon className="w-4 h-4"/> : <ChevronDownIcon className="w-4 h-4"/>}
+								{showAdvanced ? <ChevronUp className="w-4 h-4"/> : <ChevronDown className="w-4 h-4"/>}
 							</button>
 
 							{showAdvanced && (
@@ -978,7 +978,7 @@ const LoginPage = () => {
 									{trustDevice && (
 										<div className="text-xs text-gray-600 bg-blue-50 p-2 rounded border border-blue-200">
 											<div className="flex items-start">
-												<InformationCircleIcon className="w-3 h-3 text-blue-600 mt-0.5 mr-1 flex-shrink-0"/>
+												<Info className="w-3 h-3 text-blue-600 mt-0.5 mr-1 flex-shrink-0"/>
 												<div>
 													<p className="font-medium">Device Trust Information:</p>
 													<p>{deviceInfo.browser} • {deviceInfo.os}</p>
@@ -1057,7 +1057,7 @@ const LoginPage = () => {
 				{/* Header */}
 				<div className="text-center mb-8">
 					<div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-						<LockClosedIcon className="w-8 h-8 text-white"/>
+						<Lock className="w-8 h-8 text-white"/>
 					</div>
 					<h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
 					<p className="text-gray-600">Sign in to your secure healthcare dashboard</p>
@@ -1065,11 +1065,11 @@ const LoginPage = () => {
 					{/* Trust indicators */}
 					<div className="flex items-center justify-center mt-3 space-x-4 text-xs text-gray-500">
 						<div className="flex items-center">
-							<ShieldCheckIcon className="w-3 h-3 mr-1"/>
+							<ShieldCheck className="w-3 h-3 mr-1"/>
 							HIPAA Compliant
 						</div>
 						<div className="flex items-center">
-							<LockClosedIcon className="w-3 h-3 mr-1"/>
+							<Lock className="w-3 h-3 mr-1"/>
 							AES-256 Encrypted
 						</div>
 					</div>
@@ -1087,7 +1087,7 @@ const LoginPage = () => {
 								</label>
 								<div className="relative">
 									<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-										<EnvelopeIcon className="h-5 w-5 text-gray-400" aria-hidden="true"/>
+										<Mail className="h-5 w-5 text-gray-400" aria-hidden="true"/>
 									</div>
 									<input
 										{...register('email')}
@@ -1107,13 +1107,13 @@ const LoginPage = () => {
 									/>
 									{watchedFields.email && !errors.email && (
 										<div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-											<CheckCircleIcon className="h-5 w-5 text-green-500" aria-hidden="true"/>
+											<CircleCheck className="h-5 w-5 text-green-500" aria-hidden="true"/>
 										</div>
 									)}
 								</div>
 								{errors.email && (
 									<p id="email-error" className="mt-1 text-sm text-red-600 flex items-center" role="alert">
-										<ExclamationTriangleIcon className="w-4 h-4 mr-1" aria-hidden="true"/>
+										<TriangleAlert className="w-4 h-4 mr-1" aria-hidden="true"/>
 										{errors.email.message}
 									</p>
 								)}
@@ -1127,7 +1127,7 @@ const LoginPage = () => {
 								</label>
 								<div className="relative">
 									<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-										<LockClosedIcon className="h-5 w-5 text-gray-400" aria-hidden="true"/>
+										<Lock className="h-5 w-5 text-gray-400" aria-hidden="true"/>
 									</div>
 									<input
 										{...register('password')}
@@ -1152,15 +1152,15 @@ const LoginPage = () => {
 										aria-label={showPassword ? "Hide password" : "Show password"}
 									>
 										{showPassword ? (
-											<EyeSlashIcon className="h-5 w-5 text-gray-400 hover:text-gray-600"/>
+											<EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600"/>
 										) : (
-											<EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-600"/>
+											<Eye className="h-5 w-5 text-gray-400 hover:text-gray-600"/>
 										)}
 									</button>
 								</div>
 								{errors.password && (
 									<p id="password-error" className="mt-1 text-sm text-red-600 flex items-center" role="alert">
-										<ExclamationTriangleIcon className="w-4 h-4 mr-1" aria-hidden="true"/>
+										<TriangleAlert className="w-4 h-4 mr-1" aria-hidden="true"/>
 										{errors.password.message}
 									</p>
 								)}
@@ -1223,7 +1223,7 @@ const LoginPage = () => {
 					{/* Security Notice */}
 					<div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
 						<div className="flex items-start">
-							<ShieldCheckIcon className="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0"/>
+							<ShieldCheck className="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0"/>
 							<div className="text-sm text-blue-800">
 								<p className="font-medium mb-1">HIPAA Compliant & Secure</p>
 								<div className="text-xs text-blue-600 space-y-1">

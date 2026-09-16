@@ -43,8 +43,7 @@ This project intentionally follows current stable package releases rather than h
 
 ### Icons
 
-Prefer Lucide React consistently. Heroicons can be removed if it is not already deeply used.
-Keeping both icon libraries is unnecessary duplication.
+Use Lucide React as the only icon library. `@heroicons/react` has been removed.
 
 ### React Query Devtools
 
