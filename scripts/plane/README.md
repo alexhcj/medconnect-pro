@@ -29,7 +29,7 @@ Plane is authoritative for operational project-management state such as:
 
 ## Environment
 
-Copy `config.example.env` to your local environment.
+Copy `config.example.env` to `scripts/plane/.env`. The sync scripts load that file automatically and do not overwrite variables already set in the process environment.
 
 Never commit the real API key.
 
