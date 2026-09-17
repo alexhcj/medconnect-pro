@@ -8,7 +8,7 @@ function createMockSession(overrides: Partial<SessionInfo> = {}): SessionInfo {
 	return {
 		sessionId: MOCK_SESSION_ID,
 		userId: MOCK_USER_ID,
-		userRole: 'admin',
+		userRole: 'PRACTICE_ADMIN',
 		expiresAt: Date.now() + 24 * 60 * 60 * 1000,
 		lastActivity: Date.now() - 5 * 60 * 1000,
 		isActive: true,

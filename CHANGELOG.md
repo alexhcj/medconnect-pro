@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.10.0] - 2026-09-17
+
+### Added
+
+- Authenticated dashboard shell with responsive, accessible navigation and route-level loading/error UI.
+- Role-aware menu presentation (UX only) and isolated synthetic dashboard overview metrics.
+
 ## [0.9.2] - 2026-09-16
 
 ### Changed

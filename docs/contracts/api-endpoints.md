@@ -35,6 +35,10 @@ schema.
 - `DELETE /appointments/:id`
 - `GET /providers/:id/availability`
 
+## Dashboard
+
+- `GET /dashboard/overview`
+
 ## Telehealth
 
 - `POST /telehealth/sessions`

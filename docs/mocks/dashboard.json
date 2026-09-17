@@ -1,0 +1,56 @@
+{
+	"metrics": [
+		{
+			"id": "total_patients",
+			"title": "Total Patients",
+			"value": "2,834",
+			"icon": "users",
+			"trend": {"value": 12, "direction": "up"},
+			"description": "Active patients in system",
+			"roles": ["SUPER_ADMIN", "PRACTICE_ADMIN", "PROVIDER", "NURSE", "RECEPTIONIST"]
+		},
+		{
+			"id": "todays_appointments",
+			"title": "Today's Appointments",
+			"value": "24",
+			"icon": "calendar",
+			"trend": {"value": 5, "direction": "down"},
+			"description": "Scheduled for today",
+			"roles": ["SUPER_ADMIN", "PRACTICE_ADMIN", "PROVIDER", "NURSE", "RECEPTIONIST"]
+		},
+		{
+			"id": "monthly_revenue",
+			"title": "Monthly Revenue",
+			"value": "$45,231",
+			"icon": "revenue",
+			"trend": {"value": 8, "direction": "up"},
+			"description": "This month's earnings",
+			"roles": ["SUPER_ADMIN", "PRACTICE_ADMIN", "RECEPTIONIST"]
+		},
+		{
+			"id": "patient_satisfaction",
+			"title": "Patient Satisfaction",
+			"value": "98.2%",
+			"icon": "satisfaction",
+			"trend": {"value": 2, "direction": "up"},
+			"description": "Average rating",
+			"roles": ["SUPER_ADMIN", "PRACTICE_ADMIN", "PROVIDER", "NURSE"]
+		},
+		{
+			"id": "upcoming_visits",
+			"title": "Upcoming visits",
+			"value": "2",
+			"icon": "calendar",
+			"description": "Your next scheduled visits",
+			"roles": ["PATIENT"]
+		},
+		{
+			"id": "open_balance",
+			"title": "Open balance",
+			"value": "$120",
+			"icon": "revenue",
+			"description": "Demo account balance",
+			"roles": ["PATIENT"]
+		}
+	]
+}

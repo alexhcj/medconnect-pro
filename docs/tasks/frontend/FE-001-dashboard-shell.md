@@ -3,12 +3,12 @@ id: FE-001
 type: task
 area: frontend
 feature: dashboard
-status: planned
+status: implemented
 priority: high
 estimate: 2
 dependencies: []
 related_adrs: []
-related_docs: [frontend-architecture.md,../01-product-requirements.md]
+related_docs: [frontend-architecture.md,../01-product-requirements.md,../contracts/api-endpoints.md]
 plane:
   work_item_id: null
   identifier: null
@@ -34,11 +34,11 @@ Navigation, role-aware menu presentation, responsive shell and loading/error bou
 
 ## Acceptance criteria
 
-- [ ] Dashboard route exists
-- [ ] Responsive shell exists
-- [ ] Navigation is accessible
-- [ ] Loading/error states exist
-- [ ] Synthetic dashboard data is isolated
+- [x] Dashboard route exists
+- [x] Responsive shell exists
+- [x] Navigation is accessible
+- [x] Loading/error states exist
+- [x] Synthetic dashboard data is isolated
 
 ## Implementation notes
 
@@ -46,7 +46,7 @@ Do not make navigation visibility the authorization mechanism.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Dashboard route group layout, accessible shell, role-aware nav (UX only), isolated overview metrics, stub nav routes.
+- Tests: Jest unit tests for nav/metric filters; shell accessibility component test.
 - PR:
-- Notes:
+- Notes: Menu visibility is not authorization. SEC-001 remains the enforcement task.
