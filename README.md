@@ -124,9 +124,15 @@ API base URL when one is available.
 ```bash
 npm run lint
 npm run type-check
-npm run test:mocks
+npm test
+npm run test:watch
+npm run test:coverage
+npx playwright install chromium   # once per machine, before E2E
+npm run e2e
 npm run build
 ```
+
+Frontend testing conventions: [docs/workflows/frontend-testing.md](./docs/workflows/frontend-testing.md).
 
 ## Documentation
 

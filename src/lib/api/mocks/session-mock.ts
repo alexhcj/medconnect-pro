@@ -20,6 +20,8 @@ function createMockSession(overrides: Partial<SessionInfo> = {}): SessionInfo {
 
 function createMockConcurrentSessions(): ConcurrentSessionInfo[] {
 	const now = Date.now();
+	// Default mock is a single current session so dashboard E2E is not blocked by the
+	// concurrent-session dialog. Extra-session fixtures belong in a dedicated session test.
 	return [
 		{
 			sessionId: MOCK_SESSION_ID,
@@ -30,26 +32,6 @@ function createMockConcurrentSessions(): ConcurrentSessionInfo[] {
 			loginTime: now - 3 * 60 * 60 * 1000,
 			lastActivity: now - 5 * 60 * 1000,
 			isCurrentSession: true,
-		},
-		{
-			sessionId: 'sess_mock_987654321',
-			location: 'Berlin, Germany',
-			device: 'iPhone 15 Pro',
-			browser: 'Safari 17.2',
-			ipAddress: '185.199.108.153',
-			loginTime: now - 6 * 60 * 60 * 1000,
-			lastActivity: now - 2 * 60 * 60 * 1000,
-			isCurrentSession: false,
-		},
-		{
-			sessionId: 'sess_mock_456789123',
-			location: 'London, United Kingdom',
-			device: 'MacBook Pro',
-			browser: 'Firefox 122.0',
-			ipAddress: '217.138.212.58',
-			loginTime: now - 12 * 60 * 60 * 1000,
-			lastActivity: now - 30 * 60 * 1000,
-			isCurrentSession: false,
 		},
 	];
 }

@@ -73,3 +73,9 @@ Do not put server data into Zustand simply to duplicate TanStack Query.
 ## Responsive clinical use
 
 Tablet is a first-class target because clinical workflows may happen away from a desktop workstation.
+
+## Testing
+
+Frontend unit/component tests use Vitest; browser E2E uses Playwright. See
+[frontend-testing.md](../workflows/frontend-testing.md) and
+[ADR-008](../decisions/ADR-008-frontend-testing-stack.md).

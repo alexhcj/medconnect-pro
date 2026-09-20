@@ -7,8 +7,8 @@ status: planned
 priority: high
 estimate: 2
 dependencies: [BE-001]
-related_adrs: []
-related_docs: [frontend-architecture.md,backend-architecture.md]
+related_adrs: [ADR-008-frontend-testing-stack.md]
+related_docs: [frontend-architecture.md,backend-architecture.md,../workflows/frontend-testing.md]
 plane:
   work_item_id: null
   identifier: null
@@ -34,18 +34,20 @@ Unit, integration, API and E2E configuration.
 
 ## Acceptance criteria
 
-- [ ] Test commands work
-- [ ] Synthetic fixtures exist
-- [ ] Critical path test conventions documented
-- [ ] No real PHI in fixtures
+- [x] Frontend test commands work (Vitest + Playwright)
+- [x] Synthetic fixtures exist
+- [x] Frontend critical-path test conventions documented
+- [x] No real PHI in fixtures
+- [ ] Backend/Nest unit, integration, and API test runner (deferred until BE-001)
 
 ## Implementation notes
 
-Keep tests deterministic and isolated.
+Keep tests deterministic and isolated. Frontend stack is Vitest + Playwright (ADR-008). Do not
+introduce Jest. Backend test infrastructure waits on the NestJS platform.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Frontend Vitest/Playwright configs, scripts, and conventions. Backend remaining.
+- Tests: FE-001 unit/component coverage plus dashboard shell E2E on Chromium.
 - PR:
-- Notes:
+- Notes: Overall task stays open until BE-001 enables Nest/API tests.

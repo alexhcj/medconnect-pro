@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.11.0] - 2026-09-20
+
+### Added
+
+- Vitest + React Testing Library for unit and component tests, with Playwright Chromium E2E for dashboard navigation.
+- Frontend testing conventions (ADR-008) and a dashboard-shell E2E flow.
+
+### Changed
+
+- Replaced Jest with Vitest as the frontend unit/component runner. Playwright is now an installed, configured E2E dependency.
+- Mock concurrent-session list defaults to the current session so dashboard E2E is not blocked by the security dialog.
+
 ## [0.10.0] - 2026-09-17
 
 ### Added
