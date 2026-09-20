@@ -35,6 +35,9 @@ Create an ADR when a decision has meaningful long-term architectural consequence
 
 Never put secrets, tokens, credentials, API keys or real patient information in `/docs`.
 
+Generated OpenAPI (`apps/api/openapi/openapi.json`) is not hand-maintained documentation. Do not
+duplicate those schemas in `/docs`. See [docs/workflows/api-contract-workflow.md](../../docs/workflows/api-contract-workflow.md).
+
 Task files use YAML front matter for machine-readable metadata and Markdown for the human-readable
 execution contract.
 

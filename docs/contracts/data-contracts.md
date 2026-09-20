@@ -22,6 +22,10 @@ Response DTO
 
 Do not expose persistence models directly to API consumers.
 
+After NestJS exists, request DTOs and response DTOs (RDOs) are the OpenAPI component schemas.
+Decorate those types so generated OpenAPI stays aligned with validation. Do not copy generated
+schemas back into this file. Workflow: [api-contract-workflow.md](../workflows/api-contract-workflow.md).
+
 ## Patient
 
 ### PatientCreateDto

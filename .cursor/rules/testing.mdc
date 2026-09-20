@@ -14,6 +14,10 @@ A portfolio-quality vertical slice should have the tests appropriate to its risk
 - E2E tests for critical user workflows;
 - upload/security tests where applicable.
 
+Once NestJS OpenAPI exists, API/contract tests should assert against the generated specification
+and implemented routes—not against a separately authored Postman-only contract. See
+[docs/workflows/api-contract-workflow.md](../../docs/workflows/api-contract-workflow.md).
+
 Frontend runners (see [docs/workflows/frontend-testing.md](../../docs/workflows/frontend-testing.md)
 and [ADR-008](../../docs/decisions/ADR-008-frontend-testing-stack.md)):
 

@@ -68,7 +68,9 @@ Keep as a development-only dependency/import path if used, but do not expose it 
 - tailwind-merge 3.7.0
 - bcryptjs 3.0.3 (backend only if custom password auth is ever introduced)
 - next-auth 4.24.15 (not recommended for the target architecture)
-- @nestjs/swagger 12.0.1
+- @nestjs/swagger — **not installed** until [BE-002](tasks/backend/BE-002-openapi-foundation.md).
+  Pin the major to the NestJS major chosen in BE-001 (snapshot: 12.0.1 requires Nest 12; use 11.x
+  if BE-001 ships Nest 11). Do not add it to the frontend package.
 - ESLint 10.10.0
 - Prettier 3.6.2 or current stable
 - Tailwind CSS 4.x

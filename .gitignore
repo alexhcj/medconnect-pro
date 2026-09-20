@@ -53,3 +53,7 @@ next-env.d.ts
 
 # common
 info.md
+
+# Postman personal copies (tokens must never be committed)
+postman/environments/*.local.json
+postman/**/*.local.json

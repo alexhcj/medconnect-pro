@@ -37,7 +37,9 @@ This repository is an **npm workspaces** monorepo.
 medconnect-pro/
   apps/web/          Next.js frontend
   apps/api/          Reserved for future NestJS (not initialized)
+  apps/api/openapi/  Future generated OpenAPI (no JSON until BE-002)
   packages/          Reserved for future shared packages
+  postman/           Postman environments and collection conventions
   docs/              Canonical documentation
   .cursor/rules/     Project Cursor rules
   scripts/plane/     Plane task sync
@@ -145,6 +147,11 @@ npm run build
 
 Frontend testing conventions: [docs/workflows/frontend-testing.md](./docs/workflows/frontend-testing.md).
 
+API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/workflows/api-contract-workflow.md).
+OpenAPI generation (`openapi:generate`), `dev:api`, and Swagger UI are **deferred** until NestJS
+exists ([BE-001](./docs/tasks/backend/BE-001-nestjs-core-platform-foundation.md),
+[BE-002](./docs/tasks/backend/BE-002-openapi-foundation.md)).
+
 ## Documentation
 
 | Path | Purpose |
@@ -154,6 +161,8 @@ Frontend testing conventions: [docs/workflows/frontend-testing.md](./docs/workfl
 | [`docs/01-product-requirements.md`](./docs/01-product-requirements.md) | Product behavior |
 | [`docs/architecture/`](./docs/architecture/) | System structure |
 | [`docs/contracts/`](./docs/contracts/) | API and data contracts |
+| [`docs/workflows/api-contract-workflow.md`](./docs/workflows/api-contract-workflow.md) | OpenAPI, Postman, optional Swagger UI |
+| [`postman/`](./postman/README.md) | Postman environment templates |
 | [`docs/tasks/`](./docs/tasks/) | Implementation task contracts |
 | [`docs/roadmap/`](./docs/roadmap/) | Sequencing |
 
