@@ -24,7 +24,8 @@ implementation tasks, roadmaps and development workflows.
 - `contracts/` — API/data contracts.
 - `tasks/` — implementation work.
 - `roadmap/` — sequencing and delivery milestones.
-- `decisions/` — ADRs.
+- `decisions/` — ADRs, including [ADR-009](decisions/ADR-009-npm-workspace-monorepo.md) for the
+  npm workspace layout.
 - `workflows/` — repeatable engineering processes, including [versioning](workflows/versioning.md)
   and [frontend testing](workflows/frontend-testing.md).
 - `mocks/` — synthetic demo data and mock-data conventions.

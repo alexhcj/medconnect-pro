@@ -6,6 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.12.0] - 2026-09-20
+
+### Added
+
+- npm workspaces monorepo layout with the Next.js app in `apps/web`, reserved `apps/api` and
+  `packages/` directories, and ADR-009.
+
+### Changed
+
+- Root `package.json` is workspace-only; frontend dependencies and Next.js tooling live in
+  `apps/web`. Root scripts delegate to the web workspace.
+- Canonical documentation and Cursor rules stay at the repository root; frontend rule globs target
+  `apps/web`.
+
 ## [0.11.0] - 2026-09-20
 
 ### Added

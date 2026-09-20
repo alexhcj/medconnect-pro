@@ -107,9 +107,9 @@ medications and appointments are fictional.
 
 ## Current frontend state
 
-The repository currently contains a Next.js frontend foundation with mock-mode scripts and
-packages for the planned feature set. The backend is planned and should be implemented as a
-separate modular NestJS application rather than forcing backend concerns into the Next.js frontend.
+The repository is an npm workspace. The Next.js frontend lives in `apps/web` with mock-mode
+scripts for the planned feature set. `apps/api` is reserved for a separate modular NestJS
+application; do not force backend concerns into the Next.js frontend.
 
 ## Implementation strategy
 

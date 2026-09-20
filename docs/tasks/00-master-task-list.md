@@ -5,6 +5,7 @@ This is an index, not the detailed source of task requirements.
 ## Foundation
 
 - INFRA-001 — Local development foundation
+- INFRA-002 — Monorepo workspace structure
 - SEC-001 — Authentication and authorization model
 - BE-001 — NestJS core platform foundation
 - BE-002 — OpenAPI foundation

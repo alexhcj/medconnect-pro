@@ -4,9 +4,9 @@ Frontend tests use two runners with separate configs and globs. Do not add Jest.
 
 ## Responsibilities
 
-- **Vitest** (`vitest.config.mts`) — unit tests, React component tests, hook tests, and in-process
+- **Vitest** (`apps/web/vitest.config.mts`) — unit tests, React component tests, hook tests, and in-process
   component integration. Uses React Testing Library and jsdom.
-- **Playwright** (`playwright.config.ts`) — browser E2E for critical workflows, dashboard
+- **Playwright** (`apps/web/playwright.config.ts`) — browser E2E for critical workflows, dashboard
   navigation, and Next.js behavior that jsdom cannot cover (including async Server Components).
 
 Do not repeat the same assertion in both layers without a reason. Prefer unit tests for pure logic,
@@ -16,10 +16,10 @@ RTL for visible component behavior, and E2E for real routing and layout.
 
 | Layer | Location | Suffix |
 | --- | --- | --- |
-| Unit / component | Colocated under `src/` | `*.test.ts` / `*.test.tsx` |
-| E2E | `e2e/` | `*.spec.ts` |
+| Unit / component | Colocated under `apps/web/src/` | `*.test.ts` / `*.test.tsx` |
+| E2E | `apps/web/e2e/` | `*.spec.ts` |
 
-Vitest only discovers files under `src/`. Playwright only discovers files under `e2e/`.
+Vitest only discovers files under `apps/web/src/`. Playwright only discovers files under `apps/web/e2e/`.
 
 ## Naming
 

@@ -8,7 +8,9 @@ alwaysApply: true
 Follow [ADR-007](../../docs/decisions/ADR-007-semantic-versioning.md) and
 [docs/workflows/versioning.md](../../docs/workflows/versioning.md).
 
-`package.json` `version` is canonical. Keep the root `version` in `package-lock.json` in lockstep.
+The **root** `package.json` `version` is canonical for the demo artifact. Keep the root
+`version` in `package-lock.json` in lockstep. Workspace packages such as `apps/web` may
+mirror that version but are not a second product version.
 
 ## When to bump
 

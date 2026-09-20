@@ -1,5 +1,6 @@
 ---
 description: Backend conventions for the planned NestJS MedConnect backend
+globs: ["apps/api/**/*.{ts,tsx,js}"]
 alwaysApply: false
 ---
 

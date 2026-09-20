@@ -1,6 +1,6 @@
 ---
 description: Frontend implementation conventions for MedConnect Pro
-globs: ["app/**/*.{ts,tsx}", "src/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"]
+globs: ["apps/web/**/*.{ts,tsx,css}"]
 alwaysApply: false
 ---
 

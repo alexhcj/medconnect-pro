@@ -27,14 +27,20 @@
         "./src/*"
       ],
       "@docs/*": [
-        "./docs/*"
+        "../../docs/*"
       ]
     }
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "e2e/**/*.ts",
+    "vitest.config.mts",
+    "vitest.setup.ts",
+    "vitest-env.d.ts",
+    "playwright.config.ts",
+    "next.config.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],

@@ -1,7 +1,8 @@
 # Versioning Workflow
 
 Application versioning follows [ADR-007](../decisions/ADR-007-semantic-versioning.md) and
-[Semantic Versioning 2.0.0](https://semver.org/). `package.json` `version` is canonical.
+[Semantic Versioning 2.0.0](https://semver.org/). The **root** `package.json` `version` is
+canonical.
 
 This version is the **application/demo artifact**, not HTTP API URL versioning (for example `/v1`).
 Breaking API contracts still bump MINOR while `MAJOR` is `0` (MAJOR after `1.0.0`) and must update
@@ -20,8 +21,9 @@ Completed change
 1. Confirm the change is complete and shippable (not plan-only, WIP, formatting-only, or docs that
    do not ship a product change).
 2. Classify impact. If mixed, use the highest mapped bump.
-3. Increment `package.json` and the root `version` in `package-lock.json`, or run
-   `npm version <patch|minor|major> --no-git-tag-version`.
+3. Increment the **root** `package.json` and the root `version` in `package-lock.json`, or run
+   `npm version <patch|minor|major> --no-git-tag-version` from the repository root. Mirror the
+   same version on `apps/web/package.json` when the frontend ships in the same change.
 4. Prepend a Keep a Changelog section in `CHANGELOG.md`: `## [x.y.z] - YYYY-MM-DD` with Added /
    Changed / Fixed / Breaking as applicable.
 5. Record old → new version and the rationale in completion notes or the PR.

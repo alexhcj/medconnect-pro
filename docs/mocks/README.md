@@ -11,7 +11,7 @@ The project uses deterministic synthetic data for development and demonstrations
 - `555` telephone ranges are used for obvious demo numbers.
 - Never import real patient data into this directory.
 - Mock data must not be presented as production healthcare data.
-- Code under `src/lib/api/mocks` may implement delay, errors, pagination, and in-memory writes. It must not grow the fixture schema ahead of `/docs`.
+- Code under `apps/web/src/lib/api/mocks` may implement delay, errors, pagination, and in-memory writes. It must not grow the fixture schema ahead of `/docs`.
 - Promote a field from application mocks into these files **only when** `/docs` contracts, product requirements, or architecture already require it.
 
 ## Files
@@ -23,6 +23,6 @@ The project uses deterministic synthetic data for development and demonstrations
 
 ## Recommended usage
 
-Import fixtures only through the mock API/data layer (`src/lib/api/mocks`), via the `@docs/mocks/*` alias.
+Import fixtures only through the mock API/data layer (`apps/web/src/lib/api/mocks`), via the `@docs/mocks/*` alias.
 
 Do not import JSON directly into UI components.

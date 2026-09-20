@@ -2,7 +2,7 @@
 
 ## Stack
 
-Next.js App Router + React + TypeScript.
+Next.js App Router + React + TypeScript in `apps/web`.
 
 ## Layers
 

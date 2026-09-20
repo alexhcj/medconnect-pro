@@ -19,6 +19,16 @@ engineering patterns without claiming to be a deployed HIPAA-certified productio
 - Demonstrate auditability, privacy-by-design and accessibility.
 - Keep the implementation realistic enough to discuss in technical interviews.
 
+## Repository layout
+
+npm workspaces:
+
+- `apps/web` — Next.js frontend
+- `apps/api` — reserved for the future NestJS backend (not initialized)
+- `packages/` — reserved for future shared packages
+- `/docs` — canonical documentation
+- `.cursor/rules/` — project Cursor rules
+
 ## Current frontend
 
 - Next.js App Router

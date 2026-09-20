@@ -7,8 +7,9 @@ Accepted
 ## Decision
 
 The MedConnect Pro application version follows [Semantic Versioning 2.0.0](https://semver.org/).
-`package.json` `version` is the canonical source of truth. `package-lock.json` must stay in lockstep
-with that value.
+The **root** `package.json` `version` is the canonical source of truth for the demo artifact.
+`package-lock.json` must stay in lockstep with that value. Application packages under `apps/`
+may mirror the root version; they are not independently released products.
 
 Version bumps are performed by the implementing agent (or a human) as part of completing a
 shippable change. There is no CI release bot, GitHub Action, or `semantic-release` pipeline.

@@ -18,8 +18,8 @@ Playwright's browser runner.
 
 ## Rules
 
-- Vitest owns `src/**/*.test.{ts,tsx}`.
-- Playwright owns `e2e/**/*.spec.ts` and Chromium until another browser is explicitly added.
+- Vitest owns `apps/web/src/**/*.test.{ts,tsx}`.
+- Playwright owns `apps/web/e2e/**/*.spec.ts` and Chromium until another browser is explicitly added.
 - React components are tested through user-visible behavior (Testing Library), not implementation
   details.
 - E2E uses deterministic synthetic mock data, not production healthcare data.

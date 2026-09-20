@@ -17,8 +17,8 @@ A portfolio-quality vertical slice should have the tests appropriate to its risk
 Frontend runners (see [docs/workflows/frontend-testing.md](../../docs/workflows/frontend-testing.md)
 and [ADR-008](../../docs/decisions/ADR-008-frontend-testing-stack.md)):
 
-- **Vitest** + React Testing Library + jsdom for unit, hook, and component tests under `src/`.
-- **Playwright Test** for critical browser workflows under `e2e/`.
+- **Vitest** + React Testing Library + jsdom for unit, hook, and component tests under `apps/web/src/`.
+- **Playwright Test** for critical browser workflows under `apps/web/e2e/`.
 - Do not add Jest. Do not run Playwright specs through Vitest or the reverse.
 
 At minimum for frontend-only work:

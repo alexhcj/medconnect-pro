@@ -29,20 +29,29 @@ slices.
 
 All data is **synthetic**. Do not introduce real patient records, credentials, or other PHI.
 
-## Current state
+## Repository layout
 
-This repository currently contains a **Next.js frontend foundation** with mock-mode APIs for early
-UI and workflow development.
+This repository is an **npm workspaces** monorepo.
 
-The backend is planned as a **separate modular NestJS application**. Do not fold backend domain
-logic into the Next.js app.
+```text
+medconnect-pro/
+  apps/web/          Next.js frontend
+  apps/api/          Reserved for future NestJS (not initialized)
+  packages/          Reserved for future shared packages
+  docs/              Canonical documentation
+  .cursor/rules/     Project Cursor rules
+  scripts/plane/     Plane task sync
+```
+
+The backend is planned as a **separate modular NestJS application** under `apps/api`. Do not fold
+backend domain logic into the Next.js app.
 
 Frontend checks are UX only. Server-side authorization and tenant isolation are the planned
 authoritative controls.
 
 ## Stack
 
-### Frontend (this repo)
+### Frontend (`apps/web`)
 
 - Next.js App Router, React, TypeScript
 - TanStack Query
@@ -52,7 +61,7 @@ authoritative controls.
 - Daily SDK (telehealth client boundary)
 - Socket.IO client (planned realtime)
 
-### Planned backend
+### Planned backend (`apps/api`)
 
 - Node.js current LTS, NestJS, TypeScript
 - REST + OpenAPI
@@ -100,9 +109,9 @@ ownership or assignment.
 ### Installation
 
 1. Clone the repository.
-2. Copy [`.env.example`](./.env.example) to `.env.development` and adjust local values. Do not commit
-   secrets.
-3. Install dependencies:
+2. Copy [`apps/web/.env.example`](./apps/web/.env.example) to `apps/web/.env.development` and adjust
+   local values. Do not commit secrets.
+3. Install dependencies from the **repository root**:
 
 ```bash
 npm install
@@ -117,9 +126,11 @@ npm run dev:mocks
 5. Open [http://localhost:3000](http://localhost:3000).
 
 `npm run dev` starts the Next.js app without forcing mock mode. `npm run dev:real` points at a real
-API base URL when one is available.
+API base URL when one is available. The same commands exist as `dev:web` aliases.
 
 ### Useful commands
+
+Run these from the repository root (they delegate to `apps/web`):
 
 ```bash
 npm run lint
@@ -127,7 +138,7 @@ npm run type-check
 npm test
 npm run test:watch
 npm run test:coverage
-npx playwright install chromium   # once per machine, before E2E
+npx playwright install chromium   # once per machine, before E2E; run from apps/web if needed
 npm run e2e
 npm run build
 ```

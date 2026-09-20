@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useEffect, useState} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -28,7 +28,7 @@ const passwordResetSchema = z.object({
 type EmailFormData = z.infer<typeof emailSchema>;
 type PasswordResetFormData = z.infer<typeof passwordResetSchema>;
 
-const PasswordResetPage = () => {
+const PasswordResetContent = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const token = searchParams.get('token');
@@ -473,4 +473,10 @@ const PasswordResetPage = () => {
 	);
 };
 
-export default PasswordResetPage;
+export default function PasswordResetPage() {
+	return (
+		<Suspense fallback={null}>
+			<PasswordResetContent />
+		</Suspense>
+	);
+}
