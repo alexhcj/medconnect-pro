@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.12.2] - 2026-09-21
+
+### Added
+
+- Identity and access contract (roles, permission catalog, tenant resolution, resource
+  authorization, session rules) and a matching frontend permission catalog for mock sessions.
+
+### Changed
+
+- Mock PRACTICE_ADMIN session permissions now use the canonical `action:resource` catalog instead of
+  generic `read`/`admin` strings.
+
 ## [0.12.1] - 2026-09-20
 
 ### Changed

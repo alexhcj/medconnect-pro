@@ -21,7 +21,8 @@ implementation tasks, roadmaps and development workflows.
 - `00-project-spec.md` — project identity, goals, stack and global constraints.
 - `01-product-requirements.md` — functional/non-functional product requirements.
 - `architecture/` — system structure.
-- `contracts/` — API/data contracts.
+- `contracts/` — API/data contracts, including
+  [identity and access](contracts/identity-and-access.md).
 - `tasks/` — implementation work.
 - `roadmap/` — sequencing and delivery milestones.
 - `decisions/` — ADRs, including [ADR-009](decisions/ADR-009-npm-workspace-monorepo.md) for the

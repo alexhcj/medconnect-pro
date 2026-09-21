@@ -4,6 +4,10 @@
 
 Security is modeled as a portfolio-quality architecture, not a production compliance certification.
 
+The canonical role catalog, permission strings, tenant-resolution steps, resource-authorization
+rules, and session policy live in
+[identity-and-access.md](../contracts/identity-and-access.md). This page summarizes boundaries only.
+
 ## Identity
 
 - OAuth 2.0
@@ -13,6 +17,9 @@ Security is modeled as a portfolio-quality architecture, not a production compli
 - access-token lifecycle
 - refresh-token rotation
 - secure session handling
+
+Mock identity/session is allowed for the demo and must not be described as production identity
+infrastructure. See [ADR-003](../decisions/ADR-003-authentication.md).
 
 ## Authorization
 
@@ -39,6 +46,8 @@ Frontend checks are UX controls only. Backend authorization is authoritative.
 - RECEPTIONIST
 - PATIENT
 
+Role scopes and default permission grants are defined in the identity contract.
+
 ## Tenant isolation
 
 Every tenant-owned record should have `practice_id` or an equivalent server-resolved tenant
@@ -54,6 +63,8 @@ Use:
 - tenant-aware cache keys;
 - tenant-aware object-storage paths;
 - cross-tenant authorization tests.
+
+Resolution order and `SUPER_ADMIN` vs practice vs patient rules are in the identity contract.
 
 ## Audit
 

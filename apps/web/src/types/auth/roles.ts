@@ -1,3 +1,4 @@
+/** Canonical roles; scopes and grants are in docs/contracts/identity-and-access.md. */
 export const ROLES = [
 	'SUPER_ADMIN',
 	'PRACTICE_ADMIN',

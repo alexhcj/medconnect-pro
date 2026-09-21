@@ -1,3 +1,4 @@
+import {DEFAULT_ROLE_PERMISSIONS} from '@/types/auth/permissions';
 import {ActivityEvent, ConcurrentSessionInfo, ExtendSessionResponse, SessionInfo} from '@/types/auth/session';
 import {mockDelay, mockLog, shouldSimulateError} from '@/lib/api/mocks/runtime';
 
@@ -12,7 +13,7 @@ function createMockSession(overrides: Partial<SessionInfo> = {}): SessionInfo {
 		expiresAt: Date.now() + 24 * 60 * 60 * 1000,
 		lastActivity: Date.now() - 5 * 60 * 1000,
 		isActive: true,
-		permissions: ['read', 'write', 'admin', 'delete', 'manage_users'],
+		permissions: [...DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN],
 		currentContext: 'dashboard',
 		...overrides,
 	};

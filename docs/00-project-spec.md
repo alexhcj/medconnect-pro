@@ -52,19 +52,8 @@ healthcare-workflow-aware SaaS product.
 - RECEPTIONIST
 - PATIENT
 
-## Example permissions
-
-Provider:
-- read:all_patients
-- write:medical_records
-
-Nurse:
-- read:assigned_patients
-- write:vitals
-
-Receptionist:
-- read:demographics
-- write:appointments
+Role meanings, the permission catalog, and default grants are defined in
+[identity-and-access.md](contracts/identity-and-access.md).
 
 ## Planned technology
 

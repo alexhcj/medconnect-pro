@@ -3,12 +3,12 @@ id: SEC-001
 type: task
 area: security
 feature: identity-access
-status: planned
+status: implemented
 priority: critical
 estimate: 3
 dependencies: []
 related_adrs: [ADR-003-authentication.md]
-related_docs: [security-architecture.md,../00-project-spec.md]
+related_docs: [security-architecture.md,../00-project-spec.md,../contracts/identity-and-access.md]
 plane:
   work_item_id: null
   identifier: null
@@ -34,11 +34,11 @@ Define identity, roles, permissions and server-side authorization boundaries.
 
 ## Acceptance criteria
 
-- [ ] Roles documented
-- [ ] Permissions documented
-- [ ] Tenant resolution documented
-- [ ] Resource authorization documented
-- [ ] Session rules documented
+- [x] Roles documented
+- [x] Permissions documented
+- [x] Tenant resolution documented
+- [x] Resource authorization documented
+- [x] Session rules documented
 
 ## Implementation notes
 
@@ -46,7 +46,7 @@ Use OAuth/OIDC + PKCE as the target architecture; mock mode may simulate the ide
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Canonical model in `docs/contracts/identity-and-access.md`; frontend `Permission` catalog and mock session grants aligned. No NestJS/OAuth/IdP implementation.
+- Tests: Vitest catalog subset checks (`permissions.test.ts`). Existing dashboard/nav tests still pass.
 - PR:
-- Notes:
+- Notes: Browser session checks remain UX only. Tenant isolation, audit, document ACL, and QA matrix are SEC-002–004 / DATA-001 / QA-004.

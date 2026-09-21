@@ -12,11 +12,22 @@ See [API contract workflow](../workflows/api-contract-workflow.md) and [ADR-004]
 
 ## Authentication
 
-- `POST /auth/login`
+Target identity is OAuth 2.0 / OIDC Authorization Code + PKCE with MFA and refresh-token rotation
+([ADR-003](../decisions/ADR-003-authentication.md),
+[identity-and-access.md](identity-and-access.md)). The production-oriented user login is the IdP
+authorize/callback flow, not a custom password IdP.
+
+The application still exposes a session/BFF surface for token refresh, logout, and (until an IdP
+exists) a mock stand-in:
+
+- `POST /auth/login` — mock IdP / BFF stand-in only; not the target production identity protocol
 - `POST /auth/refresh`
 - `POST /auth/logout`
 - `POST /auth/logout-all`
 - `POST /auth/mfa/verify`
+
+Authorization, tenant resolution, and resource checks on every protected resource follow the
+identity-and-access contract. Do not duplicate the permission catalog here.
 
 ## Patients
 

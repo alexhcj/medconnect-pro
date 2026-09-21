@@ -1,11 +1,14 @@
+import type {Permission} from '@/types/auth/permissions';
+import type {Role} from '@/types/auth/roles';
+
 export interface SessionInfo {
 	sessionId: string;
 	userId: string;
-	userRole: string;
+	userRole: Role;
 	expiresAt: number;
 	lastActivity: number;
 	isActive: boolean;
-	permissions: string[];
+	permissions: Permission[];
 	currentContext: string;
 }
 
