@@ -3,7 +3,7 @@ id: BE-002
 type: task
 area: backend
 feature: api-contract
-status: planned
+status: implemented
 priority: high
 estimate: 2
 dependencies: [BE-001]
@@ -46,17 +46,17 @@ Do not invent unimplemented domain endpoints solely to populate OpenAPI.
 
 ## Acceptance criteria
 
-- [ ] `@nestjs/swagger` matches the NestJS major from BE-001
-- [ ] OpenAPI generation script writes `apps/api/openapi/openapi.json` (do not hand-edit)
-- [ ] Generated JSON is valid and includes title, description, version, and server metadata
-- [ ] Implemented routes appear with request/response schemas (initially platform/health)
-- [ ] HTTP Bearer security scheme documented; no secrets in the artifact
-- [ ] Error envelope schema documented
-- [ ] Raw OpenAPI JSON endpoint exists (for example `/api/docs-json` or `/openapi.json`)
-- [ ] Optional Swagger UI at `/api/docs` uses the same generated document
-- [ ] Swagger UI can be disabled via configuration in production-like deploys
-- [ ] Critical endpoint contract test exists against an implemented route
-- [ ] Workflow for re-importing the spec into Postman remains as documented
+- [x] `@nestjs/swagger` matches the NestJS major from BE-001
+- [x] OpenAPI generation script writes `apps/api/openapi/openapi.json` (do not hand-edit)
+- [x] Generated JSON is valid and includes title, description, version, and server metadata
+- [x] Implemented routes appear with request/response schemas (initially platform/health)
+- [x] HTTP Bearer security scheme documented; no secrets in the artifact
+- [x] Error envelope schema documented
+- [x] Raw OpenAPI JSON endpoint exists (for example `/api/docs-json` or `/openapi.json`)
+- [x] Optional Swagger UI at `/api/docs` uses the same generated document
+- [x] Swagger UI can be disabled via configuration in production-like deploys
+- [x] Critical endpoint contract test exists against an implemented route
+- [x] Workflow for re-importing the spec into Postman remains as documented
 
 ## Implementation notes
 
@@ -73,7 +73,10 @@ Suggested scripts (names may be wired at the workspace root): `openapi:generate`
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `@nestjs/swagger` 12.0.1; generated `apps/api/openapi/openapi.json`; live JSON at
+  `/api/docs-json`; optional Swagger UI at `/api/docs` gated by `SWAGGER_UI_ENABLED` (off by default
+  in production). Bearer scheme and error envelope documented; health/ready remain unauthenticated.
+- Tests: Vitest contract tests in `apps/api/test/openapi.contract.spec.ts` (`npm run test:api`).
 - PR:
-- Notes:
+- Notes: No domain routes invented. Postman remains import-from-OpenAPI; collections not hand-authored.
+

@@ -1,8 +1,8 @@
 # API Endpoints Contract
 
-This document describes intended API boundaries. NestJS OpenAPI output (BE-002) will become the
-authoritative machine-readable contract. This file remains a human-readable domain index and should
-not duplicate every generated schema.
+This document describes intended API boundaries. NestJS OpenAPI output is the authoritative
+machine-readable contract (`apps/api/openapi/openapi.json`). This file remains a human-readable
+domain index and should not duplicate every generated schema.
 
 Planned routes become NestJS controllers and DTOs when the corresponding backend task ships. Those
 implementations feed generated OpenAPI; Postman collections are then re-imported from that artifact.

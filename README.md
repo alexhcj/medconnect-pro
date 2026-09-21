@@ -37,7 +37,7 @@ This repository is an **npm workspaces** monorepo.
 medconnect-pro/
   apps/web/          Next.js frontend
   apps/api/          NestJS API (platform foundation)
-  apps/api/openapi/  Generated OpenAPI after BE-002
+  apps/api/openapi/  Generated OpenAPI (`npm run openapi:generate`)
   packages/          Reserved for future shared packages
   postman/           Postman environments and collection conventions
   docs/              Canonical documentation
@@ -66,7 +66,7 @@ authoritative controls.
 ### Backend (`apps/api`)
 
 - Node.js current LTS, NestJS 12, TypeScript
-- REST (OpenAPI generation in BE-002)
+- REST + OpenAPI (`npm run openapi:generate`, `/api/docs-json`, optional `/api/docs`)
 - PostgreSQL, Redis (not wired yet)
 - S3 + KMS (planned)
 - WebSockets / Socket.IO where justified
@@ -162,13 +162,14 @@ npm run build:api
 npm run clean                     # Next.js/test output under apps/web
 npm run reset                     # clean + reinstall node_modules (cross-platform)
 npm run dev:api                   # NestJS API on http://localhost:3001
+npm run openapi:generate          # Write apps/api/openapi/openapi.json
 ```
 
 Frontend testing conventions: [docs/workflows/frontend-testing.md](./docs/workflows/frontend-testing.md).
 
 API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/workflows/api-contract-workflow.md).
-`npm run dev:api` and `npm run test:api` are available. OpenAPI generation (`openapi:generate`) and
-Swagger UI remain [BE-002](./docs/tasks/backend/BE-002-openapi-foundation.md).
+`npm run dev:api`, `npm run test:api`, and `npm run openapi:generate` are available. Import
+`apps/api/openapi/openapi.json` into Postman as **MedConnect Pro API**.
 
 ## Documentation
 

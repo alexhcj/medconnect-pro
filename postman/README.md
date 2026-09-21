@@ -20,8 +20,8 @@ Import the generated spec as **MedConnect Pro API**.
 
 Do not hand-author a full collection of domain routes from
 [`docs/contracts/api-endpoints.md`](../docs/contracts/api-endpoints.md). Those routes are not
-implemented yet. `collections/` stays empty until `apps/api/openapi/openapi.json` exists (BE-002).
-Health and readiness can be called against `{{baseUrl}}` without a collection.
+implemented yet. `collections/` stays empty until you export extra Postman tests; import
+`apps/api/openapi/openapi.json` as **MedConnect Pro API** after generation.
 
 ## Environments
 
@@ -39,7 +39,7 @@ Copy a template to `*.local.json` (gitignored) if you store a personal token.
 
 ## Import (when OpenAPI exists)
 
-1. Generate `apps/api/openapi/openapi.json` (BE-002).
+1. Generate `apps/api/openapi/openapi.json` (`npm run openapi:generate`).
 2. Postman → Import → that file.
 3. Select the local or demo environment.
 4. Collection auth: Bearer Token = `{{accessToken}}`.

@@ -53,11 +53,8 @@ Frontend
 
 ## OpenAPI policy
 
-OpenAPI should be generated from the NestJS backend ([BE-002](../tasks/backend/BE-002-openapi-foundation.md)).
-
-Until that task, repository Markdown contracts describe intended domain boundaries. They are
-planning contracts, not generated OpenAPI truth. The NestJS app itself exists after
-[BE-001](../tasks/backend/BE-001-nestjs-core-platform-foundation.md).
+OpenAPI is generated from the NestJS backend ([BE-002](../tasks/backend/BE-002-openapi-foundation.md)).
+Markdown contracts remain the human-readable domain index, not a second machine-readable spec.
 
 ```text
 /docs/contracts/          Human-readable design

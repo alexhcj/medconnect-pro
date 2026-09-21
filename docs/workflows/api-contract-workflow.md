@@ -32,13 +32,12 @@ Generated OpenAPI (apps/api/openapi/openapi.json)
 ## Current backend maturity
 
 [BE-001](../tasks/backend/BE-001-nestjs-core-platform-foundation.md) initialized NestJS in `apps/api`
-(listen port `http://localhost:3001`, health/readiness, error envelope, correlation IDs). There is
-still no generated OpenAPI or Swagger UI.
+(listen port `http://localhost:3001`, health/readiness, error envelope, correlation IDs).
+[BE-002](../tasks/backend/BE-002-openapi-foundation.md) generates `apps/api/openapi/openapi.json`,
+serves it at `/api/docs-json`, and optionally shows Swagger UI at `/api/docs`.
 
-Do not fabricate `openapi.json` or a Postman collection of unimplemented domain routes.
-
-[INFRA-003](../tasks/infrastructure/INFRA-003-openapi-postman-workflow.md) established this
-workflow. [BE-002](../tasks/backend/BE-002-openapi-foundation.md) implements generation.
+Do not fabricate additional OpenAPI paths or a Postman collection of unimplemented domain routes.
+Regenerate after controller or DTO changes, then re-import Postman from the committed JSON.
 
 ## Lifecycle of an endpoint
 
@@ -55,8 +54,7 @@ workflow. [BE-002](../tasks/backend/BE-002-openapi-foundation.md) implements gen
 | --- | --- | --- |
 | `npm run dev:api` | Start the NestJS API | BE-001 (available) |
 | `npm run test:api` | Backend platform tests | BE-001 (available) |
-| `npm run openapi:generate` | Write `apps/api/openapi/openapi.json` | BE-002 |
-| `npm run openapi:validate` | Validate the generated document | BE-002 (optional) |
+| `npm run openapi:generate` | Write `apps/api/openapi/openapi.json` | BE-002 (available) |
 
 Frontend commands are unchanged (`npm run dev:mocks`, `lint`, `type-check`, `test`, `e2e`).
 
@@ -110,7 +108,7 @@ protected domain routes are not available; platform health/readiness do not requ
 
 Postman does **not** stay synchronized with the repository automatically.
 
-When `openapi.json` exists:
+When `openapi.json` exists (after `npm run openapi:generate`):
 
 1. Postman → Import → file `apps/api/openapi/openapi.json`.
 2. Select the **local** or **demo** environment.
@@ -128,12 +126,8 @@ When `openapi.json` exists:
 
 ## Swagger UI (optional)
 
-After BE-002:
-
-- UI route: `/api/docs` (configurable)
-- Raw JSON: a stable path such as `/api/docs-json` or `/openapi.json`
-- Both must serve the same generated document as `apps/api/openapi/openapi.json`
-- Disable via configuration (for example `SWAGGER_ENABLED`) in production-like deploys
+- UI route: `/api/docs` (disabled when `SWAGGER_UI_ENABLED=false`; defaults off when `NODE_ENV=production`)
+- Raw JSON: `/api/docs-json` (always served; same document as `apps/api/openapi/openapi.json`)
 - Hiding Swagger UI is not a substitute for authentication or authorization
 
 ## Security
