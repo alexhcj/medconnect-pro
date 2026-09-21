@@ -70,6 +70,8 @@ Keep as a development-only dependency/import path if used, but do not expose it 
 - next-auth 4.24.15 (not recommended for the target architecture)
 - @nestjs/swagger — **12.x** in `apps/api` only, matching NestJS 12 from BE-001. Do not add it to
   the frontend package.
+- @nestjs/typeorm — **12.x** in `apps/api` only, with TypeORM **0.3.x** and `pg`. Do not add these
+  to the frontend package.
 - ESLint 10.10.0
 - Prettier 3.6.2 or current stable
 - Tailwind CSS 4.x

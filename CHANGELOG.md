@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.15.0] - 2026-09-21
+
+### Added
+
+- PostgreSQL tenant model (TypeORM migrations, Practice and tenant-owned tables, server-side tenant
+  scope) and a database-backed `GET /ready` probe.
+
 ## [0.14.0] - 2026-09-21
 
 ### Added

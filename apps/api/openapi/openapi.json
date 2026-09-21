@@ -35,7 +35,7 @@
     },
     "/ready": {
       "get": {
-        "description": "Returns ready when the process can serve HTTP. PostgreSQL and Redis checks arrive with DATA-001.",
+        "description": "Returns ready when PostgreSQL accepts a connection. Liveness (/health) does not depend on the database.",
         "operationId": "HealthController_readiness",
         "parameters": [],
         "responses": {
@@ -58,6 +58,16 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "summary": "Readiness probe",
@@ -70,7 +80,7 @@
   "info": {
     "title": "MedConnect Pro API",
     "description": "Generated OpenAPI contract for the MedConnect Pro demonstration API. This is not a HIPAA-certified production system. Examples and fixtures must be synthetic demo data only. Do not put secrets, tokens, or real patient information in this document.",
-    "version": "0.14.0",
+    "version": "0.15.0",
     "contact": {}
   },
   "tags": [],

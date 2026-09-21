@@ -1,11 +1,13 @@
-import {Controller, Get} from '@nestjs/common';
+import {Controller, Get, ServiceUnavailableException} from '@nestjs/common';
 import {
 	ApiExtraModels,
 	ApiInternalServerErrorResponse,
 	ApiOkResponse,
 	ApiOperation,
+	ApiServiceUnavailableResponse,
 	ApiTags,
 } from '@nestjs/swagger';
+import {DataSource} from 'typeorm';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {HealthRdo, ReadyRdo} from './health.rdo.js';
 
@@ -13,6 +15,8 @@ import {HealthRdo, ReadyRdo} from './health.rdo.js';
 @ApiExtraModels(ErrorEnvelopeRdo)
 @Controller()
 export class HealthController {
+	constructor(private readonly dataSource: DataSource) {}
+
 	@Get('health')
 	@ApiOperation({summary: 'Liveness probe'})
 	@ApiOkResponse({type: HealthRdo})
@@ -25,11 +29,22 @@ export class HealthController {
 	@ApiOperation({
 		summary: 'Readiness probe',
 		description:
-			'Returns ready when the process can serve HTTP. PostgreSQL and Redis checks arrive with DATA-001.',
+			'Returns ready when PostgreSQL accepts a connection. Liveness (/health) does not depend on the database.',
 	})
 	@ApiOkResponse({type: ReadyRdo})
+	@ApiServiceUnavailableResponse({type: ErrorEnvelopeRdo})
 	@ApiInternalServerErrorResponse({type: ErrorEnvelopeRdo})
-	readiness(): ReadyRdo {
-		return {status: 'ready'};
+	async readiness(): Promise<ReadyRdo> {
+		try {
+			await this.dataSource.query('SELECT 1');
+			return {status: 'ready'};
+		} catch {
+			throw new ServiceUnavailableException({
+				error: {
+					code: 'SERVICE_UNAVAILABLE',
+					message: 'Database is not ready',
+				},
+			});
+		}
 	}
 }

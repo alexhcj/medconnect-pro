@@ -7,8 +7,9 @@ Local work is the Next.js app in `apps/web` (mock-first environment files) and t
 `apps/web/.env.example` to `.env.development` (gitignored). Copy `apps/api/.env.example` only if you
 need API overrides. Do not commit secrets.
 
-Docker Compose, PostgreSQL, Redis, and GitHub Actions are **deferred**. Backend containers belong
-with later infrastructure tasks after the Nest platform exists.
+Local PostgreSQL is Docker Compose (`docker compose up -d` at the repository root). Apply schema
+with `npm run migration:run`. Demo credentials in Compose and `DATABASE_URL` are not production
+secrets. Redis and GitHub Actions remain deferred.
 
 See the root [README](../../README.md) for setup and validation commands.
 

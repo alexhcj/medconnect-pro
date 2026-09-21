@@ -1,0 +1,20 @@
+# Local demo Postgres for apps/api (DATA-001). Credentials are not production secrets.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: medconnect
+      POSTGRES_PASSWORD: medconnect
+      POSTGRES_DB: medconnect
+    ports:
+      - "5432:5432"
+    volumes:
+      - medconnect_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medconnect -d medconnect"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  medconnect_pg:

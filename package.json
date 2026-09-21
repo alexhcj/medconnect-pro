@@ -1,6 +1,6 @@
 {
   "name": "medconnect-pro",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "private": true,
   "engines": {
     "node": ">=24 <25",
@@ -40,6 +40,7 @@
     "type-check:api": "npm run type-check -w medconnect-api",
     "test:api": "npm run test -w medconnect-api",
     "openapi:generate": "npm run openapi:generate -w medconnect-api",
+    "migration:run": "npm run migration:run -w medconnect-api",
     "clean": "npm run clean -w medconnect-web",
     "reset": "npm run clean && node scripts/reset-local.mjs && npm install",
     "plane:sync": "node scripts/plane/sync-tasks.mjs",

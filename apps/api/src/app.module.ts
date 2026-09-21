@@ -1,15 +1,22 @@
 import {Module, type MiddlewareConsumer, type NestModule} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {HealthModule} from './health/health.module.js';
+import {PersistenceModule} from './persistence/persistence.module.js';
 import {CorrelationIdMiddleware} from './platform/correlation.middleware.js';
 import {envSchema} from './platform/env.schema.js';
+import {PracticeModule} from './practice/practice.module.js';
+import {TenancyModule} from './tenancy/tenant.module.js';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
 			validationSchema: envSchema,
+			envFilePath: ['.env.development', '.env'],
 		}),
+		PersistenceModule,
+		TenancyModule,
+		PracticeModule,
 		HealthModule,
 	],
 })

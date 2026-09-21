@@ -26,7 +26,8 @@ implementation tasks, roadmaps and development workflows.
 - `tasks/` — implementation work.
 - `roadmap/` — sequencing and delivery milestones.
 - `decisions/` — ADRs, including [ADR-009](decisions/ADR-009-npm-workspace-monorepo.md) for the
-  npm workspace layout.
+  npm workspace layout and [ADR-010](decisions/ADR-010-postgresql-typeorm.md) for PostgreSQL and
+  TypeORM.
 - `workflows/` — repeatable engineering processes, including [versioning](workflows/versioning.md),
   [frontend testing](workflows/frontend-testing.md), and
   [API contract / Postman / OpenAPI](workflows/api-contract-workflow.md).

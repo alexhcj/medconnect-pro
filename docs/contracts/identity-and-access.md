@@ -109,9 +109,10 @@ Ordered rules:
 5. Ignore or reject client-supplied `practice_id` / `practiceId` for authorization decisions.
    Presence of a matching id in a DTO is not authorization.
 
-Tenant-owned records persist `practice_id` (or equivalent). PostgreSQL RLS may add defense in depth
-when the database exists ([DATA-001](../tasks/backend/DATA-001-postgresql-tenant-model.md),
-[SEC-002](../tasks/security/SEC-002-tenant-isolation.md)). Cache keys and object-storage paths must
+Tenant-owned records persist `practice_id` (or equivalent). PostgreSQL and TypeORM tenant scoping
+exist ([DATA-001](../tasks/backend/DATA-001-postgresql-tenant-model.md),
+[ADR-010](../decisions/ADR-010-postgresql-typeorm.md)). PostgreSQL RLS may add defense in depth in
+[SEC-002](../tasks/security/SEC-002-tenant-isolation.md). Cache keys and object-storage paths must
 include tenant scope when those stores exist.
 
 **Mock mode:** the same chain applies. Identity and memberships come from fixtures. Mock

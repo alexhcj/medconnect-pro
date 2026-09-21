@@ -67,7 +67,7 @@ authoritative controls.
 
 - Node.js current LTS, NestJS 12, TypeScript
 - REST + OpenAPI (`npm run openapi:generate`, `/api/docs-json`, optional `/api/docs`)
-- PostgreSQL, Redis (not wired yet)
+- PostgreSQL (local Compose + TypeORM), Redis (not wired yet)
 - S3 + KMS (planned)
 - WebSockets / Socket.IO where justified
 - WebRTC / Daily for telehealth
@@ -104,12 +104,14 @@ ownership or assignment.
 ## Getting started
 
 Local development is the Next.js app in `apps/web` (mock-first) plus the NestJS API in `apps/api`.
-Docker, PostgreSQL, and Redis are not part of this setup.
+PostgreSQL is Docker Compose at the repository root (`docker compose up -d`). Redis is not part of
+this setup.
 
 ### Prerequisites
 
 - Node.js **24** (Active LTS). See `.nvmrc` and the root `package.json` `engines` field.
 - npm **10.x** or later
+- Docker (for local PostgreSQL)
 
 ### Installation
 
@@ -123,19 +125,26 @@ Docker, PostgreSQL, and Redis are not part of this setup.
 npm install
 ```
 
-4. Start the frontend with mocks (recommended until domain APIs exist):
+4. Start local PostgreSQL and apply migrations:
+
+```bash
+docker compose up -d
+npm run migration:run
+```
+
+5. Start the frontend with mocks (recommended until domain APIs exist):
 
 ```bash
 npm run dev:mocks
 ```
 
-5. Optionally start the NestJS API (health/readiness on port 3001):
+6. Optionally start the NestJS API (health/readiness on port 3001; readiness requires Postgres):
 
 ```bash
 npm run dev:api
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000).
+7. Open [http://localhost:3000](http://localhost:3000).
 
 `npm run dev` starts Next.js using `.env.development` (mock-first in the example).
 `npm run dev:real` sets `NEXT_PUBLIC_USE_MOCKS=false`. When calling the Nest API from Next.js BFF
@@ -163,6 +172,7 @@ npm run clean                     # Next.js/test output under apps/web
 npm run reset                     # clean + reinstall node_modules (cross-platform)
 npm run dev:api                   # NestJS API on http://localhost:3001
 npm run openapi:generate          # Write apps/api/openapi/openapi.json
+npm run migration:run             # Apply TypeORM migrations to local Postgres
 ```
 
 Frontend testing conventions: [docs/workflows/frontend-testing.md](./docs/workflows/frontend-testing.md).

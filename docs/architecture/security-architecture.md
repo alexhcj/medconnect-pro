@@ -57,8 +57,8 @@ Never trust a browser-supplied tenant ID for authorization.
 
 Use:
 
-- repository/service tenant scoping;
-- PostgreSQL RLS where appropriate;
+- repository/service tenant scoping (implemented in `apps/api`);
+- PostgreSQL RLS where appropriate ([SEC-002](../tasks/security/SEC-002-tenant-isolation.md));
 - tenant-aware indexes;
 - tenant-aware cache keys;
 - tenant-aware object-storage paths;
