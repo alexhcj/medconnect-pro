@@ -53,5 +53,5 @@ Examples:
 - `FE-001-patient-list.md`
 - `BE-001-authentication-foundation.md`
 - `SEC-001-tenant-authorization.md`
-- `INFRA-001-local-docker-foundation.md`
+- `INFRA-001-local-development-foundation.md`
 - `QA-001-patient-workflow-e2e.md`

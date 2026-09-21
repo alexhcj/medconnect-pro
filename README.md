@@ -103,16 +103,20 @@ ownership or assignment.
 
 ## Getting started
 
+Local development is **frontend-only** until NestJS exists. `apps/api` is a placeholder. Docker,
+PostgreSQL, and Redis are not part of this setup.
+
 ### Prerequisites
 
-- Node.js current LTS
-- npm 10.x or later
+- Node.js **24** (Active LTS). See `.nvmrc` and the root `package.json` `engines` field.
+- npm **10.x** or later
 
 ### Installation
 
 1. Clone the repository.
-2. Copy [`apps/web/.env.example`](./apps/web/.env.example) to `apps/web/.env.development` and adjust
-   local values. Do not commit secrets.
+2. Copy [`apps/web/.env.example`](./apps/web/.env.example) to `apps/web/.env.development`. Do not
+   commit `.env.development`, `.env.test`, or secrets. For Vitest/Playwright local overrides, copy
+   the example to `apps/web/.env.test` and set mock delay/error rate to `0` as noted in that file.
 3. Install dependencies from the **repository root**:
 
 ```bash
@@ -127,8 +131,10 @@ npm run dev:mocks
 
 5. Open [http://localhost:3000](http://localhost:3000).
 
-`npm run dev` starts the Next.js app without forcing mock mode. `npm run dev:real` points at a real
-API base URL when one is available. The same commands exist as `dev:web` aliases.
+`npm run dev` starts Next.js using `.env.development` (mock-first in the example).
+`npm run dev:real` sets `NEXT_PUBLIC_USE_MOCKS=false`. When a real API exists, also set
+`API_BASE_URL` (for example `http://localhost:3001`) in `.env.development` so Next.js BFF routes can
+proxy to it. The same commands exist as `dev:web` aliases.
 
 ### Useful commands
 
@@ -143,6 +149,8 @@ npm run test:coverage
 npx playwright install chromium   # once per machine, before E2E; run from apps/web if needed
 npm run e2e
 npm run build
+npm run clean                     # Next.js/test output under apps/web
+npm run reset                     # clean + reinstall node_modules (cross-platform)
 ```
 
 Frontend testing conventions: [docs/workflows/frontend-testing.md](./docs/workflows/frontend-testing.md).

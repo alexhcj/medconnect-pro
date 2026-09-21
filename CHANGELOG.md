@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.12.1] - 2026-09-20
+
+### Changed
+
+- Local development conventions: mock-first `apps/web/.env.example`, gitignored local env files,
+  Node 24 `engines` / `.nvmrc`, and a cross-platform `npm run reset`.
+
 ## [0.12.0] - 2026-09-20
 
 ### Added

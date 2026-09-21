@@ -1,5 +1,16 @@
 # Infrastructure Architecture
 
+## Local development (current)
+
+Until NestJS exists, local work is the Next.js app in `apps/web` with mock-first environment files.
+Install and run commands from the repository root. Copy `apps/web/.env.example` to
+`.env.development` (gitignored). Do not commit secrets.
+
+Docker Compose, PostgreSQL, Redis, and GitHub Actions are **deferred**. Backend containers belong
+with later backend/infrastructure tasks after [BE-001](../tasks/backend/BE-001-nestjs-core-platform-foundation.md).
+
+See the root [README](../../README.md) for setup and validation commands.
+
 ## Target
 
 AWS.

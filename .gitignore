@@ -33,16 +33,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# environment files
+# environment
 .env
-.env.local
-.env.production
-scripts/plane/.env
-
-# keep example and specific environment files
+.env.*
 !.env.example
-!.env.development
-!.env.test
+scripts/plane/.env
 
 # vercel
 .vercel
