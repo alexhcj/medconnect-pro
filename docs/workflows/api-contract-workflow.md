@@ -31,14 +31,14 @@ Generated OpenAPI (apps/api/openapi/openapi.json)
 
 ## Current backend maturity
 
-`apps/api` is a NestJS **placeholder** until [BE-001](../tasks/backend/BE-001-nestjs-core-platform-foundation.md).
-There is no running API, no generated specification, and no Swagger UI.
+[BE-001](../tasks/backend/BE-001-nestjs-core-platform-foundation.md) initialized NestJS in `apps/api`
+(listen port `http://localhost:3001`, health/readiness, error envelope, correlation IDs). There is
+still no generated OpenAPI or Swagger UI.
 
-Do not fabricate `openapi.json` or a Postman collection of unimplemented routes.
+Do not fabricate `openapi.json` or a Postman collection of unimplemented domain routes.
 
 [INFRA-003](../tasks/infrastructure/INFRA-003-openapi-postman-workflow.md) established this
-workflow. [BE-002](../tasks/backend/BE-002-openapi-foundation.md) implements generation after
-BE-001.
+workflow. [BE-002](../tasks/backend/BE-002-openapi-foundation.md) implements generation.
 
 ## Lifecycle of an endpoint
 
@@ -51,14 +51,12 @@ BE-001.
 
 ## Commands
 
-Until BE-001 / BE-002 exist, these scripts are **not** wired. Intended names:
-
 | Command | Purpose | When |
 | --- | --- | --- |
-| `npm run dev:api` | Start the NestJS API | BE-001 |
+| `npm run dev:api` | Start the NestJS API | BE-001 (available) |
+| `npm run test:api` | Backend platform tests | BE-001 (available) |
 | `npm run openapi:generate` | Write `apps/api/openapi/openapi.json` | BE-002 |
 | `npm run openapi:validate` | Validate the generated document | BE-002 (optional) |
-| `npm run test:api` | Backend / contract tests | BE-001 / BE-002 |
 
 Frontend commands are unchanged (`npm run dev:mocks`, `lint`, `type-check`, `test`, `e2e`).
 
@@ -87,8 +85,7 @@ paths.
 
 Committed templates:
 
-- `postman/environments/local.postman_environment.json` — `baseUrl` `http://localhost:3001` until
-  BE-001 sets the listen port
+- `postman/environments/local.postman_environment.json` — `baseUrl` `http://localhost:3001`
 - `postman/environments/demo.postman_environment.json` — placeholder demo host
 
 Variables:
@@ -106,8 +103,8 @@ to Bearer Token and the token value to `{{accessToken}}`.
 
 Do not weaken backend authentication to make Postman easier. Do not commit tokens.
 
-Obtain a token from the real auth flow once it exists (BE-001 / SEC-001). Until then there is no
-backend to call.
+Obtain a token from the real auth flow once it exists. Until identity is implemented on NestJS,
+protected domain routes are not available; platform health/readiness do not require a token.
 
 ### Import and update
 

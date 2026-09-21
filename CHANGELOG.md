@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.13.0] - 2026-09-21
+
+### Added
+
+- NestJS 12 API workspace (`apps/api`) with global Zod validation, a consistent error envelope,
+  `X-Correlation-ID`, structured request logging, and unauthenticated `/health` and `/ready`
+  endpoints on port 3001.
+
 ## [0.12.2] - 2026-09-21
 
 ### Added

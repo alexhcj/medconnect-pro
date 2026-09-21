@@ -3,4 +3,4 @@
 Canonical documentation: `/docs`.
 
 Frontend application: `apps/web`.
-Planned backend application: `apps/api` (not initialized).
+Backend application: `apps/api` (NestJS 12 platform; OpenAPI is BE-002).

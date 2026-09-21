@@ -36,8 +36,8 @@ This repository is an **npm workspaces** monorepo.
 ```text
 medconnect-pro/
   apps/web/          Next.js frontend
-  apps/api/          Reserved for future NestJS (not initialized)
-  apps/api/openapi/  Future generated OpenAPI (no JSON until BE-002)
+  apps/api/          NestJS API (platform foundation)
+  apps/api/openapi/  Generated OpenAPI after BE-002
   packages/          Reserved for future shared packages
   postman/           Postman environments and collection conventions
   docs/              Canonical documentation
@@ -45,8 +45,8 @@ medconnect-pro/
   scripts/plane/     Plane task sync
 ```
 
-The backend is planned as a **separate modular NestJS application** under `apps/api`. Do not fold
-backend domain logic into the Next.js app.
+The backend is a **separate modular NestJS application** under `apps/api`. Do not fold backend
+domain logic into the Next.js app.
 
 Frontend checks are UX only. Server-side authorization and tenant isolation are the planned
 authoritative controls.
@@ -63,12 +63,12 @@ authoritative controls.
 - Daily SDK (telehealth client boundary)
 - Socket.IO client (planned realtime)
 
-### Planned backend (`apps/api`)
+### Backend (`apps/api`)
 
-- Node.js current LTS, NestJS, TypeScript
-- REST + OpenAPI
-- PostgreSQL, Redis
-- S3 + KMS
+- Node.js current LTS, NestJS 12, TypeScript
+- REST (OpenAPI generation in BE-002)
+- PostgreSQL, Redis (not wired yet)
+- S3 + KMS (planned)
 - WebSockets / Socket.IO where justified
 - WebRTC / Daily for telehealth
 
@@ -103,8 +103,8 @@ ownership or assignment.
 
 ## Getting started
 
-Local development is **frontend-only** until NestJS exists. `apps/api` is a placeholder. Docker,
-PostgreSQL, and Redis are not part of this setup.
+Local development is the Next.js app in `apps/web` (mock-first) plus the NestJS API in `apps/api`.
+Docker, PostgreSQL, and Redis are not part of this setup.
 
 ### Prerequisites
 
@@ -123,42 +123,52 @@ PostgreSQL, and Redis are not part of this setup.
 npm install
 ```
 
-4. Start the frontend with mocks (recommended until the NestJS API exists):
+4. Start the frontend with mocks (recommended until domain APIs exist):
 
 ```bash
 npm run dev:mocks
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000).
+5. Optionally start the NestJS API (health/readiness on port 3001):
+
+```bash
+npm run dev:api
+```
+
+6. Open [http://localhost:3000](http://localhost:3000).
 
 `npm run dev` starts Next.js using `.env.development` (mock-first in the example).
-`npm run dev:real` sets `NEXT_PUBLIC_USE_MOCKS=false`. When a real API exists, also set
-`API_BASE_URL` (for example `http://localhost:3001`) in `.env.development` so Next.js BFF routes can
-proxy to it. The same commands exist as `dev:web` aliases.
+`npm run dev:real` sets `NEXT_PUBLIC_USE_MOCKS=false`. When calling the Nest API from Next.js BFF
+routes, set `API_BASE_URL=http://localhost:3001` in `.env.development`. The same commands exist as
+`dev:web` aliases.
 
 ### Useful commands
 
-Run these from the repository root (they delegate to `apps/web`):
+Run these from the repository root:
 
 ```bash
 npm run lint
+npm run lint:api
 npm run type-check
+npm run type-check:api
 npm test
+npm run test:api
 npm run test:watch
 npm run test:coverage
 npx playwright install chromium   # once per machine, before E2E; run from apps/web if needed
 npm run e2e
 npm run build
+npm run build:api
 npm run clean                     # Next.js/test output under apps/web
 npm run reset                     # clean + reinstall node_modules (cross-platform)
+npm run dev:api                   # NestJS API on http://localhost:3001
 ```
 
 Frontend testing conventions: [docs/workflows/frontend-testing.md](./docs/workflows/frontend-testing.md).
 
 API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/workflows/api-contract-workflow.md).
-OpenAPI generation (`openapi:generate`), `dev:api`, and Swagger UI are **deferred** until NestJS
-exists ([BE-001](./docs/tasks/backend/BE-001-nestjs-core-platform-foundation.md),
-[BE-002](./docs/tasks/backend/BE-002-openapi-foundation.md)).
+`npm run dev:api` and `npm run test:api` are available. OpenAPI generation (`openapi:generate`) and
+Swagger UI remain [BE-002](./docs/tasks/backend/BE-002-openapi-foundation.md).
 
 ## Documentation
 

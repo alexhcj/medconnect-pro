@@ -3,12 +3,19 @@ id: BE-001
 type: task
 area: backend
 feature: core-platform
-status: planned
+status: implemented
 priority: high
 estimate: 3
 dependencies: []
-related_adrs: []
-related_docs: [backend-architecture.md, api-architecture.md, ../workflows/api-contract-workflow.md]
+related_adrs: [ADR-001, ADR-004, ADR-006, ADR-009]
+related_docs:
+  [
+    backend-architecture.md,
+    api-architecture.md,
+    ../workflows/api-contract-workflow.md,
+    ../contracts/identity-and-access.md,
+    ../contracts/data-contracts.md,
+  ]
 plane:
   work_item_id: null
   identifier: null
@@ -34,11 +41,11 @@ Modules, error format, validation, correlation IDs, logging and health endpoints
 
 ## Acceptance criteria
 
-- [ ] NestJS app bootstraps
-- [ ] Global validation configured
-- [ ] Error envelope defined
-- [ ] Correlation ID defined
-- [ ] Health/readiness endpoints exist
+- [x] NestJS app bootstraps
+- [x] Global validation configured
+- [x] Error envelope defined
+- [x] Correlation ID defined
+- [x] Health/readiness endpoints exist
 
 ## Implementation notes
 
@@ -51,7 +58,11 @@ Postman local `baseUrl` placeholder (`http://localhost:3001`), update
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: NestJS 12 ESM app in `apps/api` (`medconnect-api`); listen port 3001; Zod
+  Standard Schema validation; error envelope; `X-Correlation-ID`; PHI-safe request logs;
+  unauthenticated `GET /health` and `GET /ready`.
+- Tests: Vitest unit tests for correlation/filter; HTTP tests for health/ready/validation envelope
+  (`npm run test:api`).
 - PR:
-- Notes:
+- Notes: No OpenAPI, Identity/guards, or PostgreSQL. Follows SEC-001 identity contract without
+  implementing it. Nest Vitest runner also closes the remaining QA-001 backend AC.

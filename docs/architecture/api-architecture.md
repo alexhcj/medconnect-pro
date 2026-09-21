@@ -53,15 +53,16 @@ Frontend
 
 ## OpenAPI policy
 
-OpenAPI should be generated from the NestJS backend once the backend exists ([BE-002](../tasks/backend/BE-002-openapi-foundation.md)).
+OpenAPI should be generated from the NestJS backend ([BE-002](../tasks/backend/BE-002-openapi-foundation.md)).
 
-Before the backend exists, repository Markdown contracts describe intended boundaries. They are
-planning contracts, not generated OpenAPI truth.
+Until that task, repository Markdown contracts describe intended domain boundaries. They are
+planning contracts, not generated OpenAPI truth. The NestJS app itself exists after
+[BE-001](../tasks/backend/BE-001-nestjs-core-platform-foundation.md).
 
 ```text
 /docs/contracts/          Human-readable design
         ↓
-NestJS controllers + DTOs Implementation (after BE-001)
+NestJS controllers + DTOs Implementation
         ↓
 Generated OpenAPI         apps/api/openapi/openapi.json
         ├── Postman       Primary exploration and API tests

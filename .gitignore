@@ -22,6 +22,7 @@ out/
 
 # production
 /build
+apps/api/dist
 
 # misc
 .DS_Store
@@ -37,6 +38,7 @@ yarn-error.log*
 .env
 .env.*
 !.env.example
+!**/.env.example
 scripts/plane/.env
 
 # vercel

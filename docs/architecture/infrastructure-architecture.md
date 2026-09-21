@@ -2,12 +2,13 @@
 
 ## Local development (current)
 
-Until NestJS exists, local work is the Next.js app in `apps/web` with mock-first environment files.
-Install and run commands from the repository root. Copy `apps/web/.env.example` to
-`.env.development` (gitignored). Do not commit secrets.
+Local work is the Next.js app in `apps/web` (mock-first environment files) and the NestJS API in
+`apps/api` (`npm run dev:api`, port 3001). Install and run commands from the repository root. Copy
+`apps/web/.env.example` to `.env.development` (gitignored). Copy `apps/api/.env.example` only if you
+need API overrides. Do not commit secrets.
 
 Docker Compose, PostgreSQL, Redis, and GitHub Actions are **deferred**. Backend containers belong
-with later backend/infrastructure tasks after [BE-001](../tasks/backend/BE-001-nestjs-core-platform-foundation.md).
+with later infrastructure tasks after the Nest platform exists.
 
 See the root [README](../../README.md) for setup and validation commands.
 

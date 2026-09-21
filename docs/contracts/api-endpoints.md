@@ -1,14 +1,19 @@
 # API Endpoints Contract
 
-This document describes intended API boundaries before the NestJS backend exists.
-
-Once the backend is implemented, NestJS OpenAPI output becomes the authoritative machine-readable
-contract. This file remains a human-readable domain index and should not duplicate every generated
-schema.
+This document describes intended API boundaries. NestJS OpenAPI output (BE-002) will become the
+authoritative machine-readable contract. This file remains a human-readable domain index and should
+not duplicate every generated schema.
 
 Planned routes become NestJS controllers and DTOs when the corresponding backend task ships. Those
 implementations feed generated OpenAPI; Postman collections are then re-imported from that artifact.
 See [API contract workflow](../workflows/api-contract-workflow.md) and [ADR-004](../decisions/ADR-004-api-contracts.md).
+
+## Platform
+
+- `GET /health`
+- `GET /ready`
+
+Unauthenticated liveness and readiness. Readiness does not check PostgreSQL yet.
 
 ## Authentication
 
@@ -81,8 +86,8 @@ identity-and-access contract. Do not duplicate the permission catalog here.
 - version API when breaking changes require it;
 - consistent pagination;
 - consistent filtering/sorting;
-- consistent error envelope;
-- correlation/request ID;
+- consistent error envelope (see [data-contracts.md](data-contracts.md));
+- correlation/request ID (`X-Correlation-ID`);
 - authorization on every protected resource;
 - server-side tenant resolution;
 - no sensitive fields in error messages.

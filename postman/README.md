@@ -18,16 +18,16 @@ postman/
 
 Import the generated spec as **MedConnect Pro API**.
 
-Do not hand-author a full collection of routes from
-[`docs/contracts/api-endpoints.md`](../docs/contracts/api-endpoints.md) while NestJS is uninitialized.
-Those routes are not implemented. `collections/` stays empty until `apps/api/openapi/openapi.json`
-exists.
+Do not hand-author a full collection of domain routes from
+[`docs/contracts/api-endpoints.md`](../docs/contracts/api-endpoints.md). Those routes are not
+implemented yet. `collections/` stays empty until `apps/api/openapi/openapi.json` exists (BE-002).
+Health and readiness can be called against `{{baseUrl}}` without a collection.
 
 ## Environments
 
 | File | `baseUrl` |
 | --- | --- |
-| `environments/local.postman_environment.json` | `http://localhost:3001` (placeholder until BE-001) |
+| `environments/local.postman_environment.json` | `http://localhost:3001` |
 | `environments/demo.postman_environment.json` | `https://api.example.invalid` (replace when a demo host exists) |
 
 Variables:

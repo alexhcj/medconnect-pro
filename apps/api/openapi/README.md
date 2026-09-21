@@ -8,9 +8,8 @@ That file is **generated** from NestJS (`@nestjs/swagger`) by [BE-002](../../doc
 Do not create it by hand. Do not edit endpoint definitions inside it. Do not copy a Postman export
 here and treat it as OpenAPI source.
 
-Until [BE-001](../../docs/tasks/backend/BE-001-nestjs-core-platform-foundation.md) initializes the
-API, this directory has no JSON artifact. Fabricating a specification of unimplemented endpoints
-would drift from the real controllers.
+Until [BE-002](../../docs/tasks/backend/BE-002-openapi-foundation.md) adds generation, this
+directory has no JSON artifact. Do not fabricate a specification of unimplemented domain endpoints.
 
 When generation exists:
 
