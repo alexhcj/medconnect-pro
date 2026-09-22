@@ -49,4 +49,5 @@ Do not make navigation visibility the authorization mechanism.
 - Implementation: Dashboard route group layout, accessible shell, role-aware nav (UX only), isolated overview metrics, stub nav routes.
 - Tests: Vitest unit tests for nav/metric filters; RTL shell accessibility and mobile-nav tests; Playwright dashboard→patients navigation.
 - PR:
-- Notes: Menu visibility is not authorization. SEC-001 remains the enforcement task.
+- Notes: Menu visibility is not authorization. Session gate and mock login are FE-010. Server
+  enforcement is BE-009; SEC-001 remains the model.

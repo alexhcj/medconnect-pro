@@ -6,7 +6,7 @@ feature: patient-management
 status: planned
 priority: high
 estimate: 4
-dependencies: [BE-001,DATA-001]
+dependencies: [BE-001, DATA-001, BE-009]
 related_adrs: [ADR-002-tenant-isolation.md]
 related_docs: [backend-architecture.md,../contracts/api-endpoints.md,../contracts/data-contracts.md]
 plane:
@@ -45,9 +45,12 @@ CRUD/search/filter/pagination plus authorized profile access.
 
 Never trust browser-supplied practice_id.
 
+Do not start authorization acceptance criteria until [BE-009](BE-009-identity-and-access-http.md)
+ships. Frontend patient mocks (FE-002+) may proceed after FE-010.
+
 ## Completion
 
 - Implementation:
 - Tests:
 - PR:
-- Notes:
+- Notes: Blocked on BE-009 for role/resource authorization.

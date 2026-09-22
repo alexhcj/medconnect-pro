@@ -5,6 +5,8 @@ import {Dialog, DialogPanel, DialogTitle, Transition, TransitionChild} from '@he
 import {Clock, ShieldCheck, TriangleAlert} from 'lucide-react';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {useUISelectors} from '@/lib/stores/ui-store';
+import {sessionAPI} from '@/lib/api/session-api';
+import {loginUrl} from '@/lib/auth/paths';
 
 export function SessionExtensionModal() {
 	const {isExpiringNow, remainingTime, extendSession, isExtending} = useSessionStatus();
@@ -23,7 +25,9 @@ export function SessionExtensionModal() {
 
 				// Auto-logout when time reaches 0
 				if (newTime <= 0) {
-					window.location.href = '/auth/logout?reason=timeout';
+					void sessionAPI.logout().finally(() => {
+						window.location.href = loginUrl('timeout');
+					});
 				}
 
 				return newTime;
@@ -54,7 +58,9 @@ export function SessionExtensionModal() {
 	};
 
 	const handleLogout = () => {
-		window.location.href = '/auth/logout?reason=manual';
+		void sessionAPI.logout().finally(() => {
+			window.location.href = loginUrl('timeout');
+		});
 	};
 
 	// Keyboard shortcuts

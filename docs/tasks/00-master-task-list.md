@@ -2,6 +2,8 @@
 
 This is an index, not the detailed source of task requirements.
 
+Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-roadmap.md).
+
 ## Foundation
 
 - INFRA-001 — Local development foundation
@@ -16,6 +18,7 @@ This is an index, not the detailed source of task requirements.
 ## Frontend
 
 - FE-001 — Dashboard shell
+- FE-010 — Mock authentication UI and session gate
 - FE-002 — Patient list
 - FE-003 — Patient profile
 - FE-004 — Patient create/edit
@@ -27,6 +30,7 @@ This is an index, not the detailed source of task requirements.
 
 ## Backend
 
+- BE-009 — Identity and access HTTP
 - BE-003 — Patient API
 - BE-004 — Appointment API
 - BE-005 — Clinical record API

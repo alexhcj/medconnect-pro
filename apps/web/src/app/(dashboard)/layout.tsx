@@ -1,5 +1,6 @@
 'use client';
 
+import {DashboardAuthGate} from '@/components/auth/dashboard-auth-gate';
 import {DashboardShell} from '@/components/dashboard/dashboard-shell';
 
 export default function DashboardGroupLayout({
@@ -7,5 +8,9 @@ export default function DashboardGroupLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	return <DashboardShell>{children}</DashboardShell>;
+	return (
+		<DashboardAuthGate>
+			<DashboardShell>{children}</DashboardShell>
+		</DashboardAuthGate>
+	);
 }

@@ -1,3 +1,5 @@
+import {loginUrl} from '@/lib/auth/paths';
+
 export class ApiError extends Error {
 	status: number;
 
@@ -23,7 +25,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
 	if (response.status === 401) {
 		if (typeof window !== 'undefined') {
-			window.location.href = '/login?reason=unauthorized';
+			window.location.href = loginUrl('unauthorized');
 		}
 		throw new ApiError('Unauthorized', 401);
 	}

@@ -5,6 +5,7 @@ import {Dialog, DialogPanel, DialogTitle, Transition, TransitionChild} from '@he
 import {Monitor, Smartphone, TriangleAlert} from 'lucide-react';
 import {useConcurrentSessions, useTerminateSessions} from '@/lib/hooks/use-session';
 import {useUISelectors} from '@/lib/stores/ui-store';
+import {loginUrl} from '@/lib/auth/paths';
 
 export function ConcurrentSessionDialog() {
 	const {data: sessions = [], isLoading} = useConcurrentSessions();
@@ -87,7 +88,7 @@ export function ConcurrentSessionDialog() {
 		});
 
 		// Logout everywhere
-		window.location.href = '/auth/logout?reason=concurrent&action=logout_all';
+		window.location.href = loginUrl('concurrent');
 	};
 
 	const toggleSession = (sessionId: string) => {

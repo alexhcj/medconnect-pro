@@ -4,6 +4,18 @@ import {isMockMode} from '@/lib/api/mocks/runtime';
 import {sessionMockAPI, sessionMockFactories} from '@/lib/api/mocks/session-mock';
 
 const sessionRealAPI = {
+	login: async (email: string, password: string): Promise<SessionInfo> => {
+		return apiFetch<SessionInfo>('/api/auth/login', {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({email, password}),
+		});
+	},
+
+	logout: async (): Promise<void> => {
+		await apiFetch<void>('/api/auth/logout', {method: 'POST'});
+	},
+
 	getCurrentSession: async (): Promise<SessionInfo> => {
 		return apiFetch<SessionInfo>('/api/auth/session');
 	},

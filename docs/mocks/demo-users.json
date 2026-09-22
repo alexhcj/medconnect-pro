@@ -1,0 +1,10 @@
+{
+	"users": [
+		{
+			"email": "practice.admin@example.test",
+			"password": "Demo-Admin-1",
+			"role": "PRACTICE_ADMIN",
+			"userId": "user_mock_practice_admin"
+		}
+	]
+}

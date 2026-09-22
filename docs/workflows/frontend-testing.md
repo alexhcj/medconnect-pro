@@ -47,6 +47,7 @@ E2E runs against mock mode with `NEXT_PUBLIC_MOCK_DELAY=0` and `NEXT_PUBLIC_MOCK
 - Chromium only until broader browser coverage is justified.
 - Start or reuse the Next.js app through Playwright `webServer` (deterministic mocks).
 - Prefer roles and names over CSS selectors.
+- Authenticated dashboard flows must sign in through the mock IdP (see `e2e/helpers/mock-auth.ts`).
 
 ## Commands
 

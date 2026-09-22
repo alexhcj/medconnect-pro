@@ -1,8 +1,8 @@
 import {parseRole, type Role} from '@/types/auth/roles';
 import type {DashboardMetric, DashboardOverview} from '@/types/dashboard/overview';
 import {fixtureDashboardMetrics} from '@/lib/api/mocks/fixtures';
+import {readMockSession} from '@/lib/api/mocks/mock-session-store';
 import {mockDelay, mockLog, shouldSimulateError} from '@/lib/api/mocks/runtime';
-import {sessionMockFactories} from '@/lib/api/mocks/session-mock';
 
 export function filterMetricsForRole(
 	metrics: DashboardMetric[],
@@ -26,8 +26,7 @@ async function withMock<T>(work: () => T, errorMessage: string): Promise<T> {
 export const dashboardMockAPI = {
 	getOverview: async (): Promise<DashboardOverview> =>
 		withMock(() => {
-			const session = sessionMockFactories.createMockSession();
-			const role = parseRole(session.userRole) ?? 'PRACTICE_ADMIN';
+			const role = parseRole(readMockSession()?.userRole);
 			return {
 				metrics: filterMetricsForRole(fixtureDashboardMetrics, role),
 			};

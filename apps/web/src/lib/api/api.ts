@@ -34,7 +34,9 @@ export const queryClient = new QueryClient({
 			retry: 1,
 			onError: (error: unknown) => {
 				const err = error as { status?: number };
-
+				if (err?.status === 401) {
+					return;
+				}
 				console.error('Mutation error:', err);
 			},
 		},

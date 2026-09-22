@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.16.0] - 2026-09-22
+
+### Added
+
+- Mock identity login/logout and a dashboard session gate (FE-010), with synthetic demo credentials.
+- Milestone task crosswalk on the release roadmap; FE-010 and BE-009 task specs.
+
+### Changed
+
+- Leftover v0 MFA/register/password-reset theater is parked as out-of-milestone stubs.
+- Session chrome is limited to the authenticated dashboard tree.
+
 ## [0.15.0] - 2026-09-21
 
 ### Added

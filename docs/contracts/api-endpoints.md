@@ -13,7 +13,9 @@ See [API contract workflow](../workflows/api-contract-workflow.md) and [ADR-004]
 - `GET /health`
 - `GET /ready`
 
-Unauthenticated liveness and readiness. Readiness does not check PostgreSQL yet.
+Unauthenticated liveness and readiness. `GET /ready` checks that PostgreSQL accepts a connection
+([DATA-001](../tasks/backend/DATA-001-postgresql-tenant-model.md)). `GET /health` does not depend
+on the database.
 
 ## Authentication
 

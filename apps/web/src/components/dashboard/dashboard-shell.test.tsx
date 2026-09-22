@@ -12,6 +12,10 @@ vi.mock('@/lib/hooks/use-session', () => ({
 			userRole: 'PRACTICE_ADMIN',
 		},
 	}),
+	useLogout: () => ({
+		mutate: vi.fn(),
+		isPending: false,
+	}),
 }));
 
 vi.mock('@/lib/api/mocks/runtime', () => ({
@@ -33,6 +37,7 @@ describe('DashboardShell', () => {
 		);
 		expect(screen.getByRole('button', {name: 'Notifications'})).toBeInTheDocument();
 		expect(screen.getByRole('button', {name: 'Account'})).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Sign out'})).toBeInTheDocument();
 		expect(screen.getAllByRole('navigation', {name: 'Primary'}).length).toBeGreaterThan(0);
 		expect(screen.getAllByRole('link', {name: 'Dashboard'})[0]).toHaveAttribute('aria-current', 'page');
 		expect(screen.getByRole('main')).toHaveAttribute('id', 'main-content');

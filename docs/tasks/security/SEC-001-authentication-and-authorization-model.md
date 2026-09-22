@@ -49,4 +49,7 @@ Use OAuth/OIDC + PKCE as the target architecture; mock mode may simulate the ide
 - Implementation: Canonical model in `docs/contracts/identity-and-access.md`; frontend `Permission` catalog and mock session grants aligned. No NestJS/OAuth/IdP implementation.
 - Tests: Vitest catalog subset checks (`permissions.test.ts`). Existing dashboard/nav tests still pass.
 - PR:
-- Notes: Browser session checks remain UX only. Tenant isolation, audit, document ACL, and QA matrix are SEC-002–004 / DATA-001 / QA-004.
+- Notes: Browser session checks remain UX only. Mock login and dashboard gating are
+  [FE-010](../frontend/FE-010-mock-authentication-ui.md). NestJS Identity HTTP is
+  [BE-009](../backend/BE-009-identity-and-access-http.md). Tenant isolation, audit, document ACL,
+  and QA matrix are SEC-002–004 / DATA-001 / QA-004.

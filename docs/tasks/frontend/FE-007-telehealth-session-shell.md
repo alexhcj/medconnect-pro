@@ -1,12 +1,12 @@
 ---
-id: FE-002
+id: FE-007
 type: task
 area: frontend
-feature: patient-management
+feature: telehealth
 status: planned
-priority: high
-estimate: 2
-dependencies: [FE-001, FE-010]
+priority: medium
+estimate: 3
+dependencies: [FE-005]
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md,../contracts/api-endpoints.md]
 plane:
@@ -14,15 +14,16 @@ plane:
   identifier: null
 ---
 
-# FE-002 — Patient list
+# FE-007 — Telehealth session shell
 
 ## Objective
 
-Implement searchable, filterable patient list UI.
+Create the appointment-linked telehealth session shell for M5.
 
 ## Scope
 
-Use TanStack Query and the API data layer; mock mode may supply synthetic data.
+Join/leave UI, waiting-room presentation, and media-control placeholders. Do not claim a production
+telehealth deployment.
 
 ## Technical constraints
 
@@ -34,16 +35,15 @@ Use TanStack Query and the API data layer; mock mode may supply synthetic data.
 
 ## Acceptance criteria
 
-- [ ] List renders
-- [ ] Search works
-- [ ] Filters work
-- [ ] Pagination/infinite loading works
-- [ ] Loading/empty/error states exist
+- [ ] Session shell route exists
+- [ ] Appointment linkage is visible
+- [ ] Join/leave controls exist
+- [ ] Loading/error states exist
 - [ ] Accessible on tablet
 
 ## Implementation notes
 
-Patient data must be synthetic.
+Media behavior is bounded by the selected telehealth architecture. Backend session API is BE-006.
 
 ## Completion
 

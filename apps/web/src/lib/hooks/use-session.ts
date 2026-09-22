@@ -4,6 +4,8 @@ import {toast} from "react-hot-toast";
 import {useCallback, useEffect, useRef} from "react";
 import {sessionAPI} from "@/lib/api/session-api";
 import {queryClient} from "@/lib/api/api";
+import {loginUrl} from "@/lib/auth/paths";
+import {ApiError} from "@/lib/api/http";
 
 export function useCurrentSession() {
 	return useQuery({
@@ -11,11 +13,33 @@ export function useCurrentSession() {
 		queryFn: sessionAPI.getCurrentSession,
 		refetchInterval: 30000, // Check every 30 seconds
 		retry: (failureCount, error) => {
-			// Don't retry if unauthorized
-			if (error.message.includes('401') || error.message.includes('unauthorized')) {
+			if (error instanceof ApiError && error.status === 401) {
+				return false;
+			}
+			if (error.message.includes('401') || error.message.toLowerCase().includes('unauthorized')) {
 				return false;
 			}
 			return failureCount < 2;
+		},
+	});
+}
+
+export function useLogin() {
+	return useMutation({
+		mutationFn: ({email, password}: {email: string; password: string}) =>
+			sessionAPI.login(email, password),
+		onSuccess: (session) => {
+			queryClient.setQueryData(['session', 'current'], session);
+		},
+	});
+}
+
+export function useLogout() {
+	return useMutation({
+		mutationFn: sessionAPI.logout,
+		onSettled: () => {
+			queryClient.removeQueries({queryKey: ['session']});
+			window.location.href = loginUrl('signed_out');
 		},
 	});
 }
@@ -43,7 +67,7 @@ export function useExtendSession() {
 
 			// Redirect to login after short delay
 			setTimeout(() => {
-				window.location.href = '/auth/login?reason=extension_failed';
+				window.location.href = loginUrl('extension_failed');
 			}, 3000);
 		},
 	});

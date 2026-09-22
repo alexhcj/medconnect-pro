@@ -1,11 +1,11 @@
 ---
-id: FE-002
+id: FE-009
 type: task
 area: frontend
-feature: patient-management
+feature: administration
 status: planned
-priority: high
-estimate: 2
+priority: medium
+estimate: 3
 dependencies: [FE-001, FE-010]
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md,../contracts/api-endpoints.md]
@@ -14,15 +14,16 @@ plane:
   identifier: null
 ---
 
-# FE-002 — Patient list
+# FE-009 — Administration/security UI
 
 ## Objective
 
-Implement searchable, filterable patient list UI.
+Create practice/user administration and audit-viewer UI for M7.
 
 ## Scope
 
-Use TanStack Query and the API data layer; mock mode may supply synthetic data.
+User/role presentation and an audit event viewer using synthetic data. Permission management beyond
+default grants is out of M1.
 
 ## Technical constraints
 
@@ -34,16 +35,15 @@ Use TanStack Query and the API data layer; mock mode may supply synthetic data.
 
 ## Acceptance criteria
 
-- [ ] List renders
-- [ ] Search works
-- [ ] Filters work
-- [ ] Pagination/infinite loading works
+- [ ] Administration route exists
+- [ ] User/role list renders
+- [ ] Audit viewer renders synthetic events
 - [ ] Loading/empty/error states exist
-- [ ] Accessible on tablet
+- [ ] Navigation visibility is not treated as authorization
 
 ## Implementation notes
 
-Patient data must be synthetic.
+Server authorization remains authoritative (BE-009, SEC-002–004, QA-004).
 
 ## Completion
 

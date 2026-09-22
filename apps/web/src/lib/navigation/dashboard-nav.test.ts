@@ -52,8 +52,12 @@ describe('resolveNavRole', () => {
 		expect(resolveNavRole('PROVIDER')).toBe('PROVIDER');
 	});
 
-	it('defaults to PRACTICE_ADMIN in mock mode when the role is unknown', () => {
+	it('defaults to PRACTICE_ADMIN in mock mode when the role is unknown but present', () => {
 		expect(resolveNavRole('admin', {mockMode: true})).toBe('PRACTICE_ADMIN');
+	});
+
+	it('does not invent a role when the session role is missing', () => {
+		expect(resolveNavRole(undefined, {mockMode: true})).toBeUndefined();
 	});
 
 	it('does not invent a role outside mock mode', () => {

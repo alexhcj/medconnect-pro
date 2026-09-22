@@ -1,7 +1,8 @@
 'use client';
 
-import {Bell, Menu, User} from 'lucide-react';
+import {Bell, LogOut, Menu, User} from 'lucide-react';
 import {Button} from '@/components/ui/button';
+import {useLogout} from '@/lib/hooks/use-session';
 
 interface HeaderProps {
 	onOpenMobileNav: () => void;
@@ -9,6 +10,8 @@ interface HeaderProps {
 }
 
 export function Header({onOpenMobileNav, mobileNavOpen}: HeaderProps) {
+	const logout = useLogout();
+
 	return (
 		<header className="border-b border-gray-200 bg-white shadow-sm">
 			<div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -31,6 +34,16 @@ export function Header({onOpenMobileNav, mobileNavOpen}: HeaderProps) {
 					</Button>
 					<Button type="button" variant="ghost" size="icon" aria-label="Account">
 						<User className="h-5 w-5" aria-hidden />
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						aria-label="Sign out"
+						onClick={() => logout.mutate()}
+						disabled={logout.isPending}
+					>
+						<LogOut className="mr-2 h-4 w-4" aria-hidden />
+						Sign out
 					</Button>
 				</div>
 			</div>

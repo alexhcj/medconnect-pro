@@ -1,10 +1,9 @@
 import {expect, test} from '@playwright/test';
+import {signInAsPracticeAdmin} from './helpers/mock-auth';
 
 test.describe('Dashboard shell navigation', () => {
 	test('navigates from Dashboard to Patients', async ({page}) => {
-		await page.goto('/dashboard');
-
-		await expect(page.getByRole('heading', {level: 1, name: 'Dashboard'})).toBeVisible();
+		await signInAsPracticeAdmin(page);
 
 		const sidebar = page.getByRole('complementary');
 		await expect(sidebar.getByRole('navigation', {name: 'Primary'})).toBeVisible();

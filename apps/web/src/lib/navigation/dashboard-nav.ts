@@ -64,7 +64,7 @@ export function resolveNavRole(
 	if (parsed) {
 		return parsed;
 	}
-	if (options.mockMode) {
+	if (options.mockMode && userRole) {
 		return 'PRACTICE_ADMIN';
 	}
 	return undefined;
