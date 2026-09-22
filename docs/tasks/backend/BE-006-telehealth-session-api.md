@@ -10,8 +10,8 @@ dependencies: [BE-004]
 related_adrs: []
 related_docs: [backend-architecture.md,security-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 3744ca66-6a0d-4185-afed-92a06e370a87
+  identifier: MEDCONNECT-15
 ---
 
 # BE-006 — Telehealth session API

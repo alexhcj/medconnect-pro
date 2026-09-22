@@ -10,8 +10,8 @@ dependencies: [BE-003]
 related_adrs: []
 related_docs: [backend-architecture.md,../contracts/data-contracts.md,security-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 9ee526a8-a52f-48e5-ad88-bf2b1d4a268a
+  identifier: MEDCONNECT-14
 ---
 
 # BE-005 — Clinical record API

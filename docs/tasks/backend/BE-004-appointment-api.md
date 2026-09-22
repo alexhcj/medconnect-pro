@@ -10,8 +10,8 @@ dependencies: [BE-001,DATA-001,BE-003]
 related_adrs: [ADR-002-tenant-isolation.md]
 related_docs: [backend-architecture.md,../contracts/api-endpoints.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 587128bc-5dbe-4087-ac7b-05f838664bb9
+  identifier: MEDCONNECT-13
 ---
 
 # BE-004 — Appointment API

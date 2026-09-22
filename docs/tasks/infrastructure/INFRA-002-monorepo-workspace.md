@@ -10,8 +10,8 @@ dependencies: []
 related_adrs: [ADR-007, ADR-009]
 related_docs: [00-project-spec.md, frontend-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 06f049dd-1ff3-49d7-8b5d-290c8f57f850
+  identifier: MEDCONNECT-31
 ---
 
 # INFRA-002 — Monorepo workspace structure

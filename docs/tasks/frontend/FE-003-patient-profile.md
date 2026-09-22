@@ -10,8 +10,8 @@ dependencies: [FE-002]
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 417fc2d9-a097-4a0c-95aa-c0acba6be67c
+  identifier: MEDCONNECT-22
 ---
 
 # FE-003 — Patient profile

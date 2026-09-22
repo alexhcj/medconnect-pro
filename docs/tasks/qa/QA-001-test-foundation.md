@@ -10,8 +10,8 @@ dependencies: [BE-001]
 related_adrs: [ADR-008-frontend-testing-stack.md]
 related_docs: [frontend-architecture.md,backend-architecture.md,../workflows/frontend-testing.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 8760d286-04f0-46c1-b7fa-6a5a0f4d91dd
+  identifier: MEDCONNECT-33
 ---
 
 # QA-001 — Test foundation

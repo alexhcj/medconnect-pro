@@ -10,8 +10,8 @@ dependencies: []
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md,../contracts/api-endpoints.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 40a213f2-d30a-4016-8fd2-41eda15c5228
+  identifier: MEDCONNECT-20
 ---
 
 # FE-001 — Dashboard shell

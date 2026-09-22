@@ -10,8 +10,8 @@ dependencies: [SEC-001,SEC-002,BE-003]
 related_adrs: [ADR-002-tenant-isolation.md,ADR-003-authentication.md]
 related_docs: [security-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: d3781561-4aca-445f-821d-188bab5230ed
+  identifier: MEDCONNECT-36
 ---
 
 # QA-004 — Authorization and tenant tests

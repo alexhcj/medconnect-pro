@@ -10,8 +10,8 @@ dependencies: [FE-002,BE-003,QA-001]
 related_adrs: [ADR-002-tenant-isolation.md]
 related_docs: [../01-product-requirements.md,../contracts/api-endpoints.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 4194b9ed-7bd1-4580-b113-0a962b1c4ab0
+  identifier: MEDCONNECT-34
 ---
 
 # QA-002 — Patient vertical-slice tests

@@ -10,8 +10,8 @@ dependencies: [FE-001, FE-010]
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md,../contracts/api-endpoints.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: e3121a3e-056b-424d-9350-a4cdcc62b66a
+  identifier: MEDCONNECT-28
 ---
 
 # FE-009 — Administration/security UI

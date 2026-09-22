@@ -17,8 +17,8 @@ related_docs:
     ../contracts/data-contracts.md,
   ]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 20af3a30-8dbd-4fe6-8c28-4a1193b7450d
+  identifier: MEDCONNECT-10
 ---
 
 # BE-001 — NestJS core platform foundation

@@ -10,8 +10,8 @@ dependencies: [BE-001,SEC-001]
 related_adrs: [ADR-002-tenant-isolation.md, ADR-010-postgresql-typeorm.md]
 related_docs: [data-architecture.md,security-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: fdd131ad-6e72-4a5e-8748-70d82aadacdd
+  identifier: MEDCONNECT-19
 ---
 
 # DATA-001 — PostgreSQL tenant model

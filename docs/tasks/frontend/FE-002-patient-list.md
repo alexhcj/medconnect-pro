@@ -10,8 +10,8 @@ dependencies: [FE-001, FE-010]
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md,../contracts/api-endpoints.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 0ab91d9c-8b6d-4b95-910b-61ced17eebb6
+  identifier: MEDCONNECT-21
 ---
 
 # FE-002 — Patient list

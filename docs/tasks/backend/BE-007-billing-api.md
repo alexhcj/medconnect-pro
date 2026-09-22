@@ -10,8 +10,8 @@ dependencies: [BE-001,DATA-001]
 related_adrs: []
 related_docs: [backend-architecture.md,../contracts/api-endpoints.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 10ca6d71-df69-4ac6-84e1-604ee2076265
+  identifier: MEDCONNECT-16
 ---
 
 # BE-007 — Billing API

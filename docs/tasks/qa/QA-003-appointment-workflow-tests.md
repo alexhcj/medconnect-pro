@@ -10,8 +10,8 @@ dependencies: [FE-005,FE-006,BE-004,QA-001]
 related_adrs: []
 related_docs: [../01-product-requirements.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 40388789-47f9-456c-b118-89ddcc7ed3b4
+  identifier: MEDCONNECT-35
 ---
 
 # QA-003 — Appointment workflow tests

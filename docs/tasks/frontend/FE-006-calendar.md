@@ -10,8 +10,8 @@ dependencies: [FE-005]
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 4e8cc0ab-c90c-4303-8337-7a1c08852146
+  identifier: MEDCONNECT-25
 ---
 
 # FE-006 — Calendar

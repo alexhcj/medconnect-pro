@@ -10,8 +10,8 @@ dependencies: [DATA-001]
 related_adrs: [ADR-002-tenant-isolation.md]
 related_docs: [security-architecture.md,data-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 265b01fc-585d-4d4d-863a-7b73ecb9b686
+  identifier: MEDCONNECT-38
 ---
 
 # SEC-002 — Tenant isolation

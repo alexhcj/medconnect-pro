@@ -10,8 +10,8 @@ dependencies: [BE-004]
 related_adrs: []
 related_docs: [backend-architecture.md,infrastructure-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 81fe6921-deaf-486a-a34d-b8cb1b4fbfaf
+  identifier: MEDCONNECT-17
 ---
 
 # BE-008 — Notification domain

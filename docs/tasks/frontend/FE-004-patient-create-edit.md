@@ -10,8 +10,8 @@ dependencies: [FE-003]
 related_adrs: []
 related_docs: [frontend-architecture.md,../contracts/data-contracts.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 03ef2931-641a-4abe-b62c-497ce6b1dd34
+  identifier: MEDCONNECT-23
 ---
 
 # FE-004 — Patient create/edit

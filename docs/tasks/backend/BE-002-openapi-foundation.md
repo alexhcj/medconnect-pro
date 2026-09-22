@@ -16,8 +16,8 @@ related_docs:
     ../contracts/data-contracts.md,
   ]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: f3207981-f6ad-4f71-9ddb-83dd68d96207
+  identifier: MEDCONNECT-11
 ---
 
 # BE-002 — OpenAPI foundation

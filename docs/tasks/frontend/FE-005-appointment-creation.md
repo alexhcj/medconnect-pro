@@ -10,8 +10,8 @@ dependencies: [FE-003]
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: ac5f0fce-73d3-48f8-b312-4436299fb6e7
+  identifier: MEDCONNECT-24
 ---
 
 # FE-005 — Appointment creation

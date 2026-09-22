@@ -10,8 +10,8 @@ dependencies: [BE-001, DATA-001, BE-009]
 related_adrs: [ADR-002-tenant-isolation.md]
 related_docs: [backend-architecture.md,../contracts/api-endpoints.md,../contracts/data-contracts.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 81cc51a8-20ac-4dd4-afc6-a80a41ee3b1e
+  identifier: MEDCONNECT-12
 ---
 
 # BE-003 — Patient API

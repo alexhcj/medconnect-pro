@@ -10,8 +10,8 @@ dependencies: [FE-001]
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md,../contracts/api-endpoints.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: cc6bd0e7-346b-493a-8fc4-2992ea4a3067
+  identifier: MEDCONNECT-27
 ---
 
 # FE-008 — Billing dashboard

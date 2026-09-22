@@ -29,6 +29,8 @@ function loadLocalEnv() {
 loadLocalEnv();
 
 const API_BASE_URL = process.env.PLANE_API_BASE_URL || "https://api.plane.so";
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+let resolvedProjectId;
 
 function required(name) {
   const value = process.env[name];
@@ -62,12 +64,70 @@ export async function planeRequest(path, options = {}) {
   }
 
   if (!response.ok) {
-    throw new Error(
+    const error = new Error(
       `Plane API ${response.status} ${response.statusText}: ${JSON.stringify(body)}`
     );
+    error.status = response.status;
+    error.body = body;
+    throw error;
   }
 
   return body;
+}
+
+function projectBase() {
+  return `/api/v1/workspaces/${encodeURIComponent(workspace())}/projects/${encodeURIComponent(projectId())}`;
+}
+
+export async function resolveProjectId() {
+  const configured = required("PLANE_PROJECT_ID");
+  if (UUID.test(configured)) {
+    resolvedProjectId = configured;
+    return configured;
+  }
+
+  const body = await planeRequest(
+    `/api/v1/workspaces/${encodeURIComponent(workspace())}/projects/?per_page=100`
+  );
+  const projects = Array.isArray(body) ? body : (body?.results ?? []);
+  const needle = configured.toLowerCase();
+  const match = projects.find((project) =>
+    [project.id, project.identifier, project.name].some(
+      (value) => String(value ?? "").toLowerCase() === needle
+    )
+  );
+
+  if (!match) {
+    const known = projects.map((project) => `${project.identifier || project.name}`).join(", ") || "none";
+    throw new Error(`No Plane project matching "${configured}". Known projects: ${known}`);
+  }
+
+  resolvedProjectId = match.id;
+  return match.id;
+}
+
+export async function getProject() {
+  return planeRequest(`${projectBase()}/`);
+}
+
+export async function listStates() {
+  const body = await planeRequest(`${projectBase()}/states/?per_page=100`);
+  if (Array.isArray(body)) return body;
+  return body?.results ?? [];
+}
+
+export async function createWorkItem(payload) {
+  return planeRequest(`${projectBase()}/work-items/`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateWorkItem(workItemId, payload) {
+  return planeRequest(`${projectBase()}/work-items/${encodeURIComponent(workItemId)}/`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 }
 
 export function workspace() {
@@ -75,5 +135,5 @@ export function workspace() {
 }
 
 export function projectId() {
-  return required("PLANE_PROJECT_ID");
+  return resolvedProjectId || required("PLANE_PROJECT_ID");
 }

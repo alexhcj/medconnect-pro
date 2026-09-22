@@ -17,8 +17,8 @@ related_docs:
     ../roadmap/release-roadmap.md,
   ]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: f8f3b589-5e21-4358-80c5-2b7bd4742b71
+  identifier: MEDCONNECT-29
 ---
 
 # FE-010 — Mock authentication UI and session gate

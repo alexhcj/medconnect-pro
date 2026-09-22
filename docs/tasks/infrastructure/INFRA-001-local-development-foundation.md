@@ -10,8 +10,8 @@ dependencies: []
 related_adrs: [ADR-006, ADR-009]
 related_docs: [infrastructure-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 3a67012a-1379-49be-9778-e8995ca2442c
+  identifier: MEDCONNECT-30
 ---
 
 # INFRA-001 — Local development foundation

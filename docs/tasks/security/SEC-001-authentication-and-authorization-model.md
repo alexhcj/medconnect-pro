@@ -10,8 +10,8 @@ dependencies: []
 related_adrs: [ADR-003-authentication.md]
 related_docs: [security-architecture.md,../00-project-spec.md,../contracts/identity-and-access.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 0176848b-5f5c-44ae-9ed5-387b9d88b166
+  identifier: MEDCONNECT-37
 ---
 
 # SEC-001 — Authentication and authorization model

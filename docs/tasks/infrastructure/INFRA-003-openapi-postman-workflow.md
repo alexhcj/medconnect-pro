@@ -16,8 +16,8 @@ related_docs:
     ../contracts/data-contracts.md,
   ]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 0c5f30e7-7811-446d-aa40-42ae443993c5
+  identifier: MEDCONNECT-32
 ---
 
 # INFRA-003 — OpenAPI, Postman, and Swagger workflow

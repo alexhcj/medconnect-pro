@@ -1,44 +1,35 @@
 /**
- * Plane task synchronizer.
+ * Push repository task specs to Plane work items.
  *
- * This intentionally keeps the repository task format independent of Plane's internal API model.
- * The endpoint paths/fields should be verified against the current Plane API docs when first
- * connecting the project because Plane API versions and workspace configuration can evolve.
+ * Creates missing items in the project Backlog state. Later runs update title,
+ * description, and priority only, so cards moved by hand stay where they are.
  *
  * Usage:
  *   npm run plane:sync
- *   node scripts/plane/sync-tasks.mjs --dry-run
+ *   npm run plane:sync:dry
  */
 
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import { planeRequest, workspace, projectId } from "./plane-client.mjs";
+import {
+  createWorkItem,
+  getProject,
+  listStates,
+  projectId,
+  resolveProjectId,
+  updateWorkItem,
+  workspace,
+} from "./plane-client.mjs";
+import {
+  displayIdentifier,
+  parseTaskSource,
+  workItemContent,
+  writePlaneMapping,
+} from "./task-format.mjs";
 
 const ROOT = path.resolve("docs/tasks");
 const dryRun = process.argv.includes("--dry-run");
-
-function parseFrontMatter(source) {
-  if (!source.startsWith("---")) return null;
-  const end = source.indexOf("\n---", 3);
-  if (end === -1) throw new Error("Invalid front matter");
-
-  const raw = source.slice(3, end).trim();
-  const body = source.slice(end + 4).trim();
-
-  // Deliberately minimal parser for the controlled task schema.
-  // Replace with a YAML package if the schema grows beyond simple scalar/list/object metadata.
-  const data = {};
-  for (const line of raw.split(/\r?\n/)) {
-    if (!line.trim() || line.trim().startsWith("#")) continue;
-    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (!match) continue;
-    const [, key, value] = match;
-    data[key] = value.replace(/^['"]|['"]$/g, "");
-  }
-
-  return { data, body };
-}
 
 async function walk(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -53,68 +44,116 @@ async function walk(dir) {
   return result;
 }
 
-function taskPayload(task, body) {
-  return {
-    name: `${task.id} — ${task.title || task.id}`,
-    description_html: body.replaceAll("\n", "<br />"),
-    priority: task.priority || "medium",
-  };
+async function loadTasks() {
+  const tasks = [];
+
+  for (const file of await walk(ROOT)) {
+    const source = await fs.readFile(file, "utf8");
+    const parsed = parseTaskSource(source);
+    if (!parsed) continue;
+    tasks.push({ file, source, ...parsed.data, ...parsed, id: parsed.data.id, priority: parsed.data.priority });
+  }
+
+  return tasks;
+}
+
+function backlogStateId(states) {
+  if (process.env.PLANE_STATE_ID_BACKLOG) {
+    const id = process.env.PLANE_STATE_ID_BACKLOG;
+    const match = states.find((state) => state.id === id);
+    return { id, name: match?.name || id };
+  }
+
+  const backlog = states.filter((state) => state.group === "backlog");
+  const chosen =
+    backlog.find((state) => state.default) ||
+    backlog.find((state) => /^backlog$/i.test(state.name)) ||
+    backlog[0];
+
+  if (chosen) return { id: chosen.id, name: chosen.name };
+
+  if (process.env.PLANE_STATE_ID_PLANNED) {
+    return { id: process.env.PLANE_STATE_ID_PLANNED, name: "configured planned state" };
+  }
+
+  const known = states.map((state) => `${state.name} (${state.group})`).join(", ") || "none";
+  throw new Error(
+    `No Backlog state found. Set PLANE_STATE_ID_BACKLOG, or add a state in the backlog group. Known states: ${known}`
+  );
+}
+
+async function persist(task, workItem, projectKey) {
+  const identifier = displayIdentifier(projectKey, workItem.sequence_id);
+  const next = writePlaneMapping(task.source, workItem.id, identifier);
+  if (next !== task.source) {
+    await fs.writeFile(task.file, next, "utf8");
+    task.source = next;
+  }
+  return identifier;
+}
+
+async function syncTask(task, backlogId) {
+  const content = workItemContent(task);
+  const existingId = task.plane.work_item_id;
+
+  if (existingId) {
+    try {
+      const updated = await updateWorkItem(existingId, content);
+      return { action: "updated", workItem: updated };
+    } catch (error) {
+      if (error.status !== 404) throw error;
+    }
+  }
+
+  try {
+    const created = await createWorkItem({ ...content, state: backlogId });
+    return { action: "created", workItem: created };
+  } catch (error) {
+    if (error.status === 409 && error.body?.id) {
+      const linked = await updateWorkItem(error.body.id, content);
+      return { action: "linked", workItem: linked };
+    }
+    throw error;
+  }
 }
 
 async function main() {
+  const tasks = await loadTasks();
+  console.log(`Discovered ${tasks.length} task files.`);
+
   if (dryRun) {
     console.log("Plane sync: DRY RUN");
     console.log(`Workspace: ${workspace()}`);
     console.log(`Project: ${projectId()}`);
-  }
-
-  const files = await walk(ROOT);
-  const tasks = [];
-
-  for (const file of files) {
-    const source = await fs.readFile(file, "utf8");
-    const parsed = parseFrontMatter(source);
-    if (!parsed?.data?.id) continue;
-
-    tasks.push({
-      file,
-      ...parsed.data,
-      title: source.match(/^#\s+(.+)$/m)?.[1]?.replace(/^.+?\s+—\s+/, "") || parsed.data.id,
-      body: parsed.body,
-    });
-  }
-
-  console.log(`Discovered ${tasks.length} task files.`);
-
-  if (dryRun) {
     for (const task of tasks) {
-      console.log(`- ${task.id}: ${task.file}`);
+      const action = task.plane.work_item_id ? "update" : "create in Backlog";
+      console.log(`- ${task.id}: ${action} (${task.file})`);
     }
     return;
   }
 
-  /*
-   * IMPORTANT:
-   * The exact create/update endpoint and payload should be confirmed against the Plane workspace
-   * API documentation before the first live run. This avoids hard-coding an outdated endpoint.
-   *
-   * Recommended implementation:
-   *
-   * POST /api/v1/workspaces/{workspace_slug}/projects/{project_id}/work-items/
-   * PATCH /api/v1/workspaces/{workspace_slug}/projects/{project_id}/work-items/{work_item_id}/
-   *
-   * Map Plane state/label IDs from environment variables rather than embedding them in tasks.
-   */
+  await resolveProjectId();
+  const [project, states] = await Promise.all([getProject(), listStates()]);
+  const backlog = backlogStateId(states);
+  const projectKey = project.identifier || null;
+  console.log(`Backlog state: ${backlog.name}`);
+
+  const counts = { created: 0, updated: 0, linked: 0 };
 
   for (const task of tasks) {
-    console.log(`Would synchronize ${task.id}`);
-    // Live create/update implementation belongs here after workspace-specific IDs are configured.
+    const { action, workItem } = await syncTask(task, backlog.id);
+    const identifier = await persist(task, workItem, projectKey);
+    counts[action] += 1;
+    console.log(`${action} ${task.id} → ${identifier || workItem.id}`);
   }
 
-  console.log("Plane sync completed.");
+  console.log(
+    `Plane sync completed. created ${counts.created}, linked ${counts.linked}, updated ${counts.updated}.`
+  );
 }
 
 main().catch((error) => {
-  console.error(error);
+  const cause = error.cause?.code || error.cause?.message;
+  console.error(cause ? `${error.message} (${cause})` : error.message);
   process.exitCode = 1;
 });

@@ -10,8 +10,8 @@ dependencies: [BE-003,DATA-001]
 related_adrs: []
 related_docs: [security-architecture.md,data-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 133d7958-36f5-4932-9055-8f678a4a09d4
+  identifier: MEDCONNECT-40
 ---
 
 # SEC-004 — Document access control

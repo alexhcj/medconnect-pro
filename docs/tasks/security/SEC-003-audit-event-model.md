@@ -10,8 +10,8 @@ dependencies: [BE-001,DATA-001]
 related_adrs: []
 related_docs: [security-architecture.md,data-architecture.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: efc0785f-89d1-4e78-95b7-247c2b9b64ad
+  identifier: MEDCONNECT-39
 ---
 
 # SEC-003 — Audit event model

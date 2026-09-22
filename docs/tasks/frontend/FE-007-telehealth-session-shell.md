@@ -10,8 +10,8 @@ dependencies: [FE-005]
 related_adrs: []
 related_docs: [frontend-architecture.md,../01-product-requirements.md,../contracts/api-endpoints.md]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 77c97f7a-4104-45bf-b7ba-fbe7307e5047
+  identifier: MEDCONNECT-26
 ---
 
 # FE-007 — Telehealth session shell
