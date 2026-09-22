@@ -32,10 +32,26 @@ async function withMock<T>(work: () => T, errorMessage: string): Promise<T> {
 	return work();
 }
 
-function paginatePatients(query?: string, pageParam?: string | number) {
+type PatientStatusFilter = 'active' | 'inactive' | 'all';
+type PatientNameSort = 'name-asc' | 'name-desc';
+
+function compareByName(a: Patient, b: Patient, direction: 1 | -1) {
+	const last = a.lastName.localeCompare(b.lastName, 'en');
+	if (last !== 0) {
+		return last * direction;
+	}
+	return a.firstName.localeCompare(b.firstName, 'en') * direction;
+}
+
+function paginatePatients(
+	query?: string,
+	pageParam?: string | number,
+	status?: PatientStatusFilter,
+	sort?: PatientNameSort,
+) {
 	const page = Number(pageParam ?? 1) || 1;
 	const normalized = query?.trim().toLowerCase() ?? '';
-	const filtered = normalized
+	let filtered = normalized
 		? patients.filter((patient) => {
 			const haystack = [
 				patient.firstName,
@@ -48,7 +64,16 @@ function paginatePatients(query?: string, pageParam?: string | number) {
 				.toLowerCase();
 			return haystack.includes(normalized);
 		})
-		: patients;
+		: patients.slice();
+
+	if (status && status !== 'all') {
+		filtered = filtered.filter((patient) => patient.status === status);
+	}
+
+	if (sort === 'name-asc' || sort === 'name-desc') {
+		const direction = sort === 'name-desc' ? -1 : 1;
+		filtered = [...filtered].sort((a, b) => compareByName(a, b, direction));
+	}
 
 	const start = (page - 1) * PAGE_SIZE;
 	const slice = filtered.slice(start, start + PAGE_SIZE);
@@ -70,11 +95,29 @@ function requirePatient(patientId: string): Patient {
 }
 
 export const medicalMockAPI = {
-	listPatients: async ({pageParam, query}: {pageParam?: string | number; query?: string} = {}) =>
-		withMock(() => paginatePatients(query, pageParam), 'Mock: Failed to list patients'),
+	listPatients: async ({
+		pageParam,
+		query,
+		status,
+		sort,
+	}: {
+		pageParam?: string | number;
+		query?: string;
+		status?: PatientStatusFilter;
+		sort?: PatientNameSort;
+	} = {}) => withMock(() => paginatePatients(query, pageParam, status, sort), 'Mock: Failed to list patients'),
 
-	searchPatients: async ({pageParam, query}: {pageParam?: string | number; query?: string}) =>
-		withMock(() => paginatePatients(query, pageParam), 'Mock: Failed to search patients'),
+	searchPatients: async ({
+		pageParam,
+		query,
+		status,
+		sort,
+	}: {
+		pageParam?: string | number;
+		query?: string;
+		status?: PatientStatusFilter;
+		sort?: PatientNameSort;
+	}) => withMock(() => paginatePatients(query, pageParam, status, sort), 'Mock: Failed to search patients'),
 
 	getPatient: async (patientId: string): Promise<Patient> =>
 		withMock(() => requirePatient(patientId), 'Mock: Failed to fetch patient'),

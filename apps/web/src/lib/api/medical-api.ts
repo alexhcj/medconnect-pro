@@ -9,9 +9,15 @@ import {apiFetch} from '@/lib/api/http';
 import {medicalMockAPI} from '@/lib/api/mocks/medical-mock';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 
+export type PatientStatusFilter = 'active' | 'inactive' | 'all';
+
+export type PatientNameSort = 'name-asc' | 'name-desc';
+
 export interface PatientSearchParams {
 	pageParam?: string | number;
 	query?: string;
+	status?: PatientStatusFilter;
+	sort?: PatientNameSort;
 }
 
 export interface PatientSearchResult {
@@ -21,9 +27,11 @@ export interface PatientSearchResult {
 }
 
 const medicalRealAPI = {
-	listPatients: async ({pageParam, query}: PatientSearchParams = {}): Promise<PatientSearchResult> => {
+	listPatients: async ({pageParam, query, status, sort}: PatientSearchParams = {}): Promise<PatientSearchResult> => {
 		const params = new URLSearchParams();
 		if (query) params.set('q', query);
+		if (status && status !== 'all') params.set('status', status);
+		if (sort) params.set('sort', sort);
 		if (pageParam !== undefined) params.set('page', String(pageParam));
 		const suffix = params.toString() ? `?${params.toString()}` : '';
 		try {

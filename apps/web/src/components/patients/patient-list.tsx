@@ -1,139 +1,152 @@
-'use client'
+'use client';
 
-import {useState} from 'react'
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Calendar, Mail, MoreHorizontal, Phone, Plus, Search} from 'lucide-react'
+import {useEffect, useState} from 'react';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardHeader} from '@/components/ui/card';
+import {Input} from '@/components/ui/input';
+import {PatientNameSort, PatientStatusFilter} from '@/lib/api/medical-api';
+import {usePatientSearch} from '@/lib/hooks/use-medical';
+import {Patient} from '@/types/medical/patient';
 
-interface Patient {
-	id: string
-	firstName: string
-	lastName: string
-	email: string
-	phone: string
-	dateOfBirth: string
-	lastVisit: string
-	status: 'active' | 'inactive' | 'new'
-	avatar?: string
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+	const [debounced, setDebounced] = useState(value);
+
+	useEffect(() => {
+		const timeoutId = window.setTimeout(() => setDebounced(value), delayMs);
+		return () => window.clearTimeout(timeoutId);
+	}, [value, delayMs]);
+
+	return debounced;
+}
+
+function statusLabel(status: Patient['status']) {
+	return status === 'active' ? 'Active' : 'Inactive';
 }
 
 const PatientList = () => {
-	const [searchTerm, setSearchTerm] = useState('')
-	const [patients] = useState<Patient[]>([
-		{
-			id: '1',
-			firstName: 'John',
-			lastName: 'Doe',
-			email: 'john.doe@email.com',
-			phone: '+1 (555) 123-4567',
-			dateOfBirth: '1985-03-15',
-			lastVisit: '2024-01-15',
-			status: 'active'
-		},
-		{
-			id: '2',
-			firstName: 'Jane',
-			lastName: 'Smith',
-			email: 'jane.smith@email.com',
-			phone: '+1 (555) 987-6543',
-			dateOfBirth: '1990-07-22',
-			lastVisit: '2024-01-10',
-			status: 'new'
-		}
-	])
+	const [searchTerm, setSearchTerm] = useState('');
+	const [status, setStatus] = useState<PatientStatusFilter>('all');
+	const [sort, setSort] = useState<PatientNameSort>('name-asc');
+	const debouncedQuery = useDebouncedValue(searchTerm, 300);
+	const {
+		data,
+		isPending,
+		isError,
+		refetch,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = usePatientSearch({query: debouncedQuery, status, sort});
 
-	const getStatusColor = (status: Patient['status']) => {
-		switch (status) {
-			case 'active':
-				return 'bg-green-100 text-green-800'
-			case 'inactive':
-				return 'bg-gray-100 text-gray-800'
-			case 'new':
-				return 'bg-blue-100 text-blue-800'
-			default:
-				return 'bg-gray-100 text-gray-800'
-		}
-	}
-
-	const filteredPatients = patients.filter(patient =>
-		`${patient.firstName} ${patient.lastName}`
-			.toLowerCase()
-			.includes(searchTerm.toLowerCase()) ||
-		patient.email.toLowerCase().includes(searchTerm.toLowerCase())
-	)
+	const patients = data?.pages.flatMap((page) => page.patients) ?? [];
 
 	return (
 		<Card>
 			<CardHeader>
-				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-					<CardTitle>Patients</CardTitle>
-					<div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-						<div className="relative">
-							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"/>
-							<Input
-								placeholder="Search patients..."
-								value={searchTerm}
-								onChange={(e) => setSearchTerm(e.target.value)}
-								className="pl-10 w-full sm:w-64"
-							/>
-						</div>
-						<Button>
-							<Plus className="h-4 w-4 mr-2"/>
-							Add Patient
-						</Button>
+				<div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="sm:col-span-2 lg:col-span-1">
+						<label htmlFor="patient-search" className="mb-2 block text-sm font-medium text-gray-700">
+							Search patients
+						</label>
+						<Input
+							id="patient-search"
+							type="search"
+							placeholder="Name, email, phone, or ID"
+							value={searchTerm}
+							onChange={(event) => setSearchTerm(event.target.value)}
+						/>
+					</div>
+					<div>
+						<label htmlFor="patient-status" className="mb-2 block text-sm font-medium text-gray-700">
+							Status
+						</label>
+						<select
+							id="patient-status"
+							value={status}
+							onChange={(event) => setStatus(event.target.value as PatientStatusFilter)}
+							className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+						>
+							<option value="all">All statuses</option>
+							<option value="active">Active</option>
+							<option value="inactive">Inactive</option>
+						</select>
+					</div>
+					<div>
+						<label htmlFor="patient-sort" className="mb-2 block text-sm font-medium text-gray-700">
+							Sort by name
+						</label>
+						<select
+							id="patient-sort"
+							value={sort}
+							onChange={(event) => setSort(event.target.value as PatientNameSort)}
+							className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+						>
+							<option value="name-asc">Last name A–Z</option>
+							<option value="name-desc">Last name Z–A</option>
+						</select>
 					</div>
 				</div>
 			</CardHeader>
 			<CardContent>
-				<div className="space-y-4">
-					{filteredPatients.map((patient) => (
-						<div
-							key={patient.id}
-							className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-						>
-							<div className="flex items-center space-x-4">
-								<div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-medium">
-                    {patient.firstName[0]}{patient.lastName[0]}
-                  </span>
-								</div>
+				{isPending && (
+					<div className="space-y-3" aria-busy="true">
+						<div className="h-20 animate-pulse rounded-lg bg-gray-200" />
+						<div className="h-20 animate-pulse rounded-lg bg-gray-200" />
+						<div className="h-20 animate-pulse rounded-lg bg-gray-200" />
+						<span className="sr-only">Loading patients</span>
+					</div>
+				)}
+
+				{isError && (
+					<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
+						<p className="text-sm text-gray-700">Unable to load patients.</p>
+						<Button type="button" className="mt-3" variant="outline" onClick={() => refetch()}>
+							Retry
+						</Button>
+					</div>
+				)}
+
+				{!isPending && !isError && patients.length === 0 && (
+					<p className="text-sm text-gray-600">No patients match your search.</p>
+				)}
+
+				{!isPending && !isError && patients.length > 0 && (
+					<ul className="space-y-3" aria-label="Patients">
+						{patients.map((patient) => (
+							<li
+								key={patient.id}
+								className="flex flex-col gap-3 rounded-lg border border-gray-200 p-4 md:flex-row md:items-center md:justify-between"
+							>
 								<div>
-									<h3 className="font-medium text-gray-900">
+									<p className="font-medium text-gray-900">
 										{patient.firstName} {patient.lastName}
-									</h3>
-									<div className="flex items-center space-x-4 text-sm text-gray-500">
-										<div className="flex items-center">
-											<Mail className="h-3 w-3 mr-1"/>
-											{patient.email}
-										</div>
-										<div className="flex items-center">
-											<Phone className="h-3 w-3 mr-1"/>
-											{patient.phone}
-										</div>
-									</div>
+									</p>
+									<p className="mt-1 text-sm text-gray-700">{statusLabel(patient.status)}</p>
 								</div>
-							</div>
-							<div className="flex items-center space-x-4">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(patient.status)}`}>
-                  {patient.status}
-                </span>
-								<div className="text-sm text-gray-500">
-									<div className="flex items-center">
-										<Calendar className="h-3 w-3 mr-1"/>
-										Last visit: {new Date(patient.lastVisit).toLocaleDateString()}
-									</div>
+								<div className="flex flex-col gap-1 text-sm text-gray-600 sm:flex-row sm:gap-4">
+									<span>{patient.email}</span>
+									<span>{patient.phone}</span>
 								</div>
-								<Button variant="ghost" size="icon">
-									<MoreHorizontal className="h-4 w-4"/>
-								</Button>
-							</div>
-						</div>
-					))}
-				</div>
+							</li>
+						))}
+					</ul>
+				)}
+
+				{!isPending && !isError && hasNextPage && (
+					<div className="mt-4">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => fetchNextPage()}
+							disabled={isFetchingNextPage}
+						>
+							{isFetchingNextPage ? 'Loading more patients' : 'Load more'}
+						</Button>
+					</div>
+				)}
 			</CardContent>
 		</Card>
-	)
-}
+	);
+};
 
-export {PatientList}
+export {PatientList};

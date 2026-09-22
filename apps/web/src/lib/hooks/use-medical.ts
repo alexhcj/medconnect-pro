@@ -1,8 +1,14 @@
 import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-hot-toast';
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {medicalAPI} from '@/lib/api/medical-api';
+import {medicalAPI, PatientNameSort, PatientStatusFilter} from '@/lib/api/medical-api';
 import {Patient} from '@/types/medical/patient';
+
+export interface PatientSearchInput {
+	query?: string;
+	status?: PatientStatusFilter;
+	sort?: PatientNameSort;
+}
 
 export function usePatient(patientId: string) {
 	return useQuery({
@@ -14,10 +20,10 @@ export function usePatient(patientId: string) {
 	});
 }
 
-export function usePatientSearch(query = '') {
+export function usePatientSearch({query = '', status = 'all', sort = 'name-asc'}: PatientSearchInput = {}) {
 	return useInfiniteQuery({
-		queryKey: ['patients', 'search', query],
-		queryFn: ({pageParam}) => medicalAPI.searchPatients({pageParam, query}),
+		queryKey: ['patients', 'search', query, status, sort],
+		queryFn: ({pageParam}) => medicalAPI.searchPatients({pageParam, query, status, sort}),
 		initialPageParam: 1,
 		getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextPage : undefined),
 		staleTime: 2 * 60 * 1000,

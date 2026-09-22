@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.19.0] - 2026-09-22
+
+### Added
+
+- Searchable, filterable patient list on `/dashboard/patients` (FE-002), backed by the synthetic mock patient fixtures with status filter, last-name sort, load more, and loading, empty, and error states.
+
 ## [0.18.0] - 2026-09-22
 
 ### Added

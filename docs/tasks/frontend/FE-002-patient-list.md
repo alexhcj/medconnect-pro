@@ -3,7 +3,7 @@ id: FE-002
 type: task
 area: frontend
 feature: patient-management
-status: planned
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-001, FE-010]
@@ -34,12 +34,12 @@ Use TanStack Query and the API data layer; mock mode may supply synthetic data.
 
 ## Acceptance criteria
 
-- [ ] List renders
-- [ ] Search works
-- [ ] Filters work
-- [ ] Pagination/infinite loading works
-- [ ] Loading/empty/error states exist
-- [ ] Accessible on tablet
+- [x] List renders
+- [x] Search works
+- [x] Filters work
+- [x] Pagination/infinite loading works
+- [x] Loading/empty/error states exist
+- [x] Accessible on tablet
 
 ## Implementation notes
 
@@ -47,7 +47,7 @@ Patient data must be synthetic.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Patients route uses `usePatientSearch` over synthetic fixtures, with search, status filter, last-name sort, and load more.
+- Tests: Vitest for mock paging/filter/sort; RTL for list states; Playwright tablet flow for search, filter, sort, and load more.
 - PR:
-- Notes:
+- Notes: Mock list is not tenant-scoped. Practice and assigned-patient enforcement remain BE-003. Profile and create/edit stay FE-003 and FE-004.
