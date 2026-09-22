@@ -7,6 +7,14 @@ import {
 	type ExceptionFilter,
 } from '@nestjs/common';
 import type {Request, Response} from 'express';
+import {
+	InvalidCredentialsError,
+	MembershipUnresolvedError,
+	MfaInvalidError,
+	PermissionDeniedError,
+	SessionInvalidError,
+} from '../identity/auth.errors.js';
+import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {getCorrelationId} from './correlation.js';
 import {
 	isErrorBody,
@@ -34,6 +42,11 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 		exception: unknown,
 		correlationId: string,
 	): {status: number; error: ErrorBody} {
+		const domain = this.fromDomainError(exception);
+		if (domain) {
+			return domain;
+		}
+
 		if (exception instanceof HttpException) {
 			return this.fromHttpException(exception);
 		}
@@ -46,6 +59,48 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 				message: 'An unexpected error occurred',
 			},
 		};
+	}
+
+	private fromDomainError(exception: unknown): {status: number; error: ErrorBody} | undefined {
+		if (exception instanceof InvalidCredentialsError) {
+			return this.authError(HttpStatus.UNAUTHORIZED, 'UNAUTHENTICATED', 'Invalid email or password');
+		}
+		if (exception instanceof SessionInvalidError) {
+			return this.authError(HttpStatus.UNAUTHORIZED, 'UNAUTHENTICATED', 'Authentication is required');
+		}
+		if (exception instanceof MfaInvalidError) {
+			return this.authError(HttpStatus.UNAUTHORIZED, 'UNAUTHENTICATED', 'MFA verification failed');
+		}
+		if (exception instanceof TenantMismatchError) {
+			return this.authError(
+				HttpStatus.FORBIDDEN,
+				'FORBIDDEN',
+				'Client-supplied practice id is not authorized',
+			);
+		}
+		if (exception instanceof MembershipUnresolvedError) {
+			return this.authError(
+				HttpStatus.FORBIDDEN,
+				'FORBIDDEN',
+				'A practice membership could not be resolved',
+			);
+		}
+		if (exception instanceof PermissionDeniedError) {
+			return this.authError(
+				HttpStatus.FORBIDDEN,
+				'FORBIDDEN',
+				'You do not have permission to perform this action',
+			);
+		}
+		return undefined;
+	}
+
+	private authError(
+		status: number,
+		code: string,
+		message: string,
+	): {status: number; error: ErrorBody} {
+		return {status, error: {code, message}};
 	}
 
 	private fromHttpException(exception: HttpException): {
@@ -86,6 +141,12 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 		}
 		if (status === HttpStatus.NOT_FOUND) {
 			return 'NOT_FOUND';
+		}
+		if (status === HttpStatus.UNAUTHORIZED) {
+			return 'UNAUTHENTICATED';
+		}
+		if (status === HttpStatus.FORBIDDEN) {
+			return 'FORBIDDEN';
 		}
 		if (status >= 500) {
 			return 'INTERNAL_ERROR';

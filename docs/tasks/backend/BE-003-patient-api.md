@@ -53,4 +53,4 @@ ships. Frontend patient mocks (FE-002+) may proceed after FE-010.
 - Implementation:
 - Tests:
 - PR:
-- Notes: Blocked on BE-009 for role/resource authorization.
+- Notes: BE-009 identity HTTP has shipped. Role and resource authorization can use those guards.

@@ -44,8 +44,17 @@ describe('OpenAPI contract', () => {
 		const document = response.body as OpenAPIObject;
 		validateOpenApiDocument(document);
 		expect(document.info.title).toBe('MedConnect Pro API');
+		expect(document.paths?.['/health']?.get?.security).toBeUndefined();
+		expect(document.paths?.['/ready']?.get?.security).toBeUndefined();
+		expect(document.paths?.['/auth/login']?.post?.security).toBeUndefined();
+		expect(document.paths?.['/auth/refresh']?.post?.security).toBeUndefined();
+		expect(document.paths?.['/auth/mfa/verify']?.post?.security).toBeUndefined();
+		expect(document.paths?.['/auth/logout']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/auth/logout-all']?.post?.security).toEqual([{bearer: []}]);
 		expect(document.paths).not.toHaveProperty('/patients');
 		expect(document.paths).not.toHaveProperty('/__test/validate');
+		expect(document.paths).not.toHaveProperty('/__test/authz');
+		expect(JSON.stringify(document)).not.toMatch(/Demo-Admin-1|Demo-Mfa-1|135790/);
 		expect(JSON.stringify(document)).not.toMatch(/eyJ[A-Za-z0-9_-]+\.|sk_live|BEGIN PRIVATE KEY/);
 		const committed = loadCommittedSpec();
 		expect(document.paths).toEqual(committed.paths);

@@ -1,6 +1,7 @@
 import {Module, type MiddlewareConsumer, type NestModule} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {HealthModule} from './health/health.module.js';
+import {IdentityModule} from './identity/identity.module.js';
 import {PersistenceModule} from './persistence/persistence.module.js';
 import {CorrelationIdMiddleware} from './platform/correlation.middleware.js';
 import {envSchema} from './platform/env.schema.js';
@@ -17,6 +18,7 @@ import {TenancyModule} from './tenancy/tenant.module.js';
 		PersistenceModule,
 		TenancyModule,
 		PracticeModule,
+		IdentityModule,
 		HealthModule,
 	],
 })

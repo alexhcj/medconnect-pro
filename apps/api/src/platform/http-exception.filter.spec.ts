@@ -1,5 +1,7 @@
 import {BadRequestException, HttpStatus, InternalServerErrorException} from '@nestjs/common';
 import {describe, expect, it} from 'vitest';
+import {InvalidCredentialsError, PermissionDeniedError} from '../identity/auth.errors.js';
+import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {EnvelopeExceptionFilter} from './http-exception.filter.js';
 import type {ErrorEnvelope} from './error-envelope.js';
 
@@ -78,5 +80,28 @@ describe('EnvelopeExceptionFilter', () => {
 		expect(result.body.error.code).toBe('INTERNAL_ERROR');
 		expect(result.body.error.message).toBe('An unexpected error occurred');
 		expect(JSON.stringify(result.body)).not.toContain('secret');
+	});
+
+	it('maps credential and permission failures to safe auth envelopes', () => {
+		const unauthenticated = createHost('cid-auth');
+		filter.catch(new InvalidCredentialsError(), unauthenticated.host);
+		expect(unauthenticated.getResult().statusCode).toBe(HttpStatus.UNAUTHORIZED);
+		expect(unauthenticated.getResult().body.error).toEqual({
+			code: 'UNAUTHENTICATED',
+			message: 'Invalid email or password',
+		});
+
+		const forbidden = createHost('cid-forbidden');
+		filter.catch(new PermissionDeniedError(), forbidden.host);
+		expect(forbidden.getResult().statusCode).toBe(HttpStatus.FORBIDDEN);
+		expect(forbidden.getResult().body.error.code).toBe('FORBIDDEN');
+
+		const mismatch = createHost('cid-tenant');
+		filter.catch(new TenantMismatchError(), mismatch.host);
+		expect(mismatch.getResult().statusCode).toBe(HttpStatus.FORBIDDEN);
+		expect(mismatch.getResult().body.error.message).toBe(
+			'Client-supplied practice id is not authorized',
+		);
+		expect(JSON.stringify(mismatch.getResult().body)).not.toMatch(/stack|[0-9a-f]{8}-/i);
 	});
 });

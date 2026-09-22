@@ -26,5 +26,7 @@ ORM, which keeps persistence inside the modular Nest application without a secon
 ## Consequences
 
 - Local Postgres is provided by Docker Compose for development and API tests.
-- Identity HTTP/OAuth is not required for tenant scoping; tests inject `TenantContext`.
+- HTTP requests resolve `TenantContext` from practice memberships
+  ([BE-009](../tasks/backend/BE-009-identity-and-access-http.md)). Repository tests may still inject
+  `TenantContext`. Production OAuth is not required for that scoping.
 - Cache keys and object-storage paths remain future work with those stores.

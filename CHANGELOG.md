@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.17.0] - 2026-09-22
+
+### Added
+
+- NestJS mock identity HTTP (`POST /auth/login`, refresh, logout, logout-all, and MFA verify) with
+  opaque bearer sessions resolved from practice memberships.
+
+### Changed
+
+- OpenAPI Bearer auth describes those opaque mock access tokens. Logout requires a bearer token.
+  Health and readiness stay unauthenticated.
+
 ## [0.16.0] - 2026-09-22
 
 ### Added

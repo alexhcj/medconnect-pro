@@ -101,8 +101,9 @@ to Bearer Token and the token value to `{{accessToken}}`.
 
 Do not weaken backend authentication to make Postman easier. Do not commit tokens.
 
-Obtain a token from the real auth flow once it exists. Until identity is implemented on NestJS,
-protected domain routes are not available; platform health/readiness do not require a token.
+Obtain a bearer token from the mock IdP stand-in (`POST /auth/login` on the Nest API) or, later,
+from the OAuth authorization-code flow. Do not commit it. Platform health and readiness do not
+require a token. Protected routes, including logout, require `Authorization: Bearer`.
 
 ### Import and update
 

@@ -48,9 +48,9 @@ export function createOpenApiDocument(app: INestApplication): OpenAPIObject {
 			{
 				type: 'http',
 				scheme: 'bearer',
-				bearerFormat: 'JWT',
+				bearerFormat: 'Opaque',
 				description:
-					'OAuth 2.0 access token (Authorization: Bearer). Platform health and readiness do not require a token. Never commit tokens.',
+					'Opaque mock access token (Authorization: Bearer). Stand-in for a future OAuth 2.0 access token, not a production IdP credential. Platform health and readiness do not require a token. Never commit tokens.',
 			},
 			'bearer',
 		)
@@ -88,11 +88,53 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 	if (!document.paths?.['/health'] || !document.paths?.['/ready']) {
 		throw new Error('OpenAPI must include /health and /ready');
 	}
-	const bearer = document.components?.securitySchemes?.bearer;
-	if (!bearer || (bearer as {type?: string}).type !== 'http') {
-		throw new Error('OpenAPI must document HTTP Bearer security');
+	const bearer = document.components?.securitySchemes?.bearer as
+		| {type?: string; bearerFormat?: string}
+		| undefined;
+	if (!bearer || bearer.type !== 'http' || bearer.bearerFormat === 'JWT') {
+		throw new Error('OpenAPI must document opaque HTTP Bearer security');
 	}
+	assertUnauthenticated(document, '/health', 'get');
+	assertUnauthenticated(document, '/ready', 'get');
+	assertUnauthenticated(document, '/auth/login', 'post');
+	assertUnauthenticated(document, '/auth/refresh', 'post');
+	assertUnauthenticated(document, '/auth/mfa/verify', 'post');
+	assertBearer(document, '/auth/logout', 'post');
+	assertBearer(document, '/auth/logout-all', 'post');
 	if (!document.components?.schemas?.ErrorEnvelope) {
 		throw new Error('OpenAPI must include the ErrorEnvelope schema');
+	}
+}
+
+type DocumentedOperation = {
+	security?: Array<Record<string, unknown>>;
+};
+
+function documentedOperation(
+	document: OpenAPIObject,
+	path: string,
+	method: string,
+): DocumentedOperation | undefined {
+	const item = document.paths?.[path] as Record<string, DocumentedOperation> | undefined;
+	return item?.[method];
+}
+
+function assertUnauthenticated(document: OpenAPIObject, path: string, method: string): void {
+	const operation = documentedOperation(document, path, method);
+	if (!operation) {
+		throw new Error(`OpenAPI must include ${method.toUpperCase()} ${path}`);
+	}
+	if (operation.security && operation.security.length > 0) {
+		throw new Error(`${method.toUpperCase()} ${path} must not require authentication`);
+	}
+}
+
+function assertBearer(document: OpenAPIObject, path: string, method: string): void {
+	const operation = documentedOperation(document, path, method);
+	const hasBearer = operation?.security?.some((requirement) =>
+		Object.prototype.hasOwnProperty.call(requirement, 'bearer'),
+	);
+	if (!hasBearer) {
+		throw new Error(`${method.toUpperCase()} ${path} must require HTTP Bearer auth`);
 	}
 }

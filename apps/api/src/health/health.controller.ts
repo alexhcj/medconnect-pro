@@ -8,11 +8,13 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import {DataSource} from 'typeorm';
+import {Public} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {HealthRdo, ReadyRdo} from './health.rdo.js';
 
 @ApiTags('platform')
 @ApiExtraModels(ErrorEnvelopeRdo)
+@Public()
 @Controller()
 export class HealthController {
 	constructor(private readonly dataSource: DataSource) {}

@@ -135,7 +135,8 @@ Clinical fields must not leak to `read:demographics`-only actors.
 
 **Frontend is not enforcement.** Navigation visibility, route segments, hidden form fields, and
 `SessionInfo.permissions` in the browser are UX hints. Authoritative checks belong on the server
-(planned NestJS Identity & Access module). QA coverage for the matrix is
+(NestJS Identity & Access module, [BE-009](../tasks/backend/BE-009-identity-and-access-http.md)).
+QA coverage for the full role × resource matrix is
 [QA-004](../tasks/qa/QA-004-authorization-and-tenant-tests.md).
 
 ## Session rules
