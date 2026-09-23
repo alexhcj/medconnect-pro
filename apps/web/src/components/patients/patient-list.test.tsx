@@ -52,6 +52,10 @@ describe('PatientList', () => {
 		expect(screen.getByLabelText('Sort by name')).toBeInTheDocument();
 		expect(screen.getByRole('list', {name: 'Patients'})).toBeInTheDocument();
 		expect(screen.getByText('Avery Carter')).toBeInTheDocument();
+		expect(screen.getByRole('link', {name: 'View profile for Avery Carter'})).toHaveAttribute(
+			'href',
+			'/dashboard/patients/demo-patient-001',
+		);
 		expect(screen.getByRole('list', {name: 'Patients'})).toHaveTextContent('Active');
 		expect(screen.getByRole('button', {name: 'Load more'})).toBeInTheDocument();
 	});

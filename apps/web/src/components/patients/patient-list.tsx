@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {useEffect, useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
@@ -122,6 +123,13 @@ const PatientList = () => {
 										{patient.firstName} {patient.lastName}
 									</p>
 									<p className="mt-1 text-sm text-gray-700">{statusLabel(patient.status)}</p>
+									<Link
+										href={`/dashboard/patients/${patient.id}`}
+										aria-label={`View profile for ${patient.firstName} ${patient.lastName}`}
+										className="mt-2 inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+									>
+										View profile
+									</Link>
 								</div>
 								<div className="flex flex-col gap-1 text-sm text-gray-600 sm:flex-row sm:gap-4">
 									<span>{patient.email}</span>

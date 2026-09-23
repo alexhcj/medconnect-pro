@@ -49,41 +49,41 @@ export function useUpdatePatient() {
 	});
 }
 
-export function usePatientHistory(patientId: string) {
+export function usePatientHistory(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'history'],
 		queryFn: () => medicalAPI.getPatientHistory(patientId),
-		enabled: !!patientId,
+		enabled: !!patientId && enabled,
 		staleTime: 3 * 60 * 1000,
 		gcTime: 10 * 60 * 1000,
 	});
 }
 
-export function usePatientVitals(patientId: string) {
+export function usePatientVitals(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'vitals'],
 		queryFn: () => medicalAPI.getPatientVitals(patientId),
-		enabled: !!patientId,
+		enabled: !!patientId && enabled,
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
 	});
 }
 
-export function usePatientMedications(patientId: string) {
+export function usePatientMedications(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'medications'],
 		queryFn: () => medicalAPI.getPatientMedications(patientId),
-		enabled: !!patientId,
+		enabled: !!patientId && enabled,
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
 	});
 }
 
-export function usePatientDocuments(patientId: string) {
+export function usePatientDocuments(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'documents'],
 		queryFn: () => medicalAPI.getPatientDocuments(patientId),
-		enabled: !!patientId,
+		enabled: !!patientId && enabled,
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
 	});

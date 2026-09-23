@@ -3,7 +3,7 @@ id: FE-003
 type: task
 area: frontend
 feature: patient-management
-status: planned
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-002]
@@ -34,10 +34,10 @@ Demographics, history, vitals, medications and documents UI boundaries.
 
 ## Acceptance criteria
 
-- [ ] Profile route exists
-- [ ] Sections are accessible
-- [ ] Sensitive sections are permission-aware
-- [ ] Loading/error states exist
+- [x] Profile route exists
+- [x] Sections are accessible
+- [x] Sensitive sections are permission-aware
+- [x] Loading/error states exist
 
 ## Implementation notes
 
@@ -45,7 +45,7 @@ Do not expose clinical data simply because mock data contains it.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Staff profile route linked from the patient list. Demographics always; history, medications, and documents require `write:medical_records`; vitals require `write:vitals`. Clinical queries stay disabled without those grants.
+- Tests: Vitest for the permission policy and profile states; Playwright tablet flow for the practice-admin demographics profile.
 - PR:
-- Notes:
+- Notes: Mock `getPatient` still returns `conditions`. The profile does not render that field. Tenant and assigned-patient enforcement remain BE-003. Create/edit remains FE-004. Document upload remains out of scope.

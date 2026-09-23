@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.20.0] - 2026-09-23
+
+### Added
+
+- Patient profile at `/dashboard/patients/[patientId]` (FE-003), with demographics for staff who can read patients and history, vitals, medications, and documents gated by clinical permissions.
+
 ## [0.19.0] - 2026-09-22
 
 ### Added
