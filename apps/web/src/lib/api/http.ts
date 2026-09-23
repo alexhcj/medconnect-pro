@@ -1,4 +1,5 @@
 import {loginUrl} from '@/lib/auth/paths';
+import {nestApiBaseUrl} from '@/lib/api/nest-api';
 
 export interface ApiErrorDetail {
 	path: string;
@@ -79,7 +80,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 	});
 
 	if (response.status === 401) {
-		if (typeof window !== 'undefined') {
+		if (typeof window !== 'undefined' && path.startsWith(nestApiBaseUrl())) {
 			window.location.href = loginUrl('unauthorized');
 		}
 		throw new ApiError('Unauthorized', 401);

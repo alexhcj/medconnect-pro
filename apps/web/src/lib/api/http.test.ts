@@ -60,4 +60,18 @@ describe('apiFetch', () => {
 			details: [{path: 'phone', message: 'Phone is required'}],
 		});
 	});
+
+	it('does not send the browser to login for a Next route 401', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: false,
+				status: 401,
+				json: async () => ({error: 'Unauthorized'}),
+			}),
+		);
+
+		await expect(apiFetch('/api/dashboard/overview')).rejects.toMatchObject({status: 401});
+		expect(window.location.pathname).not.toContain('login');
+	});
 });

@@ -2,6 +2,7 @@ import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from '@tanstack
 import {toast} from 'react-hot-toast';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {medicalAPI, PatientDemographicsInput, PatientNameSort, PatientStatusFilter} from '@/lib/api/medical-api';
+import {isMockMode} from '@/lib/api/mocks/runtime';
 import {Patient} from '@/types/medical/patient';
 
 export interface PatientSearchInput {
@@ -70,7 +71,7 @@ export function usePatientHistory(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'history'],
 		queryFn: () => medicalAPI.getPatientHistory(patientId),
-		enabled: !!patientId && enabled,
+		enabled: !!patientId && enabled && isMockMode(),
 		staleTime: 3 * 60 * 1000,
 		gcTime: 10 * 60 * 1000,
 	});
@@ -80,7 +81,7 @@ export function usePatientVitals(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'vitals'],
 		queryFn: () => medicalAPI.getPatientVitals(patientId),
-		enabled: !!patientId && enabled,
+		enabled: !!patientId && enabled && isMockMode(),
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
 	});
@@ -90,7 +91,7 @@ export function usePatientMedications(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'medications'],
 		queryFn: () => medicalAPI.getPatientMedications(patientId),
-		enabled: !!patientId && enabled,
+		enabled: !!patientId && enabled && isMockMode(),
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
 	});
@@ -100,7 +101,7 @@ export function usePatientDocuments(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'documents'],
 		queryFn: () => medicalAPI.getPatientDocuments(patientId),
-		enabled: !!patientId && enabled,
+		enabled: !!patientId && enabled && isMockMode(),
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
 	});

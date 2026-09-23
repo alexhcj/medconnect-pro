@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.24.0] - 2026-09-23
+
+### Added
+
+- Patient list, profile, create, and edit call the Nest patient API when mocks are off (FE-011), using the bearer from `POST /auth/login`. History, vitals, medications, and documents stay off that API. `npm run seed:mock-identity` also inserts a synthetic provider and demo patients. `npm run e2e:live` checks list plus create against the API; `npm run e2e` stays on mocks.
+
 ## [0.23.1] - 2026-09-23
 
 ### Added

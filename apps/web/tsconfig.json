@@ -40,6 +40,7 @@
     "vitest.setup.ts",
     "vitest-env.d.ts",
     "playwright.config.ts",
+    "playwright.live.config.ts",
     "next.config.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"

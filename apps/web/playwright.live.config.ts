@@ -1,19 +1,24 @@
+/// <reference types="node" />
 import {defineConfig, devices} from '@playwright/test';
 
+/**
+ * Non-mock browser check for FE-011.
+ * Requires Postgres, migrations, `npm run seed:mock-identity`, and the API on port 3001.
+ * The default `playwright.config.ts` suite stays on mocks and ignores this spec.
+ */
 export default defineConfig({
 	testDir: 'e2e',
-	testMatch: '**/*.spec.ts',
-	testIgnore: '**/patient-live.spec.ts',
-	fullyParallel: true,
+	testMatch: '**/patient-live.spec.ts',
+	fullyParallel: false,
 	forbidOnly: !!process.env.CI,
-	retries: process.env.CI ? 2 : 0,
-	workers: process.env.CI ? 1 : undefined,
+	retries: 0,
+	workers: 1,
 	timeout: 60_000,
 	expect: {
 		timeout: 10_000,
 	},
 	outputDir: 'test-results',
-	reporter: [['list'], ['html', {open: 'never', outputFolder: 'playwright-report'}]],
+	reporter: [['list']],
 	use: {
 		baseURL: 'http://localhost:3000',
 		trace: 'on-first-retry',
@@ -29,14 +34,12 @@ export default defineConfig({
 	webServer: {
 		command: 'npx next dev --turbopack',
 		url: 'http://localhost:3000',
-		reuseExistingServer: !process.env.CI,
+		reuseExistingServer: false,
 		timeout: 120_000,
 		env: {
 			...process.env,
-			NEXT_PUBLIC_USE_MOCKS: 'true',
-			NEXT_PUBLIC_MOCK_DELAY: '0',
-			NEXT_PUBLIC_MOCK_ERROR_RATE: '0',
-			NEXT_PUBLIC_MOCK_LOG_LEVEL: 'silent',
+			NEXT_PUBLIC_USE_MOCKS: 'false',
+			NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001',
 		},
 	},
 });

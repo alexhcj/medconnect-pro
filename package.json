@@ -1,6 +1,6 @@
 {
   "name": "medconnect-pro",
-  "version": "0.23.1",
+  "version": "0.24.0",
   "private": true,
   "engines": {
     "node": ">=24 <25",
@@ -33,6 +33,7 @@
     "e2e": "npm run e2e -w medconnect-web",
     "e2e:web": "npm run e2e -w medconnect-web",
     "e2e:mocks": "npm run e2e:mocks -w medconnect-web",
+    "e2e:live": "npm run e2e:live -w medconnect-web",
     "e2e:ui": "npm run e2e:ui -w medconnect-web",
     "dev:api": "npm run dev -w medconnect-api",
     "build:api": "npm run build -w medconnect-api",

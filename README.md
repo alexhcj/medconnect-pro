@@ -147,9 +147,11 @@ npm run dev:api
 7. Open [http://localhost:3000](http://localhost:3000).
 
 `npm run dev` starts Next.js using `.env.development` (mock-first in the example).
-`npm run dev:real` sets `NEXT_PUBLIC_USE_MOCKS=false`. When calling the Nest API from Next.js BFF
-routes, set `API_BASE_URL=http://localhost:3001` in `.env.development`. The same commands exist as
-`dev:web` aliases.
+`npm run dev:real` sets `NEXT_PUBLIC_USE_MOCKS=false`. The browser then calls Nest at
+`NEXT_PUBLIC_API_BASE_URL` (default `http://localhost:3001`) with the bearer from `POST /auth/login`.
+Seed the practice admin, provider, and demo patients with `npm run seed:mock-identity` first.
+When calling the Nest API from Next.js BFF routes, set `API_BASE_URL=http://localhost:3001` in
+`.env.development`. The same commands exist as `dev:web` aliases.
 
 ### Useful commands
 

@@ -39,8 +39,13 @@ secrets. Compose credentials are local demo values only.
 - `GET /api/docs-json` — generated OpenAPI document
 - `GET /api/docs` — optional Swagger UI (off when `SWAGGER_UI_ENABLED=false` or by default in production)
 
-`npm run seed:mock-identity` inserts the synthetic demo practice admin when that email is absent.
+`npm run seed:mock-identity` inserts the synthetic demo practice admin when that email is absent,
+plus one provider membership and a few synthetic patients so the live patient list can be demonstrated.
 The password stays in the mock fixture, not in `users`.
+
+The API allows browser calls from `WEB_ORIGIN` (default `http://localhost:3000`) with an
+`Authorization` bearer header. That is the local Next.js app in `npm run dev:real`. It is not a
+wildcard and it does not use credentialed cookies.
 
 Errors use the envelope in [data-contracts.md](../../docs/contracts/data-contracts.md). Requests
 accept and return `X-Correlation-ID`.

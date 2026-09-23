@@ -18,6 +18,7 @@ import {
 	usePatientVitals,
 	useProvider,
 } from '@/lib/hooks/use-medical';
+import {isMockMode} from '@/lib/api/mocks/runtime';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {HistoryEntry} from '@/types/medical/history';
 import {Medication} from '@/types/medical/medication';
@@ -345,8 +346,9 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 	const permissions = session?.permissions;
 	const canView = !isSessionLoading && canViewPatientProfile(permissions);
 	const canWrite = canView && canWritePatientDemographics(permissions);
-	const showMedicalRecords = canView && canViewMedicalRecords(permissions);
-	const showVitals = canView && canViewVitals(permissions);
+	const showClinical = isMockMode();
+	const showMedicalRecords = showClinical && canView && canViewMedicalRecords(permissions);
+	const showVitals = showClinical && canView && canViewVitals(permissions);
 
 	const patient = usePatient(canView ? patientId : '');
 	const history = usePatientHistory(patientId, showMedicalRecords);

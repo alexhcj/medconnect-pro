@@ -8,6 +8,12 @@ import {RequestLoggingInterceptor} from './request-logging.interceptor.js';
 
 export function configureApp(app: INestApplication): void {
 	app.enableShutdownHooks();
+	const origin = process.env.WEB_ORIGIN?.trim() || 'http://localhost:3000';
+	app.enableCors({
+		origin,
+		methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
+		allowedHeaders: ['Authorization', 'Content-Type', 'X-Correlation-ID'],
+	});
 	app.useGlobalPipes(
 		new StandardSchemaValidationPipe({
 			exceptionFactory: (issues) =>
