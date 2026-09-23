@@ -20,7 +20,8 @@ Slices below are sequencing, not a calendar independent of
 
 ## Slice 3 — Patient management (M2)
 
-- patient list/profile/create/edit (FE-002, FE-003, FE-004).
+- patient list/profile/create/edit (FE-002, FE-003, FE-004);
+- patient UI against the Nest patient API (FE-011).
 
 ## Slice 4 — Appointments and calendar (M3)
 
