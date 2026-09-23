@@ -3,7 +3,7 @@ id: QA-002
 type: task
 area: qa
 feature: patient-management
-status: planned
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-002,BE-003,QA-001]
@@ -34,11 +34,11 @@ List, profile, create/edit and authorization.
 
 ## Acceptance criteria
 
-- [ ] Patient list test
-- [ ] Create patient test
-- [ ] Edit patient test
-- [ ] Unauthorized access test
-- [ ] Cross-tenant test
+- [x] Patient list test
+- [x] Create patient test
+- [x] Edit patient test
+- [x] Unauthorized access test
+- [x] Cross-tenant test
 
 ## Implementation notes
 
@@ -46,7 +46,7 @@ Use synthetic patients only.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: No product surface change. Browser patient flows stay on synthetic mocks.
+- Tests: Playwright list, create, edit, and profile specs; provider link hiding plus direct create/edit URL denial. Nest HTTP tests for receptionist create, profile read, filter, update, pagination, anonymous and provider denial, nurse assignment, portal self-scope, cross-tenant not-found, and client `practiceId` mismatch.
 - PR:
-- Notes:
+- Notes: Version 0.23.0 → 0.23.1 (PATCH). Test coverage only; no API or UX contract change. Cross-tenant coverage is the API HTTP spec. A browser-to-Nest patient run is out of scope until the client calls the API.

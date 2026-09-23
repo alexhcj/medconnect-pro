@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.23.1] - 2026-09-23
+
+### Added
+
+- Patient workflow tests (QA-002): a provider who opens create or edit URLs directly is denied in the mock UI, and a receptionist can read the patient they just created. Existing list, create, edit, and cross-tenant checks stay in place. Browser patient tests still use synthetic mocks.
+
 ## [0.23.0] - 2026-09-23
 
 ### Added

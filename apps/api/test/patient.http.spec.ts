@@ -189,6 +189,15 @@ describe('patient HTTP', () => {
 		expect(created.body.providerId).toBe(provider.id);
 		expect(created.body).not.toHaveProperty('conditions');
 
+		const profile = await request(app.getHttpServer())
+			.get(`/patients/${created.body.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.expect(200);
+		expect(profile.body.id).toBe(created.body.id);
+		expect(profile.body.practiceId).toBe(practiceA.id);
+		expect(profile.body.synthetic).toBe(true);
+		expect(profile.body).not.toHaveProperty('conditions');
+
 		const listed = await request(app.getHttpServer())
 			.get('/patients')
 			.query({q: `Quinn${suffix}`, status: 'active', sort: 'name-asc'})

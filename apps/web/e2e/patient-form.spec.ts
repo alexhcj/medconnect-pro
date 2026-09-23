@@ -68,4 +68,16 @@ test.describe('Patient create and edit', () => {
 		await expect(page.getByRole('heading', {level: 1, name: 'Avery Carter'})).toBeVisible();
 		await expect(page.getByRole('link', {name: 'Edit patient'})).toHaveCount(0);
 	});
+
+	test('blocks a provider who opens create or edit directly', async ({page}) => {
+		await signIn(page, 'provider@example.test', 'Demo-Provider-1');
+
+		await page.goto('/dashboard/patients/new');
+		await expect(page.getByText('You do not have access to create or edit patients.')).toBeVisible();
+		await expect(page.getByRole('button', {name: 'Create patient'})).toHaveCount(0);
+
+		await page.goto('/dashboard/patients/demo-patient-001/edit');
+		await expect(page.getByText('You do not have access to create or edit patients.')).toBeVisible();
+		await expect(page.getByRole('button', {name: 'Save changes'})).toHaveCount(0);
+	});
 });
