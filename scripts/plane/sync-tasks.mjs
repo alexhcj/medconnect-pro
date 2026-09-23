@@ -7,6 +7,8 @@
  * Usage:
  *   npm run plane:sync
  *   npm run plane:sync:dry
+ *   npm run plane:sync -- FE-003
+ *   npm run plane:sync -- --changed
  */
 
 import fs from "node:fs/promises";
@@ -21,6 +23,7 @@ import {
   updateWorkItem,
   workspace,
 } from "./plane-client.mjs";
+import { changedTaskPaths, parseSyncArgs, selectTasks } from "./select-tasks.mjs";
 import {
   displayIdentifier,
   parseTaskSource,
@@ -29,7 +32,6 @@ import {
 } from "./task-format.mjs";
 
 const ROOT = path.resolve("docs/tasks");
-const dryRun = process.argv.includes("--dry-run");
 
 async function walk(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -92,7 +94,19 @@ async function persist(task, workItem, projectKey) {
   return identifier;
 }
 
-async function syncTask(task, backlogId) {
+function backlogResolver() {
+  let pending;
+  return () => {
+    pending ??= listStates().then((states) => {
+      const backlog = backlogStateId(states);
+      console.log(`Backlog state: ${backlog.name}`);
+      return backlog.id;
+    });
+    return pending;
+  };
+}
+
+async function syncTask(task, resolveBacklogId) {
   const content = workItemContent(task);
   const existingId = task.plane.work_item_id;
 
@@ -106,7 +120,7 @@ async function syncTask(task, backlogId) {
   }
 
   try {
-    const created = await createWorkItem({ ...content, state: backlogId });
+    const created = await createWorkItem({ ...content, state: await resolveBacklogId() });
     return { action: "created", workItem: created };
   } catch (error) {
     if (error.status === 409 && error.body?.id) {
@@ -117,31 +131,46 @@ async function syncTask(task, backlogId) {
   }
 }
 
-async function main() {
-  const tasks = await loadTasks();
-  console.log(`Discovered ${tasks.length} task files.`);
+function tasksToSync(tasks, syncArgs) {
+  const changedPaths = syncArgs.changed ? changedTaskPaths() : [];
+  return selectTasks(tasks, {
+    ids: syncArgs.ids,
+    changed: syncArgs.changed,
+    changedPaths,
+  });
+}
 
-  if (dryRun) {
+async function main() {
+  const syncArgs = parseSyncArgs(process.argv.slice(2));
+  const tasks = await loadTasks();
+  const selected = tasksToSync(tasks, syncArgs);
+  console.log(`Discovered ${tasks.length} task files; selected ${selected.length}.`);
+
+  if (syncArgs.dryRun) {
     console.log("Plane sync: DRY RUN");
     console.log(`Workspace: ${workspace()}`);
     console.log(`Project: ${projectId()}`);
-    for (const task of tasks) {
+    for (const task of selected) {
       const action = task.plane.work_item_id ? "update" : "create in Backlog";
       console.log(`- ${task.id}: ${action} (${task.file})`);
     }
     return;
   }
 
+  if (selected.length === 0) {
+    console.log("No tasks to sync.");
+    return;
+  }
+
   await resolveProjectId();
-  const [project, states] = await Promise.all([getProject(), listStates()]);
-  const backlog = backlogStateId(states);
+  const project = await getProject();
   const projectKey = project.identifier || null;
-  console.log(`Backlog state: ${backlog.name}`);
+  const resolveBacklogId = backlogResolver();
 
   const counts = { created: 0, updated: 0, linked: 0 };
 
-  for (const task of tasks) {
-    const { action, workItem } = await syncTask(task, backlog.id);
+  for (const task of selected) {
+    const { action, workItem } = await syncTask(task, resolveBacklogId);
     const identifier = await persist(task, workItem, projectKey);
     counts[action] += 1;
     console.log(`${action} ${task.id} → ${identifier || workItem.id}`);
