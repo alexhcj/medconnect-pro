@@ -1,7 +1,7 @@
 import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-hot-toast';
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {medicalAPI, PatientNameSort, PatientStatusFilter} from '@/lib/api/medical-api';
+import {medicalAPI, PatientDemographicsInput, PatientNameSort, PatientStatusFilter} from '@/lib/api/medical-api';
 import {Patient} from '@/types/medical/patient';
 
 export interface PatientSearchInput {
@@ -28,6 +28,23 @@ export function usePatientSearch({query = '', status = 'all', sort = 'name-asc'}
 		getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextPage : undefined),
 		staleTime: 2 * 60 * 1000,
 		gcTime: 5 * 60 * 1000,
+	});
+}
+
+export function useCreatePatient() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (input: PatientDemographicsInput) => medicalAPI.createPatient(input),
+		onSuccess: (createdPatient) => {
+			queryClient.setQueryData(['patient', createdPatient.id], createdPatient);
+			queryClient.invalidateQueries({queryKey: ['patients', 'search']});
+			toast.success('Patient created successfully');
+		},
+		onError: (error) => {
+			console.error('Failed to create patient:', error);
+			toast.error('Failed to create patient');
+		},
 	});
 }
 
@@ -86,6 +103,15 @@ export function usePatientDocuments(patientId: string, enabled = true) {
 		enabled: !!patientId && enabled,
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
+	});
+}
+
+export function useProviders(enabled = true) {
+	return useQuery({
+		queryKey: ['providers'],
+		queryFn: () => medicalAPI.listProviders(),
+		enabled,
+		staleTime: 5 * 60 * 1000,
 	});
 }
 

@@ -6,7 +6,9 @@ import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
 import {Input} from '@/components/ui/input';
 import {PatientNameSort, PatientStatusFilter} from '@/lib/api/medical-api';
+import {canWritePatientDemographics} from '@/lib/auth/patient-profile-access';
 import {usePatientSearch} from '@/lib/hooks/use-medical';
+import {useSessionStatus} from '@/lib/hooks/use-session';
 import {Patient} from '@/types/medical/patient';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
@@ -40,10 +42,22 @@ const PatientList = () => {
 	} = usePatientSearch({query: debouncedQuery, status, sort});
 
 	const patients = data?.pages.flatMap((page) => page.patients) ?? [];
+	const {session, isLoading: isSessionLoading} = useSessionStatus();
+	const canWrite = !isSessionLoading && canWritePatientDemographics(session?.permissions);
 
 	return (
 		<Card>
 			<CardHeader>
+				{canWrite && (
+					<div className="mb-4 flex justify-end">
+						<Link
+							href="/dashboard/patients/new"
+							className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+						>
+							Add patient
+						</Link>
+					</div>
+				)}
 				<div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					<div className="sm:col-span-2 lg:col-span-1">
 						<label htmlFor="patient-search" className="mb-2 block text-sm font-medium text-gray-700">

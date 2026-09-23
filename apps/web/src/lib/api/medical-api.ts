@@ -1,4 +1,4 @@
-import {Patient} from '@/types/medical/patient';
+import {Patient, PatientDemographicsInput} from '@/types/medical/patient';
 import {Medication} from '@/types/medical/medication';
 import {Vital} from '@/types/medical/vital';
 import {HistoryEntry} from '@/types/medical/history';
@@ -25,6 +25,8 @@ export interface PatientSearchResult {
 	nextPage?: number;
 	hasMore: boolean;
 }
+
+export type {PatientDemographicsInput};
 
 const medicalRealAPI = {
 	listPatients: async ({pageParam, query, status, sort}: PatientSearchParams = {}): Promise<PatientSearchResult> => {
@@ -53,6 +55,22 @@ const medicalRealAPI = {
 			});
 		} catch (error) {
 			toast.error('Failed to load patient information');
+			throw error;
+		}
+	},
+
+	createPatient: async (input: PatientDemographicsInput): Promise<Patient> => {
+		try {
+			return await apiFetch<Patient>('/api/patients', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Audit-Context': 'patient_create',
+				},
+				body: JSON.stringify(input),
+			});
+		} catch (error) {
+			toast.error('Failed to create patient');
 			throw error;
 		}
 	},
@@ -113,6 +131,15 @@ const medicalRealAPI = {
 			});
 		} catch (error) {
 			toast.error('Failed to fetch patient documents');
+			throw error;
+		}
+	},
+
+	listProviders: async (): Promise<Provider[]> => {
+		try {
+			return await apiFetch<Provider[]>('/api/providers');
+		} catch (error) {
+			toast.error('Failed to load providers');
 			throw error;
 		}
 	},

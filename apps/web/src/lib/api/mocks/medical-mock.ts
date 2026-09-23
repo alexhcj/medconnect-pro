@@ -1,4 +1,5 @@
-import {Patient} from '@/types/medical/patient';
+import {ApiError, ApiErrorDetail} from '@/lib/api/http';
+import {Patient, PatientDemographicsInput} from '@/types/medical/patient';
 import {Medication} from '@/types/medical/medication';
 import {Vital} from '@/types/medical/vital';
 import {HistoryEntry} from '@/types/medical/history';
@@ -89,9 +90,102 @@ function paginatePatients(
 function requirePatient(patientId: string): Patient {
 	const patient = patients.find((item) => item.id === patientId);
 	if (!patient) {
-		throw new Error(`Mock: Patient with id "${patientId}" not found`);
+		throw new ApiError('Patient not found', 404, {code: 'NOT_FOUND'});
 	}
 	return patient;
+}
+
+function validationError(details: ApiErrorDetail[]): never {
+	throw new ApiError('Request validation failed', 400, {code: 'VALIDATION_ERROR', details});
+}
+
+function assertKnownProvider(providerId: string) {
+	if (!providers.some((provider) => provider.id === providerId)) {
+		validationError([{path: 'providerId', message: 'Assigned provider is not available'}]);
+	}
+}
+
+function assertUniqueEmail(email: string, exceptId?: string) {
+	const normalized = email.trim().toLowerCase();
+	const clash = patients.find(
+		(patient) => patient.id !== exceptId && patient.email.trim().toLowerCase() === normalized,
+	);
+	if (clash) {
+		validationError([{path: 'email', message: 'A patient with this email already exists'}]);
+	}
+}
+
+function requireDemographics(input: PatientDemographicsInput) {
+	const details: ApiErrorDetail[] = [];
+	const required: Array<[string, string | undefined, string]> = [
+		['firstName', input.firstName, 'First name is required'],
+		['lastName', input.lastName, 'Last name is required'],
+		['dateOfBirth', input.dateOfBirth, 'Date of birth is required'],
+		['gender', input.gender, 'Gender is required'],
+		['phone', input.phone, 'Phone is required'],
+		['email', input.email, 'Email is required'],
+		['providerId', input.providerId, 'Assigned provider is required'],
+		['address.street', input.address?.street, 'Street is required'],
+		['address.city', input.address?.city, 'City is required'],
+		['address.state', input.address?.state, 'State is required'],
+		['address.postalCode', input.address?.postalCode, 'Postal code is required'],
+		['emergencyContact.name', input.emergencyContact?.name, 'Emergency contact name is required'],
+		['emergencyContact.relationship', input.emergencyContact?.relationship, 'Relationship is required'],
+		['emergencyContact.phone', input.emergencyContact?.phone, 'Emergency phone is required'],
+		['insurance.provider', input.insurance?.provider, 'Insurance provider is required'],
+		['insurance.policyNumber', input.insurance?.policyNumber, 'Policy number is required'],
+		['insurance.groupNumber', input.insurance?.groupNumber, 'Group number is required'],
+	];
+
+	for (const [path, value, message] of required) {
+		if (!value?.trim()) {
+			details.push({path, message});
+		}
+	}
+
+	if (input.status !== 'active' && input.status !== 'inactive') {
+		details.push({path: 'status', message: 'Status is required'});
+	}
+
+	if (details.length > 0) {
+		validationError(details);
+	}
+}
+
+function nextPatientId() {
+	const max = patients.reduce((highest, patient) => {
+		const match = /^demo-patient-(\d+)$/.exec(patient.id);
+		return match ? Math.max(highest, Number(match[1])) : highest;
+	}, 0);
+	return `demo-patient-${String(max + 1).padStart(3, '0')}`;
+}
+
+function demoPracticeId() {
+	return patients[0]?.practiceId ?? 'demo-practice-001';
+}
+
+const WRITABLE_KEYS = [
+	'firstName',
+	'lastName',
+	'dateOfBirth',
+	'gender',
+	'status',
+	'phone',
+	'email',
+	'address',
+	'emergencyContact',
+	'insurance',
+	'providerId',
+] as const;
+
+function pickWritable(updates: Partial<Patient>): Partial<Patient> {
+	const next: Partial<Patient> = {};
+	for (const key of WRITABLE_KEYS) {
+		if (updates[key] !== undefined) {
+			Object.assign(next, {[key]: updates[key]});
+		}
+	}
+	return next;
 }
 
 export const medicalMockAPI = {
@@ -122,17 +216,56 @@ export const medicalMockAPI = {
 	getPatient: async (patientId: string): Promise<Patient> =>
 		withMock(() => requirePatient(patientId), 'Mock: Failed to fetch patient'),
 
+	createPatient: async (input: PatientDemographicsInput): Promise<Patient> =>
+		withMock(() => {
+			requireDemographics(input);
+			assertUniqueEmail(input.email);
+			assertKnownProvider(input.providerId);
+
+			const created: Patient = {
+				id: nextPatientId(),
+				firstName: input.firstName.trim(),
+				lastName: input.lastName.trim(),
+				dateOfBirth: input.dateOfBirth,
+				gender: input.gender,
+				status: input.status,
+				phone: input.phone.trim(),
+				email: input.email.trim(),
+				address: {...input.address},
+				emergencyContact: {...input.emergencyContact},
+				insurance: {...input.insurance},
+				practiceId: demoPracticeId(),
+				providerId: input.providerId,
+				conditions: [],
+				synthetic: true,
+			};
+			patients.push(created);
+			mockLog('info', 'Created patient', created.id);
+			return created;
+		}, 'Mock: Failed to create patient'),
+
 	updatePatient: async (patientId: string, updates: Partial<Patient>): Promise<Patient> =>
 		withMock(() => {
 			const index = patients.findIndex((item) => item.id === patientId);
 			if (index === -1) {
-				throw new Error(`Mock: Patient with id "${patientId}" not found`);
+				throw new ApiError('Patient not found', 404, {code: 'NOT_FOUND'});
 			}
 
+			const writable = pickWritable(updates);
+			if (typeof writable.email === 'string') {
+				assertUniqueEmail(writable.email, patientId);
+			}
+			if (typeof writable.providerId === 'string') {
+				assertKnownProvider(writable.providerId);
+			}
+
+			const current = patients[index];
 			patients[index] = {
-				...patients[index],
-				...updates,
-				id: patients[index].id,
+				...current,
+				...writable,
+				id: current.id,
+				practiceId: current.practiceId,
+				conditions: current.conditions,
 				synthetic: true,
 			};
 			mockLog('info', 'Updated patient', patientId);
@@ -162,6 +295,9 @@ export const medicalMockAPI = {
 			requirePatient(patientId);
 			return documents.filter((entry) => entry.patientId === patientId);
 		}, 'Mock: Failed to fetch patient documents'),
+
+	listProviders: async (): Promise<Provider[]> =>
+		withMock(() => providers.map((provider) => ({...provider})), 'Mock: Failed to list providers'),
 
 	getProvider: async (providerId: string): Promise<Provider> =>
 		withMock(() => {

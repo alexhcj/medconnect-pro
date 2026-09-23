@@ -3,6 +3,7 @@ import {
 	canViewMedicalRecords,
 	canViewPatientProfile,
 	canViewVitals,
+	canWritePatientDemographics,
 } from '@/lib/auth/patient-profile-access';
 import {DEFAULT_ROLE_PERMISSIONS} from '@/types/auth/permissions';
 
@@ -28,6 +29,16 @@ describe('patient profile access', () => {
 		expect(canViewMedicalRecords(DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN)).toBe(false);
 		expect(canViewMedicalRecords(DEFAULT_ROLE_PERMISSIONS.RECEPTIONIST)).toBe(false);
 		expect(canViewMedicalRecords(DEFAULT_ROLE_PERMISSIONS.PATIENT)).toBe(false);
+	});
+
+	it('allows demographic writes only with write:demographics', () => {
+		expect(canWritePatientDemographics(DEFAULT_ROLE_PERMISSIONS.SUPER_ADMIN)).toBe(true);
+		expect(canWritePatientDemographics(DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN)).toBe(true);
+		expect(canWritePatientDemographics(DEFAULT_ROLE_PERMISSIONS.RECEPTIONIST)).toBe(true);
+		expect(canWritePatientDemographics(DEFAULT_ROLE_PERMISSIONS.PROVIDER)).toBe(false);
+		expect(canWritePatientDemographics(DEFAULT_ROLE_PERMISSIONS.NURSE)).toBe(false);
+		expect(canWritePatientDemographics(DEFAULT_ROLE_PERMISSIONS.PATIENT)).toBe(false);
+		expect(canWritePatientDemographics(undefined)).toBe(false);
 	});
 
 	it('shows vitals only with write:vitals', () => {

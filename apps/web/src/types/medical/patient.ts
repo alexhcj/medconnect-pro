@@ -19,6 +19,20 @@ export interface Insurance {
 
 export type PatientStatus = 'active' | 'inactive';
 
+export interface PatientDemographicsInput {
+	firstName: string;
+	lastName: string;
+	dateOfBirth: string;
+	gender: string;
+	status: PatientStatus;
+	phone: string;
+	email: string;
+	address: PatientAddress;
+	emergencyContact: EmergencyContact;
+	insurance: Insurance;
+	providerId: string;
+}
+
 export interface Patient {
 	id: string;
 	firstName: string;

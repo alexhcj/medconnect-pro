@@ -1,14 +1,20 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {PatientList} from '@/components/patients/patient-list';
+import {DEFAULT_ROLE_PERMISSIONS} from '@/types/auth/permissions';
 import {Patient} from '@/types/medical/patient';
 
-const {usePatientSearch} = vi.hoisted(() => ({
+const {usePatientSearch, useSessionStatus} = vi.hoisted(() => ({
 	usePatientSearch: vi.fn(),
+	useSessionStatus: vi.fn(),
 }));
 
 vi.mock('@/lib/hooks/use-medical', () => ({
 	usePatientSearch,
+}));
+
+vi.mock('@/lib/hooks/use-session', () => ({
+	useSessionStatus,
 }));
 
 const samplePatient: Patient = {
@@ -43,6 +49,13 @@ function mockSearch(overrides: Record<string, unknown> = {}) {
 }
 
 describe('PatientList', () => {
+	beforeEach(() => {
+		useSessionStatus.mockReturnValue({
+			session: {permissions: DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN},
+			isLoading: false,
+		});
+	});
+
 	it('renders labeled controls, a patient row, and load more', () => {
 		mockSearch();
 		render(<PatientList />);
@@ -126,5 +139,21 @@ describe('PatientList', () => {
 			status: 'inactive',
 			sort: 'name-desc',
 		});
+	});
+
+	it('links practice admins to the create form', () => {
+		mockSearch();
+		render(<PatientList />);
+		expect(screen.getByRole('link', {name: 'Add patient'})).toHaveAttribute('href', '/dashboard/patients/new');
+	});
+
+	it('hides create from a provider session', () => {
+		useSessionStatus.mockReturnValue({
+			session: {permissions: DEFAULT_ROLE_PERMISSIONS.PROVIDER},
+			isLoading: false,
+		});
+		mockSearch();
+		render(<PatientList />);
+		expect(screen.queryByRole('link', {name: 'Add patient'})).not.toBeInTheDocument();
 	});
 });

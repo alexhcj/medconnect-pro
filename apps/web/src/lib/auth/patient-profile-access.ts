@@ -25,3 +25,7 @@ export function canViewMedicalRecords(permissions: readonly Permission[] | undef
 export function canViewVitals(permissions: readonly Permission[] | undefined): boolean {
 	return hasPermission(permissions, 'write:vitals');
 }
+
+export function canWritePatientDemographics(permissions: readonly Permission[] | undefined): boolean {
+	return hasPermission(permissions, 'write:demographics');
+}

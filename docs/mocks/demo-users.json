@@ -5,6 +5,12 @@
 			"password": "Demo-Admin-1",
 			"role": "PRACTICE_ADMIN",
 			"userId": "user_mock_practice_admin"
+		},
+		{
+			"email": "provider@example.test",
+			"password": "Demo-Provider-1",
+			"role": "PROVIDER",
+			"userId": "user_mock_provider"
 		}
 	]
 }

@@ -8,6 +8,7 @@ import {
 	canViewMedicalRecords,
 	canViewPatientProfile,
 	canViewVitals,
+	canWritePatientDemographics,
 } from '@/lib/auth/patient-profile-access';
 import {
 	usePatient,
@@ -320,7 +321,7 @@ function DocumentsSection({
 	);
 }
 
-function ProfileShell({title, children}: {title: string; children: ReactNode}) {
+function ProfileShell({title, action, children}: {title: string; action?: ReactNode; children: ReactNode}) {
 	return (
 		<div>
 			<Link
@@ -330,7 +331,10 @@ function ProfileShell({title, children}: {title: string; children: ReactNode}) {
 				Back to patients
 			</Link>
 			<p className="mt-4 text-sm text-gray-600">Synthetic demo data. Not a real medical record.</p>
-			<h1 className="mb-6 mt-2 text-2xl font-bold text-gray-900">{title}</h1>
+			<div className="mb-6 mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+				{action}
+			</div>
 			{children}
 		</div>
 	);
@@ -340,6 +344,7 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 	const {session, isLoading: isSessionLoading} = useSessionStatus();
 	const permissions = session?.permissions;
 	const canView = !isSessionLoading && canViewPatientProfile(permissions);
+	const canWrite = canView && canWritePatientDemographics(permissions);
 	const showMedicalRecords = canView && canViewMedicalRecords(permissions);
 	const showVitals = canView && canViewVitals(permissions);
 
@@ -407,7 +412,19 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 	}
 
 	return (
-		<ProfileShell title={`${record.firstName} ${record.lastName}`}>
+		<ProfileShell
+			title={`${record.firstName} ${record.lastName}`}
+			action={
+				canWrite ? (
+					<Link
+						href={`/dashboard/patients/${record.id}/edit`}
+						className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+					>
+						Edit patient
+					</Link>
+				) : undefined
+			}
+		>
 			<nav aria-label="Profile sections" className="mb-6">
 				<ul className="flex flex-wrap gap-2">
 					{sections.map((section) => (
