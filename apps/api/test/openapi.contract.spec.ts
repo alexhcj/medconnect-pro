@@ -51,7 +51,15 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/auth/mfa/verify']?.post?.security).toBeUndefined();
 		expect(document.paths?.['/auth/logout']?.post?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/auth/logout-all']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths).not.toHaveProperty('/patients');
+		expect(document.paths?.['/patients']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}']?.patch?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}']?.delete).toBeUndefined();
+		expect(document.paths).not.toHaveProperty('/patients/{id}/history');
+		expect(document.paths).not.toHaveProperty('/patients/{id}/vitals');
+		expect(document.paths).not.toHaveProperty('/patients/{id}/medications');
+		expect(document.paths).not.toHaveProperty('/patients/{id}/documents');
 		expect(document.paths).not.toHaveProperty('/__test/validate');
 		expect(document.paths).not.toHaveProperty('/__test/authz');
 		expect(JSON.stringify(document)).not.toMatch(/Demo-Admin-1|Demo-Mfa-1|135790/);

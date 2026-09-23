@@ -3,7 +3,7 @@ id: BE-003
 type: task
 area: backend
 feature: patient-management
-status: planned
+status: implemented
 priority: high
 estimate: 4
 dependencies: [BE-001, DATA-001, BE-009]
@@ -34,12 +34,12 @@ CRUD/search/filter/pagination plus authorized profile access.
 
 ## Acceptance criteria
 
-- [ ] CRUD endpoints exist
-- [ ] DTO validation exists
-- [ ] Tenant scope enforced
-- [ ] Role/resource authorization enforced
-- [ ] OpenAPI documented
-- [ ] Tests cover denied access
+- [x] CRUD endpoints exist
+- [x] DTO validation exists
+- [x] Tenant scope enforced
+- [x] Role/resource authorization enforced
+- [x] OpenAPI documented
+- [x] Tests cover denied access
 
 ## Implementation notes
 
@@ -50,7 +50,7 @@ ships. Frontend patient mocks (FE-002+) may proceed after FE-010.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: NestJS patient module with `GET`/`POST /patients` and `GET`/`PATCH /patients/:id`. Demographics persist on `patients`. `patient_assignments` limits `read:assigned_patients`. `portal_user_id` limits `read:own_patient`. `synthetic` is always true. No delete route and no clinical subresources.
+- Tests: Role policy and service units; HTTP tests for anonymous access, validation, receptionist create/filter/update, provider write denial, unassigned nurse, portal self-scope, cross-tenant not-found, and client `practiceId` mismatch (`npm run test:api` with Compose Postgres).
 - PR:
-- Notes: BE-009 identity HTTP has shipped. Role and resource authorization can use those guards.
+- Notes: Frontend patient UI remains on mocks. Nurse assignment has no admin HTTP API. Full role matrix remains QA-004. DELETE is not in the endpoint index.

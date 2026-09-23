@@ -101,6 +101,24 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 	assertUnauthenticated(document, '/auth/mfa/verify', 'post');
 	assertBearer(document, '/auth/logout', 'post');
 	assertBearer(document, '/auth/logout-all', 'post');
+	assertBearer(document, '/patients', 'get');
+	assertBearer(document, '/patients', 'post');
+	assertBearer(document, '/patients/{id}', 'get');
+	assertBearer(document, '/patients/{id}', 'patch');
+	const patientById = document.paths?.['/patients/{id}'];
+	if (patientById && 'delete' in patientById) {
+		throw new Error('DELETE /patients/{id} is not part of the patient contract');
+	}
+	for (const path of [
+		'/patients/{id}/history',
+		'/patients/{id}/vitals',
+		'/patients/{id}/medications',
+		'/patients/{id}/documents',
+	]) {
+		if (document.paths?.[path]) {
+			throw new Error(`${path} is outside the patient demographics contract`);
+		}
+	}
 	if (!document.components?.schemas?.ErrorEnvelope) {
 		throw new Error('OpenAPI must include the ErrorEnvelope schema');
 	}

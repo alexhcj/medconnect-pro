@@ -29,8 +29,10 @@ indexes. The NestJS API stores this in PostgreSQL via TypeORM migrations
 tenant context; they must not trust client-supplied `practice_id`.
 
 The current persistence slice includes `practices`, `users` (synthetic identity keys, no passwords),
-`practice_memberships`, `auth_sessions` (opaque mock session hashes, not passwords), and a minimal
-`patients` table. Patient HTTP APIs belong to later tasks.
+`practice_memberships`, `auth_sessions` (opaque mock session hashes, not passwords), `patients`
+(demographics, assigned provider, and optional portal user), and `patient_assignments` for
+assigned-patient reads. Patient demographics HTTP is
+[BE-003](../tasks/backend/BE-003-patient-api.md).
 PostgreSQL row-level security is deferred to
 [SEC-002](../tasks/security/SEC-002-tenant-isolation.md).
 

@@ -14,6 +14,7 @@ import {
 	PermissionDeniedError,
 	SessionInvalidError,
 } from '../identity/auth.errors.js';
+import {InvalidProviderAssignmentError, PatientNotFoundError} from '../patient/patient.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {getCorrelationId} from './correlation.js';
 import {
@@ -91,6 +92,24 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 				'FORBIDDEN',
 				'You do not have permission to perform this action',
 			);
+		}
+		if (exception instanceof PatientNotFoundError) {
+			return this.authError(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Resource not found');
+		}
+		if (exception instanceof InvalidProviderAssignmentError) {
+			return {
+				status: HttpStatus.BAD_REQUEST,
+				error: {
+					code: 'VALIDATION_ERROR',
+					message: 'Request validation failed',
+					details: [
+						{
+							path: 'providerId',
+							message: 'Assigned provider must be a provider in this practice',
+						},
+					],
+				},
+			};
 		}
 		return undefined;
 	}

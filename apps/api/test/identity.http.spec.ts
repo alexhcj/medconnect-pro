@@ -9,12 +9,14 @@ import {MOCK_IDP_USERS, type MockIdpAccount} from '../src/identity/mock-idp.js';
 import {configureApp} from '../src/platform/configure-app.js';
 import {PracticeModule} from '../src/practice/practice.module.js';
 import {TenancyModule} from '../src/tenancy/tenant.module.js';
+import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
 import {Practice} from '../src/persistence/entities/practice.entity.js';
 import {User} from '../src/persistence/entities/user.entity.js';
 import {AuthSession} from '../src/persistence/entities/auth-session.entity.js';
 import {AuthorizationProbeController} from './authorization-probe.controller.js';
+import {syntheticPatientColumns} from './synthetic-patient.js';
 
 const password = 'Synthetic-Pass-1';
 const mfaCode = '135791';
@@ -81,15 +83,15 @@ describe('identity HTTP', () => {
 		});
 		patientA = await dataSource.getRepository(Patient).save({
 			practiceId: practiceA.id,
-			firstName: 'Avery',
-			lastName: 'Quinn',
-			synthetic: true,
+			...syntheticPatientColumns(nurse.id),
 		});
 		patientB = await dataSource.getRepository(Patient).save({
 			practiceId: practiceB.id,
-			firstName: 'Casey',
-			lastName: `Ramirez${suffix.slice(0, 8)}`,
-			synthetic: true,
+			...syntheticPatientColumns(nurse.id, {
+				firstName: 'Casey',
+				lastName: `Ramirez${suffix.slice(0, 8)}`,
+				email: `casey.${suffix}@synthetic.example`,
+			}),
 		});
 	});
 
@@ -99,14 +101,15 @@ describe('identity HTTP', () => {
 			return;
 		}
 		const userIds = [nurse, admin, mfaUser].filter(Boolean).map((user) => user.id);
+		const patientIds = [patientA, patientB].filter(Boolean).map((patient) => patient.id);
+		if (patientIds.length > 0) {
+			await dataSource.getRepository(PatientAssignment).delete({patientId: In(patientIds)});
+			await dataSource.getRepository(Patient).delete({id: In(patientIds)});
+		}
 		if (userIds.length > 0) {
 			await dataSource.getRepository(AuthSession).delete({userId: In(userIds)});
 			await dataSource.getRepository(PracticeMembership).delete({userId: In(userIds)});
 			await dataSource.getRepository(User).delete({id: In(userIds)});
-		}
-		const patientIds = [patientA, patientB].filter(Boolean).map((patient) => patient.id);
-		if (patientIds.length > 0) {
-			await dataSource.getRepository(Patient).delete({id: In(patientIds)});
 		}
 		const practiceIds = [practiceA, practiceB].filter(Boolean).map((practice) => practice.id);
 		if (practiceIds.length > 0) {

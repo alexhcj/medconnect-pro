@@ -2,6 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {beforeAll, afterAll, describe, expect, it} from 'vitest';
 import {DataSource} from 'typeorm';
 import {DEFAULT_DATABASE_URL} from '../src/persistence/default-database-url.js';
+import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
 import {Practice} from '../src/persistence/entities/practice.entity.js';
@@ -12,6 +13,7 @@ import {PatientRepository} from '../src/practice/patient.repository.js';
 import {PracticeRepository} from '../src/practice/practice.repository.js';
 import {TenantContext} from '../src/tenancy/tenant-context.js';
 import {TenantMismatchError, TenantScopeMissingError} from '../src/tenancy/tenant-errors.js';
+import {syntheticDemographics, syntheticPatientColumns} from './synthetic-patient.js';
 
 const databaseUrl = process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
 
@@ -62,15 +64,15 @@ describe('tenant isolation', () => {
 		});
 		patientA = await dataSource.getRepository(Patient).save({
 			practiceId: practiceA.id,
-			firstName: 'Avery',
-			lastName: 'Quinn',
-			synthetic: true,
+			...syntheticPatientColumns(userA.id),
 		});
 		patientB = await dataSource.getRepository(Patient).save({
 			practiceId: practiceB.id,
-			firstName: 'Casey',
-			lastName: 'Ramirez',
-			synthetic: true,
+			...syntheticPatientColumns(userB.id, {
+				firstName: 'Casey',
+				lastName: 'Ramirez',
+				email: 'casey.ramirez@synthetic.example',
+			}),
 		});
 	});
 
@@ -78,6 +80,8 @@ describe('tenant isolation', () => {
 		if (!dataSource?.isInitialized) {
 			return;
 		}
+		await dataSource.getRepository(PatientAssignment).delete({practiceId: practiceA.id});
+		await dataSource.getRepository(PatientAssignment).delete({practiceId: practiceB.id});
 		await dataSource.getRepository(Patient).delete([patientA.id, patientB.id]);
 		await dataSource.getRepository(PracticeMembership).delete({practiceId: practiceA.id});
 		await dataSource.getRepository(PracticeMembership).delete({practiceId: practiceB.id});
@@ -89,7 +93,11 @@ describe('tenant isolation', () => {
 	function scopedPatientRepo(practiceId: string, actorUserId: string): PatientRepository {
 		const tenant = new TenantContext();
 		tenant.set({practiceId, actorUserId, role: 'PROVIDER'});
-		return new PatientRepository(dataSource.getRepository(Patient), tenant);
+		return new PatientRepository(
+			dataSource.getRepository(Patient),
+			dataSource.getRepository(PatientAssignment),
+			tenant,
+		);
 	}
 
 	function scopedMembershipRepo(practiceId: string, actorUserId: string): MembershipRepository {
@@ -113,8 +121,7 @@ describe('tenant isolation', () => {
 	it('rejects writes that carry a mismatched client practice id', async () => {
 		await expect(
 			scopedPatientRepo(practiceA.id, userA.id).create({
-				firstName: 'Riley',
-				lastName: 'Chen',
+				...syntheticDemographics(userA.id, {firstName: 'Riley', lastName: 'Chen'}),
 				practiceId: practiceB.id,
 			}),
 		).rejects.toBeInstanceOf(TenantMismatchError);
@@ -131,7 +138,11 @@ describe('tenant isolation', () => {
 
 	it('fails closed when tenant scope is missing', async () => {
 		const tenant = new TenantContext();
-		const patients = new PatientRepository(dataSource.getRepository(Patient), tenant);
+		const patients = new PatientRepository(
+			dataSource.getRepository(Patient),
+			dataSource.getRepository(PatientAssignment),
+			tenant,
+		);
 		await expect(patients.list()).rejects.toBeInstanceOf(TenantScopeMissingError);
 	});
 
