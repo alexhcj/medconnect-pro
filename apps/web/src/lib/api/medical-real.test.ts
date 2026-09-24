@@ -1,4 +1,5 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
+import type {AppointmentRdo} from '@/lib/api/appointment-rdo';
 import {LIVE_DEMO_PROVIDER_ID} from '@/lib/api/live-demo-provider';
 import {medicalRealAPI} from '@/lib/api/medical-api';
 import type {PatientRdo} from '@/lib/api/patient-rdo';
@@ -18,6 +19,30 @@ const rdo: PatientRdo = {
 	providerId: LIVE_DEMO_PROVIDER_ID,
 	practiceId: '22222222-2222-4222-8222-222222222222',
 	synthetic: true,
+};
+
+const appointmentRdo: AppointmentRdo = {
+	id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+	practiceId: rdo.practiceId,
+	patientId: rdo.id,
+	providerId: LIVE_DEMO_PROVIDER_ID,
+	start: '2026-10-15T14:00:00.000Z',
+	end: '2026-10-15T15:00:00.000Z',
+	type: 'office_visit',
+	state: 'scheduled',
+	notes: 'Annual follow-up',
+	patientName: 'Avery Quinn',
+	providerName: 'jordan.ellis@synthetic.example',
+	synthetic: true,
+};
+
+const createInput = {
+	patientId: rdo.id,
+	providerId: LIVE_DEMO_PROVIDER_ID,
+	start: '2026-10-20T10:00:00.000Z',
+	end: '2026-10-20T11:00:00.000Z',
+	type: 'office_visit' as const,
+	state: 'scheduled' as const,
 };
 
 describe('medicalRealAPI', () => {
@@ -49,7 +74,89 @@ describe('medicalRealAPI', () => {
 		);
 	});
 
-	it('does not request clinical routes from Nest', async () => {
+	it('lists appointments from Nest and maps AppointmentRdo', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				status: 200,
+				json: async () => ({appointments: [appointmentRdo], hasMore: false}),
+			}),
+		);
+
+		const listed = await medicalRealAPI.listAppointments();
+
+		expect(listed[0]).toMatchObject({
+			patientName: 'Avery Quinn',
+			providerName: 'Dr. Jordan Ellis',
+			synthetic: true,
+		});
+		expect(fetch).toHaveBeenCalledWith('http://localhost:3001/appointments', expect.any(Object));
+	});
+
+	it('creates an appointment on Nest and maps AppointmentRdo', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				status: 201,
+				json: async () => ({...appointmentRdo, start: createInput.start, end: createInput.end}),
+			}),
+		);
+
+		const created = await medicalRealAPI.createAppointment(createInput);
+
+		expect(created).toMatchObject({
+			patientId: createInput.patientId,
+			providerName: 'Dr. Jordan Ellis',
+		});
+		expect(fetch).toHaveBeenCalledWith(
+			'http://localhost:3001/appointments',
+			expect.objectContaining({
+				method: 'POST',
+				body: JSON.stringify(createInput),
+			}),
+		);
+	});
+
+	it('throws Nest APPOINTMENT_CONFLICT from create', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: false,
+				status: 409,
+				json: async () => ({
+					error: {
+						code: 'APPOINTMENT_CONFLICT',
+						message: 'This time overlaps an existing appointment for the provider.',
+						details: [
+							{
+								path: 'start',
+								message: 'This time overlaps an existing appointment for the provider.',
+							},
+						],
+					},
+				}),
+			}),
+		);
+
+		await expect(medicalRealAPI.createAppointment(createInput)).rejects.toMatchObject({
+			status: 409,
+			code: 'APPOINTMENT_CONFLICT',
+			details: [
+				{
+					path: 'start',
+					message: 'This time overlaps an existing appointment for the provider.',
+				},
+			],
+		});
+		expect(fetch).toHaveBeenCalledWith(
+			'http://localhost:3001/appointments',
+			expect.objectContaining({method: 'POST'}),
+		);
+	});
+
+	it('does not request clinical, availability, patch, or delete routes from Nest', async () => {
 		const fetchMock = vi.fn();
 		vi.stubGlobal('fetch', fetchMock);
 
@@ -57,17 +164,6 @@ describe('medicalRealAPI', () => {
 		await expect(medicalRealAPI.getPatientVitals('patient-1')).rejects.toMatchObject({status: 404});
 		await expect(medicalRealAPI.getPatientMedications('patient-1')).rejects.toMatchObject({status: 404});
 		await expect(medicalRealAPI.getPatientDocuments('patient-1')).rejects.toMatchObject({status: 404});
-		await expect(medicalRealAPI.listAppointments()).rejects.toMatchObject({status: 404});
-		await expect(
-			medicalRealAPI.createAppointment({
-				patientId: 'patient-1',
-				providerId: LIVE_DEMO_PROVIDER_ID,
-				start: '2026-10-20T10:00:00.000Z',
-				end: '2026-10-20T11:00:00.000Z',
-				type: 'office_visit',
-				state: 'scheduled',
-			}),
-		).rejects.toMatchObject({status: 404});
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 

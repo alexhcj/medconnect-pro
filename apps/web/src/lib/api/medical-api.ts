@@ -11,6 +11,11 @@ import {liveDemoProvider} from '@/lib/api/live-demo-provider';
 import {medicalMockAPI} from '@/lib/api/mocks/medical-mock';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {nestApiBaseUrl} from '@/lib/api/nest-api';
+import {
+	appointmentFromRdo,
+	type AppointmentRdo,
+	type AppointmentSearchResultRdo,
+} from '@/lib/api/appointment-rdo';
 import {patientFromRdo, type PatientRdo, type PatientSearchResultRdo} from '@/lib/api/patient-rdo';
 
 export type PatientStatusFilter = 'active' | 'inactive' | 'all';
@@ -34,6 +39,10 @@ export type {PatientDemographicsInput};
 
 function patientsUrl(path = ''): string {
 	return `${nestApiBaseUrl()}/patients${path}`;
+}
+
+function appointmentsUrl(path = ''): string {
+	return `${nestApiBaseUrl()}/appointments${path}`;
 }
 
 function clinicalUnavailable(message: string): Promise<never> {
@@ -131,11 +140,27 @@ export const medicalRealAPI = {
 	},
 
 	listAppointments: async (): Promise<Appointment[]> => {
-		return clinicalUnavailable('Appointments are not available from the patient API');
+		try {
+			const result = await apiFetch<AppointmentSearchResultRdo>(appointmentsUrl());
+			return result.appointments.map(appointmentFromRdo);
+		} catch (error) {
+			toast.error('Failed to load appointments');
+			throw error;
+		}
 	},
 
-	createAppointment: async (_input: AppointmentCreateInput): Promise<Appointment> => {
-		return clinicalUnavailable('Appointments are not available from the patient API');
+	createAppointment: async (input: AppointmentCreateInput): Promise<Appointment> => {
+		try {
+			const rdo = await apiFetch<AppointmentRdo>(appointmentsUrl(), {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify(input),
+			});
+			return appointmentFromRdo(rdo);
+		} catch (error) {
+			toast.error('Failed to schedule appointment');
+			throw error;
+		}
 	},
 };
 

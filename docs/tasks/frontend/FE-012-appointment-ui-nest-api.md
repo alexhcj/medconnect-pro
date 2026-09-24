@@ -3,15 +3,15 @@ id: FE-012
 type: task
 area: frontend
 feature: scheduling
-status: planned
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-006, FE-011, BE-004, BE-009]
 related_adrs: [ADR-003-authentication.md]
 related_docs: [frontend-architecture.md,../contracts/api-endpoints.md,../contracts/data-contracts.md,../tasks/backend/BE-004-appointment-api.md,../tasks/backend/BE-009-identity-and-access-http.md]
 plane:
-  work_item_id:
-  identifier:
+  work_item_id:be2b0099-0f03-454e-a95e-59081f2f28a3
+  identifier:MEDCONNECT-44
 ---
 
 # FE-012 — Appointment UI on the Nest appointment API
@@ -37,11 +37,11 @@ Availability, PATCH, and DELETE stay unrequested. Those routes exist on Nest; th
 
 ## Acceptance criteria
 
-- [ ] With mocks off, list, calendar, and create call the Nest appointment API using the BE-009 session
-- [ ] `AppointmentRdo` maps onto the UI appointment type
-- [ ] Availability, PATCH, and DELETE are not requested from Nest
-- [ ] A synthetic seed or create path makes the live calendar demonstrable
-- [ ] One non-mock browser check covers calendar (or list) plus create
+- [x] With mocks off, list, calendar, and create call the Nest appointment API using the BE-009 session
+- [x] `AppointmentRdo` maps onto the UI appointment type
+- [x] Availability, PATCH, and DELETE are not requested from Nest
+- [x] A synthetic seed or create path makes the live calendar demonstrable
+- [x] One non-mock browser check covers calendar (or list) plus create
 
 ## Implementation notes
 
@@ -57,7 +57,7 @@ Extend `playwright.live.config.ts` `testMatch` for the live appointment spec. Do
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Live appointment list, calendar, and create on the Nest appointment API with the BE-009 bearer session. Availability, PATCH, and DELETE stay unused. Mock Playwright specs stay on `NEXT_PUBLIC_USE_MOCKS=true`.
+- Tests: Vitest covers `AppointmentRdo` mapping (including the live provider display name), list/create against `/appointments`, and `APPOINTMENT_CONFLICT`. `npm run e2e:live` covers the seeded calendar visit plus create with the API and seed already running.
 - PR:
-- Notes:
+- Notes: The live provider dropdown still uses the seeded id. Nest `providerName` is the provider email; the client mapper substitutes `Dr. Jordan Ellis` for that id.

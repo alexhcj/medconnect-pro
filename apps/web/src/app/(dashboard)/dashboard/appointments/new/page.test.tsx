@@ -3,15 +3,17 @@ import NewAppointmentPage from '@/app/(dashboard)/dashboard/appointments/new/pag
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {DEFAULT_ROLE_PERMISSIONS} from '@/types/auth/permissions';
 
-const {useSessionStatus, useProviders, usePatientSearch, usePatient} = vi.hoisted(() => ({
+const {useSessionStatus, useProviders, usePatientSearch, usePatient, useCreateAppointment} = vi.hoisted(() => ({
 	useSessionStatus: vi.fn(),
 	useProviders: vi.fn(),
 	usePatientSearch: vi.fn(),
 	usePatient: vi.fn(),
+	useCreateAppointment: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({
 	useSearchParams: () => ({get: () => null}),
+	useRouter: () => ({push: vi.fn()}),
 }));
 
 vi.mock('@/lib/hooks/use-session', () => ({
@@ -22,6 +24,7 @@ vi.mock('@/lib/hooks/use-medical', () => ({
 	useProviders,
 	usePatientSearch,
 	usePatient,
+	useCreateAppointment,
 }));
 
 vi.mock('@/lib/api/mocks/runtime', () => ({
@@ -44,6 +47,7 @@ describe('NewAppointmentPage', () => {
 		useProviders.mockReturnValue(queryState({data: []}));
 		usePatientSearch.mockReturnValue(queryState({data: {pages: [{patients: []}]}}));
 		usePatient.mockReturnValue(queryState());
+		useCreateAppointment.mockReturnValue({mutateAsync: vi.fn(), isPending: false});
 	});
 
 	it('denies a session without write:appointments', () => {
@@ -58,7 +62,7 @@ describe('NewAppointmentPage', () => {
 		expect(screen.queryByRole('button', {name: 'Schedule appointment'})).not.toBeInTheDocument();
 	});
 
-	it('shows a mock-only status when mocks are off', () => {
+	it('renders the schedule form when mocks are off', () => {
 		vi.mocked(isMockMode).mockReturnValue(false);
 		useSessionStatus.mockReturnValue({
 			session: {permissions: DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN},
@@ -67,9 +71,8 @@ describe('NewAppointmentPage', () => {
 
 		render(<NewAppointmentPage />);
 
-		expect(screen.getByRole('status')).toHaveTextContent(
-			'Appointment scheduling is mock-only until the appointment API is available.',
-		);
-		expect(screen.queryByRole('button', {name: 'Schedule appointment'})).not.toBeInTheDocument();
+		expect(screen.getByRole('heading', {level: 1, name: 'Schedule appointment'})).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Schedule appointment'})).toBeInTheDocument();
+		expect(screen.queryByText(/mock-only until the appointment API is available/)).not.toBeInTheDocument();
 	});
 });

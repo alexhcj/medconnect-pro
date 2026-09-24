@@ -137,7 +137,7 @@ export function useAppointments(enabled = true) {
 	return useQuery({
 		queryKey: ['appointments'],
 		queryFn: () => medicalAPI.listAppointments(),
-		enabled: enabled && isMockMode(),
+		enabled,
 		staleTime: 2 * 60 * 1000,
 		gcTime: 5 * 60 * 1000,
 	});

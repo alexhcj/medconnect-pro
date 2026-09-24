@@ -91,14 +91,13 @@ describe('AppointmentList', () => {
 		expect(refetch).toHaveBeenCalledOnce();
 	});
 
-	it('shows a mock-only status when mocks are off', () => {
+	it('renders appointment rows when mocks are off', () => {
 		vi.mocked(isMockMode).mockReturnValue(false);
 		mockAppointments();
 		render(<AppointmentList />);
 
-		expect(screen.getByRole('status')).toHaveTextContent(
-			'Appointment scheduling is mock-only until the appointment API is available.',
-		);
-		expect(screen.queryByRole('list', {name: 'Appointments'})).not.toBeInTheDocument();
+		expect(screen.getByRole('list', {name: 'Appointments'})).toBeInTheDocument();
+		expect(screen.getByText(/Avery Carter/)).toBeInTheDocument();
+		expect(screen.queryByText(/mock-only until the appointment API is available/)).not.toBeInTheDocument();
 	});
 });

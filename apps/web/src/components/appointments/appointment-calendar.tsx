@@ -21,7 +21,6 @@ import {
 	type CalendarNavigateAction,
 } from '@/lib/appointments/calendar-events';
 import {canWriteAppointments} from '@/lib/auth/appointment-access';
-import {isMockMode} from '@/lib/api/mocks/runtime';
 import {useAppointments} from '@/lib/hooks/use-medical';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {Appointment} from '@/types/medical/appointment';
@@ -91,23 +90,12 @@ function CalendarToolbar({
 }
 
 const AppointmentCalendar = () => {
-	const mockMode = isMockMode();
 	const {session, isLoading: isSessionLoading} = useSessionStatus();
 	const canWrite = !isSessionLoading && canWriteAppointments(session?.permissions);
-	const appointments = useAppointments(mockMode);
+	const appointments = useAppointments();
 	const [view, setView] = useState<AppointmentCalendarView>('week');
 	const [date, setDate] = useState<Date | undefined>(undefined);
 	const [selected, setSelected] = useState<Appointment | null>(null);
-
-	if (!mockMode) {
-		return (
-			<div className="rounded-lg border border-gray-200 bg-white p-4" role="status">
-				<p className="text-sm text-gray-700">
-					Appointment scheduling is mock-only until the appointment API is available.
-				</p>
-			</div>
-		);
-	}
 
 	if (appointments.isPending) {
 		return (

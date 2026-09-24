@@ -8,7 +8,6 @@ import {
 	APPOINTMENT_TYPE_LABELS,
 } from '@/components/forms/appointment-form-schema';
 import {canWriteAppointments} from '@/lib/auth/appointment-access';
-import {isMockMode} from '@/lib/api/mocks/runtime';
 import {useAppointments} from '@/lib/hooks/use-medical';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {Appointment} from '@/types/medical/appointment';
@@ -31,20 +30,9 @@ function stateLabel(state: Appointment['state']) {
 }
 
 const AppointmentList = () => {
-	const mockMode = isMockMode();
 	const {session, isLoading: isSessionLoading} = useSessionStatus();
 	const canWrite = !isSessionLoading && canWriteAppointments(session?.permissions);
-	const appointments = useAppointments(mockMode);
-
-	if (!mockMode) {
-		return (
-			<div className="rounded-lg border border-gray-200 bg-white p-4" role="status">
-				<p className="text-sm text-gray-700">
-					Appointment scheduling is mock-only until the appointment API is available.
-				</p>
-			</div>
-		);
-	}
+	const appointments = useAppointments();
 
 	return (
 		<Card>

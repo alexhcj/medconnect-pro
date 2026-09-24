@@ -6,7 +6,6 @@ import {useSearchParams} from 'next/navigation';
 import {AppointmentForm} from '@/components/forms/appointment-form';
 import {Button} from '@/components/ui/button';
 import {canWriteAppointments} from '@/lib/auth/appointment-access';
-import {isMockMode} from '@/lib/api/mocks/runtime';
 import {usePatient, usePatientSearch, useProviders} from '@/lib/hooks/use-medical';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {Patient} from '@/types/medical/patient';
@@ -56,9 +55,8 @@ const NewAppointmentFormPage = () => {
 	const searchParams = useSearchParams();
 	const prefilledPatientId = searchParams.get('patientId')?.trim() ?? '';
 	const {session, isLoading: isSessionLoading} = useSessionStatus();
-	const mockMode = isMockMode();
 	const canWrite = !isSessionLoading && canWriteAppointments(session?.permissions);
-	const loadOptions = canWrite && mockMode;
+	const loadOptions = canWrite;
 	const providers = useProviders(loadOptions);
 	const patients = usePatientSearch({enabled: loadOptions});
 	const prefilledPatient = usePatient(loadOptions ? prefilledPatientId : '');
@@ -79,18 +77,6 @@ const NewAppointmentFormPage = () => {
 			<FormChrome>
 				<div className="rounded-lg border border-gray-200 bg-white p-4" role="status">
 					<p className="text-sm text-gray-700">You do not have access to create appointments.</p>
-				</div>
-			</FormChrome>
-		);
-	}
-
-	if (!mockMode) {
-		return (
-			<FormChrome>
-				<div className="rounded-lg border border-gray-200 bg-white p-4" role="status">
-					<p className="text-sm text-gray-700">
-						Appointment scheduling is mock-only until the appointment API is available.
-					</p>
 				</div>
 			</FormChrome>
 		);

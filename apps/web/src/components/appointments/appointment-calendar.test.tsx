@@ -153,14 +153,13 @@ describe('AppointmentCalendar', () => {
 		expect(screen.queryByRole('region', {name: 'Appointment calendar'})).not.toBeInTheDocument();
 	});
 
-	it('shows a mock-only status when mocks are off', () => {
+	it('renders appointment events when mocks are off', () => {
 		vi.mocked(isMockMode).mockReturnValue(false);
 		mockAppointments();
 		render(<AppointmentCalendar />);
 
-		expect(screen.getByRole('status')).toHaveTextContent(
-			'Appointment scheduling is mock-only until the appointment API is available.',
-		);
-		expect(screen.queryByRole('region', {name: 'Appointment calendar'})).not.toBeInTheDocument();
+		expect(screen.getByRole('region', {name: 'Appointment calendar'})).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: /Avery Carter · Dr\. Jordan Ellis · Scheduled/})).toBeInTheDocument();
+		expect(screen.queryByText(/mock-only until the appointment API is available/)).not.toBeInTheDocument();
 	});
 });

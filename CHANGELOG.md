@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.28.0] - 2026-09-24
+
+### Added
+
+- Appointment list, calendar, and create call the Nest appointment API when mocks are off (FE-012), using the bearer from `POST /auth/login`. Availability, PATCH, and DELETE stay off that API. `npm run seed:mock-identity` already inserts a synthetic visit for the live calendar. `npm run e2e:live` checks calendar plus create against the API; `npm run e2e` stays on mocks.
+
 ## [0.27.1] - 2026-09-24
 
 ### Added
