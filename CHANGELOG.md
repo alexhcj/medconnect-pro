@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.27.1] - 2026-09-24
+
+### Added
+
+- Appointment workflow tests (QA-003): after a mock create, the new visit appears on the calendar, and a nurse who opens create directly is denied. Existing conflict, calendar view, and Nest authorization checks stay in place. Browser appointment tests still use synthetic mocks.
+
 ## [0.27.0] - 2026-09-24
 
 ### Added

@@ -11,6 +11,12 @@
 			"password": "Demo-Provider-1",
 			"role": "PROVIDER",
 			"userId": "user_mock_provider"
+		},
+		{
+			"email": "nurse@example.test",
+			"password": "Demo-Nurse-1",
+			"role": "NURSE",
+			"userId": "user_mock_nurse"
 		}
 	]
 }

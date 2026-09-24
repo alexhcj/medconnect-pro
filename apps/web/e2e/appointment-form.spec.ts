@@ -1,5 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
-import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {signInAsNurse, signInAsPracticeAdmin} from './helpers/mock-auth';
 
 function toDatetimeLocalValue(iso: string) {
 	const date = new Date(iso);
@@ -48,6 +48,13 @@ test.describe('Appointment creation', () => {
 		await page.getByRole('button', {name: 'Schedule appointment'}).click();
 
 		await expect(page).toHaveURL(/\/dashboard\/appointments$/);
+		await expect(page.getByRole('button', {name: 'Calendar'})).toHaveAttribute('aria-pressed', 'true');
+		await expect(page.getByRole('button', {name: 'Week view'})).toHaveAttribute('aria-pressed', 'true');
+		await page.getByRole('button', {name: 'Next period'}).click();
+		await expect(
+			page.getByRole('button', {name: /Jordan Brooks · Dr\. Jordan Ellis · Scheduled/}),
+		).toBeVisible();
+
 		await page.getByRole('button', {name: 'List'}).click();
 		await expect(page.getByRole('list', {name: 'Appointments'})).toContainText('Jordan Brooks');
 		await expect(page.getByRole('list', {name: 'Appointments'})).toContainText('Office visit');
@@ -69,5 +76,25 @@ test.describe('Appointment creation', () => {
 		);
 		await expect(page.getByLabel('Start')).toHaveAttribute('aria-invalid', 'true');
 		await expect(page).toHaveURL(/\/dashboard\/appointments\/new$/);
+	});
+
+	test('hides schedule from a nurse', async ({page}) => {
+		await signInAsNurse(page);
+		await openAppointments(page);
+
+		await expect(page.getByRole('heading', {level: 1, name: 'Appointments'})).toBeVisible();
+		await expect(page.getByRole('link', {name: 'Schedule appointment'})).toHaveCount(0);
+
+		await page.getByRole('button', {name: 'List'}).click();
+		await expect(page.getByRole('list', {name: 'Appointments'})).toBeVisible();
+		await expect(page.getByRole('link', {name: 'Schedule appointment'})).toHaveCount(0);
+	});
+
+	test('blocks a nurse who opens create directly', async ({page}) => {
+		await signInAsNurse(page);
+
+		await page.goto('/dashboard/appointments/new');
+		await expect(page.getByText('You do not have access to create appointments.')).toBeVisible();
+		await expect(page.getByRole('button', {name: 'Schedule appointment'})).toHaveCount(0);
 	});
 });

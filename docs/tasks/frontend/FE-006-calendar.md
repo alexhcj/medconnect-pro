@@ -47,6 +47,6 @@ Keep calendar state distinct from server state.
 ## Completion
 
 - Implementation: Calendar/list toggle on `/dashboard/appointments` (calendar default). React Big Calendar month/week/day with local view/date/selection state; appointments stay in TanStack Query. Selection opens an accessible details dialog. Mock-only until BE-004. Visible date initializes from loaded appointments so October fixtures appear.
-- Tests: Vitest for event mapping, toolbar views, loading/error/empty/mock-only, selection dialog, and page toggle. Playwright tablet flow for day/week/month switching, event selection, and list fallback. FE-005 create E2E now opens List after redirect.
+- Tests: Vitest for event mapping, toolbar views, loading/error/empty/mock-only, selection dialog, and page toggle. Playwright tablet flow for day/week/month switching, event selection, and list fallback. QA-003 create E2E asserts the new visit on the calendar, then List.
 - PR:
-- Notes: Mock list still returns the full in-memory practice set (same as FE-005). Drag/drop, slot-click create, and Nest `/appointments` stay out of scope. QA-003 remains a later task.
+- Notes: Mock list still returns the full in-memory practice set (same as FE-005). Drag/drop, slot-click create, and Nest `/appointments` stay out of scope.
