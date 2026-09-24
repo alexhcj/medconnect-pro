@@ -3,7 +3,7 @@ id: FE-006
 type: task
 area: frontend
 feature: scheduling
-status: planned
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-005]
@@ -34,11 +34,11 @@ Use React Big Calendar with healthcare-oriented responsive behavior.
 
 ## Acceptance criteria
 
-- [ ] Calendar renders
-- [ ] Day/week/month views work as applicable
-- [ ] Appointment selection works
-- [ ] Tablet layout works
-- [ ] Loading/error states exist
+- [x] Calendar renders
+- [x] Day/week/month views work as applicable
+- [x] Appointment selection works
+- [x] Tablet layout works
+- [x] Loading/error states exist
 
 ## Implementation notes
 
@@ -46,7 +46,7 @@ Keep calendar state distinct from server state.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Calendar/list toggle on `/dashboard/appointments` (calendar default). React Big Calendar month/week/day with local view/date/selection state; appointments stay in TanStack Query. Selection opens an accessible details dialog. Mock-only until BE-004. Visible date initializes from loaded appointments so October fixtures appear.
+- Tests: Vitest for event mapping, toolbar views, loading/error/empty/mock-only, selection dialog, and page toggle. Playwright tablet flow for day/week/month switching, event selection, and list fallback. FE-005 create E2E now opens List after redirect.
 - PR:
-- Notes:
+- Notes: Mock list still returns the full in-memory practice set (same as FE-005). Drag/drop, slot-click create, and Nest `/appointments` stay out of scope. QA-003 remains a later task.

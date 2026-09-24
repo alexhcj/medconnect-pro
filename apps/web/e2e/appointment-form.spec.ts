@@ -48,6 +48,7 @@ test.describe('Appointment creation', () => {
 		await page.getByRole('button', {name: 'Schedule appointment'}).click();
 
 		await expect(page).toHaveURL(/\/dashboard\/appointments$/);
+		await page.getByRole('button', {name: 'List'}).click();
 		await expect(page.getByRole('list', {name: 'Appointments'})).toContainText('Jordan Brooks');
 		await expect(page.getByRole('list', {name: 'Appointments'})).toContainText('Office visit');
 

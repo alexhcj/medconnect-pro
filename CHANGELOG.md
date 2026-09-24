@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.26.0] - 2026-09-24
+
+### Added
+
+- Appointment calendar on `/dashboard/appointments` (FE-006): day, week, and month views with
+  appointment selection, tablet-oriented toolbar, and loading/error states. List and create stay
+  available; the Nest appointment API stays out of scope.
+
 ## [0.25.0] - 2026-09-24
 
 ### Added

@@ -1,1 +1,19 @@
 @import "tailwindcss";
+@import "react-big-calendar/lib/css/react-big-calendar.css";
+
+.appointment-calendar .rbc-calendar {
+	min-height: 32rem;
+	min-width: 40rem;
+}
+
+.appointment-calendar .rbc-toolbar button,
+.appointment-calendar .rbc-event {
+	min-height: 2.5rem;
+}
+
+.appointment-calendar-event--cancelled,
+.appointment-calendar .appointment-calendar-event--cancelled {
+	background-color: #e5e7eb;
+	border-color: #9ca3af;
+	color: #4b5563;
+}
