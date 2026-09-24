@@ -11,7 +11,7 @@ export function configureApp(app: INestApplication): void {
 	const origin = process.env.WEB_ORIGIN?.trim() || 'http://localhost:3000';
 	app.enableCors({
 		origin,
-		methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
+		methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
 		allowedHeaders: ['Authorization', 'Content-Type', 'X-Correlation-ID'],
 	});
 	app.useGlobalPipes(

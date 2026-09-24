@@ -1,5 +1,6 @@
 import {Logger} from '@nestjs/common';
 import {DataSource} from 'typeorm';
+import {Appointment} from '../persistence/entities/appointment.entity.js';
 import {Patient} from '../persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {Practice} from '../persistence/entities/practice.entity.js';
@@ -86,6 +87,7 @@ async function seed(): Promise<void> {
 		const practices = dataSource.getRepository(Practice);
 		const memberships = dataSource.getRepository(PracticeMembership);
 		const patients = dataSource.getRepository(Patient);
+		const appointments = dataSource.getRepository(Appointment);
 
 		let admin = await users.findOne({where: {email: account.email}});
 		if (!admin) {
@@ -144,8 +146,30 @@ async function seed(): Promise<void> {
 			});
 		}
 
+		const seededPatient = await patients.findOne({
+			where: {practiceId: practice.id, email: SEEDED_PATIENTS[0].email},
+		});
+		if (seededPatient) {
+			const existingAppointment = await appointments.findOne({
+				where: {practiceId: practice.id, patientId: seededPatient.id},
+			});
+			if (!existingAppointment) {
+				await appointments.save({
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					providerUserId: provider.id,
+					startAt: new Date('2026-10-15T14:00:00.000Z'),
+					endAt: new Date('2026-10-15T15:00:00.000Z'),
+					type: 'office_visit',
+					state: 'scheduled',
+					notes: 'Annual follow-up',
+					synthetic: true,
+				});
+			}
+		}
+
 		Logger.log(
-			`Seeded synthetic practice admin, provider ${provider.id}, and demo patients`,
+			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, and a demo appointment`,
 			'MockIdentity',
 		);
 	} finally {

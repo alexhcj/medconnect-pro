@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.27.0] - 2026-09-24
+
+### Added
+
+- Appointment API (BE-004): `GET`/`POST /appointments`, `GET`/`PATCH`/`DELETE /appointments/:id`, and
+  `GET /providers/:id/availability`, with server-side provider conflict detection, tenant and role
+  checks, and mutation audit events. Frontend appointment screens stay on mocks.
+
 ## [0.26.0] - 2026-09-24
 
 ### Added

@@ -1,3 +1,5 @@
+import {Appointment} from './appointment.entity.js';
+import {AuditEvent} from './audit-event.entity.js';
 import {AuthSession} from './auth-session.entity.js';
 import {PatientAssignment} from './patient-assignment.entity.js';
 import {Patient} from './patient.entity.js';
@@ -12,6 +14,17 @@ export const persistenceEntities = [
 	Patient,
 	PatientAssignment,
 	AuthSession,
+	Appointment,
+	AuditEvent,
 ];
 
-export {AuthSession, Patient, PatientAssignment, Practice, PracticeMembership, User};
+export {
+	Appointment,
+	AuditEvent,
+	AuthSession,
+	Patient,
+	PatientAssignment,
+	Practice,
+	PracticeMembership,
+	User,
+};

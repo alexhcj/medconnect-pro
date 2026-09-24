@@ -30,9 +30,12 @@ tenant context; they must not trust client-supplied `practice_id`.
 
 The current persistence slice includes `practices`, `users` (synthetic identity keys, no passwords),
 `practice_memberships`, `auth_sessions` (opaque mock session hashes, not passwords), `patients`
-(demographics, assigned provider, and optional portal user), and `patient_assignments` for
-assigned-patient reads. Patient demographics HTTP is
-[BE-003](../tasks/backend/BE-003-patient-api.md).
+(demographics, assigned provider, and optional portal user), `patient_assignments` for
+assigned-patient reads, `appointments` (schedule, type, and state, with provider overlap exclusion),
+and write-only `audit_events` for appointment mutations. Patient demographics HTTP is
+[BE-003](../tasks/backend/BE-003-patient-api.md). Appointment HTTP is
+[BE-004](../tasks/backend/BE-004-appointment-api.md). The structured audit viewer remains
+[SEC-003](../tasks/security/SEC-003-audit-event-model.md).
 PostgreSQL row-level security is deferred to
 [SEC-002](../tasks/security/SEC-002-tenant-isolation.md).
 

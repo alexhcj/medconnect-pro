@@ -105,6 +105,12 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 	assertBearer(document, '/patients', 'post');
 	assertBearer(document, '/patients/{id}', 'get');
 	assertBearer(document, '/patients/{id}', 'patch');
+	assertBearer(document, '/appointments', 'get');
+	assertBearer(document, '/appointments', 'post');
+	assertBearer(document, '/appointments/{id}', 'get');
+	assertBearer(document, '/appointments/{id}', 'patch');
+	assertBearer(document, '/appointments/{id}', 'delete');
+	assertBearer(document, '/providers/{id}/availability', 'get');
 	const patientById = document.paths?.['/patients/{id}'];
 	if (patientById && 'delete' in patientById) {
 		throw new Error('DELETE /patients/{id} is not part of the patient contract');

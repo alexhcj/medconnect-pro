@@ -3,10 +3,10 @@ id: BE-004
 type: task
 area: backend
 feature: scheduling
-status: planned
+status: implemented
 priority: high
 estimate: 3
-dependencies: [BE-001,DATA-001,BE-003]
+dependencies: [BE-001,DATA-001,BE-003,BE-009]
 related_adrs: [ADR-002-tenant-isolation.md]
 related_docs: [backend-architecture.md,../contracts/api-endpoints.md]
 plane:
@@ -34,19 +34,22 @@ Provider schedules, availability and appointment state.
 
 ## Acceptance criteria
 
-- [ ] CRUD works
-- [ ] Availability works
-- [ ] Conflicts rejected
-- [ ] Tenant scope enforced
-- [ ] Audit events emitted where applicable
+- [x] CRUD works
+- [x] Availability works
+- [x] Conflicts rejected
+- [x] Tenant scope enforced
+- [x] Audit events emitted where applicable
 
 ## Implementation notes
 
 Conflict detection must be server-side.
 
+Do not start authorization acceptance criteria until [BE-009](BE-009-identity-and-access-http.md)
+ships. Frontend appointment mocks (FE-005, FE-006) stay on mocks until a later connect task.
+
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: NestJS scheduling module with `GET`/`POST /appointments`, `GET`/`PATCH`/`DELETE /appointments/:id`, and `GET /providers/:id/availability`. Appointments persist with tenant scope and a provider overlap exclusion constraint. Availability uses demo Monday–Friday 09:00–17:00 UTC. Mutations write `audit_events` without notes. `synthetic` is always true. Frontend live client still 404s appointments.
+- Tests: Overlap, access, availability, and service units; HTTP tests for anonymous access, receptionist CRUD, provider conflict (including cancelled reuse and concurrent insert), nurse/patient write denial, assigned/portal read scope, cross-tenant not-found, and client `practiceId` mismatch (`npm run test:api` with Compose Postgres).
 - PR:
-- Notes:
+- Notes: No `read:appointments` catalog string; reads use `write:appointments`, `read:assigned_patients`, or `read:own_patient`. SEC-003 is not complete (no audit HTTP). Waitlist, reminders, and frontend wiring stay out of scope.

@@ -1,6 +1,7 @@
 import {BadRequestException, HttpStatus, InternalServerErrorException} from '@nestjs/common';
 import {describe, expect, it} from 'vitest';
 import {InvalidCredentialsError, PermissionDeniedError} from '../identity/auth.errors.js';
+import {AppointmentConflictError} from '../scheduling/appointment.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {EnvelopeExceptionFilter} from './http-exception.filter.js';
 import type {ErrorEnvelope} from './error-envelope.js';
@@ -103,5 +104,22 @@ describe('EnvelopeExceptionFilter', () => {
 			'Client-supplied practice id is not authorized',
 		);
 		expect(JSON.stringify(mismatch.getResult().body)).not.toMatch(/stack|[0-9a-f]{8}-/i);
+	});
+
+	it('maps appointment conflicts to a 409 envelope without PHI', () => {
+		const {host, getResult} = createHost('cid-conflict');
+		filter.catch(new AppointmentConflictError(), host);
+		const result = getResult();
+		expect(result.statusCode).toBe(HttpStatus.CONFLICT);
+		expect(result.body.error).toEqual({
+			code: 'APPOINTMENT_CONFLICT',
+			message: 'This time overlaps an existing appointment for the provider.',
+			details: [
+				{
+					path: 'start',
+					message: 'This time overlaps an existing appointment for the provider.',
+				},
+			],
+		});
 	});
 });

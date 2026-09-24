@@ -15,6 +15,13 @@ import {
 	SessionInvalidError,
 } from '../identity/auth.errors.js';
 import {InvalidProviderAssignmentError, PatientNotFoundError} from '../patient/patient.errors.js';
+import {
+	AppointmentConflictError,
+	AppointmentNotFoundError,
+	InvalidAppointmentPatientError,
+	InvalidAppointmentProviderError,
+	InvalidAppointmentTimeError,
+} from '../scheduling/appointment.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {getCorrelationId} from './correlation.js';
 import {
@@ -93,8 +100,58 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 				'You do not have permission to perform this action',
 			);
 		}
-		if (exception instanceof PatientNotFoundError) {
+		if (exception instanceof PatientNotFoundError || exception instanceof AppointmentNotFoundError) {
 			return this.authError(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Resource not found');
+		}
+		if (exception instanceof AppointmentConflictError) {
+			return {
+				status: HttpStatus.CONFLICT,
+				error: {
+					code: 'APPOINTMENT_CONFLICT',
+					message: 'This time overlaps an existing appointment for the provider.',
+					details: [
+						{
+							path: 'start',
+							message: 'This time overlaps an existing appointment for the provider.',
+						},
+					],
+				},
+			};
+		}
+		if (exception instanceof InvalidAppointmentTimeError) {
+			return {
+				status: HttpStatus.BAD_REQUEST,
+				error: {
+					code: 'VALIDATION_ERROR',
+					message: 'Request validation failed',
+					details: [{path: 'end', message: 'End must be after start'}],
+				},
+			};
+		}
+		if (exception instanceof InvalidAppointmentPatientError) {
+			return {
+				status: HttpStatus.BAD_REQUEST,
+				error: {
+					code: 'VALIDATION_ERROR',
+					message: 'Request validation failed',
+					details: [{path: 'patientId', message: 'Patient must be in this practice'}],
+				},
+			};
+		}
+		if (exception instanceof InvalidAppointmentProviderError) {
+			return {
+				status: HttpStatus.BAD_REQUEST,
+				error: {
+					code: 'VALIDATION_ERROR',
+					message: 'Request validation failed',
+					details: [
+						{
+							path: 'providerId',
+							message: 'Provider must be a provider in this practice',
+						},
+					],
+				},
+			};
 		}
 		if (exception instanceof InvalidProviderAssignmentError) {
 			return {
