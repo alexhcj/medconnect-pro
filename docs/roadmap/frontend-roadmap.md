@@ -25,7 +25,8 @@ Slices below are sequencing, not a calendar independent of
 
 ## Slice 4 — Appointments and calendar (M3)
 
-- FE-005, FE-006.
+- appointment creation and calendar (FE-005, FE-006);
+- appointment UI against the Nest appointment API (FE-012).
 
 ## Slice 5 — Telehealth UI (M5)
 

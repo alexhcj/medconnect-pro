@@ -25,6 +25,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-011 — Patient UI on the Nest patient API
 - FE-005 — Appointment creation
 - FE-006 — Calendar
+- FE-012 — Appointment UI on the Nest appointment API
 - FE-007 — Telehealth session shell
 - FE-008 — Billing dashboard
 - FE-009 — Administration/security UI
