@@ -1,0 +1,40 @@
+{
+  "generated_at": "synthetic-demo-fixture",
+  "notice": "All records are fictional and must never be replaced with real appointment data.",
+  "appointments": [
+    {
+      "id": "demo-appointment-001",
+      "practiceId": "demo-practice-001",
+      "patientId": "demo-patient-001",
+      "providerId": "demo-provider-001",
+      "start": "2026-10-15T14:00:00.000Z",
+      "end": "2026-10-15T15:00:00.000Z",
+      "type": "office_visit",
+      "state": "scheduled",
+      "notes": "Annual follow-up",
+      "synthetic": true
+    },
+    {
+      "id": "demo-appointment-002",
+      "practiceId": "demo-practice-001",
+      "patientId": "demo-patient-004",
+      "providerId": "demo-provider-004",
+      "start": "2026-10-16T16:00:00.000Z",
+      "end": "2026-10-16T16:30:00.000Z",
+      "type": "telehealth",
+      "state": "confirmed",
+      "synthetic": true
+    },
+    {
+      "id": "demo-appointment-003",
+      "practiceId": "demo-practice-001",
+      "patientId": "demo-patient-001",
+      "providerId": "demo-provider-001",
+      "start": "2026-10-14T14:00:00.000Z",
+      "end": "2026-10-14T15:00:00.000Z",
+      "type": "follow_up",
+      "state": "cancelled",
+      "synthetic": true
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import {
 	canViewVitals,
 	canWritePatientDemographics,
 } from '@/lib/auth/patient-profile-access';
+import {canWriteAppointments} from '@/lib/auth/appointment-access';
 import {
 	usePatient,
 	usePatientDocuments,
@@ -346,6 +347,7 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 	const permissions = session?.permissions;
 	const canView = !isSessionLoading && canViewPatientProfile(permissions);
 	const canWrite = canView && canWritePatientDemographics(permissions);
+	const canSchedule = canView && canWriteAppointments(permissions);
 	const showClinical = isMockMode();
 	const showMedicalRecords = showClinical && canView && canViewMedicalRecords(permissions);
 	const showVitals = showClinical && canView && canViewVitals(permissions);
@@ -417,13 +419,25 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 		<ProfileShell
 			title={`${record.firstName} ${record.lastName}`}
 			action={
-				canWrite ? (
-					<Link
-						href={`/dashboard/patients/${record.id}/edit`}
-						className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-					>
-						Edit patient
-					</Link>
+				canWrite || canSchedule ? (
+					<div className="flex flex-wrap gap-3">
+						{canSchedule && (
+							<Link
+								href={`/dashboard/appointments/new?patientId=${record.id}`}
+								className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+							>
+								Schedule appointment
+							</Link>
+						)}
+						{canWrite && (
+							<Link
+								href={`/dashboard/patients/${record.id}/edit`}
+								className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+							>
+								Edit patient
+							</Link>
+						)}
+					</div>
 				) : undefined
 			}
 		>

@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.25.0] - 2026-09-24
+
+### Added
+
+- Appointment creation on `/dashboard/appointments` (FE-005): mock list and schedule form (patient, provider, time, type, state), accessible validation, and provider overlap feedback. Calendar views and the Nest appointment API stay out of scope.
+
 ## [0.24.0] - 2026-09-23
 
 ### Added

@@ -1,4 +1,12 @@
 import {ApiError, ApiErrorDetail} from '@/lib/api/http';
+import {
+	APPOINTMENT_CREATE_STATES,
+	APPOINTMENT_TYPES,
+	Appointment,
+	AppointmentCreateInput,
+	AppointmentCreateState,
+	AppointmentType,
+} from '@/types/medical/appointment';
 import {Patient, PatientDemographicsInput} from '@/types/medical/patient';
 import {Medication} from '@/types/medical/medication';
 import {Vital} from '@/types/medical/vital';
@@ -6,6 +14,7 @@ import {HistoryEntry} from '@/types/medical/history';
 import {PatientDocument} from '@/types/medical/document';
 import {Provider} from '@/types/medical/provider';
 import {
+	fixtureAppointments,
 	fixtureDocuments,
 	fixtureHistory,
 	fixtureMedications,
@@ -23,6 +32,27 @@ const vitals: Vital[] = structuredClone(fixtureVitals);
 const history: HistoryEntry[] = structuredClone(fixtureHistory);
 const documents: PatientDocument[] = structuredClone(fixtureDocuments);
 const providers: Provider[] = structuredClone(fixtureProviders);
+const appointments: Appointment[] = [];
+
+function patientDisplayName(patient: Patient) {
+	return `${patient.firstName} ${patient.lastName}`;
+}
+
+function withParticipants(
+	appointment: Omit<Appointment, 'patientName' | 'providerName'> &
+		Partial<Pick<Appointment, 'patientName' | 'providerName'>>,
+): Appointment {
+	const patient = patients.find((item) => item.id === appointment.patientId);
+	const provider = providers.find((item) => item.id === appointment.providerId);
+	return {
+		...appointment,
+		patientName: patient ? patientDisplayName(patient) : appointment.patientId,
+		providerName: provider?.displayName ?? appointment.providerId,
+		synthetic: true,
+	};
+}
+
+appointments.push(...structuredClone(fixtureAppointments).map((appointment) => withParticipants(appointment)));
 
 async function withMock<T>(work: () => T, errorMessage: string): Promise<T> {
 	await mockDelay();
@@ -188,6 +218,67 @@ function pickWritable(updates: Partial<Patient>): Partial<Patient> {
 	return next;
 }
 
+function isAppointmentType(value: string): value is AppointmentType {
+	return (APPOINTMENT_TYPES as readonly string[]).includes(value);
+}
+
+function isCreateState(value: string): value is AppointmentCreateState {
+	return (APPOINTMENT_CREATE_STATES as readonly string[]).includes(value);
+}
+
+function nextAppointmentId() {
+	const max = appointments.reduce((highest, appointment) => {
+		const match = /^demo-appointment-(\d+)$/.exec(appointment.id);
+		return match ? Math.max(highest, Number(match[1])) : highest;
+	}, 0);
+	return `demo-appointment-${String(max + 1).padStart(3, '0')}`;
+}
+
+function parseInstant(value: string, path: string, message: string): Date {
+	const instant = new Date(value);
+	if (Number.isNaN(instant.getTime())) {
+		validationError([{path, message}]);
+	}
+	return instant;
+}
+
+function requireAppointmentInput(input: AppointmentCreateInput) {
+	const details: ApiErrorDetail[] = [];
+	if (!input.patientId?.trim()) {
+		details.push({path: 'patientId', message: 'Select a patient'});
+	}
+	if (!input.providerId?.trim()) {
+		details.push({path: 'providerId', message: 'Select a provider'});
+	}
+	if (!input.start?.trim()) {
+		details.push({path: 'start', message: 'Start is required'});
+	}
+	if (!input.end?.trim()) {
+		details.push({path: 'end', message: 'End is required'});
+	}
+	if (!isAppointmentType(input.type)) {
+		details.push({path: 'type', message: 'Select a type'});
+	}
+	if (!isCreateState(input.state)) {
+		details.push({path: 'state', message: 'Select a state'});
+	}
+	if (details.length > 0) {
+		validationError(details);
+	}
+}
+
+/** UX simulation only. Server conflict detection is authoritative (BE-004). */
+function hasProviderOverlap(providerId: string, start: Date, end: Date) {
+	return appointments.some((existing) => {
+		if (existing.providerId !== providerId || existing.state === 'cancelled') {
+			return false;
+		}
+		const existingStart = new Date(existing.start);
+		const existingEnd = new Date(existing.end);
+		return start < existingEnd && end > existingStart;
+	});
+}
+
 export const medicalMockAPI = {
 	listPatients: async ({
 		pageParam,
@@ -307,4 +398,50 @@ export const medicalMockAPI = {
 			}
 			return provider;
 		}, 'Mock: Failed to fetch provider'),
+
+	listAppointments: async (): Promise<Appointment[]> =>
+		withMock(
+			() =>
+				appointments
+					.slice()
+					.sort((a, b) => a.start.localeCompare(b.start))
+					.map((appointment) => withParticipants(appointment)),
+			'Mock: Failed to list appointments',
+		),
+
+	createAppointment: async (input: AppointmentCreateInput): Promise<Appointment> =>
+		withMock(() => {
+			requireAppointmentInput(input);
+			const patient = requirePatient(input.patientId);
+			assertKnownProvider(input.providerId);
+
+			const start = parseInstant(input.start, 'start', 'Enter a valid start time');
+			const end = parseInstant(input.end, 'end', 'Enter a valid end time');
+			if (end <= start) {
+				validationError([{path: 'end', message: 'End must be after start'}]);
+			}
+
+			if (hasProviderOverlap(input.providerId, start, end)) {
+				throw new ApiError('This time overlaps an existing appointment for the provider.', 409, {
+					code: 'APPOINTMENT_CONFLICT',
+					details: [{path: 'start', message: 'This time overlaps an existing appointment for the provider.'}],
+				});
+			}
+
+			const created = withParticipants({
+				id: nextAppointmentId(),
+				practiceId: patient.practiceId,
+				patientId: patient.id,
+				providerId: input.providerId,
+				start: start.toISOString(),
+				end: end.toISOString(),
+				type: input.type,
+				state: input.state,
+				notes: input.notes?.trim() || undefined,
+				synthetic: true,
+			});
+			appointments.push(created);
+			mockLog('info', 'Created appointment', created.id);
+			return created;
+		}, 'Mock: Failed to create appointment'),
 };

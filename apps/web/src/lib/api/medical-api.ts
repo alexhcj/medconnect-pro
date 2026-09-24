@@ -1,3 +1,4 @@
+import {Appointment, AppointmentCreateInput} from '@/types/medical/appointment';
 import {Patient, PatientDemographicsInput} from '@/types/medical/patient';
 import {Medication} from '@/types/medical/medication';
 import {Vital} from '@/types/medical/vital';
@@ -127,6 +128,14 @@ export const medicalRealAPI = {
 			throw new ApiError('Failed to load provider information', 404);
 		}
 		return liveDemoProvider;
+	},
+
+	listAppointments: async (): Promise<Appointment[]> => {
+		return clinicalUnavailable('Appointments are not available from the patient API');
+	},
+
+	createAppointment: async (_input: AppointmentCreateInput): Promise<Appointment> => {
+		return clinicalUnavailable('Appointments are not available from the patient API');
 	},
 };
 

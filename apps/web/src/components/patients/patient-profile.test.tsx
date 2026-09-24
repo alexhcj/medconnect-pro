@@ -122,6 +122,10 @@ describe('PatientProfile', () => {
 			'href',
 			'/dashboard/patients/demo-patient-001/edit',
 		);
+		expect(screen.getByRole('link', {name: 'Schedule appointment'})).toHaveAttribute(
+			'href',
+			'/dashboard/appointments/new?patientId=demo-patient-001',
+		);
 		expect(screen.queryByText('Hypertension')).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'History'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'Vitals'})).not.toBeInTheDocument();
@@ -160,6 +164,10 @@ describe('PatientProfile', () => {
 
 		expect(screen.getByText('No history records.')).toBeInTheDocument();
 		expect(screen.queryByRole('link', {name: 'Edit patient'})).not.toBeInTheDocument();
+		expect(screen.getByRole('link', {name: 'Schedule appointment'})).toHaveAttribute(
+			'href',
+			'/dashboard/appointments/new?patientId=demo-patient-001',
+		);
 		expect(screen.getByRole('heading', {level: 2, name: 'Vitals'})).toBeInTheDocument();
 		expect(screen.getByText('Blood pressure 128/82 mmHg')).toBeInTheDocument();
 		expect(screen.getByText('patient001@example.test')).toBeInTheDocument();
@@ -188,6 +196,7 @@ describe('PatientProfile', () => {
 
 		expect(screen.getByRole('heading', {level: 2, name: 'Vitals'})).toBeInTheDocument();
 		expect(screen.getByText('No vitals recorded.')).toBeInTheDocument();
+		expect(screen.queryByRole('link', {name: 'Schedule appointment'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'History'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'Medications'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'Documents'})).not.toBeInTheDocument();

@@ -6,6 +6,8 @@ import medicationsFixture from '@docs/mocks/medications.json';
 import vitalsFixture from '@docs/mocks/vitals.json';
 import historyFixture from '@docs/mocks/history.json';
 import documentsFixture from '@docs/mocks/documents.json';
+import appointmentsFixture from '@docs/mocks/appointments.json';
+import {Appointment} from '@/types/medical/appointment';
 import {Patient} from '@/types/medical/patient';
 import {Provider} from '@/types/medical/provider';
 import {Medication} from '@/types/medical/medication';
@@ -29,4 +31,7 @@ export const fixtureMedications = medicationsFixture.medications as Medication[]
 export const fixtureVitals = vitalsFixture.vitals as Vital[];
 export const fixtureHistory = historyFixture.history as HistoryEntry[];
 export const fixtureDocuments = documentsFixture.documents as PatientDocument[];
+export const fixtureAppointments = appointmentsFixture.appointments as Array<
+	Omit<Appointment, 'patientName' | 'providerName'>
+>;
 export const fixtureDashboardMetrics = dashboardFixture.metrics as DashboardMetric[];

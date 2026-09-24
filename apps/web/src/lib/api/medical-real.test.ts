@@ -57,6 +57,17 @@ describe('medicalRealAPI', () => {
 		await expect(medicalRealAPI.getPatientVitals('patient-1')).rejects.toMatchObject({status: 404});
 		await expect(medicalRealAPI.getPatientMedications('patient-1')).rejects.toMatchObject({status: 404});
 		await expect(medicalRealAPI.getPatientDocuments('patient-1')).rejects.toMatchObject({status: 404});
+		await expect(medicalRealAPI.listAppointments()).rejects.toMatchObject({status: 404});
+		await expect(
+			medicalRealAPI.createAppointment({
+				patientId: 'patient-1',
+				providerId: LIVE_DEMO_PROVIDER_ID,
+				start: '2026-10-20T10:00:00.000Z',
+				end: '2026-10-20T11:00:00.000Z',
+				type: 'office_visit',
+				state: 'scheduled',
+			}),
+		).rejects.toMatchObject({status: 404});
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 

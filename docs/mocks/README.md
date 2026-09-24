@@ -20,6 +20,7 @@ The project uses deterministic synthetic data for development and demonstrations
 - `patients.json` — patient RDO-oriented demographics, contact, emergency contact, insurance, tenant/provider assignment.
 - `dashboard.json` — aggregate overview metrics only (no patient names or identifiers).
 - `providers.json` — providers referenced by `providerId`.
+- `appointments.json` — synthetic appointments keyed by patient and provider (type, state, start/end). Runtime handlers add participant display names.
 - `medications.json`, `vitals.json`, `history.json`, `documents.json` — clinical resources keyed by `patientId` (not nested on the patient).
 
 ## Recommended usage

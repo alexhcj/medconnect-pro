@@ -1,10 +1,15 @@
-import {FeaturePlaceholder} from '@/components/dashboard/feature-placeholder';
+'use client';
 
-export default function AppointmentsPage() {
+import {AppointmentList} from '@/components/appointments/appointment-list';
+
+const AppointmentsPage = () => {
 	return (
-		<FeaturePlaceholder
-			title="Appointments"
-			description="Scheduling workflows will appear here. This route is a placeholder so dashboard navigation stays intact."
-		/>
+		<div>
+			<h1 className="mb-2 text-2xl font-bold text-gray-900">Appointments</h1>
+			<p className="mb-6 text-sm text-gray-600">Synthetic demo data. Not a real medical record.</p>
+			<AppointmentList />
+		</div>
 	);
-}
+};
+
+export default AppointmentsPage;

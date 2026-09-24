@@ -3,7 +3,7 @@ id: FE-005
 type: task
 area: frontend
 feature: scheduling
-status: planned
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-003]
@@ -34,10 +34,10 @@ Provider, patient, time, type and appointment state.
 
 ## Acceptance criteria
 
-- [ ] Appointment form works
-- [ ] Conflict feedback exists
-- [ ] Validation works
-- [ ] Accessible workflow exists
+- [x] Appointment form works
+- [x] Conflict feedback exists
+- [x] Validation works
+- [x] Accessible workflow exists
 
 ## Implementation notes
 
@@ -45,7 +45,7 @@ Backend conflict detection is authoritative.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Mock list and create at `/dashboard/appointments` and `/dashboard/appointments/new`. Form covers patient, provider, start/end, type, and state, gated by `write:appointments`. Patient profile can prefill `?patientId=`. Live mode does not call Nest `/appointments`.
+- Tests: Vitest for schema, mock overlap (including cancelled slots), permissions, form errors, and list states. Playwright tablet flow for empty validation, create, and provider conflict.
 - PR:
-- Notes:
+- Notes: Mock overlap is UX only; BE-004 remains authoritative. Calendar is FE-006. No Nest appointment API in this slice.

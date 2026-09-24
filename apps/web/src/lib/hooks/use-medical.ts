@@ -2,13 +2,16 @@ import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from '@tanstack
 import {toast} from 'react-hot-toast';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {medicalAPI, PatientDemographicsInput, PatientNameSort, PatientStatusFilter} from '@/lib/api/medical-api';
+import {ApiError} from '@/lib/api/http';
 import {isMockMode} from '@/lib/api/mocks/runtime';
+import {AppointmentCreateInput} from '@/types/medical/appointment';
 import {Patient} from '@/types/medical/patient';
 
 export interface PatientSearchInput {
 	query?: string;
 	status?: PatientStatusFilter;
 	sort?: PatientNameSort;
+	enabled?: boolean;
 }
 
 export function usePatient(patientId: string) {
@@ -21,7 +24,12 @@ export function usePatient(patientId: string) {
 	});
 }
 
-export function usePatientSearch({query = '', status = 'all', sort = 'name-asc'}: PatientSearchInput = {}) {
+export function usePatientSearch({
+	query = '',
+	status = 'all',
+	sort = 'name-asc',
+	enabled = true,
+}: PatientSearchInput = {}) {
 	return useInfiniteQuery({
 		queryKey: ['patients', 'search', query, status, sort],
 		queryFn: ({pageParam}) => medicalAPI.searchPatients({pageParam, query, status, sort}),
@@ -29,6 +37,7 @@ export function usePatientSearch({query = '', status = 'all', sort = 'name-asc'}
 		getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextPage : undefined),
 		staleTime: 2 * 60 * 1000,
 		gcTime: 5 * 60 * 1000,
+		enabled,
 	});
 }
 
@@ -121,6 +130,34 @@ export function useProvider(providerId: string) {
 		queryKey: ['provider', providerId],
 		queryFn: () => medicalAPI.getProvider(providerId),
 		enabled: !!providerId,
+	});
+}
+
+export function useAppointments(enabled = true) {
+	return useQuery({
+		queryKey: ['appointments'],
+		queryFn: () => medicalAPI.listAppointments(),
+		enabled: enabled && isMockMode(),
+		staleTime: 2 * 60 * 1000,
+		gcTime: 5 * 60 * 1000,
+	});
+}
+
+export function useCreateAppointment() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (input: AppointmentCreateInput) => medicalAPI.createAppointment(input),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: ['appointments']});
+			toast.success('Appointment scheduled successfully');
+		},
+		onError: (error) => {
+			if (!(error instanceof ApiError)) {
+				console.error('Failed to create appointment:', error);
+			}
+			toast.error('Failed to schedule appointment');
+		},
 	});
 }
 

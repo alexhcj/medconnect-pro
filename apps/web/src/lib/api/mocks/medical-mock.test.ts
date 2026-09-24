@@ -137,3 +137,87 @@ describe('medicalMockAPI.createPatient', () => {
 		}
 	});
 });
+
+const validAppointment = () => ({
+	patientId: 'demo-patient-002',
+	providerId: 'demo-provider-001',
+	start: '2026-10-20T10:00:00.000Z',
+	end: '2026-10-20T11:00:00.000Z',
+	type: 'office_visit' as const,
+	state: 'scheduled' as const,
+});
+
+describe('medicalMockAPI.createAppointment', () => {
+	it('lists fixture appointments with participant names, sorted by start', async () => {
+		const listed = await medicalMockAPI.listAppointments();
+		const starts = listed.map((appointment) => appointment.start);
+
+		expect(listed.some((appointment) => appointment.id === 'demo-appointment-001')).toBe(true);
+		expect(starts).toEqual([...starts].sort((a, b) => a.localeCompare(b)));
+		expect(listed.find((appointment) => appointment.id === 'demo-appointment-001')).toMatchObject({
+			patientName: 'Avery Carter',
+			providerName: 'Dr. Jordan Ellis',
+			state: 'scheduled',
+		});
+	});
+
+	it('stores a synthetic appointment on the patient practice', async () => {
+		const created = await medicalMockAPI.createAppointment(validAppointment());
+
+		expect(created).toMatchObject({
+			practiceId: 'demo-practice-002',
+			patientName: 'Jordan Brooks',
+			providerName: 'Dr. Jordan Ellis',
+			synthetic: true,
+			state: 'scheduled',
+		});
+		expect(created.id).toMatch(/^demo-appointment-\d+$/);
+
+		const listed = await medicalMockAPI.listAppointments();
+		expect(listed.some((appointment) => appointment.id === created.id)).toBe(true);
+	});
+
+	it('rejects an unknown patient or provider', async () => {
+		await expect(
+			medicalMockAPI.createAppointment({...validAppointment(), patientId: 'missing-patient'}),
+		).rejects.toMatchObject({status: 404, code: 'NOT_FOUND'});
+
+		await expect(
+			medicalMockAPI.createAppointment({
+				...validAppointment(),
+				start: '2026-10-21T10:00:00.000Z',
+				end: '2026-10-21T11:00:00.000Z',
+				providerId: 'missing-provider',
+			}),
+		).rejects.toMatchObject({
+			status: 400,
+			code: 'VALIDATION_ERROR',
+			details: [{path: 'providerId', message: 'Assigned provider is not available'}],
+		});
+	});
+
+	it('rejects a provider overlap with APPOINTMENT_CONFLICT', async () => {
+		await expect(
+			medicalMockAPI.createAppointment({
+				...validAppointment(),
+				start: '2026-10-15T14:00:00.000Z',
+				end: '2026-10-15T15:00:00.000Z',
+			}),
+		).rejects.toMatchObject({
+			status: 409,
+			code: 'APPOINTMENT_CONFLICT',
+			details: [{path: 'start', message: 'This time overlaps an existing appointment for the provider.'}],
+		});
+	});
+
+	it('allows a slot that only overlaps a cancelled appointment', async () => {
+		const created = await medicalMockAPI.createAppointment({
+			...validAppointment(),
+			start: '2026-10-14T14:00:00.000Z',
+			end: '2026-10-14T15:00:00.000Z',
+		});
+
+		expect(created.start).toBe('2026-10-14T14:00:00.000Z');
+		expect(created.state).toBe('scheduled');
+	});
+});
