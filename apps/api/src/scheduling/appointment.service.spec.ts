@@ -9,7 +9,7 @@ import {TenantContext} from '../tenancy/tenant-context.js';
 import type {PracticeRole} from '../tenancy/practice-role.js';
 import {AppointmentConflictError, AppointmentNotFoundError} from './appointment.errors.js';
 import type {AppointmentRepository} from './appointment.repository.js';
-import type {AuditEventRepository} from './audit-event.repository.js';
+import type {AuditEventRepository} from '../audit/audit-event.repository.js';
 import {AppointmentService} from './appointment.service.js';
 import type {AppointmentCreateBody} from './appointment.schema.js';
 

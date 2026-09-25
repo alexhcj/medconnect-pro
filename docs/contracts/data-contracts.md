@@ -69,9 +69,26 @@ Response concepts:
 
 ## Clinical data
 
-Keep clinical boundaries explicit.
+Keep clinical boundaries explicit. Clinical collections are nested under a patient and must not appear on `PatientRdo`.
 
-Use FHIR R4-aligned concepts where beneficial, without claiming complete FHIR compliance.
+This API is **not a FHIR server**. Request and response DTOs use application field names. FHIR R4
+resource names below are conceptual alignment only: payloads are not FHIR JSON, and unsupported
+resources, profiles, and code systems are out of scope.
+
+| Collection | HTTP | Bounded FHIR concept | Application fields | Not claimed |
+| --- | --- | --- | --- | --- |
+| History entry | `GET`/`POST /patients/:id/history` | ClinicalImpression / DocumentReference-like visit event | type (`visit` \| `consultation` \| `procedure`), occurredAt, title, summary, providerId, status | FHIR resource JSON, Composition, narrative notes attached to an event |
+| Condition | `GET`/`POST /patients/:id/conditions` | Condition (`code.text` + `clinicalStatus`) | display, clinicalStatus (`active` \| `resolved` \| `inactive`), recordedAt, recordedById | ICD/SNOMED, Condition FHIR profile |
+| Vital | `GET`/`POST /patients/:id/vitals` | Observation vital-signs panel (one flattened panel per recording) | recordedAt, systolicMmHg, diastolicMmHg, heartRateBpm, temperatureC, respiratoryRate, spo2Percent, weightKg, recordedById | LOINC, one Observation per measure |
+| Medication | `GET`/`POST /patients/:id/medications` | MedicationRequest-like order | name, dosage, frequency, route, startDate, endDate, prescriberId, instructions, status | MedicationStatement vs Request split, RxNorm |
+
+A **history entry** is a significant clinical event in the longitudinal record. It must not contain
+diagnoses, vitals, or medications. Narrative notes attached to an event, patient, or appointment are
+a later concern. Documents are a separate boundary.
+
+`synthetic` is always true. Actor ids (`providerId`, `recordedById`, `prescriberId`) and tenant scope
+come from the session, not from the client. Create DTOs accept only the mutable clinical fields for
+that collection.
 
 ## Validation
 

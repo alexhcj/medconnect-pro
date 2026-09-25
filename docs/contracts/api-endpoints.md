@@ -43,10 +43,17 @@ identity-and-access contract. Do not duplicate the permission catalog here.
 - `POST /patients`
 - `PATCH /patients/:id`
 - `GET /patients/:id/history`
+- `POST /patients/:id/history`
+- `GET /patients/:id/conditions`
+- `POST /patients/:id/conditions`
 - `GET /patients/:id/vitals`
+- `POST /patients/:id/vitals`
 - `GET /patients/:id/medications`
+- `POST /patients/:id/medications`
 - `GET /patients/:id/documents`
 - `POST /patients/:id/documents`
+
+Clinical collections are the first EHR slice ([BE-005](../tasks/backend/BE-005-clinical-record-api.md)): history entries (visit/consultation/procedure events), conditions, vitals, and medications. Writes are create-only (`POST`). Documents remain a later boundary. History entries are not a bucket for diagnoses, vitals, or medications.
 
 ## Appointments
 

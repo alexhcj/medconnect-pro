@@ -563,6 +563,760 @@
         ]
       }
     },
+    "/patients/{id}/history": {
+      "get": {
+        "description": "Visit, consultation, and procedure events in the longitudinal record. Conceptual FHIR ClinicalImpression/DocumentReference alignment only — not a FHIR resource payload. Requires write:medical_records, or a portal user reading their own record. History is not a bucket for conditions, vitals, or medications. Tenant comes from the session.",
+        "operationId": "HistoryController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List history entries for a patient",
+        "tags": [
+          "ehr"
+        ]
+      },
+      "post": {
+        "description": "Requires write:medical_records. providerId is the authenticated actor. synthetic is always stored as true. This is not a FHIR create.",
+        "operationId": "HistoryController_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "visit",
+                      "consultation",
+                      "procedure"
+                    ]
+                  },
+                  "occurredAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "summary": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "completed",
+                      "reviewed",
+                      "amended"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "occurredAt",
+                  "title",
+                  "summary",
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryEntry"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a synthetic history entry",
+        "tags": [
+          "ehr"
+        ]
+      }
+    },
+    "/patients/{id}/conditions": {
+      "get": {
+        "description": "Diagnoses as bounded Condition.code.text plus clinicalStatus. Not ICD/SNOMED and not a FHIR Condition resource. Requires write:medical_records, or a portal user reading their own record. Tenant comes from the session.",
+        "operationId": "ConditionsController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConditionList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List conditions for a patient",
+        "tags": [
+          "ehr"
+        ]
+      },
+      "post": {
+        "description": "Requires write:medical_records. recordedById is the authenticated actor. synthetic is always stored as true. This is not a FHIR create.",
+        "operationId": "ConditionsController_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "display": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "clinicalStatus": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "resolved",
+                      "inactive"
+                    ]
+                  },
+                  "recordedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  }
+                },
+                "required": [
+                  "display",
+                  "clinicalStatus",
+                  "recordedAt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicalCondition"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a synthetic condition",
+        "tags": [
+          "ehr"
+        ]
+      }
+    },
+    "/patients/{id}/vitals": {
+      "get": {
+        "description": "Flattened vital-signs panel (not one Observation per measure, not LOINC). Requires write:vitals, or a portal user reading their own record. Tenant comes from the session.",
+        "operationId": "VitalsController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VitalList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List vitals for a patient",
+        "tags": [
+          "ehr"
+        ]
+      },
+      "post": {
+        "description": "Requires write:vitals. recordedById is the authenticated actor. synthetic is always stored as true. This is not a FHIR create.",
+        "operationId": "VitalsController_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recordedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  },
+                  "systolicMmHg": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 300
+                  },
+                  "diastolicMmHg": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 200
+                  },
+                  "heartRateBpm": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 300
+                  },
+                  "temperatureC": {
+                    "type": "number",
+                    "minimum": 30,
+                    "maximum": 45
+                  },
+                  "respiratoryRate": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 80
+                  },
+                  "spo2Percent": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "weightKg": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 500
+                  }
+                },
+                "required": [
+                  "recordedAt",
+                  "systolicMmHg",
+                  "diastolicMmHg",
+                  "heartRateBpm",
+                  "temperatureC",
+                  "respiratoryRate",
+                  "spo2Percent",
+                  "weightKg"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vital"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a synthetic vitals recording",
+        "tags": [
+          "ehr"
+        ]
+      }
+    },
+    "/patients/{id}/medications": {
+      "get": {
+        "description": "MedicationRequest-like orders (not RxNorm, not MedicationStatement). Requires write:medical_records, or a portal user reading their own record. Tenant comes from the session.",
+        "operationId": "MedicationsController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List medications for a patient",
+        "tags": [
+          "ehr"
+        ]
+      },
+      "post": {
+        "description": "Requires write:medical_records. prescriberId is the authenticated actor. synthetic is always stored as true. This is not a FHIR create.",
+        "operationId": "MedicationsController_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "dosage": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "frequency": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "route": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "instructions": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "discontinued",
+                      "completed"
+                    ]
+                  }
+                },
+                "required": [
+                  "name",
+                  "dosage",
+                  "frequency",
+                  "route",
+                  "startDate",
+                  "instructions",
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Medication"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a synthetic medication",
+        "tags": [
+          "ehr"
+        ]
+      }
+    },
     "/appointments": {
       "get": {
         "description": "Optional from/to window, patient, provider, and state filters. Page size defaults to 50 (max 100). Tenant comes from the session, not from the client. Nurses see assigned patients. Patient users see their own appointments.",
@@ -1740,6 +2494,341 @@
         "required": [
           "patients",
           "hasMore"
+        ]
+      },
+      "HistoryEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "patientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "visit",
+              "consultation",
+              "procedure"
+            ],
+            "example": "visit"
+          },
+          "occurredAt": {
+            "type": "string",
+            "example": "2025-07-15T10:30:00.000Z"
+          },
+          "title": {
+            "type": "string",
+            "example": "Hypertension follow-up"
+          },
+          "summary": {
+            "type": "string",
+            "example": "Blood pressure stable on current medication. Continue current plan."
+          },
+          "providerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "completed",
+              "reviewed",
+              "amended"
+            ],
+            "example": "completed"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "practiceId",
+          "patientId",
+          "type",
+          "occurredAt",
+          "title",
+          "summary",
+          "providerId",
+          "status",
+          "synthetic"
+        ]
+      },
+      "HistoryList": {
+        "type": "object",
+        "properties": {
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoryEntry"
+            }
+          }
+        },
+        "required": [
+          "history"
+        ]
+      },
+      "ClinicalCondition": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "patientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "display": {
+            "type": "string",
+            "example": "Hypertension",
+            "description": "Human-readable condition text (FHIR Condition.code.text alignment). Not a coded system."
+          },
+          "clinicalStatus": {
+            "type": "string",
+            "enum": [
+              "active",
+              "resolved",
+              "inactive"
+            ],
+            "example": "active"
+          },
+          "recordedAt": {
+            "type": "string",
+            "example": "2025-07-15T10:30:00.000Z"
+          },
+          "recordedById": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "practiceId",
+          "patientId",
+          "display",
+          "clinicalStatus",
+          "recordedAt",
+          "recordedById",
+          "synthetic"
+        ]
+      },
+      "ConditionList": {
+        "type": "object",
+        "properties": {
+          "conditions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClinicalCondition"
+            }
+          }
+        },
+        "required": [
+          "conditions"
+        ]
+      },
+      "Vital": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "patientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "recordedAt": {
+            "type": "string",
+            "example": "2025-07-15T10:15:00.000Z"
+          },
+          "systolicMmHg": {
+            "type": "number",
+            "example": 128
+          },
+          "diastolicMmHg": {
+            "type": "number",
+            "example": 82
+          },
+          "heartRateBpm": {
+            "type": "number",
+            "example": 72
+          },
+          "temperatureC": {
+            "type": "number",
+            "example": 36.7
+          },
+          "respiratoryRate": {
+            "type": "number",
+            "example": 16
+          },
+          "spo2Percent": {
+            "type": "number",
+            "example": 98
+          },
+          "weightKg": {
+            "type": "number",
+            "example": 72.5
+          },
+          "recordedById": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "practiceId",
+          "patientId",
+          "recordedAt",
+          "systolicMmHg",
+          "diastolicMmHg",
+          "heartRateBpm",
+          "temperatureC",
+          "respiratoryRate",
+          "spo2Percent",
+          "weightKg",
+          "recordedById",
+          "synthetic"
+        ]
+      },
+      "VitalList": {
+        "type": "object",
+        "properties": {
+          "vitals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Vital"
+            }
+          }
+        },
+        "required": [
+          "vitals"
+        ]
+      },
+      "Medication": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "patientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Lisinopril"
+          },
+          "dosage": {
+            "type": "string",
+            "example": "10mg"
+          },
+          "frequency": {
+            "type": "string",
+            "example": "Once daily"
+          },
+          "route": {
+            "type": "string",
+            "example": "oral"
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2023-01-10",
+            "description": "ISO date (YYYY-MM-DD)."
+          },
+          "endDate": {
+            "type": "string",
+            "example": "2026-01-10",
+            "description": "ISO date (YYYY-MM-DD)."
+          },
+          "prescriberId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "instructions": {
+            "type": "string",
+            "example": "Take in the morning with water"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "discontinued",
+              "completed"
+            ],
+            "example": "active"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "practiceId",
+          "patientId",
+          "name",
+          "dosage",
+          "frequency",
+          "route",
+          "startDate",
+          "prescriberId",
+          "instructions",
+          "status",
+          "synthetic"
+        ]
+      },
+      "MedicationList": {
+        "type": "object",
+        "properties": {
+          "medications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Medication"
+            }
+          }
+        },
+        "required": [
+          "medications"
         ]
       },
       "Appointment": {

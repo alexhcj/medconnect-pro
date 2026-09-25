@@ -111,19 +111,20 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 	assertBearer(document, '/appointments/{id}', 'patch');
 	assertBearer(document, '/appointments/{id}', 'delete');
 	assertBearer(document, '/providers/{id}/availability', 'get');
+	assertBearer(document, '/patients/{id}/history', 'get');
+	assertBearer(document, '/patients/{id}/history', 'post');
+	assertBearer(document, '/patients/{id}/conditions', 'get');
+	assertBearer(document, '/patients/{id}/conditions', 'post');
+	assertBearer(document, '/patients/{id}/vitals', 'get');
+	assertBearer(document, '/patients/{id}/vitals', 'post');
+	assertBearer(document, '/patients/{id}/medications', 'get');
+	assertBearer(document, '/patients/{id}/medications', 'post');
 	const patientById = document.paths?.['/patients/{id}'];
 	if (patientById && 'delete' in patientById) {
 		throw new Error('DELETE /patients/{id} is not part of the patient contract');
 	}
-	for (const path of [
-		'/patients/{id}/history',
-		'/patients/{id}/vitals',
-		'/patients/{id}/medications',
-		'/patients/{id}/documents',
-	]) {
-		if (document.paths?.[path]) {
-			throw new Error(`${path} is outside the patient demographics contract`);
-		}
+	if (document.paths?.['/patients/{id}/documents']) {
+		throw new Error('/patients/{id}/documents is outside the clinical record contract');
 	}
 	if (!document.components?.schemas?.ErrorEnvelope) {
 		throw new Error('OpenAPI must include the ErrorEnvelope schema');

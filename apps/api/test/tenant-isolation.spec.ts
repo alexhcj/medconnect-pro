@@ -1,12 +1,14 @@
 import {randomUUID} from 'node:crypto';
 import {beforeAll, afterAll, describe, expect, it} from 'vitest';
 import {DataSource} from 'typeorm';
+import {VitalRepository} from '../src/ehr/vital.repository.js';
 import {DEFAULT_DATABASE_URL} from '../src/persistence/default-database-url.js';
 import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
 import {Practice} from '../src/persistence/entities/practice.entity.js';
 import {User} from '../src/persistence/entities/user.entity.js';
+import {Vital} from '../src/persistence/entities/vital.entity.js';
 import {postgresConnectionOptions} from '../src/persistence/typeorm.options.js';
 import {MembershipRepository} from '../src/practice/membership.repository.js';
 import {PatientRepository} from '../src/practice/patient.repository.js';
@@ -26,6 +28,7 @@ describe('tenant isolation', () => {
 	let patientA: Patient;
 	let patientB: Patient;
 	let membershipB: PracticeMembership;
+	let vitalB: Vital;
 
 	beforeAll(async () => {
 		dataSource = new DataSource(postgresConnectionOptions(databaseUrl));
@@ -74,12 +77,28 @@ describe('tenant isolation', () => {
 				email: 'casey.ramirez@synthetic.example',
 			}),
 		});
+		vitalB = await dataSource.getRepository(Vital).save({
+			practiceId: practiceB.id,
+			patientId: patientB.id,
+			recordedAt: new Date('2025-07-15T10:15:00.000Z'),
+			systolicMmHg: 118,
+			diastolicMmHg: 76,
+			heartRateBpm: 70,
+			temperatureC: 36.6,
+			respiratoryRate: 16,
+			spo2Percent: 99,
+			weightKg: 70.1,
+			recordedByUserId: userB.id,
+			synthetic: true,
+		});
 	});
 
 	afterAll(async () => {
 		if (!dataSource?.isInitialized) {
 			return;
 		}
+		await dataSource.getRepository(Vital).delete({practiceId: practiceA.id});
+		await dataSource.getRepository(Vital).delete({practiceId: practiceB.id});
 		await dataSource.getRepository(PatientAssignment).delete({practiceId: practiceA.id});
 		await dataSource.getRepository(PatientAssignment).delete({practiceId: practiceB.id});
 		await dataSource.getRepository(Patient).delete([patientA.id, patientB.id]);
@@ -104,6 +123,12 @@ describe('tenant isolation', () => {
 		const tenant = new TenantContext();
 		tenant.set({practiceId, actorUserId, role: 'PRACTICE_ADMIN'});
 		return new MembershipRepository(dataSource.getRepository(PracticeMembership), tenant);
+	}
+
+	function scopedVitalRepo(practiceId: string, actorUserId: string): VitalRepository {
+		const tenant = new TenantContext();
+		tenant.set({practiceId, actorUserId, role: 'PROVIDER'});
+		return new VitalRepository(dataSource.getRepository(Vital), tenant);
 	}
 
 	it('lists only patients in the server-resolved practice', async () => {
@@ -160,5 +185,28 @@ describe('tenant isolation', () => {
 		const current = await practices.getCurrent();
 		expect(current?.id).toBe(practiceA.id);
 		expect(current?.name).not.toBe(practiceB.name);
+	});
+
+	it('lists only vitals in the server-resolved practice', async () => {
+		const listed = await scopedVitalRepo(practiceA.id, userA.id).listByPatient(patientB.id);
+		expect(listed.map((row) => row.id)).not.toContain(vitalB.id);
+	});
+
+	it('rejects clinical writes that carry a mismatched client practice id', async () => {
+		await expect(
+			scopedVitalRepo(practiceA.id, userA.id).create({
+				patientId: patientA.id,
+				recordedAt: new Date('2025-07-16T10:15:00.000Z'),
+				systolicMmHg: 120,
+				diastolicMmHg: 80,
+				heartRateBpm: 70,
+				temperatureC: 36.5,
+				respiratoryRate: 16,
+				spo2Percent: 98,
+				weightKg: 70,
+				recordedByUserId: userA.id,
+				practiceId: practiceB.id,
+			}),
+		).rejects.toBeInstanceOf(TenantMismatchError);
 	});
 });

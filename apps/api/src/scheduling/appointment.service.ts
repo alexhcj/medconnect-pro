@@ -33,7 +33,7 @@ import {
 	type AppointmentUpdateInput,
 	type BusyInterval,
 } from './appointment.repository.js';
-import {AuditEventRepository} from './audit-event.repository.js';
+import {AuditEventRepository} from '../audit/audit-event.repository.js';
 import {
 	DEMO_AVAILABILITY_TIME_ZONE,
 	DEMO_WORKING_HOURS,

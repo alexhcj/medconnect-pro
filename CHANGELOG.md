@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.30.0] - 2026-09-25
+
+### Added
+
+- Clinical record API (BE-005): `GET`/`POST /patients/:id/history`, `/conditions`, `/vitals`, and `/medications`. Tenant-scoped TypeORM persistence, provider vs nurse permission checks, portal self-read, and mutation audit events without clinical payloads. FHIR alignment is conceptual only.
+
+### Changed
+
+- Human API index and data contracts document the bounded clinical mapping. Documents remain unimplemented. Shared `AuditModule` records appointment and clinical writes.
+
 ## [0.29.0] - 2026-09-25
 
 ### Changed

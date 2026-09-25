@@ -62,10 +62,15 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/appointments/{id}']?.patch?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/appointments/{id}']?.delete?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/providers/{id}/availability']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/history']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/history']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/conditions']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/conditions']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/vitals']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/vitals']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/medications']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/medications']?.post?.security).toEqual([{bearer: []}]);
 		expect(document.paths).not.toHaveProperty('/providers');
-		expect(document.paths).not.toHaveProperty('/patients/{id}/history');
-		expect(document.paths).not.toHaveProperty('/patients/{id}/vitals');
-		expect(document.paths).not.toHaveProperty('/patients/{id}/medications');
 		expect(document.paths).not.toHaveProperty('/patients/{id}/documents');
 		expect(document.paths).not.toHaveProperty('/__test/validate');
 		expect(document.paths).not.toHaveProperty('/__test/authz');

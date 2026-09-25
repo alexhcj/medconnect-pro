@@ -1,5 +1,6 @@
 import {Module, type MiddlewareConsumer, type NestModule} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
+import {EhrModule} from './ehr/ehr.module.js';
 import {HealthModule} from './health/health.module.js';
 import {IdentityModule} from './identity/identity.module.js';
 import {PatientModule} from './patient/patient.module.js';
@@ -21,6 +22,7 @@ import {TenancyModule} from './tenancy/tenant.module.js';
 		TenancyModule,
 		PracticeModule,
 		PatientModule,
+		EhrModule,
 		SchedulingModule,
 		IdentityModule,
 		HealthModule,
