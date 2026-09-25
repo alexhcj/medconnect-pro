@@ -1,6 +1,10 @@
 import {Inject, Injectable} from '@nestjs/common';
+import {REQUEST} from '@nestjs/core';
+import type {Request} from 'express';
+import {AuditEventRepository} from '../audit/audit-event.repository.js';
 import type {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import type {AuthSession} from '../persistence/entities/auth-session.entity.js';
+import {getCorrelationId} from '../platform/correlation.js';
 import {isPracticeRole} from '../tenancy/practice-role.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {
@@ -36,6 +40,11 @@ export type AuthenticatedSession = {
 	membership: PracticeMembership;
 };
 
+type AuditScope = {
+	practiceId: string;
+	actorUserId: string;
+};
+
 @Injectable()
 export class AuthService {
 	constructor(
@@ -43,6 +52,8 @@ export class AuthService {
 		private readonly memberships: IdentityMembershipLookup,
 		@Inject(MOCK_IDP_USERS) private readonly accounts: readonly MockIdpAccount[],
 		@Inject(CLOCK) private readonly clock: Clock,
+		private readonly audit: AuditEventRepository,
+		@Inject(REQUEST) private readonly request: Request,
 	) {}
 
 	async login(input: {
@@ -85,8 +96,12 @@ export class AuthService {
 				expiresIn: Math.floor(MFA_TTL_MS / 1000),
 			};
 		}
-		const tokens = await this.insertSession(user.id, membership.id, now);
-		return {kind: 'tokens', ...tokens};
+		const {pair, session} = await this.insertSession(user.id, membership.id, now);
+		await this.recordAuth('auth.login.succeeded', session.id, {
+			practiceId: membership.practiceId,
+			actorUserId: user.id,
+		});
+		return {kind: 'tokens', ...pair};
 	}
 
 	async verifyMfa(mfaToken: string, code: string): Promise<TokenPair> {
@@ -101,6 +116,7 @@ export class AuthService {
 			session.mfaExpiresAt.getTime() <= now.getTime() ||
 			session.absoluteExpiresAt.getTime() <= now.getTime()
 		) {
+			await this.recordMfaFailure(session);
 			throw new MfaInvalidError();
 		}
 		const user = await this.memberships.findUserById(session.userId);
@@ -108,13 +124,19 @@ export class AuthService {
 			? this.accounts.find((item) => item.email.toLowerCase() === user.email.toLowerCase())
 			: undefined;
 		if (!account?.mfaRequired || !account.mfaCode || !constantTimeEqual(code, account.mfaCode)) {
+			await this.recordMfaFailure(session);
 			throw new MfaInvalidError();
 		}
 		const membership = await this.memberships.getById(session.membershipId);
 		if (!membership || membership.userId !== session.userId || !isPracticeRole(membership.role)) {
 			throw new MfaInvalidError();
 		}
-		return this.rotate(session, now);
+		const tokens = await this.rotate(session, now);
+		await this.recordAuth('auth.mfa.succeeded', session.id, {
+			practiceId: membership.practiceId,
+			actorUserId: session.userId,
+		});
+		return tokens;
 	}
 
 	async refresh(refreshToken: string): Promise<TokenPair> {
@@ -125,6 +147,13 @@ export class AuthService {
 			const reused = await this.sessions.findByPreviousRefreshHash(hash);
 			if (reused && !reused.revokedAt) {
 				await this.sessions.revoke(reused.id, now);
+				const membership = await this.memberships.getById(reused.membershipId);
+				if (membership) {
+					await this.recordAuth('auth.refresh.reuse', reused.id, {
+						practiceId: membership.practiceId,
+						actorUserId: reused.userId,
+					});
+				}
 			}
 			throw new SessionInvalidError();
 		}
@@ -149,11 +178,32 @@ export class AuthService {
 	}
 
 	async logout(sessionId: string): Promise<void> {
+		const session = await this.sessions.findById(sessionId);
 		await this.sessions.revoke(sessionId, this.clock.now());
+		if (!session) {
+			return;
+		}
+		const membership = await this.memberships.getById(session.membershipId);
+		if (!membership) {
+			return;
+		}
+		await this.recordAuth('auth.logout', sessionId, {
+			practiceId: membership.practiceId,
+			actorUserId: session.userId,
+		});
 	}
 
 	async logoutAll(userId: string): Promise<void> {
+		const memberships = await this.memberships.listForUser(userId);
 		await this.sessions.revokeAllForUser(userId, this.clock.now());
+		const membership = memberships[0];
+		if (!membership) {
+			return;
+		}
+		await this.recordAuth('auth.logout_all', null, {
+			practiceId: membership.practiceId,
+			actorUserId: userId,
+		});
 	}
 
 	private bindMembership(
@@ -204,12 +254,16 @@ export class AuthService {
 		return Math.max(0, Math.floor((accessExpiresAt.getTime() - now.getTime()) / 1000));
 	}
 
-	private async insertSession(userId: string, membershipId: string, now: Date): Promise<TokenPair> {
+	private async insertSession(
+		userId: string,
+		membershipId: string,
+		now: Date,
+	): Promise<{pair: TokenPair; session: AuthSession}> {
 		const absoluteExpiresAt = new Date(now.getTime() + ABSOLUTE_TTL_MS);
 		const accessToken = generateToken();
 		const refreshToken = generateToken();
 		const accessExpiresAt = this.accessExpiry(absoluteExpiresAt, now);
-		await this.sessions.insert({
+		const session = await this.sessions.insert({
 			userId,
 			membershipId,
 			accessTokenHash: hashToken(accessToken),
@@ -223,10 +277,13 @@ export class AuthService {
 			accessExpiresAt,
 		});
 		return {
-			tokenType: 'Bearer',
-			accessToken,
-			refreshToken,
-			expiresIn: this.expiresIn(accessExpiresAt, now),
+			session,
+			pair: {
+				tokenType: 'Bearer',
+				accessToken,
+				refreshToken,
+				expiresIn: this.expiresIn(accessExpiresAt, now),
+			},
 		};
 	}
 
@@ -248,5 +305,32 @@ export class AuthService {
 			refreshToken,
 			expiresIn: this.expiresIn(accessExpiresAt, now),
 		};
+	}
+
+	private async recordMfaFailure(session: AuthSession): Promise<void> {
+		const membership = await this.memberships.getById(session.membershipId);
+		if (!membership) {
+			return;
+		}
+		await this.recordAuth('auth.mfa.failed', session.id, {
+			practiceId: membership.practiceId,
+			actorUserId: session.userId,
+		});
+	}
+
+	private async recordAuth(
+		action: string,
+		resourceId: string | null,
+		scope: AuditScope,
+	): Promise<void> {
+		await this.audit.record(
+			{
+				action,
+				resourceType: 'session',
+				resourceId,
+				correlationId: getCorrelationId(this.request),
+			},
+			scope,
+		);
 	}
 }

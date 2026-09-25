@@ -1,6 +1,7 @@
 import {CanActivate, ExecutionContext, Injectable, Scope} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
 import type {Request} from 'express';
+import {AuditEventRepository} from '../audit/audit-event.repository.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
 import {IS_PUBLIC_KEY} from './auth.decorators.js';
@@ -18,6 +19,7 @@ export class AuthGuard implements CanActivate {
 		private readonly reflector: Reflector,
 		private readonly auth: AuthService,
 		private readonly tenant: TenantContext,
+		private readonly audit: AuditEventRepository,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -34,6 +36,10 @@ export class AuthGuard implements CanActivate {
 		const resolved = await this.auth.authenticate(token);
 		const clientPracticeIds = readClientPracticeIds(request);
 		if (clientPracticeIds.some((practiceId) => practiceId !== resolved.membership.practiceId)) {
+			await this.audit.tryRecordDenied(request, {
+				practiceId: resolved.membership.practiceId,
+				actorUserId: resolved.membership.userId,
+			});
 			throw new TenantMismatchError();
 		}
 

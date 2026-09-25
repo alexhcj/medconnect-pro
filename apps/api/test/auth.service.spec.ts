@@ -1,6 +1,7 @@
 import {randomUUID} from 'node:crypto';
-import {afterAll, beforeAll, describe, expect, it} from 'vitest';
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest';
 import {DataSource, In} from 'typeorm';
+import type {AuditEventRepository} from '../src/audit/audit-event.repository.js';
 import {AuthService, type LoginResult, type TokenPair} from '../src/identity/auth.service.js';
 import {InvalidCredentialsError, MembershipUnresolvedError, MfaInvalidError, SessionInvalidError} from '../src/identity/auth.errors.js';
 import type {Clock} from '../src/identity/clock.js';
@@ -32,6 +33,7 @@ function expectTokens(result: LoginResult): TokenPair {
 describe('AuthService', () => {
 	let dataSource: DataSource;
 	let service: AuthService;
+	let audit: {record: ReturnType<typeof vi.fn>};
 	let now = new Date('2026-03-01T12:00:00.000Z');
 	let practiceA: Practice;
 	let practiceB: Practice;
@@ -106,7 +108,16 @@ describe('AuthService', () => {
 			dataSource.getRepository(User),
 			dataSource.getRepository(PracticeMembership),
 		);
-		service = new AuthService(sessions, memberships, catalog, clock);
+		audit = {record: vi.fn().mockResolvedValue({})};
+		const request = {path: '/auth/login'} as never;
+		service = new AuthService(
+			sessions,
+			memberships,
+			catalog,
+			clock,
+			audit as unknown as AuditEventRepository,
+			request,
+		);
 	});
 
 	afterAll(async () => {
@@ -150,6 +161,14 @@ describe('AuthService', () => {
 		const resolved = await service.authenticate(tokens.accessToken);
 		expect(resolved.membership.practiceId).toBe(practiceA.id);
 		expect(resolved.membership.role).toBe('PROVIDER');
+		expect(audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: 'auth.login.succeeded',
+				resourceType: 'session',
+			}),
+			expect.objectContaining({practiceId: practiceA.id, actorUserId: singleUser.id}),
+		);
+		expect(JSON.stringify(audit.record.mock.calls)).not.toMatch(/synthetic\.example|Synthetic-Pass/);
 	});
 
 	it('rejects a practice selector outside the membership set', async () => {

@@ -1,6 +1,10 @@
-import {Injectable} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
+import {REQUEST} from '@nestjs/core';
+import type {Request} from 'express';
+import {AuditEventRepository} from '../audit/audit-event.repository.js';
 import {PermissionDeniedError} from '../identity/auth.errors.js';
 import type {Patient} from '../persistence/entities/patient.entity.js';
+import {getCorrelationId} from '../platform/correlation.js';
 import {MembershipRepository} from '../practice/membership.repository.js';
 import {
 	PatientRepository,
@@ -21,6 +25,8 @@ export class PatientService {
 		private readonly patients: PatientRepository,
 		private readonly memberships: MembershipRepository,
 		private readonly tenant: TenantContext,
+		private readonly audit: AuditEventRepository,
+		@Inject(REQUEST) private readonly request: Request,
 	) {}
 
 	async list(query: PatientListQuery): Promise<PatientSearchResultRdo> {
@@ -30,6 +36,7 @@ export class PatientService {
 
 	async get(id: string): Promise<PatientRdo> {
 		const row = await this.loadVisible(id);
+		await this.recordAudit('patient.accessed', row.id);
 		return toPatientRdo(row);
 	}
 
@@ -37,6 +44,7 @@ export class PatientService {
 		this.assertCanWrite();
 		await this.assertAssignedProvider(input.providerId);
 		const row = await this.patients.create(flattenCreate(input));
+		await this.recordAudit('patient.created', row.id);
 		return toPatientRdo(row);
 	}
 
@@ -50,6 +58,7 @@ export class PatientService {
 		if (!row) {
 			throw new PatientNotFoundError();
 		}
+		await this.recordAudit('patient.updated', row.id);
 		return toPatientRdo(row);
 	}
 
@@ -103,6 +112,15 @@ export class PatientService {
 		if (!match) {
 			throw new InvalidProviderAssignmentError();
 		}
+	}
+
+	private async recordAudit(action: string, resourceId: string): Promise<void> {
+		await this.audit.record({
+			action,
+			resourceType: 'patient',
+			resourceId,
+			correlationId: getCorrelationId(this.request),
+		});
 	}
 }
 

@@ -1,5 +1,8 @@
 import {Module, type MiddlewareConsumer, type NestModule} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
+import {APP_INTERCEPTOR} from '@nestjs/core';
+import {AuditAccessDeniedInterceptor} from './audit/audit-access-denied.interceptor.js';
+import {AuditModule} from './audit/audit.module.js';
 import {EhrModule} from './ehr/ehr.module.js';
 import {HealthModule} from './health/health.module.js';
 import {IdentityModule} from './identity/identity.module.js';
@@ -21,12 +24,14 @@ import {TenancyModule} from './tenancy/tenant.module.js';
 		PersistenceModule,
 		TenancyModule,
 		PracticeModule,
+		AuditModule,
 		PatientModule,
 		EhrModule,
 		SchedulingModule,
 		IdentityModule,
 		HealthModule,
 	],
+	providers: [{provide: APP_INTERCEPTOR, useClass: AuditAccessDeniedInterceptor}],
 })
 export class AppModule implements NestModule {
 	configure(consumer: MiddlewareConsumer): void {

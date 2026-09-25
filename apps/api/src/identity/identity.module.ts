@@ -1,6 +1,7 @@
 import {Module} from '@nestjs/common';
 import {APP_GUARD} from '@nestjs/core';
 import {TypeOrmModule} from '@nestjs/typeorm';
+import {AuditModule} from '../audit/audit.module.js';
 import {AuthSession} from '../persistence/entities/auth-session.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {User} from '../persistence/entities/user.entity.js';
@@ -15,7 +16,11 @@ import {PermissionsGuard} from './permissions.guard.js';
 import {SessionRepository} from './session.repository.js';
 
 @Module({
-	imports: [TenancyModule, TypeOrmModule.forFeature([User, PracticeMembership, AuthSession])],
+	imports: [
+		TenancyModule,
+		AuditModule,
+		TypeOrmModule.forFeature([User, PracticeMembership, AuthSession]),
+	],
 	controllers: [AuthController],
 	providers: [
 		AuthService,

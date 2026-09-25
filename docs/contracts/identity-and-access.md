@@ -60,7 +60,7 @@ HTTP route. Endpoint implementations map to these strings.
 | `write:appointments` | Create or update appointments. |
 | `read:billing` | Read billing artifacts in scope (practice-wide or self, via resource check). |
 | `write:billing` | Create or update billing artifacts in scope. |
-| `admin:practice` | Manage practice profile and practice-level settings. |
+| `admin:practice` | Manage practice profile and practice-level settings, including reading tenant-scoped audit events (`GET /admin/audit-events`). |
 | `admin:users` | Assign roles and manage users within tenant rules. |
 | `admin:global` | Platform-wide administration. |
 

@@ -70,6 +70,7 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/patients/{id}/vitals']?.post?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/patients/{id}/medications']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/patients/{id}/medications']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/admin/audit-events']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths).not.toHaveProperty('/providers');
 		expect(document.paths).not.toHaveProperty('/patients/{id}/documents');
 		expect(document.paths).not.toHaveProperty('/__test/validate');

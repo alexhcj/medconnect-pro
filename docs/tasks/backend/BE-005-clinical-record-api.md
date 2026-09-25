@@ -48,12 +48,12 @@ Do not claim full FHIR compliance. Bounded mapping is in
 Task “notes” map to **history entries** at `GET`/`POST /patients/:id/history` (visit, consultation,
 or procedure events). Diagnoses map to `GET`/`POST /patients/:id/conditions`. History entries must
 not bucket conditions, vitals, or medications. Narrative notes attached to an event are out of
-scope. Documents stay unimplemented. Writes are `POST` only. Mutation audit reuses `audit_events`
-without an audit HTTP viewer ([SEC-003](../security/SEC-003-audit-event-model.md)).
+scope. Documents stay unimplemented. Writes are `POST` only. Mutation audit reuses `audit_events`;
+the HTTP list is [SEC-003](../security/SEC-003-audit-event-model.md).
 
 ## Completion
 
 - Implementation: NestJS EHR module with `GET`/`POST /patients/:id/history`, `/conditions`, `/vitals`, and `/medications`. Rows persist on `clinical_history`, `clinical_conditions`, `vitals`, and `medications` with `practice_id`. `write:medical_records` covers history/conditions/medications; `write:vitals` covers vitals. Assigned nurses write vitals only. Portal users GET their own records. Mutations write `audit_events` without clinical payloads. `synthetic` is always true. Frontend live clinical client stays on mocks. Documents are not implemented.
 - Tests: Access and service units; HTTP tests for anonymous access, validation, provider create/list, nurse vitals vs medical-record denial, unassigned nurse not-found, receptionist/practice-admin denial, portal self-read, cross-tenant not-found, and client `practiceId` mismatch (`npm run test:api` with Compose Postgres). Tenant isolation covers vital repository scoping.
 - PR:
-- Notes: FHIR alignment is documented in data-contracts only (not a FHIR server). SEC-003 is not complete (no audit HTTP). PATCH/DELETE, documents, and frontend wiring stay out of scope. Audit repository moved to a shared `AuditModule` used by scheduling and EHR.
+- Notes: FHIR alignment is documented in data-contracts only (not a FHIR server). Audit HTTP list is [SEC-003](../security/SEC-003-audit-event-model.md). PATCH/DELETE, documents, and frontend wiring stay out of scope. Audit repository lives in a shared `AuditModule` used by scheduling and EHR.

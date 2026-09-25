@@ -90,6 +90,13 @@ a later concern. Documents are a separate boundary.
 come from the session, not from the client. Create DTOs accept only the mutable clinical fields for
 that collection.
 
+## Audit events
+
+`GET /admin/audit-events` returns tenant-scoped rows from `audit_events`. Response fields are
+identity and action metadata only: `id`, `practiceId`, `actorUserId`, `action`, `resourceType`,
+`resourceId`, `correlationId`, `createdAt`. There is no payload object. Emails, passwords, notes,
+and clinical text must not appear. Reads require `admin:practice`. Tenant comes from the session.
+
 ## Validation
 
 Use server-side DTO validation as authoritative.

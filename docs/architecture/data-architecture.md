@@ -33,12 +33,15 @@ The current persistence slice includes `practices`, `users` (synthetic identity 
 (demographics, assigned provider, and optional portal user), `patient_assignments` for
 assigned-patient reads, `appointments` (schedule, type, and state, with provider overlap exclusion),
 `clinical_history`, `clinical_conditions`, `vitals`, and `medications` (tenant-owned clinical
-collections keyed by `practice_id` and `patient_id`), and write-only `audit_events` for appointment
-and clinical mutations (action, resource type/id, actor, correlation; no clinical payload). Patient
+collections keyed by `practice_id` and `patient_id`), and `audit_events` (actor, tenant, action,
+resource type/id, correlation; no payload). Authentication, authenticated denials, patient
+access/mutations, appointment mutations, and clinical creates write rows. Restricted HTTP list is
+[SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,
+`admin:practice`). The administration UI viewer remains
+[FE-009](../tasks/frontend/FE-009-administration-security-ui.md). Patient
 demographics HTTP is [BE-003](../tasks/backend/BE-003-patient-api.md). Appointment HTTP is
 [BE-004](../tasks/backend/BE-004-appointment-api.md). Clinical HTTP is
-[BE-005](../tasks/backend/BE-005-clinical-record-api.md). The structured audit viewer remains
-[SEC-003](../tasks/security/SEC-003-audit-event-model.md).
+[BE-005](../tasks/backend/BE-005-clinical-record-api.md).
 PostgreSQL row-level security is deferred to
 [SEC-002](../tasks/security/SEC-002-tenant-isolation.md).
 

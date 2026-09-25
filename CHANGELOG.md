@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.31.0] - 2026-09-25
+
+### Added
+
+- Restricted `GET /admin/audit-events` (SEC-003): practice-admin list of tenant-scoped audit rows (actor, action, resource ids, correlation; no emails, notes, or clinical text). Mock login, logout, MFA, refresh-token reuse, authenticated denials, and patient GET/create/update now write `audit_events` alongside existing appointment and clinical mutation events.
+
 ## [0.30.0] - 2026-09-25
 
 ### Added

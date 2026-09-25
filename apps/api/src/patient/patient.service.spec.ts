@@ -1,4 +1,5 @@
 import {describe, expect, it, vi} from 'vitest';
+import type {AuditEventRepository} from '../audit/audit-event.repository.js';
 import {PermissionDeniedError} from '../identity/auth.errors.js';
 import type {Patient} from '../persistence/entities/patient.entity.js';
 import type {MembershipRepository} from '../practice/membership.repository.js';
@@ -74,12 +75,18 @@ function harness(role: PracticeRole, userId = actorId) {
 	const memberships = {
 		list: vi.fn().mockResolvedValue([{userId: providerId, role: 'PROVIDER'}]),
 	};
+	const audit = {
+		record: vi.fn().mockResolvedValue({}),
+	};
+	const request = {correlationId: 'cid-patient'} as never;
 	const service = new PatientService(
 		patients as unknown as PatientRepository,
 		memberships as unknown as MembershipRepository,
 		tenant,
+		audit as unknown as AuditEventRepository,
+		request,
 	);
-	return {service, patients, memberships};
+	return {service, patients, memberships, audit};
 }
 
 describe('PatientService', () => {
@@ -136,5 +143,25 @@ describe('PatientService', () => {
 		expect(receptionist.patients.create).toHaveBeenCalledWith(
 			expect.objectContaining({providerId, street: '10 Demo Lane'}),
 		);
+		expect(receptionist.audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: 'patient.created',
+				resourceType: 'patient',
+			}),
+		);
+		expect(JSON.stringify(receptionist.audit.record.mock.calls[0])).not.toMatch(/Riley|Chen/);
+	});
+
+	it('audits a successful patient profile read without demographics', async () => {
+		const patient = harness('PATIENT');
+		await patient.service.get(patientRow().id);
+		expect(patient.audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: 'patient.accessed',
+				resourceType: 'patient',
+				resourceId: patientRow().id,
+			}),
+		);
+		expect(JSON.stringify(patient.audit.record.mock.calls[0])).not.toMatch(/Avery|Quinn/);
 	});
 });

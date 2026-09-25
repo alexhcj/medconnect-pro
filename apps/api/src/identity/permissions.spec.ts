@@ -4,6 +4,8 @@ import {roleHasPermissions} from './permissions.js';
 describe('permission catalog', () => {
 	it('grants practice administration to practice admins', () => {
 		expect(roleHasPermissions('PRACTICE_ADMIN', ['admin:users'])).toBe(true);
+		expect(roleHasPermissions('PRACTICE_ADMIN', ['admin:practice'])).toBe(true);
+		expect(roleHasPermissions('PROVIDER', ['admin:practice'])).toBe(false);
 	});
 
 	it('does not grant user administration to nurses', () => {

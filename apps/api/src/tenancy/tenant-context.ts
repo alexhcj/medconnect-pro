@@ -10,20 +10,24 @@ export type TenantScope = {
 
 @Injectable({scope: Scope.REQUEST})
 export class TenantContext {
-	private current: TenantScope | undefined;
+	private scope: TenantScope | undefined;
 
 	set(scope: TenantScope): void {
-		this.current = scope;
+		this.scope = scope;
+	}
+
+	current(): TenantScope | undefined {
+		return this.scope;
 	}
 
 	require(): TenantScope {
-		if (!this.current) {
+		if (!this.scope) {
 			throw new TenantScopeMissingError();
 		}
-		return this.current;
+		return this.scope;
 	}
 
 	clear(): void {
-		this.current = undefined;
+		this.scope = undefined;
 	}
 }

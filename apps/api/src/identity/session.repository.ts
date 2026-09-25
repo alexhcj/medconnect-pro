@@ -33,6 +33,11 @@ export class SessionRepository {
 		return this.rows.save(row);
 	}
 
+	async findById(id: string): Promise<AuthSession | undefined> {
+		const row = await this.rows.findOne({where: {id}});
+		return row ?? undefined;
+	}
+
 	async findByAccessHash(hash: string): Promise<AuthSession | undefined> {
 		const row = await this.rows.findOne({
 			where: {accessTokenHash: hash, revokedAt: IsNull()},

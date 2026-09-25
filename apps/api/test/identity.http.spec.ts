@@ -15,6 +15,7 @@ import {PracticeMembership} from '../src/persistence/entities/practice-membershi
 import {Practice} from '../src/persistence/entities/practice.entity.js';
 import {User} from '../src/persistence/entities/user.entity.js';
 import {AuthSession} from '../src/persistence/entities/auth-session.entity.js';
+import {AuditEvent} from '../src/persistence/entities/audit-event.entity.js';
 import {AuthorizationProbeController} from './authorization-probe.controller.js';
 import {syntheticPatientColumns} from './synthetic-patient.js';
 
@@ -102,6 +103,10 @@ describe('identity HTTP', () => {
 		}
 		const userIds = [nurse, admin, mfaUser].filter(Boolean).map((user) => user.id);
 		const patientIds = [patientA, patientB].filter(Boolean).map((patient) => patient.id);
+		const practiceIds = [practiceA, practiceB].filter(Boolean).map((practice) => practice.id);
+		if (practiceIds.length > 0) {
+			await dataSource.getRepository(AuditEvent).delete({practiceId: In(practiceIds)});
+		}
 		if (patientIds.length > 0) {
 			await dataSource.getRepository(PatientAssignment).delete({patientId: In(patientIds)});
 			await dataSource.getRepository(Patient).delete({id: In(patientIds)});
@@ -111,7 +116,6 @@ describe('identity HTTP', () => {
 			await dataSource.getRepository(PracticeMembership).delete({userId: In(userIds)});
 			await dataSource.getRepository(User).delete({id: In(userIds)});
 		}
-		const practiceIds = [practiceA, practiceB].filter(Boolean).map((practice) => practice.id);
 		if (practiceIds.length > 0) {
 			await dataSource.getRepository(Practice).delete({id: In(practiceIds)});
 		}

@@ -3,10 +3,13 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {AuditEvent} from '../persistence/entities/audit-event.entity.js';
 import {TenancyModule} from '../tenancy/tenant.module.js';
 import {AuditEventRepository} from './audit-event.repository.js';
+import {AuditController} from './audit.controller.js';
+import {AuditService} from './audit.service.js';
 
 @Module({
 	imports: [TenancyModule, TypeOrmModule.forFeature([AuditEvent])],
-	providers: [AuditEventRepository],
+	controllers: [AuditController],
+	providers: [AuditEventRepository, AuditService],
 	exports: [AuditEventRepository],
 })
 export class AuditModule {}

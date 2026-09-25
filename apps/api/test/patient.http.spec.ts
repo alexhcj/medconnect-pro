@@ -8,6 +8,7 @@ import {AppModule} from '../src/app.module.js';
 import {MOCK_IDP_USERS, type MockIdpAccount} from '../src/identity/mock-idp.js';
 import {configureApp} from '../src/platform/configure-app.js';
 import {AuthSession} from '../src/persistence/entities/auth-session.entity.js';
+import {AuditEvent} from '../src/persistence/entities/audit-event.entity.js';
 import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
@@ -131,6 +132,9 @@ describe('patient HTTP', () => {
 			],
 		});
 		const userIds = users.map((user) => user.id);
+		if (practiceIds.length > 0) {
+			await dataSource.getRepository(AuditEvent).delete({practiceId: In(practiceIds)});
+		}
 		if (userIds.length > 0) {
 			await dataSource.getRepository(AuthSession).delete({userId: In(userIds)});
 		}
