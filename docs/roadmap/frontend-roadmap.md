@@ -28,18 +28,22 @@ Slices below are sequencing, not a calendar independent of
 - appointment creation and calendar (FE-005, FE-006);
 - appointment UI against the Nest appointment API (FE-012).
 
-## Slice 5 — Telehealth UI (M5)
+## Slice 5 — Clinical record (M4)
+
+- patient profile clinical lists against the Nest clinical API (FE-013).
+
+## Slice 6 — Telehealth UI (M5)
 
 - FE-007.
 
-## Slice 6 — Billing (M6)
+## Slice 7 — Billing (M6)
 
 - FE-008.
 
-## Slice 7 — Settings and security administration (M7)
+## Slice 8 — Settings and security administration (M7)
 
 - FE-009.
 
-## Slice 8 — Responsive polish
+## Slice 9 — Responsive polish
 
 - mobile/PWA-oriented polish and responsive workflows.
