@@ -13,6 +13,7 @@ import {
 import {canWriteAppointments} from '@/lib/auth/appointment-access';
 import {
 	usePatient,
+	usePatientConditions,
 	usePatientDocuments,
 	usePatientHistory,
 	usePatientMedications,
@@ -21,6 +22,7 @@ import {
 } from '@/lib/hooks/use-medical';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {useSessionStatus} from '@/lib/hooks/use-session';
+import {ClinicalCondition} from '@/types/medical/clinical-condition';
 import {HistoryEntry} from '@/types/medical/history';
 import {Medication} from '@/types/medical/medication';
 import {Patient} from '@/types/medical/patient';
@@ -169,6 +171,52 @@ function HistorySection({
 										{entry.type} · {entry.status} · {entry.occurredAt.slice(0, 10)}
 									</p>
 									<p className="mt-2 text-sm text-gray-700">{entry.summary}</p>
+								</li>
+							))}
+						</ul>
+					</SectionQueryState>
+				</CardContent>
+			</Card>
+		</section>
+	);
+}
+
+function ConditionsSection({
+	entries,
+	isPending,
+	isError,
+	onRetry,
+}: {
+	entries: ClinicalCondition[] | undefined;
+	isPending: boolean;
+	isError: boolean;
+	onRetry: () => void;
+}) {
+	return (
+		<section id="conditions" aria-labelledby="conditions-heading" className="scroll-mt-6">
+			<Card>
+				<CardHeader>
+					<h2 id="conditions-heading" className="text-lg font-semibold text-gray-900">
+						Conditions
+					</h2>
+				</CardHeader>
+				<CardContent>
+					<SectionQueryState
+						isPending={isPending}
+						isError={isError}
+						onRetry={onRetry}
+						loadingLabel="Loading conditions"
+						errorMessage="Unable to load conditions."
+						isEmpty={(entries?.length ?? 0) === 0}
+						emptyMessage="No conditions recorded."
+					>
+						<ul className="space-y-3" aria-label="Conditions">
+							{entries?.map((entry) => (
+								<li key={entry.id} className="rounded-lg border border-gray-200 p-4">
+									<p className="font-medium text-gray-900">{entry.display}</p>
+									<p className="mt-1 text-sm text-gray-700">
+										{entry.clinicalStatus} · {entry.recordedAt.slice(0, 10)}
+									</p>
 								</li>
 							))}
 						</ul>
@@ -348,15 +396,16 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 	const canView = !isSessionLoading && canViewPatientProfile(permissions);
 	const canWrite = canView && canWritePatientDemographics(permissions);
 	const canSchedule = canView && canWriteAppointments(permissions);
-	const showClinical = isMockMode();
-	const showMedicalRecords = showClinical && canView && canViewMedicalRecords(permissions);
-	const showVitals = showClinical && canView && canViewVitals(permissions);
+	const showMedicalRecords = canView && canViewMedicalRecords(permissions);
+	const showVitals = canView && canViewVitals(permissions);
+	const showDocuments = isMockMode() && showMedicalRecords;
 
 	const patient = usePatient(canView ? patientId : '');
 	const history = usePatientHistory(patientId, showMedicalRecords);
+	const conditions = usePatientConditions(patientId, showMedicalRecords);
 	const vitals = usePatientVitals(patientId, showVitals);
 	const medications = usePatientMedications(patientId, showMedicalRecords);
-	const documents = usePatientDocuments(patientId, showMedicalRecords);
+	const documents = usePatientDocuments(patientId, showDocuments);
 
 	if (isSessionLoading) {
 		return (
@@ -406,13 +455,16 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 	const record = patient.data;
 	const sections: ProfileSection[] = [{id: 'demographics', label: 'Demographics'}];
 	if (showMedicalRecords) {
-		sections.push({id: 'history', label: 'History'});
+		sections.push({id: 'history', label: 'History'}, {id: 'conditions', label: 'Conditions'});
 	}
 	if (showVitals) {
 		sections.push({id: 'vitals', label: 'Vitals'});
 	}
 	if (showMedicalRecords) {
-		sections.push({id: 'medications', label: 'Medications'}, {id: 'documents', label: 'Documents'});
+		sections.push({id: 'medications', label: 'Medications'});
+	}
+	if (showDocuments) {
+		sections.push({id: 'documents', label: 'Documents'});
 	}
 
 	return (
@@ -465,6 +517,14 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 						onRetry={() => history.refetch()}
 					/>
 				)}
+				{showMedicalRecords && (
+					<ConditionsSection
+						entries={conditions.data}
+						isPending={conditions.isPending}
+						isError={conditions.isError}
+						onRetry={() => conditions.refetch()}
+					/>
+				)}
 				{showVitals && (
 					<VitalsSection
 						entries={vitals.data}
@@ -481,7 +541,7 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 						onRetry={() => medications.refetch()}
 					/>
 				)}
-				{showMedicalRecords && (
+				{showDocuments && (
 					<DocumentsSection
 						entries={documents.data}
 						isPending={documents.isPending}

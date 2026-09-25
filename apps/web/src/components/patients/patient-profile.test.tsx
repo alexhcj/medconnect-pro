@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {PatientProfile} from '@/components/patients/patient-profile';
+import {isMockMode} from '@/lib/api/mocks/runtime';
 import {DEFAULT_ROLE_PERMISSIONS} from '@/types/auth/permissions';
 import {Patient} from '@/types/medical/patient';
 
@@ -8,6 +9,7 @@ const {
 	useSessionStatus,
 	usePatient,
 	usePatientHistory,
+	usePatientConditions,
 	usePatientVitals,
 	usePatientMedications,
 	usePatientDocuments,
@@ -16,6 +18,7 @@ const {
 	useSessionStatus: vi.fn(),
 	usePatient: vi.fn(),
 	usePatientHistory: vi.fn(),
+	usePatientConditions: vi.fn(),
 	usePatientVitals: vi.fn(),
 	usePatientMedications: vi.fn(),
 	usePatientDocuments: vi.fn(),
@@ -29,10 +32,15 @@ vi.mock('@/lib/hooks/use-session', () => ({
 vi.mock('@/lib/hooks/use-medical', () => ({
 	usePatient,
 	usePatientHistory,
+	usePatientConditions,
 	usePatientVitals,
 	usePatientMedications,
 	usePatientDocuments,
 	useProvider,
+}));
+
+vi.mock('@/lib/api/mocks/runtime', () => ({
+	isMockMode: vi.fn(() => true),
 }));
 
 const samplePatient: Patient = {
@@ -72,6 +80,7 @@ function mockSession(permissions: readonly string[]) {
 
 function mockClinicalQueries() {
 	usePatientHistory.mockReturnValue(queryState({data: []}));
+	usePatientConditions.mockReturnValue(queryState({data: []}));
 	usePatientVitals.mockReturnValue(queryState({data: []}));
 	usePatientMedications.mockReturnValue(queryState({data: []}));
 	usePatientDocuments.mockReturnValue(queryState({data: []}));
@@ -79,6 +88,9 @@ function mockClinicalQueries() {
 }
 
 describe('PatientProfile', () => {
+	beforeEach(() => {
+		vi.mocked(isMockMode).mockReturnValue(true);
+	});
 	it('shows a loading state before the patient arrives', () => {
 		mockSession(DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN);
 		usePatient.mockReturnValue(queryState({isPending: true}));
@@ -128,10 +140,12 @@ describe('PatientProfile', () => {
 		);
 		expect(screen.queryByText('Hypertension')).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'History'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('heading', {level: 2, name: 'Conditions'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'Vitals'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'Medications'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'Documents'})).not.toBeInTheDocument();
 		expect(usePatientHistory).toHaveBeenCalledWith('demo-patient-001', false);
+		expect(usePatientConditions).toHaveBeenCalledWith('demo-patient-001', false);
 		expect(usePatientVitals).toHaveBeenCalledWith('demo-patient-001', false);
 		expect(usePatientMedications).toHaveBeenCalledWith('demo-patient-001', false);
 		expect(usePatientDocuments).toHaveBeenCalledWith('demo-patient-001', false);
@@ -163,6 +177,8 @@ describe('PatientProfile', () => {
 		render(<PatientProfile patientId="demo-patient-001" />);
 
 		expect(screen.getByText('No history records.')).toBeInTheDocument();
+		expect(screen.getByRole('heading', {level: 2, name: 'Conditions'})).toBeInTheDocument();
+		expect(screen.getByText('No conditions recorded.')).toBeInTheDocument();
 		expect(screen.queryByRole('link', {name: 'Edit patient'})).not.toBeInTheDocument();
 		expect(screen.getByRole('link', {name: 'Schedule appointment'})).toHaveAttribute(
 			'href',
@@ -172,6 +188,7 @@ describe('PatientProfile', () => {
 		expect(screen.getByText('Blood pressure 128/82 mmHg')).toBeInTheDocument();
 		expect(screen.getByText('patient001@example.test')).toBeInTheDocument();
 		expect(usePatientHistory).toHaveBeenCalledWith('demo-patient-001', true);
+		expect(usePatientConditions).toHaveBeenCalledWith('demo-patient-001', true);
 		expect(usePatientVitals).toHaveBeenCalledWith('demo-patient-001', true);
 	});
 
@@ -198,9 +215,11 @@ describe('PatientProfile', () => {
 		expect(screen.getByText('No vitals recorded.')).toBeInTheDocument();
 		expect(screen.queryByRole('link', {name: 'Schedule appointment'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'History'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('heading', {level: 2, name: 'Conditions'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'Medications'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', {level: 2, name: 'Documents'})).not.toBeInTheDocument();
 		expect(usePatientHistory).toHaveBeenCalledWith('demo-patient-001', false);
+		expect(usePatientConditions).toHaveBeenCalledWith('demo-patient-001', false);
 		expect(usePatientVitals).toHaveBeenCalledWith('demo-patient-001', true);
 		expect(usePatientMedications).toHaveBeenCalledWith('demo-patient-001', false);
 		expect(usePatientDocuments).toHaveBeenCalledWith('demo-patient-001', false);
@@ -216,6 +235,37 @@ describe('PatientProfile', () => {
 		expect(screen.getByText('You do not have access to patient profiles.')).toBeInTheDocument();
 		expect(usePatient).toHaveBeenCalledWith('');
 		expect(usePatientHistory).toHaveBeenCalledWith('demo-patient-001', false);
+		expect(usePatientConditions).toHaveBeenCalledWith('demo-patient-001', false);
+		expect(screen.queryByText('Hypertension')).not.toBeInTheDocument();
+	});
+
+	it('shows live clinical lists for a provider without documents', () => {
+		vi.mocked(isMockMode).mockReturnValue(false);
+		mockSession(DEFAULT_ROLE_PERMISSIONS.PROVIDER);
+		usePatient.mockReturnValue(queryState({data: samplePatient}));
+		mockClinicalQueries();
+		usePatientConditions.mockReturnValue(
+			queryState({
+				data: [
+					{
+						id: 'demo-condition-001',
+						display: 'Essential hypertension',
+						clinicalStatus: 'active',
+						recordedAt: '2025-07-15T10:30:00Z',
+					},
+				],
+			}),
+		);
+
+		render(<PatientProfile patientId="demo-patient-001" />);
+
+		expect(screen.getByRole('heading', {level: 2, name: 'History'})).toBeInTheDocument();
+		expect(screen.getByRole('heading', {level: 2, name: 'Conditions'})).toBeInTheDocument();
+		expect(screen.getByText('Essential hypertension')).toBeInTheDocument();
+		expect(screen.getByRole('heading', {level: 2, name: 'Vitals'})).toBeInTheDocument();
+		expect(screen.getByRole('heading', {level: 2, name: 'Medications'})).toBeInTheDocument();
+		expect(screen.queryByRole('heading', {level: 2, name: 'Documents'})).not.toBeInTheDocument();
+		expect(usePatientDocuments).toHaveBeenCalledWith('demo-patient-001', false);
 		expect(screen.queryByText('Hypertension')).not.toBeInTheDocument();
 	});
 });

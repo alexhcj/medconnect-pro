@@ -1,5 +1,6 @@
 import {Appointment, AppointmentCreateInput} from '@/types/medical/appointment';
 import {Patient, PatientDemographicsInput} from '@/types/medical/patient';
+import {ClinicalCondition} from '@/types/medical/clinical-condition';
 import {Medication} from '@/types/medical/medication';
 import {Vital} from '@/types/medical/vital';
 import {HistoryEntry} from '@/types/medical/history';
@@ -16,6 +17,16 @@ import {
 	type AppointmentRdo,
 	type AppointmentSearchResultRdo,
 } from '@/lib/api/appointment-rdo';
+import {
+	conditionFromRdo,
+	historyFromRdo,
+	medicationFromRdo,
+	vitalFromRdo,
+	type ConditionListRdo,
+	type HistoryListRdo,
+	type MedicationListRdo,
+	type VitalListRdo,
+} from '@/lib/api/clinical-rdo';
 import {patientFromRdo, type PatientRdo, type PatientSearchResultRdo} from '@/lib/api/patient-rdo';
 
 export type PatientStatusFilter = 'active' | 'inactive' | 'all';
@@ -112,16 +123,44 @@ export const medicalRealAPI = {
 		}
 	},
 
-	getPatientHistory: async (_patientId: string): Promise<HistoryEntry[]> => {
-		return clinicalUnavailable('Patient history is not available from the patient API');
+	getPatientHistory: async (patientId: string): Promise<HistoryEntry[]> => {
+		try {
+			const result = await apiFetch<HistoryListRdo>(patientsUrl(`/${patientId}/history`));
+			return result.history.map(historyFromRdo);
+		} catch (error) {
+			toast.error('Failed to load history');
+			throw error;
+		}
 	},
 
-	getPatientVitals: async (_patientId: string): Promise<Vital[]> => {
-		return clinicalUnavailable('Patient vitals are not available from the patient API');
+	getPatientConditions: async (patientId: string): Promise<ClinicalCondition[]> => {
+		try {
+			const result = await apiFetch<ConditionListRdo>(patientsUrl(`/${patientId}/conditions`));
+			return result.conditions.map(conditionFromRdo);
+		} catch (error) {
+			toast.error('Failed to load conditions');
+			throw error;
+		}
 	},
 
-	getPatientMedications: async (_patientId: string): Promise<Medication[]> => {
-		return clinicalUnavailable('Patient medications are not available from the patient API');
+	getPatientVitals: async (patientId: string): Promise<Vital[]> => {
+		try {
+			const result = await apiFetch<VitalListRdo>(patientsUrl(`/${patientId}/vitals`));
+			return result.vitals.map(vitalFromRdo);
+		} catch (error) {
+			toast.error('Failed to load vitals');
+			throw error;
+		}
+	},
+
+	getPatientMedications: async (patientId: string): Promise<Medication[]> => {
+		try {
+			const result = await apiFetch<MedicationListRdo>(patientsUrl(`/${patientId}/medications`));
+			return result.medications.map(medicationFromRdo);
+		} catch (error) {
+			toast.error('Failed to load medications');
+			throw error;
+		}
 	},
 
 	getPatientDocuments: async (_patientId: string): Promise<PatientDocument[]> => {

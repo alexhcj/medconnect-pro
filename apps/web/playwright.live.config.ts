@@ -2,7 +2,7 @@
 import {defineConfig, devices} from '@playwright/test';
 
 /**
- * Non-mock browser checks for FE-011 and FE-012.
+ * Non-mock browser checks for FE-011, FE-012, and FE-013.
  * Requires Postgres, migrations, `npm run seed:mock-identity`, and the API on port 3001.
  * The default `playwright.config.ts` suite stays on mocks and ignores these specs.
  */

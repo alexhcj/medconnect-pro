@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.32.0] - 2026-09-25
+
+### Added
+
+- Clinical lists on the patient profile call the Nest clinical API when mocks are off (FE-013): history, conditions, vitals, and medications with the bearer from `POST /auth/login`. Documents stay off that API. `npm run seed:mock-identity` inserts synthetic clinical rows and a loginable provider `jordan.ellis@synthetic.example`. `npm run e2e:live` checks the seeded provider profile lists; `npm run e2e` stays on mocks.
+
 ## [0.31.0] - 2026-09-25
 
 ### Added

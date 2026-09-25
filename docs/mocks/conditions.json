@@ -1,0 +1,33 @@
+{
+  "generated_at": "synthetic-demo-fixture",
+  "notice": "All records are fictional and must never be replaced with real clinical data.",
+  "conditions": [
+    {
+      "id": "demo-condition-001",
+      "patientId": "demo-patient-001",
+      "display": "Hypertension",
+      "clinicalStatus": "active",
+      "recordedAt": "2025-07-15T10:30:00Z",
+      "recordedById": "demo-provider-001",
+      "synthetic": true
+    },
+    {
+      "id": "demo-condition-002",
+      "patientId": "demo-patient-002",
+      "display": "Type 2 diabetes",
+      "clinicalStatus": "active",
+      "recordedAt": "2025-07-12T14:55:00Z",
+      "recordedById": "demo-provider-002",
+      "synthetic": true
+    },
+    {
+      "id": "demo-condition-003",
+      "patientId": "demo-patient-003",
+      "display": "Asthma",
+      "clinicalStatus": "active",
+      "recordedAt": "2025-07-08T09:20:00Z",
+      "recordedById": "demo-provider-003",
+      "synthetic": true
+    }
+  ]
+}

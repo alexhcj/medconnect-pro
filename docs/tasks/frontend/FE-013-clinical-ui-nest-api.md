@@ -3,7 +3,7 @@ id: FE-013
 type: task
 area: frontend
 feature: ehr
-status: planned
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-003, FE-011, BE-005, BE-009]
@@ -34,11 +34,11 @@ Documents stay hidden or `clinicalUnavailable` in live mode. POST/create forms, 
 
 ## Acceptance criteria
 
-- [ ] With mocks off, the provider profile calls Nest history, conditions, vitals, and medications using the BE-009 session
-- [ ] Clinical RDOs map onto UI types; `practiceId` is not used for authorization
-- [ ] Documents are not requested from Nest
-- [ ] A synthetic seed plus a loginable provider makes the live clinical profile demonstrable
-- [ ] One non-mock browser check covers the seeded provider profile lists
+- [x] With mocks off, the provider profile calls Nest history, conditions, vitals, and medications using the BE-009 session
+- [x] Clinical RDOs map onto UI types; `practiceId` is not used for authorization
+- [x] Documents are not requested from Nest
+- [x] A synthetic seed plus a loginable provider makes the live clinical profile demonstrable
+- [x] One non-mock browser check covers the seeded provider profile lists
 
 ## Implementation notes
 
@@ -58,7 +58,7 @@ Extend `playwright.live.config.ts` `testMatch` for a live clinical spec: sign in
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Live patient-profile history, conditions, vitals, and medications on the Nest clinical API with the BE-009 bearer session. Documents stay hidden/`clinicalUnavailable` in live mode. `jordan.ellis@synthetic.example` is a loginable mock IdP provider; seed inserts one of each clinical row on Avery Quinn.
+- Tests: Vitest covers clinical RDO mapping (no `practiceId`), live GETs, documents without `fetch`, and profile gating including live documents hidden. `npm run e2e:live` covers the seeded provider profile lists; mock Playwright stays on `NEXT_PUBLIC_USE_MOCKS=true`.
 - PR:
-- Notes:
+- Notes: Practice-admin live patient spec still asserts History is absent. POST/PATCH/DELETE and Nest document routes stay unused. `Patient.conditions: string[]` is not the diagnoses list.

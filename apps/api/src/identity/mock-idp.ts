@@ -22,6 +22,11 @@ export const defaultMockIdpAccounts: readonly MockIdpAccount[] = [
 		role: 'PRACTICE_ADMIN',
 	},
 	{
+		email: 'jordan.ellis@synthetic.example',
+		password: 'Demo-Provider-1',
+		role: 'PROVIDER',
+	},
+	{
 		email: 'mfa.nurse@example.test',
 		password: 'Demo-Mfa-1',
 		role: 'NURSE',

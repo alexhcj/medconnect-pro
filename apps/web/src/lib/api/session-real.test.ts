@@ -50,6 +50,34 @@ describe('sessionRealAPI', () => {
 		);
 	});
 
+	it('stores a provider session with clinical write grants for the live demo provider', async () => {
+		const provider = fixtureDemoUsers.find((user) => user.email === 'jordan.ellis@synthetic.example');
+		expect(provider).toBeDefined();
+		if (!provider) {
+			return;
+		}
+
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(
+				jsonResponse(200, {
+					tokenType: 'Bearer',
+					accessToken: 'provider-access',
+					refreshToken: 'provider-refresh',
+					expiresIn: 900,
+				}),
+			),
+		);
+
+		const session = await sessionRealAPI.login(provider.email, provider.password);
+
+		expect(session.userRole).toBe('PROVIDER');
+		expect(session.userId).toBe('11111111-1111-4111-8111-111111111111');
+		expect(session.permissions).toContain('write:medical_records');
+		expect(session.permissions).toContain('write:vitals');
+		expect(window.localStorage.getItem(MOCK_TOKEN_STORAGE_KEY)).toBe('provider-access');
+	});
+
 	it('does not persist a session when Nest requires MFA', async () => {
 		vi.stubGlobal(
 			'fetch',

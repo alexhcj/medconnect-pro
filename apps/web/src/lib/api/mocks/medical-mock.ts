@@ -8,6 +8,7 @@ import {
 	AppointmentType,
 } from '@/types/medical/appointment';
 import {Patient, PatientDemographicsInput} from '@/types/medical/patient';
+import {ClinicalCondition} from '@/types/medical/clinical-condition';
 import {Medication} from '@/types/medical/medication';
 import {Vital} from '@/types/medical/vital';
 import {HistoryEntry} from '@/types/medical/history';
@@ -15,6 +16,7 @@ import {PatientDocument} from '@/types/medical/document';
 import {Provider} from '@/types/medical/provider';
 import {
 	fixtureAppointments,
+	fixtureConditions,
 	fixtureDocuments,
 	fixtureHistory,
 	fixtureMedications,
@@ -30,6 +32,7 @@ const patients: Patient[] = structuredClone(fixturePatients);
 const medications: Medication[] = structuredClone(fixtureMedications);
 const vitals: Vital[] = structuredClone(fixtureVitals);
 const history: HistoryEntry[] = structuredClone(fixtureHistory);
+const conditions: ClinicalCondition[] = structuredClone(fixtureConditions);
 const documents: PatientDocument[] = structuredClone(fixtureDocuments);
 const providers: Provider[] = structuredClone(fixtureProviders);
 const appointments: Appointment[] = [];
@@ -368,6 +371,12 @@ export const medicalMockAPI = {
 			requirePatient(patientId);
 			return history.filter((entry) => entry.patientId === patientId);
 		}, 'Mock: Failed to fetch patient history'),
+
+	getPatientConditions: async (patientId: string): Promise<ClinicalCondition[]> =>
+		withMock(() => {
+			requirePatient(patientId);
+			return conditions.filter((entry) => entry.patientId === patientId);
+		}, 'Mock: Failed to fetch patient conditions'),
 
 	getPatientVitals: async (patientId: string): Promise<Vital[]> =>
 		withMock(() => {

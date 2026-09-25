@@ -1,10 +1,14 @@
 import {Logger} from '@nestjs/common';
 import {DataSource} from 'typeorm';
 import {Appointment} from '../persistence/entities/appointment.entity.js';
+import {ClinicalCondition} from '../persistence/entities/clinical-condition.entity.js';
+import {ClinicalHistory} from '../persistence/entities/clinical-history.entity.js';
+import {Medication} from '../persistence/entities/medication.entity.js';
 import {Patient} from '../persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {Practice} from '../persistence/entities/practice.entity.js';
 import {User} from '../persistence/entities/user.entity.js';
+import {Vital} from '../persistence/entities/vital.entity.js';
 import {DEFAULT_DATABASE_URL} from '../persistence/default-database-url.js';
 import {postgresConnectionOptions} from '../persistence/typeorm.options.js';
 import {defaultMockIdpAccounts} from './mock-idp.js';
@@ -88,6 +92,10 @@ async function seed(): Promise<void> {
 		const memberships = dataSource.getRepository(PracticeMembership);
 		const patients = dataSource.getRepository(Patient);
 		const appointments = dataSource.getRepository(Appointment);
+		const historyRows = dataSource.getRepository(ClinicalHistory);
+		const conditionRows = dataSource.getRepository(ClinicalCondition);
+		const vitalRows = dataSource.getRepository(Vital);
+		const medicationRows = dataSource.getRepository(Medication);
 
 		let admin = await users.findOne({where: {email: account.email}});
 		if (!admin) {
@@ -166,10 +174,81 @@ async function seed(): Promise<void> {
 					synthetic: true,
 				});
 			}
+
+			const existingHistory = await historyRows.findOne({
+				where: {practiceId: practice.id, patientId: seededPatient.id},
+			});
+			if (!existingHistory) {
+				await historyRows.save({
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					type: 'visit',
+					occurredAt: new Date('2025-07-15T10:30:00.000Z'),
+					title: 'Hypertension follow-up',
+					summary: 'Blood pressure stable on current medication. Continue current plan.',
+					providerUserId: provider.id,
+					status: 'completed',
+					synthetic: true,
+				});
+			}
+
+			const existingCondition = await conditionRows.findOne({
+				where: {practiceId: practice.id, patientId: seededPatient.id},
+			});
+			if (!existingCondition) {
+				await conditionRows.save({
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					display: 'Hypertension',
+					clinicalStatus: 'active',
+					recordedAt: new Date('2025-07-15T10:30:00.000Z'),
+					recordedByUserId: provider.id,
+					synthetic: true,
+				});
+			}
+
+			const existingVital = await vitalRows.findOne({
+				where: {practiceId: practice.id, patientId: seededPatient.id},
+			});
+			if (!existingVital) {
+				await vitalRows.save({
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					recordedAt: new Date('2025-07-15T10:15:00.000Z'),
+					systolicMmHg: 128,
+					diastolicMmHg: 82,
+					heartRateBpm: 72,
+					temperatureC: 36.7,
+					respiratoryRate: 16,
+					spo2Percent: 98,
+					weightKg: 72.5,
+					recordedByUserId: provider.id,
+					synthetic: true,
+				});
+			}
+
+			const existingMedication = await medicationRows.findOne({
+				where: {practiceId: practice.id, patientId: seededPatient.id},
+			});
+			if (!existingMedication) {
+				await medicationRows.save({
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					name: 'Lisinopril',
+					dosage: '10mg',
+					frequency: 'Once daily',
+					route: 'oral',
+					startDate: '2023-01-10',
+					instructions: 'Take in the morning with water',
+					prescriberUserId: provider.id,
+					status: 'active',
+					synthetic: true,
+				});
+			}
 		}
 
 		Logger.log(
-			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, and a demo appointment`,
+			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, a demo appointment, and clinical rows`,
 			'MockIdentity',
 		);
 	} finally {

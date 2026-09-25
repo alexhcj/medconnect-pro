@@ -46,4 +46,17 @@ describe('mock IdP fixture', () => {
 			true,
 		);
 	});
+
+	it('accepts the live demo provider password', () => {
+		const provider = defaultMockIdpAccounts.find(
+			(account) => account.email === 'jordan.ellis@synthetic.example',
+		);
+		expect(provider).toMatchObject({
+			password: 'Demo-Provider-1',
+			role: 'PROVIDER',
+		});
+		expect(matchMockIdpAccount(defaultMockIdpAccounts, provider?.email ?? '', provider?.password ?? '')).toBe(
+			provider,
+		);
+	});
 });

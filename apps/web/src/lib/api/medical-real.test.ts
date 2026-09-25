@@ -156,13 +156,107 @@ describe('medicalRealAPI', () => {
 		);
 	});
 
-	it('does not request clinical, availability, patch, or delete routes from Nest', async () => {
+	it('lists history, conditions, vitals, and medications from Nest', async () => {
+		const historyRdo = {
+			id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+			practiceId: rdo.practiceId,
+			patientId: rdo.id,
+			type: 'visit' as const,
+			occurredAt: '2025-07-15T10:30:00.000Z',
+			title: 'Hypertension follow-up',
+			summary: 'Blood pressure stable on current medication. Continue current plan.',
+			providerId: LIVE_DEMO_PROVIDER_ID,
+			status: 'completed' as const,
+			synthetic: true,
+		};
+		const conditionRdo = {
+			id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+			practiceId: rdo.practiceId,
+			patientId: rdo.id,
+			display: 'Hypertension',
+			clinicalStatus: 'active' as const,
+			recordedAt: '2025-07-15T10:30:00.000Z',
+			recordedById: LIVE_DEMO_PROVIDER_ID,
+			synthetic: true,
+		};
+		const vitalRdo = {
+			id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+			practiceId: rdo.practiceId,
+			patientId: rdo.id,
+			recordedAt: '2025-07-15T10:15:00.000Z',
+			systolicMmHg: 128,
+			diastolicMmHg: 82,
+			heartRateBpm: 72,
+			temperatureC: 36.7,
+			respiratoryRate: 16,
+			spo2Percent: 98,
+			weightKg: 72.5,
+			recordedById: LIVE_DEMO_PROVIDER_ID,
+			synthetic: true,
+		};
+		const medicationRdo = {
+			id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+			practiceId: rdo.practiceId,
+			patientId: rdo.id,
+			name: 'Lisinopril',
+			dosage: '10mg',
+			frequency: 'Once daily',
+			route: 'oral',
+			startDate: '2023-01-10',
+			prescriberId: LIVE_DEMO_PROVIDER_ID,
+			instructions: 'Take in the morning with water',
+			status: 'active' as const,
+			synthetic: true,
+		};
+
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (input: RequestInfo) => {
+				const url = String(input);
+				if (url.endsWith('/history')) {
+					return {ok: true, status: 200, json: async () => ({history: [historyRdo]})};
+				}
+				if (url.endsWith('/conditions')) {
+					return {ok: true, status: 200, json: async () => ({conditions: [conditionRdo]})};
+				}
+				if (url.endsWith('/vitals')) {
+					return {ok: true, status: 200, json: async () => ({vitals: [vitalRdo]})};
+				}
+				if (url.endsWith('/medications')) {
+					return {ok: true, status: 200, json: async () => ({medications: [medicationRdo]})};
+				}
+				return {ok: false, status: 404, json: async () => ({})};
+			}),
+		);
+
+		await expect(medicalRealAPI.getPatientHistory(rdo.id)).resolves.toEqual([
+			expect.objectContaining({title: 'Hypertension follow-up', patientId: rdo.id}),
+		]);
+		await expect(medicalRealAPI.getPatientConditions(rdo.id)).resolves.toEqual([
+			expect.objectContaining({display: 'Hypertension', patientId: rdo.id}),
+		]);
+		await expect(medicalRealAPI.getPatientVitals(rdo.id)).resolves.toEqual([
+			expect.objectContaining({systolicMmHg: 128, patientId: rdo.id}),
+		]);
+		await expect(medicalRealAPI.getPatientMedications(rdo.id)).resolves.toEqual([
+			expect.objectContaining({name: 'Lisinopril', patientId: rdo.id}),
+		]);
+		expect(fetch).toHaveBeenCalledWith(`http://localhost:3001/patients/${rdo.id}/history`, expect.any(Object));
+		expect(fetch).toHaveBeenCalledWith(
+			`http://localhost:3001/patients/${rdo.id}/conditions`,
+			expect.any(Object),
+		);
+		expect(fetch).toHaveBeenCalledWith(`http://localhost:3001/patients/${rdo.id}/vitals`, expect.any(Object));
+		expect(fetch).toHaveBeenCalledWith(
+			`http://localhost:3001/patients/${rdo.id}/medications`,
+			expect.any(Object),
+		);
+	});
+
+	it('does not request documents from Nest', async () => {
 		const fetchMock = vi.fn();
 		vi.stubGlobal('fetch', fetchMock);
 
-		await expect(medicalRealAPI.getPatientHistory('patient-1')).rejects.toMatchObject({status: 404});
-		await expect(medicalRealAPI.getPatientVitals('patient-1')).rejects.toMatchObject({status: 404});
-		await expect(medicalRealAPI.getPatientMedications('patient-1')).rejects.toMatchObject({status: 404});
 		await expect(medicalRealAPI.getPatientDocuments('patient-1')).rejects.toMatchObject({status: 404});
 		expect(fetchMock).not.toHaveBeenCalled();
 	});

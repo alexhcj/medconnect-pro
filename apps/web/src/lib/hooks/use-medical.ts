@@ -80,7 +80,17 @@ export function usePatientHistory(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'history'],
 		queryFn: () => medicalAPI.getPatientHistory(patientId),
-		enabled: !!patientId && enabled && isMockMode(),
+		enabled: !!patientId && enabled,
+		staleTime: 3 * 60 * 1000,
+		gcTime: 10 * 60 * 1000,
+	});
+}
+
+export function usePatientConditions(patientId: string, enabled = true) {
+	return useQuery({
+		queryKey: ['patient', patientId, 'conditions'],
+		queryFn: () => medicalAPI.getPatientConditions(patientId),
+		enabled: !!patientId && enabled,
 		staleTime: 3 * 60 * 1000,
 		gcTime: 10 * 60 * 1000,
 	});
@@ -90,7 +100,7 @@ export function usePatientVitals(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'vitals'],
 		queryFn: () => medicalAPI.getPatientVitals(patientId),
-		enabled: !!patientId && enabled && isMockMode(),
+		enabled: !!patientId && enabled,
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
 	});
@@ -100,7 +110,7 @@ export function usePatientMedications(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'medications'],
 		queryFn: () => medicalAPI.getPatientMedications(patientId),
-		enabled: !!patientId && enabled && isMockMode(),
+		enabled: !!patientId && enabled,
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
 	});

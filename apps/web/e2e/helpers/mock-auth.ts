@@ -4,6 +4,8 @@ export const DEMO_EMAIL = 'practice.admin@example.test';
 export const DEMO_PASSWORD = 'Demo-Admin-1';
 export const NURSE_EMAIL = 'nurse@example.test';
 export const NURSE_PASSWORD = 'Demo-Nurse-1';
+export const LIVE_PROVIDER_EMAIL = 'jordan.ellis@synthetic.example';
+export const LIVE_PROVIDER_PASSWORD = 'Demo-Provider-1';
 
 export async function signInAsPracticeAdmin(page: Page) {
 	await signIn(page, DEMO_EMAIL, DEMO_PASSWORD);
@@ -11,6 +13,10 @@ export async function signInAsPracticeAdmin(page: Page) {
 
 export async function signInAsNurse(page: Page) {
 	await signIn(page, NURSE_EMAIL, NURSE_PASSWORD);
+}
+
+export async function signInAsLiveProvider(page: Page) {
+	await signIn(page, LIVE_PROVIDER_EMAIL, LIVE_PROVIDER_PASSWORD);
 }
 
 export async function signIn(page: Page, email: string, password: string) {
