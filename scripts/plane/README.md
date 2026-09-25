@@ -63,6 +63,10 @@ Backlog is the state whose group is `backlog`. Set `PLANE_STATE_ID_BACKLOG` to f
 
 Task priority `critical` is sent as Plane priority `urgent`.
 
+Task Markdown is converted to Plane `description_html` on every create and update (full sync and single-task sync). The leading `# ID — title` heading is omitted because it is already the work-item name. Headings, paragraphs, ordered and unordered lists, one nested list level, task items (`- [ ]` / `- [x]`), blockquotes, fenced and inline code, bold/italic/strike, http(s)/mailto links, tables, and horizontal rules are mapped to Plane tags. Text is escaped; raw HTML from the task file is not passed through. Link schemes other than `http:`, `https:`, and `mailto:` are dropped.
+
+If Plane's sanitizer strips checkbox markup, acceptance lines may appear as a bullet list in the card. Re-run sync after a converter change; the next update overwrites the description from Git.
+
 Move cards on the board by hand. This command does not set In Progress, Review, QA, or Done.
 
 ## API versioning
