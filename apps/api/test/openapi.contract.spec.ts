@@ -74,6 +74,11 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/telehealth/sessions/{id}']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/telehealth/sessions/{id}/join']?.post?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/telehealth/sessions/{id}/end']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/billing/invoices']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/billing/invoices']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/billing/invoices/{id}']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/billing/payments']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/billing/claims']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/admin/audit-events']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths).not.toHaveProperty('/providers');
 		expect(document.paths).not.toHaveProperty('/patients/{id}/documents');

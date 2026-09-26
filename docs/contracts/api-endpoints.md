@@ -81,6 +81,9 @@ participants; there is no participant-leave route yet.
 
 ## Billing
 
+Invoice list/detail, a Stripe/ACH payment adapter boundary, and a labeled EDI 837 claims envelope.
+Do not send card or bank account numbers. `GET /billing/claims` is not claim submission.
+
 - `GET /billing/invoices`
 - `GET /billing/invoices/:id`
 - `POST /billing/invoices`

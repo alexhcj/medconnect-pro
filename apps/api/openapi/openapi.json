@@ -2317,6 +2317,393 @@
         ]
       }
     },
+    "/billing/invoices": {
+      "get": {
+        "description": "Practice admins, receptionists, providers, and super admins read practice invoices. Portal users read their own. Nurses are denied this practice-revenue surface. Tenant comes from the session, not from the client. synthetic is always true.",
+        "operationId": "InvoiceController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List invoices for the current tenant",
+        "tags": [
+          "billing"
+        ]
+      },
+      "post": {
+        "description": "Requires write:billing for practice administrators and receptionists. PATIENT write:billing does not create invoices. amountCents is the sum of line items. Tenant comes from the session. Do not send card data.",
+        "operationId": "InvoiceController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patientId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "dueAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "enum": [
+                      "USD"
+                    ]
+                  },
+                  "lineItems": {
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        "amountCents": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100000000
+                        }
+                      },
+                      "required": [
+                        "description",
+                        "amountCents"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "practiceId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "patientId",
+                  "dueAt",
+                  "lineItems"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a synthetic invoice",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/billing/invoices/{id}": {
+      "get": {
+        "description": "Unknown ids, cross-tenant ids, and invoices outside the caller’s own-patient scope return the same not-found response. Issued invoices past dueAt are returned as overdue.",
+        "operationId": "InvoiceController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Read one invoice",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/billing/payments": {
+      "post": {
+        "description": "Stripe/ACH adapter boundary. Accepts invoiceId and method only. Does not store or accept card or bank account numbers. Marks the invoice paid through a demo processor that does not call Stripe. Paid invoices conflict.",
+        "operationId": "PaymentController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "invoiceId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "stripe",
+                      "ach"
+                    ]
+                  },
+                  "practiceId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "invoiceId",
+                  "method"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Record a synthetic payment against an invoice",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/billing/claims": {
+      "get": {
+        "description": "Labeled EDI 837 boundary. Returns not_submitted envelopes derived from visible invoices. This is not claim submission, status workflow, or an X12 payload.",
+        "operationId": "ClaimsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List claim envelopes for visible invoices",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "description": "Password-shaped stand-in for a mock identity provider. Not the production OAuth 2.0 authorization-code + PKCE flow. Practice selection is limited to server-side memberships.",
@@ -3633,6 +4020,219 @@
           "state",
           "waitingStartedAt",
           "synthetic"
+        ]
+      },
+      "InvoiceLineItem": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "example": "Office visit"
+          },
+          "amountCents": {
+            "type": "number",
+            "example": 15000,
+            "description": "Amount in cents."
+          }
+        },
+        "required": [
+          "description",
+          "amountCents"
+        ]
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "patientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patientName": {
+            "type": "string",
+            "example": "Avery Quinn"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "issued",
+              "paid",
+              "overdue"
+            ],
+            "example": "issued"
+          },
+          "amountCents": {
+            "type": "number",
+            "example": 15000,
+            "description": "Sum of line items in cents. Computed server-side."
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD"
+          },
+          "issuedAt": {
+            "type": "string",
+            "example": "2026-09-01T00:00:00.000Z"
+          },
+          "dueAt": {
+            "type": "string",
+            "example": "2026-09-15T00:00:00.000Z"
+          },
+          "lineItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceLineItem"
+            }
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "practiceId",
+          "patientId",
+          "patientName",
+          "status",
+          "amountCents",
+          "currency",
+          "issuedAt",
+          "dueAt",
+          "lineItems",
+          "synthetic"
+        ]
+      },
+      "InvoiceList": {
+        "type": "object",
+        "properties": {
+          "invoices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Invoice"
+            }
+          }
+        },
+        "required": [
+          "invoices"
+        ]
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "invoiceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "amountCents": {
+            "type": "number",
+            "example": 15000
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "stripe",
+              "ach"
+            ],
+            "example": "stripe"
+          },
+          "processorRef": {
+            "type": "string",
+            "example": "demo_00000000-0000-4000-8000-000000000001",
+            "description": "Opaque synthetic processor reference. Not a card or bank account number."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "recorded"
+            ],
+            "example": "recorded"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "invoiceId",
+          "practiceId",
+          "amountCents",
+          "method",
+          "processorRef",
+          "status",
+          "synthetic"
+        ]
+      },
+      "Claim": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Derived envelope id (same as invoice id)."
+          },
+          "invoiceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_submitted"
+            ],
+            "example": "not_submitted"
+          },
+          "processor": {
+            "type": "string",
+            "example": "edi837",
+            "description": "Labeled claims boundary. EDI 837 is not generated."
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "invoiceId",
+          "status",
+          "processor",
+          "synthetic"
+        ]
+      },
+      "ClaimList": {
+        "type": "object",
+        "properties": {
+          "claims": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Claim"
+            }
+          }
+        },
+        "required": [
+          "claims"
         ]
       },
       "TokenPair": {

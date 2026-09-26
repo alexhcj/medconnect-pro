@@ -3,9 +3,12 @@ import {AuditEvent} from './audit-event.entity.js';
 import {AuthSession} from './auth-session.entity.js';
 import {ClinicalCondition} from './clinical-condition.entity.js';
 import {ClinicalHistory} from './clinical-history.entity.js';
+import {InvoiceLineItem} from './invoice-line-item.entity.js';
+import {Invoice} from './invoice.entity.js';
 import {Medication} from './medication.entity.js';
 import {PatientAssignment} from './patient-assignment.entity.js';
 import {Patient} from './patient.entity.js';
+import {Payment} from './payment.entity.js';
 import {PracticeMembership} from './practice-membership.entity.js';
 import {Practice} from './practice.entity.js';
 import {TelehealthSession} from './telehealth-session.entity.js';
@@ -26,6 +29,9 @@ export const persistenceEntities = [
 	Vital,
 	Medication,
 	TelehealthSession,
+	Invoice,
+	InvoiceLineItem,
+	Payment,
 ];
 
 export {
@@ -34,9 +40,12 @@ export {
 	AuthSession,
 	ClinicalCondition,
 	ClinicalHistory,
+	Invoice,
+	InvoiceLineItem,
 	Medication,
 	Patient,
 	PatientAssignment,
+	Payment,
 	Practice,
 	PracticeMembership,
 	TelehealthSession,

@@ -3,6 +3,8 @@ import {DataSource} from 'typeorm';
 import {Appointment} from '../persistence/entities/appointment.entity.js';
 import {ClinicalCondition} from '../persistence/entities/clinical-condition.entity.js';
 import {ClinicalHistory} from '../persistence/entities/clinical-history.entity.js';
+import {InvoiceLineItem} from '../persistence/entities/invoice-line-item.entity.js';
+import {Invoice} from '../persistence/entities/invoice.entity.js';
 import {Medication} from '../persistence/entities/medication.entity.js';
 import {Patient} from '../persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
@@ -99,6 +101,8 @@ async function seed(): Promise<void> {
 		const conditionRows = dataSource.getRepository(ClinicalCondition);
 		const vitalRows = dataSource.getRepository(Vital);
 		const medicationRows = dataSource.getRepository(Medication);
+		const invoiceRows = dataSource.getRepository(Invoice);
+		const lineItemRows = dataSource.getRepository(InvoiceLineItem);
 
 		let admin = await users.findOne({where: {email: account.email}});
 		if (!admin) {
@@ -276,10 +280,48 @@ async function seed(): Promise<void> {
 					synthetic: true,
 				});
 			}
+
+			const existingInvoice = await invoiceRows.findOne({
+				where: {practiceId: practice.id, patientId: seededPatient.id},
+			});
+			if (!existingInvoice) {
+				const issued = await invoiceRows.save({
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					status: 'issued',
+					amountCents: 15000,
+					currency: 'USD',
+					issuedAt: new Date('2026-09-01T00:00:00.000Z'),
+					dueAt: new Date('2026-09-15T00:00:00.000Z'),
+					synthetic: true,
+				});
+				await lineItemRows.save({
+					practiceId: practice.id,
+					invoiceId: issued.id,
+					description: 'Office visit',
+					amountCents: 15000,
+				});
+				const paid = await invoiceRows.save({
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					status: 'paid',
+					amountCents: 8000,
+					currency: 'USD',
+					issuedAt: new Date('2026-08-10T00:00:00.000Z'),
+					dueAt: new Date('2026-08-24T00:00:00.000Z'),
+					synthetic: true,
+				});
+				await lineItemRows.save({
+					practiceId: practice.id,
+					invoiceId: paid.id,
+					description: 'Telehealth visit',
+					amountCents: 8000,
+				});
+			}
 		}
 
 		Logger.log(
-			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, a demo appointment, an in-window telehealth visit, and clinical rows`,
+			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, a demo appointment, an in-window telehealth visit, clinical rows, and invoices`,
 			'MockIdentity',
 		);
 	} finally {

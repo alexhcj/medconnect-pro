@@ -23,6 +23,11 @@ import {
 	InvalidAppointmentTimeError,
 } from '../scheduling/appointment.errors.js';
 import {
+	InvoiceAlreadyPaidError,
+	InvoiceNotFoundError,
+	InvalidInvoicePatientError,
+} from '../billing/billing.errors.js';
+import {
 	InvalidTelehealthAppointmentError,
 	SessionAlreadyEndedError,
 	SessionNotJoinableError,
@@ -109,7 +114,8 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 		if (
 			exception instanceof PatientNotFoundError ||
 			exception instanceof AppointmentNotFoundError ||
-			exception instanceof TelehealthSessionNotFoundError
+			exception instanceof TelehealthSessionNotFoundError ||
+			exception instanceof InvoiceNotFoundError
 		) {
 			return this.authError(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Resource not found');
 		}
@@ -193,6 +199,25 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 				error: {
 					code: 'SESSION_ENDED',
 					message: 'A telehealth session for this appointment has already ended.',
+				},
+			};
+		}
+		if (exception instanceof InvoiceAlreadyPaidError) {
+			return {
+				status: HttpStatus.CONFLICT,
+				error: {
+					code: 'INVOICE_ALREADY_PAID',
+					message: 'This invoice has already been paid.',
+				},
+			};
+		}
+		if (exception instanceof InvalidInvoicePatientError) {
+			return {
+				status: HttpStatus.BAD_REQUEST,
+				error: {
+					code: 'VALIDATION_ERROR',
+					message: 'Request validation failed',
+					details: [{path: 'patientId', message: 'Patient must be in this practice'}],
 				},
 			};
 		}

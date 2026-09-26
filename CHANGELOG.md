@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.37.0] - 2026-09-26
+
+### Added
+
+- Billing API (BE-007): `GET`/`POST /billing/invoices`, `GET /billing/invoices/:id`, `POST /billing/payments`, and `GET /billing/claims`. Invoices and payments are tenant-scoped. Payments use an in-process Stripe/ACH adapter and never store card data. Claims are labeled EDI 837 envelopes, not generated X12. Nurse practice-revenue access is denied. Frontend live billing still 404s until a later connect task.
+
 ## [0.36.0] - 2026-09-26
 
 ### Added

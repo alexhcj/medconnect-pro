@@ -3,6 +3,7 @@ import {ConfigModule} from '@nestjs/config';
 import {APP_INTERCEPTOR} from '@nestjs/core';
 import {AuditAccessDeniedInterceptor} from './audit/audit-access-denied.interceptor.js';
 import {AuditModule} from './audit/audit.module.js';
+import {BillingModule} from './billing/billing.module.js';
 import {EhrModule} from './ehr/ehr.module.js';
 import {HealthModule} from './health/health.module.js';
 import {IdentityModule} from './identity/identity.module.js';
@@ -30,6 +31,7 @@ import {TenancyModule} from './tenancy/tenant.module.js';
 		EhrModule,
 		SchedulingModule,
 		TelehealthModule,
+		BillingModule,
 		IdentityModule,
 		HealthModule,
 	],

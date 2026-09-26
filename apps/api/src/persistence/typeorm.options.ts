@@ -5,6 +5,7 @@ import {AuthSessions1760000000001} from './migrations/1760000000001-AuthSessions
 import {ClinicalRecords1760000000004} from './migrations/1760000000004-ClinicalRecords.js';
 import {InitialTenantModel1760000000000} from './migrations/1760000000000-InitialTenantModel.js';
 import {PatientDemographics1760000000002} from './migrations/1760000000002-PatientDemographics.js';
+import {Billing1760000000006} from './migrations/1760000000006-Billing.js';
 import {TelehealthSessions1760000000005} from './migrations/1760000000005-TelehealthSessions.js';
 
 export function postgresConnectionOptions(databaseUrl: string): DataSourceOptions {
@@ -19,6 +20,7 @@ export function postgresConnectionOptions(databaseUrl: string): DataSourceOption
 			Appointments1760000000003,
 			ClinicalRecords1760000000004,
 			TelehealthSessions1760000000005,
+			Billing1760000000006,
 		],
 		synchronize: false,
 		migrationsRun: false,

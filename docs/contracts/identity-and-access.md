@@ -142,6 +142,22 @@ catalog without new permission strings:
 Unknown and cross-tenant session ids return the same not-found response as other tenant-owned
 resources.
 
+Billing HTTP ([BE-007](../tasks/backend/BE-007-billing-api.md)) maps onto `read:billing` /
+`write:billing` with resource checks:
+
+- **Practice invoice list/get, claims list:** `read:billing` for `PRACTICE_ADMIN`, `RECEPTIONIST`,
+  `PROVIDER`, and `SUPER_ADMIN`. This is practice revenue administration.
+- **Create invoice:** `write:billing` for `PRACTICE_ADMIN`, `RECEPTIONIST`, and `SUPER_ADMIN`.
+  `PATIENT` `write:billing` does not create invoices.
+- **Record payment:** `write:billing` for practice administrators and receptionists (practice-wide)
+  or `PATIENT` on their own invoice.
+- **PATIENT reads:** own invoices and claims envelopes only.
+- **NURSE:** denied on this surface. Catalog `read:billing` remains limited to visit-context amounts,
+  which are not part of this API.
+
+Unknown and cross-tenant invoice ids return the same not-found response as other tenant-owned
+resources.
+
 Response DTOs expose only authorized fields ([data-contracts.md](data-contracts.md) `PatientRdo`).
 Clinical fields must not leak to `read:demographics`-only actors.
 

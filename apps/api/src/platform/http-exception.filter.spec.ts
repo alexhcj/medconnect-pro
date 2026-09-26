@@ -1,6 +1,7 @@
 import {BadRequestException, HttpStatus, InternalServerErrorException} from '@nestjs/common';
 import {describe, expect, it} from 'vitest';
 import {InvalidCredentialsError, PermissionDeniedError} from '../identity/auth.errors.js';
+import {InvoiceAlreadyPaidError} from '../billing/billing.errors.js';
 import {AppointmentConflictError} from '../scheduling/appointment.errors.js';
 import {SessionAlreadyEndedError, SessionNotJoinableError} from '../telehealth/telehealth-session.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
@@ -118,6 +119,15 @@ describe('EnvelopeExceptionFilter', () => {
 		expect(ended.getResult().statusCode).toBe(HttpStatus.CONFLICT);
 		expect(ended.getResult().body.error.code).toBe('SESSION_ENDED');
 		expect(JSON.stringify(ended.getResult().body)).not.toMatch(/Quinn|Avery/);
+	});
+
+	it('maps a paid invoice conflict to a 409 envelope without card data', () => {
+		const {host, getResult} = createHost('cid-paid');
+		filter.catch(new InvoiceAlreadyPaidError(), host);
+		const result = getResult();
+		expect(result.statusCode).toBe(HttpStatus.CONFLICT);
+		expect(result.body.error.code).toBe('INVOICE_ALREADY_PAID');
+		expect(JSON.stringify(result.body)).not.toMatch(/cardNumber|cvv|4111/i);
 	});
 
 	it('maps appointment conflicts to a 409 envelope without PHI', () => {

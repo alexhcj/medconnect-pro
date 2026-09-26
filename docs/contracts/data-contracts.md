@@ -128,6 +128,55 @@ a later concern. Documents are a separate boundary.
 come from the session, not from the client. Create DTOs accept only the mutable clinical fields for
 that collection.
 
+## Billing
+
+Practice-scoped invoices, a Stripe/ACH adapter boundary, and a labeled claims envelope. Billing
+accounts are implicit (patient + practice). There is no `/billing/accounts` route. Do not store or
+accept payment card or bank account numbers.
+
+Request concepts (create invoice):
+
+- patientId
+- dueAt
+- optional currency (`USD`)
+- lineItems (`description`, `amountCents`)
+- optional client `practiceId` is ignored for authorization and rejected on mismatch
+
+Request concepts (record payment):
+
+- invoiceId
+- method (`stripe` | `ach`)
+
+Response concepts (invoice):
+
+- invoice identity (server-generated UUID)
+- patient identity and display name
+- status (`issued` | `paid` | `overdue`) — `overdue` is derived when persisted status is `issued`
+  and `dueAt` is in the past
+- amountCents (sum of line items, computed server-side)
+- issuedAt / dueAt
+- line items
+- synthetic (always true)
+
+Response concepts (payment):
+
+- payment identity
+- linked invoice
+- method
+- opaque synthetic processor reference
+- status `recorded`
+
+Response concepts (claims):
+
+- envelope identity (same as invoice id)
+- linked invoice
+- status `not_submitted`
+- processor labeled `edi837`
+- synthetic (always true)
+
+This is not Stripe, ACH origination, or EDI 837 generation. `POST /billing/payments` calls an
+in-process demo adapter. `GET /billing/claims` does not persist claim rows or emit X12.
+
 ## Audit events
 
 `GET /admin/audit-events` returns tenant-scoped rows from `audit_events`. Response fields are

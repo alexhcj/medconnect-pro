@@ -35,9 +35,13 @@ The current persistence slice includes `practices`, `users` (synthetic identity 
 assigned-patient reads, `appointments` (schedule, type, and state, with provider overlap exclusion),
 `telehealth_sessions` (one application session per telehealth appointment, with waiting/in-session/ended
 state and join timestamps), `clinical_history`, `clinical_conditions`, `vitals`, and `medications`
-(tenant-owned clinical collections keyed by `practice_id` and `patient_id`), and `audit_events` (actor,
+(tenant-owned clinical collections keyed by `practice_id` and `patient_id`), `invoices`,
+`invoice_line_items`, and `payments` (tenant-owned billing rows keyed by `practice_id` and
+`patient_id` / `invoice_id`; payments store a synthetic processor reference, never card or bank
+account numbers), and `audit_events` (actor,
 tenant, action, resource type/id, correlation; no payload). Authentication, authenticated denials, patient
-access/mutations, appointment mutations, clinical creates, and telehealth session create/join/end write
+access/mutations, appointment mutations, clinical creates, telehealth session create/join/end, and
+billing invoice create and payment records write
 rows. Restricted HTTP list is
 [SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,
 `admin:practice`). The administration UI viewer remains
@@ -45,7 +49,8 @@ rows. Restricted HTTP list is
 demographics HTTP is [BE-003](../tasks/backend/BE-003-patient-api.md). Appointment HTTP is
 [BE-004](../tasks/backend/BE-004-appointment-api.md). Clinical HTTP is
 [BE-005](../tasks/backend/BE-005-clinical-record-api.md). Telehealth session HTTP is
-[BE-006](../tasks/backend/BE-006-telehealth-session-api.md).
+[BE-006](../tasks/backend/BE-006-telehealth-session-api.md). Billing HTTP is
+[BE-007](../tasks/backend/BE-007-billing-api.md).
 PostgreSQL row-level security is deferred to
 [SEC-002](../tasks/security/SEC-002-tenant-isolation.md).
 
