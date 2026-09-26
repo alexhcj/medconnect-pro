@@ -34,7 +34,8 @@ Slices below are sequencing, not a calendar independent of
 
 ## Slice 6 — Telehealth UI (M5)
 
-- FE-007.
+- telehealth session shell (FE-007);
+- telehealth UI against the Nest telehealth session API (FE-014).
 
 ## Slice 7 — Billing (M6)
 
