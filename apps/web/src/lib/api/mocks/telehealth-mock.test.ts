@@ -22,6 +22,15 @@ describe('telehealthMockAPI', () => {
 		]);
 	});
 
+	it('creates a derived session from a joinable appointment', async () => {
+		const created = await telehealthMockAPI.createSession('demo-appointment-002');
+		expect(created).toMatchObject({
+			id: 'session-demo-appointment-002',
+			appointmentId: 'demo-appointment-002',
+			state: 'waiting',
+		});
+	});
+
 	it('joins then leaves a session', async () => {
 		const waiting = await telehealthMockAPI.getSession('session-demo-appointment-002');
 		expect(waiting.state).toBe('waiting');

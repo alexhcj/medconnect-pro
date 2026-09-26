@@ -21,6 +21,18 @@ export function useTelehealthSession(sessionId: string, enabled = true) {
 	});
 }
 
+export function useCreateTelehealthSession() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (appointmentId: string) => telehealthAPI.createSession(appointmentId),
+		onSuccess: (session) => {
+			queryClient.setQueryData(['telehealth', 'session', session.id], session);
+			queryClient.invalidateQueries({queryKey: ['telehealth', 'visits']});
+		},
+	});
+}
+
 export function useJoinTelehealthSession() {
 	const queryClient = useQueryClient();
 

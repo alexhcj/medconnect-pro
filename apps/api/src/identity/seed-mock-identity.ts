@@ -7,6 +7,7 @@ import {Medication} from '../persistence/entities/medication.entity.js';
 import {Patient} from '../persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {Practice} from '../persistence/entities/practice.entity.js';
+import {TelehealthSession} from '../persistence/entities/telehealth-session.entity.js';
 import {User} from '../persistence/entities/user.entity.js';
 import {Vital} from '../persistence/entities/vital.entity.js';
 import {DEFAULT_DATABASE_URL} from '../persistence/default-database-url.js';
@@ -22,6 +23,7 @@ const PRACTICE_NAME = 'Harbor Synthetic Practice';
  */
 export const LIVE_DEMO_PROVIDER_ID = '11111111-1111-4111-8111-111111111111';
 const PROVIDER_EMAIL = 'jordan.ellis@synthetic.example';
+const LIVE_TELEHEALTH_NOTES = 'Live demo telehealth visit';
 
 const SEEDED_PATIENTS = [
 	{
@@ -92,6 +94,7 @@ async function seed(): Promise<void> {
 		const memberships = dataSource.getRepository(PracticeMembership);
 		const patients = dataSource.getRepository(Patient);
 		const appointments = dataSource.getRepository(Appointment);
+		const telehealthSessions = dataSource.getRepository(TelehealthSession);
 		const historyRows = dataSource.getRepository(ClinicalHistory);
 		const conditionRows = dataSource.getRepository(ClinicalCondition);
 		const vitalRows = dataSource.getRepository(Vital);
@@ -175,6 +178,34 @@ async function seed(): Promise<void> {
 				});
 			}
 
+			const now = Date.now();
+			const telehealthStart = new Date(now - 2 * 60 * 1000);
+			const telehealthEnd = new Date(now + 45 * 60 * 1000);
+			let liveTelehealth = await appointments.findOne({
+				where: {practiceId: practice.id, patientId: seededPatient.id, notes: LIVE_TELEHEALTH_NOTES},
+			});
+			if (!liveTelehealth) {
+				liveTelehealth = await appointments.save({
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					providerUserId: provider.id,
+					startAt: telehealthStart,
+					endAt: telehealthEnd,
+					type: 'telehealth',
+					state: 'scheduled',
+					notes: LIVE_TELEHEALTH_NOTES,
+					synthetic: true,
+				});
+			} else {
+				liveTelehealth.providerUserId = provider.id;
+				liveTelehealth.startAt = telehealthStart;
+				liveTelehealth.endAt = telehealthEnd;
+				liveTelehealth.type = 'telehealth';
+				liveTelehealth.state = 'scheduled';
+				await appointments.save(liveTelehealth);
+			}
+			await telehealthSessions.delete({appointmentId: liveTelehealth.id});
+
 			const existingHistory = await historyRows.findOne({
 				where: {practiceId: practice.id, patientId: seededPatient.id},
 			});
@@ -248,7 +279,7 @@ async function seed(): Promise<void> {
 		}
 
 		Logger.log(
-			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, a demo appointment, and clinical rows`,
+			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, a demo appointment, an in-window telehealth visit, and clinical rows`,
 			'MockIdentity',
 		);
 	} finally {

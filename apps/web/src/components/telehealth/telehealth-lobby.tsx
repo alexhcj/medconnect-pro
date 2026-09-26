@@ -1,11 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
+import {JoinTelehealthVisitControl} from '@/components/telehealth/join-telehealth-visit-control';
 import {TELEHEALTH_DEMO_NOTICE, TelehealthAppointmentLinkage} from '@/components/telehealth/telehealth-appointment-linkage';
 import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
-import {telehealthSessionPath} from '@/lib/telehealth/joinable';
 import {useJoinableTelehealthVisits} from '@/lib/hooks/use-telehealth';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 
@@ -67,12 +66,7 @@ export function TelehealthLobby() {
 										className="flex flex-col gap-3 rounded-lg border border-gray-200 p-4 md:flex-row md:items-start md:justify-between"
 									>
 										<TelehealthAppointmentLinkage session={visit} />
-										<Link
-											href={telehealthSessionPath(visit.appointmentId)}
-											className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-										>
-											Join visit
-										</Link>
+										<JoinTelehealthVisitControl appointmentId={visit.appointmentId} />
 									</li>
 								))}
 							</ul>

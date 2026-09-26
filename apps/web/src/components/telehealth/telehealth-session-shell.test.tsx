@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {TelehealthSessionShell} from '@/components/telehealth/telehealth-session-shell';
+import {ApiError} from '@/lib/api/http';
 import {TelehealthSession} from '@/types/medical/telehealth-session';
 
 const {useTelehealthSession, useJoinTelehealthSession, useLeaveTelehealthSession, useSessionStatus, push} =
@@ -99,7 +100,7 @@ describe('TelehealthSessionShell', () => {
 		await user.click(screen.getByRole('button', {name: 'Screen share'}));
 		expect(screen.getByRole('button', {name: 'Screen share'})).toHaveAttribute('aria-pressed', 'true');
 
-		await user.click(screen.getByRole('button', {name: 'Leave session'}));
+		await user.click(screen.getByRole('button', {name: 'End session'}));
 		expect(mutate).toHaveBeenCalledWith(
 			'session-demo-appointment-002',
 			expect.objectContaining({onSuccess: expect.any(Function)}),
@@ -130,5 +131,18 @@ describe('TelehealthSessionShell', () => {
 		expect(screen.getByRole('alert')).toHaveTextContent('Unable to load this telehealth session.');
 		await user.click(screen.getByRole('button', {name: 'Retry'}));
 		expect(refetch).toHaveBeenCalledOnce();
+	});
+
+	it('surfaces a Nest 409 when join is rejected', () => {
+		useJoinTelehealthSession.mockReturnValue({
+			mutate: vi.fn(),
+			isPending: false,
+			isError: true,
+			error: new ApiError('This telehealth session cannot be joined.', 409, {code: 'SESSION_NOT_JOINABLE'}),
+		});
+		mockVisit();
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+
+		expect(screen.getByRole('alert')).toHaveTextContent('This telehealth session cannot be joined.');
 	});
 });

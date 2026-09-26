@@ -14,6 +14,7 @@ import {
 	useTelehealthSession,
 } from '@/lib/hooks/use-telehealth';
 import {useSessionStatus} from '@/lib/hooks/use-session';
+import {telehealthActionErrorMessage} from '@/lib/telehealth/action-error';
 
 function SessionChrome({children}: {children: ReactNode}) {
 	return (
@@ -72,7 +73,9 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 
 			{visit.isError && (
 				<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
-					<p className="text-sm text-gray-700">Unable to load this telehealth session.</p>
+					<p className="text-sm text-gray-700">
+						{telehealthActionErrorMessage(visit.error, 'Unable to load this telehealth session.')}
+					</p>
 					<Button type="button" className="mt-3" variant="outline" onClick={() => visit.refetch()}>
 						Retry
 					</Button>
@@ -92,7 +95,11 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 						<WaitingRoom
 							onJoin={() => join.mutate(sessionId)}
 							isJoining={join.isPending}
-							errorMessage={join.isError ? 'Unable to join this session.' : undefined}
+							errorMessage={
+								join.isError
+									? telehealthActionErrorMessage(join.error, 'Unable to join this session.')
+									: undefined
+							}
 						/>
 					)}
 
@@ -101,7 +108,9 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 							<MediaPlaceholders />
 							{leave.isError && (
 								<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
-									<p className="text-sm text-gray-700">Unable to leave this session.</p>
+									<p className="text-sm text-gray-700">
+										{telehealthActionErrorMessage(leave.error, 'Unable to end this session.')}
+									</p>
 								</div>
 							)}
 							<Button
@@ -114,7 +123,7 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 									})
 								}
 							>
-								Leave session
+								End session
 							</Button>
 						</div>
 					)}

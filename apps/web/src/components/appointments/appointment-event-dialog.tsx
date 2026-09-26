@@ -7,9 +7,10 @@ import {
 	APPOINTMENT_STATE_LABELS,
 	APPOINTMENT_TYPE_LABELS,
 } from '@/components/forms/appointment-form-schema';
+import {JoinTelehealthVisitControl} from '@/components/telehealth/join-telehealth-visit-control';
 import {canViewPatientProfile} from '@/lib/auth/patient-profile-access';
 import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
-import {isJoinableTelehealthAppointment, telehealthSessionPath} from '@/lib/telehealth/joinable';
+import {isJoinableTelehealthAppointment} from '@/lib/telehealth/joinable';
 import {Appointment} from '@/types/medical/appointment';
 import type {Permission} from '@/types/auth/permissions';
 import type {Role} from '@/types/auth/roles';
@@ -81,12 +82,7 @@ export function AppointmentEventDialog({
 						)}
 						{canJoinVisit && (
 							<p>
-								<Link
-									href={telehealthSessionPath(appointment.id)}
-									className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-								>
-									Join visit
-								</Link>
+								<JoinTelehealthVisitControl appointmentId={appointment.id} />
 							</p>
 						)}
 					</div>

@@ -3,7 +3,7 @@ id: FE-014
 type: task
 area: frontend
 feature: telehealth
-status: planned
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-007, FE-012, BE-006, BE-009]
@@ -37,11 +37,11 @@ Daily/WebRTC is not invoked. Do not add `GET /telehealth/sessions` or `POST .../
 
 ## Acceptance criteria
 
-- [ ] With mocks off, the lobby and session shell call Nest create, get, join, and end using the BE-009 session
-- [ ] `TelehealthSessionRdo` maps onto the UI type; `practiceId` is not used for authorization
-- [ ] Daily/WebRTC is not invoked; no `/leave` route is added
-- [ ] A synthetic in-window seed plus a loginable provider makes the live shell demonstrable
-- [ ] One non-mock browser check covers lobby, join, placeholders, and end
+- [x] With mocks off, the lobby and session shell call Nest create, get, join, and end using the BE-009 session
+- [x] `TelehealthSessionRdo` maps onto the UI type; `practiceId` is not used for authorization
+- [x] Daily/WebRTC is not invoked; no `/leave` route is added
+- [x] A synthetic in-window seed plus a loginable provider makes the live shell demonstrable
+- [x] One non-mock browser check covers lobby, join, placeholders, and end
 
 ## Implementation notes
 
@@ -63,7 +63,7 @@ Receptionist remains off Telehealth nav. Frontend checks stay UX only.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Live lobby and session shell on the Nest telehealth session API with the BE-009 bearer session. Join visit creates `POST /telehealth/sessions` then navigates to the server UUID. Leave maps to `POST .../end` (copy: End session). `npm run seed:mock-identity` upserts a relative-to-now telehealth appointment for Avery Quinn and `jordan.ellis@synthetic.example`, and clears any prior session row so re-seed stays joinable.
+- Tests: Vitest covers `TelehealthSessionRdo` mapping (no `practiceId`), live create/get/join/end (no `/leave`), join-visit create-then-navigate, and 409/400 error copy. `npm run e2e:live` covers the seeded provider lobby → join → placeholders → end path; mock Playwright stays on `NEXT_PUBLIC_USE_MOCKS=true`.
 - PR:
-- Notes:
+- Notes: Daily/WebRTC is unused. No `GET /telehealth/sessions` or `POST .../leave`. Ineligible appointments (including office visits) remain Nest 400 `VALIDATION_ERROR`; join-window and already-ended conflicts are 409. Practice admin may see the lobby but cannot join; live e2e signs in as the provider.

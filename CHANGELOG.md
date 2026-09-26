@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.35.0] - 2026-09-26
+
+### Added
+
+- Telehealth lobby and session shell call the Nest telehealth session API when mocks are off (FE-014): create, get, join, and end with the bearer from `POST /auth/login`. Live Join visit uses the server session UUID. `npm run seed:mock-identity` inserts a relative-to-now telehealth appointment for `jordan.ellis@synthetic.example`. `npm run e2e:live` covers lobby, join, media placeholders, and end; `npm run e2e` stays on mocks. Daily/WebRTC is not connected.
+
 ## [0.34.1] - 2026-09-26
 
 ### Fixed

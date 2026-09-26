@@ -47,6 +47,11 @@ export const telehealthMockAPI = {
 			.map((appointment) => currentOrWaiting(appointment));
 	},
 
+	createSession: async (appointmentId: string): Promise<TelehealthSession> => {
+		const appointment = await joinableAppointment(appointmentId);
+		return currentOrWaiting(appointment);
+	},
+
 	getSession: async (sessionId: string): Promise<TelehealthSession> => {
 		const appointmentId = appointmentIdFromSessionId(sessionId);
 		if (!appointmentId) {

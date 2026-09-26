@@ -7,9 +7,10 @@ import {
 	APPOINTMENT_STATE_LABELS,
 	APPOINTMENT_TYPE_LABELS,
 } from '@/components/forms/appointment-form-schema';
+import {JoinTelehealthVisitControl} from '@/components/telehealth/join-telehealth-visit-control';
 import {canWriteAppointments} from '@/lib/auth/appointment-access';
 import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
-import {isJoinableTelehealthAppointment, telehealthSessionPath} from '@/lib/telehealth/joinable';
+import {isJoinableTelehealthAppointment} from '@/lib/telehealth/joinable';
 import {useAppointments} from '@/lib/hooks/use-medical';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {Appointment} from '@/types/medical/appointment';
@@ -91,12 +92,7 @@ const AppointmentList = () => {
 										{typeLabel(appointment.type)} · {stateLabel(appointment.state)}
 									</p>
 									{canJoinTelehealth && isJoinableTelehealthAppointment(appointment) && (
-										<Link
-											href={telehealthSessionPath(appointment.id)}
-											className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-										>
-											Join visit
-										</Link>
+										<JoinTelehealthVisitControl appointmentId={appointment.id} />
 									)}
 								</div>
 							</li>
