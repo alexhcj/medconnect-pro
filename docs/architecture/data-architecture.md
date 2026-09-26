@@ -18,6 +18,7 @@ Practice
  ├── Providers
  ├── Patients
  ├── Appointments
+ ├── Telehealth Sessions
  ├── Clinical Records
  ├── Documents
  └── Billing Data
@@ -32,16 +33,19 @@ The current persistence slice includes `practices`, `users` (synthetic identity 
 `practice_memberships`, `auth_sessions` (opaque mock session hashes, not passwords), `patients`
 (demographics, assigned provider, and optional portal user), `patient_assignments` for
 assigned-patient reads, `appointments` (schedule, type, and state, with provider overlap exclusion),
-`clinical_history`, `clinical_conditions`, `vitals`, and `medications` (tenant-owned clinical
-collections keyed by `practice_id` and `patient_id`), and `audit_events` (actor, tenant, action,
-resource type/id, correlation; no payload). Authentication, authenticated denials, patient
-access/mutations, appointment mutations, and clinical creates write rows. Restricted HTTP list is
+`telehealth_sessions` (one application session per telehealth appointment, with waiting/in-session/ended
+state and join timestamps), `clinical_history`, `clinical_conditions`, `vitals`, and `medications`
+(tenant-owned clinical collections keyed by `practice_id` and `patient_id`), and `audit_events` (actor,
+tenant, action, resource type/id, correlation; no payload). Authentication, authenticated denials, patient
+access/mutations, appointment mutations, clinical creates, and telehealth session create/join/end write
+rows. Restricted HTTP list is
 [SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,
 `admin:practice`). The administration UI viewer remains
 [FE-009](../tasks/frontend/FE-009-administration-security-ui.md). Patient
 demographics HTTP is [BE-003](../tasks/backend/BE-003-patient-api.md). Appointment HTTP is
 [BE-004](../tasks/backend/BE-004-appointment-api.md). Clinical HTTP is
-[BE-005](../tasks/backend/BE-005-clinical-record-api.md).
+[BE-005](../tasks/backend/BE-005-clinical-record-api.md). Telehealth session HTTP is
+[BE-006](../tasks/backend/BE-006-telehealth-session-api.md).
 PostgreSQL row-level security is deferred to
 [SEC-002](../tasks/security/SEC-002-tenant-isolation.md).
 

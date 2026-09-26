@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.34.0] - 2026-09-26
+
+### Added
+
+- Telehealth session API (BE-006): `POST /telehealth/sessions`, `GET /telehealth/sessions/:id`, `POST /telehealth/sessions/:id/join`, and `POST /telehealth/sessions/:id/end`. Sessions are appointment-linked, tenant-scoped application visits with waiting/in-session/ended state, 15-minute join grace, and mutation audit events without PHI. Daily/WebRTC is not part of this surface.
+
 ## [0.33.0] - 2026-09-26
 
 ### Added

@@ -9,6 +9,7 @@ import {IdentityModule} from './identity/identity.module.js';
 import {PatientModule} from './patient/patient.module.js';
 import {PersistenceModule} from './persistence/persistence.module.js';
 import {SchedulingModule} from './scheduling/scheduling.module.js';
+import {TelehealthModule} from './telehealth/telehealth.module.js';
 import {CorrelationIdMiddleware} from './platform/correlation.middleware.js';
 import {envSchema} from './platform/env.schema.js';
 import {PracticeModule} from './practice/practice.module.js';
@@ -28,6 +29,7 @@ import {TenancyModule} from './tenancy/tenant.module.js';
 		PatientModule,
 		EhrModule,
 		SchedulingModule,
+		TelehealthModule,
 		IdentityModule,
 		HealthModule,
 	],

@@ -130,6 +130,18 @@ confirming whether the id exists (no resource oracle).
 4. **Ownership or assignment.** Examples: provider/nurse assigned to the patient; receptionist
    limited to demographics; patient limited to self.
 
+Telehealth session HTTP ([BE-006](../tasks/backend/BE-006-telehealth-session-api.md)) maps onto this
+catalog without new permission strings:
+
+- **Create / end:** `write:appointments`, and the linked appointment must be visible to the caller.
+- **Get:** the same read scope as the linked appointment (`write:appointments` practice-wide,
+  `read:assigned_patients` for nurses, `read:own_patient` for portal users).
+- **Join:** visit participant only — the appointment’s provider, the portal patient, or an assigned
+  nurse. Receptionists may create and end sessions but cannot join.
+
+Unknown and cross-tenant session ids return the same not-found response as other tenant-owned
+resources.
+
 Response DTOs expose only authorized fields ([data-contracts.md](data-contracts.md) `PatientRdo`).
 Clinical fields must not leak to `read:demographics`-only actors.
 

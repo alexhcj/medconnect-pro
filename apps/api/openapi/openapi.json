@@ -2012,6 +2012,311 @@
         ]
       }
     },
+    "/telehealth/sessions": {
+      "post": {
+        "description": "Requires write:appointments. The appointment must be a scheduled or confirmed telehealth visit that has not passed the 15-minute post-end grace window. Tenant comes from the session, not from the client. synthetic is always stored as true. Returns the existing non-ended session when one already exists. This is an application session, not a media room.",
+        "operationId": "TelehealthSessionController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "appointmentId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "appointmentId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelehealthSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create an appointment-linked telehealth session",
+        "tags": [
+          "telehealth"
+        ]
+      }
+    },
+    "/telehealth/sessions/{id}": {
+      "get": {
+        "description": "Unknown ids, cross-tenant ids, and records outside the caller’s assignment or portal scope return the same not-found response. Past the appointment end plus 15 minutes, the session is lazily marked ended.",
+        "operationId": "TelehealthSessionController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelehealthSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Read one telehealth session",
+        "tags": [
+          "telehealth"
+        ]
+      }
+    },
+    "/telehealth/sessions/{id}/join": {
+      "post": {
+        "description": "Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists may create and end sessions but cannot join. Join is allowed from 15 minutes before the appointment start through 15 minutes after it ends. This does not mint a media token.",
+        "operationId": "TelehealthSessionController_join",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelehealthSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Join a telehealth session",
+        "tags": [
+          "telehealth"
+        ]
+      }
+    },
+    "/telehealth/sessions/{id}/end": {
+      "post": {
+        "description": "Requires write:appointments. Closes the application visit for all participants. Idempotent when the session is already ended.",
+        "operationId": "TelehealthSessionController_end",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelehealthSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "End a telehealth session",
+        "tags": [
+          "telehealth"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "description": "Password-shaped stand-in for a mock identity provider. Not the production OAuth 2.0 authorization-code + PKCE flow. Practice selection is limited to server-side memberships.",
@@ -3234,6 +3539,100 @@
           "workingHours",
           "busy",
           "free"
+        ]
+      },
+      "TelehealthSession": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "appointmentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "patientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "providerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patientName": {
+            "type": "string",
+            "example": "Avery Quinn"
+          },
+          "providerName": {
+            "type": "string",
+            "example": "jordan.ellis@synthetic.example"
+          },
+          "start": {
+            "type": "string",
+            "example": "2026-09-26T14:00:00.000Z",
+            "description": "Linked appointment start (ISO-8601)."
+          },
+          "end": {
+            "type": "string",
+            "example": "2026-09-26T15:00:00.000Z",
+            "description": "Linked appointment end (ISO-8601)."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "office_visit",
+              "telehealth",
+              "follow_up"
+            ],
+            "example": "telehealth"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "waiting",
+              "in_session",
+              "ended"
+            ],
+            "example": "waiting"
+          },
+          "waitingStartedAt": {
+            "type": "string",
+            "example": "2026-09-26T13:45:00.000Z"
+          },
+          "joinedAt": {
+            "type": "string",
+            "example": "2026-09-26T14:02:00.000Z"
+          },
+          "endedAt": {
+            "type": "string",
+            "example": "2026-09-26T14:40:00.000Z"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "appointmentId",
+          "practiceId",
+          "patientId",
+          "providerId",
+          "patientName",
+          "providerName",
+          "start",
+          "end",
+          "type",
+          "state",
+          "waitingStartedAt",
+          "synthetic"
         ]
       },
       "TokenPair": {

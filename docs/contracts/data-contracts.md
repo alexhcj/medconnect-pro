@@ -67,6 +67,44 @@ Response concepts:
 - scheduling state
 - authorized participant information
 
+## Telehealth session
+
+Application session over a telehealth appointment. This is not a media/WebRTC room and does not
+mint join tokens.
+
+Request concepts:
+
+- appointmentId (create only)
+
+Response concepts:
+
+- session identity (server-generated UUID)
+- linked appointment identity and window
+- authorized participant names
+- session state
+- waiting/join/end timestamps
+- synthetic (always true)
+
+State machine:
+
+- `waiting` after create
+- `in_session` after an authorized participant joins
+- `ended` after `POST .../end` or after lazy grace expiry
+
+One session row per appointment. Creating again returns the existing non-ended session. Recreating
+after `ended` is rejected.
+
+### Timeout and grace (demo policy)
+
+Not an authentication timeout ([identity-and-access.md](identity-and-access.md) session rules). Not
+a production SLA.
+
+- Join window: 15 minutes before `appointment.start` through 15 minutes after `appointment.end`.
+- Create is allowed only for `type=telehealth` appointments in `scheduled` or `confirmed` whose end
+  plus 15 minutes has not already passed.
+- After appointment end plus 15 minutes, the next GET/join/end lazily persists `ended` (no worker).
+- Join outside the window returns a conflict. There is no background timeout job.
+
 ## Clinical data
 
 Keep clinical boundaries explicit. Clinical collections are nested under a patient and must not appear on `PatientRdo`.

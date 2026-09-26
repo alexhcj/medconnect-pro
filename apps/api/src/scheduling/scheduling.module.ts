@@ -13,5 +13,6 @@ import {AvailabilityController} from './availability.controller.js';
 	imports: [TenancyModule, PracticeModule, AuditModule, TypeOrmModule.forFeature([Appointment])],
 	controllers: [AppointmentController, AvailabilityController],
 	providers: [AppointmentService, AppointmentRepository],
+	exports: [AppointmentRepository],
 })
 export class SchedulingModule {}

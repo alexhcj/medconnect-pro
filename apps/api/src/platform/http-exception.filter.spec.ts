@@ -2,6 +2,7 @@ import {BadRequestException, HttpStatus, InternalServerErrorException} from '@ne
 import {describe, expect, it} from 'vitest';
 import {InvalidCredentialsError, PermissionDeniedError} from '../identity/auth.errors.js';
 import {AppointmentConflictError} from '../scheduling/appointment.errors.js';
+import {SessionAlreadyEndedError, SessionNotJoinableError} from '../telehealth/telehealth-session.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {EnvelopeExceptionFilter} from './http-exception.filter.js';
 import type {ErrorEnvelope} from './error-envelope.js';
@@ -104,6 +105,19 @@ describe('EnvelopeExceptionFilter', () => {
 			'Client-supplied practice id is not authorized',
 		);
 		expect(JSON.stringify(mismatch.getResult().body)).not.toMatch(/stack|[0-9a-f]{8}-/i);
+	});
+
+	it('maps telehealth session conflicts to 409 envelopes without PHI', () => {
+		const notJoinable = createHost('cid-join');
+		filter.catch(new SessionNotJoinableError(), notJoinable.host);
+		expect(notJoinable.getResult().statusCode).toBe(HttpStatus.CONFLICT);
+		expect(notJoinable.getResult().body.error.code).toBe('SESSION_NOT_JOINABLE');
+
+		const ended = createHost('cid-ended');
+		filter.catch(new SessionAlreadyEndedError(), ended.host);
+		expect(ended.getResult().statusCode).toBe(HttpStatus.CONFLICT);
+		expect(ended.getResult().body.error.code).toBe('SESSION_ENDED');
+		expect(JSON.stringify(ended.getResult().body)).not.toMatch(/Quinn|Avery/);
 	});
 
 	it('maps appointment conflicts to a 409 envelope without PHI', () => {

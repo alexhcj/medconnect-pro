@@ -22,6 +22,12 @@ import {
 	InvalidAppointmentProviderError,
 	InvalidAppointmentTimeError,
 } from '../scheduling/appointment.errors.js';
+import {
+	InvalidTelehealthAppointmentError,
+	SessionAlreadyEndedError,
+	SessionNotJoinableError,
+	TelehealthSessionNotFoundError,
+} from '../telehealth/telehealth-session.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {getCorrelationId} from './correlation.js';
 import {
@@ -100,7 +106,11 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 				'You do not have permission to perform this action',
 			);
 		}
-		if (exception instanceof PatientNotFoundError || exception instanceof AppointmentNotFoundError) {
+		if (
+			exception instanceof PatientNotFoundError ||
+			exception instanceof AppointmentNotFoundError ||
+			exception instanceof TelehealthSessionNotFoundError
+		) {
 			return this.authError(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Resource not found');
 		}
 		if (exception instanceof AppointmentConflictError) {
@@ -150,6 +160,39 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 							message: 'Provider must be a provider in this practice',
 						},
 					],
+				},
+			};
+		}
+		if (exception instanceof InvalidTelehealthAppointmentError) {
+			return {
+				status: HttpStatus.BAD_REQUEST,
+				error: {
+					code: 'VALIDATION_ERROR',
+					message: 'Request validation failed',
+					details: [
+						{
+							path: 'appointmentId',
+							message: 'Appointment is not eligible for a telehealth session',
+						},
+					],
+				},
+			};
+		}
+		if (exception instanceof SessionNotJoinableError) {
+			return {
+				status: HttpStatus.CONFLICT,
+				error: {
+					code: 'SESSION_NOT_JOINABLE',
+					message: 'This telehealth session cannot be joined.',
+				},
+			};
+		}
+		if (exception instanceof SessionAlreadyEndedError) {
+			return {
+				status: HttpStatus.CONFLICT,
+				error: {
+					code: 'SESSION_ENDED',
+					message: 'A telehealth session for this appointment has already ended.',
 				},
 			};
 		}

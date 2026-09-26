@@ -70,6 +70,10 @@ Clinical collections are the first EHR slice ([BE-005](../tasks/backend/BE-005-c
 
 ## Telehealth
 
+These routes are the application session for an appointment-linked visit, not a media room. Media
+transport (Daily/WebRTC) is a separate boundary. `POST .../end` closes the visit for all
+participants; there is no participant-leave route yet.
+
 - `POST /telehealth/sessions`
 - `GET /telehealth/sessions/:id`
 - `POST /telehealth/sessions/:id/join`

@@ -76,6 +76,7 @@ Audit sensitive actions such as:
 - clinical changes;
 - document access;
 - appointment changes;
+- telehealth session create, join, and end;
 - billing changes;
 - administrative security changes.
 

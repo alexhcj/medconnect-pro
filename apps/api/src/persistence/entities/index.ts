@@ -8,6 +8,7 @@ import {PatientAssignment} from './patient-assignment.entity.js';
 import {Patient} from './patient.entity.js';
 import {PracticeMembership} from './practice-membership.entity.js';
 import {Practice} from './practice.entity.js';
+import {TelehealthSession} from './telehealth-session.entity.js';
 import {User} from './user.entity.js';
 import {Vital} from './vital.entity.js';
 
@@ -24,6 +25,7 @@ export const persistenceEntities = [
 	ClinicalCondition,
 	Vital,
 	Medication,
+	TelehealthSession,
 ];
 
 export {
@@ -37,6 +39,7 @@ export {
 	PatientAssignment,
 	Practice,
 	PracticeMembership,
+	TelehealthSession,
 	User,
 	Vital,
 };
