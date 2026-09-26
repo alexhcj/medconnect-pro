@@ -33,6 +33,7 @@ describe('AppointmentEventDialog', () => {
 			'href',
 			'/dashboard/patients/demo-patient-001',
 		);
+		expect(screen.queryByRole('link', {name: 'Join visit'})).not.toBeInTheDocument();
 	});
 
 	it('omits the profile link without a patient read grant', () => {
@@ -60,5 +61,51 @@ describe('AppointmentEventDialog', () => {
 
 		await user.click(screen.getByRole('button', {name: 'Close'}));
 		expect(onClose).toHaveBeenCalledOnce();
+	});
+
+	it('links a joinable telehealth visit', () => {
+		const telehealthAppointment: Appointment = {
+			...appointment,
+			id: 'demo-appointment-002',
+			type: 'telehealth',
+			state: 'confirmed',
+			patientName: 'Taylor Bennett',
+			providerName: 'Dr. Casey Walsh',
+		};
+
+		render(
+			<AppointmentEventDialog
+				appointment={telehealthAppointment}
+				permissions={DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN}
+				userRole="PRACTICE_ADMIN"
+				onClose={vi.fn()}
+			/>,
+		);
+
+		expect(screen.getByRole('dialog', {name: 'Appointment'})).toHaveTextContent('Telehealth');
+		expect(screen.getByRole('link', {name: 'Join visit'})).toHaveAttribute(
+			'href',
+			'/dashboard/telehealth/session-demo-appointment-002',
+		);
+	});
+
+	it('omits join visit for a receptionist', () => {
+		const telehealthAppointment: Appointment = {
+			...appointment,
+			id: 'demo-appointment-002',
+			type: 'telehealth',
+			state: 'confirmed',
+		};
+
+		render(
+			<AppointmentEventDialog
+				appointment={telehealthAppointment}
+				permissions={DEFAULT_ROLE_PERMISSIONS.RECEPTIONIST}
+				userRole="RECEPTIONIST"
+				onClose={vi.fn()}
+			/>,
+		);
+
+		expect(screen.queryByRole('link', {name: 'Join visit'})).not.toBeInTheDocument();
 	});
 });

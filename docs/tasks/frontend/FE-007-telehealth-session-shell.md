@@ -3,7 +3,7 @@ id: FE-007
 type: task
 area: frontend
 feature: telehealth
-status: planned
+status: implemented
 priority: medium
 estimate: 3
 dependencies: [FE-005]
@@ -35,11 +35,11 @@ telehealth deployment.
 
 ## Acceptance criteria
 
-- [ ] Session shell route exists
-- [ ] Appointment linkage is visible
-- [ ] Join/leave controls exist
-- [ ] Loading/error states exist
-- [ ] Accessible on tablet
+- [x] Session shell route exists
+- [x] Appointment linkage is visible
+- [x] Join/leave controls exist
+- [x] Loading/error states exist
+- [x] Accessible on tablet
 
 ## Implementation notes
 
@@ -47,7 +47,7 @@ Media behavior is bounded by the selected telehealth architecture. Backend sessi
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Mock lobby at `/dashboard/telehealth` and session shell at `/dashboard/telehealth/[sessionId]` with waiting room, join/leave, and camera/mic/share placeholders. Sessions are derived from joinable telehealth appointments (`session-{appointmentId}`). Join visit also appears on the appointment list and calendar dialog. Live mode lists visits from the appointment API; get/join/leave are labeled unavailable until BE-006. Daily is not invoked.
+- Tests: Vitest for joinable mapping, mock join/leave, live join rejection, access helper, lobby/session UI, and appointment Join visit visibility. Playwright tablet flow covers lobby linkage, join, placeholders, and leave.
 - PR:
-- Notes:
+- Notes: Receptionist remains off Telehealth nav; frontend checks are UX only. Chat, recording, reconnection, and Nest `/telehealth` stay out of scope.

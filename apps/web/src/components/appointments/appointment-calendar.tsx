@@ -186,6 +186,7 @@ const AppointmentCalendar = () => {
 			<AppointmentEventDialog
 				appointment={selected}
 				permissions={session?.permissions}
+				userRole={session?.userRole}
 				onClose={() => setSelected(null)}
 			/>
 		</Card>

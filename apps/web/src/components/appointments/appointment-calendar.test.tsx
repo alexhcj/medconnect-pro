@@ -59,7 +59,7 @@ describe('AppointmentCalendar', () => {
 	beforeEach(() => {
 		vi.mocked(isMockMode).mockReturnValue(true);
 		useSessionStatus.mockReturnValue({
-			session: {permissions: DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN},
+			session: {permissions: DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN, userRole: 'PRACTICE_ADMIN'},
 			isLoading: false,
 		});
 	});
@@ -106,6 +106,7 @@ describe('AppointmentCalendar', () => {
 			'href',
 			'/dashboard/patients/demo-patient-001',
 		);
+		expect(screen.queryByRole('link', {name: 'Join visit'})).not.toBeInTheDocument();
 
 		await user.click(screen.getByRole('button', {name: 'Close'}));
 		expect(screen.queryByRole('dialog', {name: 'Appointment'})).not.toBeInTheDocument();
@@ -113,7 +114,7 @@ describe('AppointmentCalendar', () => {
 
 	it('hides the profile link without patient read grants', async () => {
 		useSessionStatus.mockReturnValue({
-			session: {permissions: DEFAULT_ROLE_PERMISSIONS.PATIENT},
+			session: {permissions: DEFAULT_ROLE_PERMISSIONS.PATIENT, userRole: 'PATIENT'},
 			isLoading: false,
 		});
 		mockAppointments();

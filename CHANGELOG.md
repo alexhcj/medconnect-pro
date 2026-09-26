@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.33.0] - 2026-09-26
+
+### Added
+
+- Appointment-linked telehealth session shell (FE-007): lobby at `/dashboard/telehealth`, waiting room and join/leave on `/dashboard/telehealth/[sessionId]`, and camera/microphone/screen-share placeholders. Mock sessions are derived from telehealth appointments. Live mode lists joinable visits from the appointment API; join/get/leave stay unavailable until BE-006. Daily is not connected. Copy labels the surface as a synthetic demo, not a production telehealth deployment.
+
 ## [0.32.0] - 2026-09-25
 
 ### Added

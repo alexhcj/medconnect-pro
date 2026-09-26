@@ -8,8 +8,11 @@ import {
 	APPOINTMENT_TYPE_LABELS,
 } from '@/components/forms/appointment-form-schema';
 import {canViewPatientProfile} from '@/lib/auth/patient-profile-access';
+import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
+import {isJoinableTelehealthAppointment, telehealthSessionPath} from '@/lib/telehealth/joinable';
 import {Appointment} from '@/types/medical/appointment';
 import type {Permission} from '@/types/auth/permissions';
+import type {Role} from '@/types/auth/roles';
 
 function formatRange(start: string, end: string) {
 	const startDate = new Date(start);
@@ -23,11 +26,19 @@ function formatRange(start: string, end: string) {
 interface AppointmentEventDialogProps {
 	appointment: Appointment | null;
 	permissions: readonly Permission[] | undefined;
+	userRole?: Role;
 	onClose: () => void;
 }
 
-export function AppointmentEventDialog({appointment, permissions, onClose}: AppointmentEventDialogProps) {
+export function AppointmentEventDialog({
+	appointment,
+	permissions,
+	userRole,
+	onClose,
+}: AppointmentEventDialogProps) {
 	const canOpenProfile = canViewPatientProfile(permissions);
+	const canJoinVisit =
+		!!appointment && canAccessTelehealth(userRole) && isJoinableTelehealthAppointment(appointment);
 
 	return (
 		<Dialog
@@ -65,6 +76,16 @@ export function AppointmentEventDialog({appointment, permissions, onClose}: Appo
 									className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
 								>
 									View patient profile
+								</Link>
+							</p>
+						)}
+						{canJoinVisit && (
+							<p>
+								<Link
+									href={telehealthSessionPath(appointment.id)}
+									className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+								>
+									Join visit
 								</Link>
 							</p>
 						)}

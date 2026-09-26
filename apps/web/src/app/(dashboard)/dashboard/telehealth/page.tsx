@@ -1,10 +1,7 @@
-import {FeaturePlaceholder} from '@/components/dashboard/feature-placeholder';
+'use client';
+
+import {TelehealthLobby} from '@/components/telehealth/telehealth-lobby';
 
 export default function TelehealthPage() {
-	return (
-		<FeaturePlaceholder
-			title="Telehealth"
-			description="Telehealth session workflows will appear here. This route is a placeholder so dashboard navigation stays intact."
-		/>
-	);
+	return <TelehealthLobby />;
 }

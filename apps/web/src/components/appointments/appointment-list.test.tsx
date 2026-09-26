@@ -50,7 +50,7 @@ describe('AppointmentList', () => {
 	beforeEach(() => {
 		vi.mocked(isMockMode).mockReturnValue(true);
 		useSessionStatus.mockReturnValue({
-			session: {permissions: DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN},
+			session: {permissions: DEFAULT_ROLE_PERMISSIONS.PRACTICE_ADMIN, userRole: 'PRACTICE_ADMIN'},
 			isLoading: false,
 		});
 	});
@@ -66,11 +66,12 @@ describe('AppointmentList', () => {
 			'href',
 			'/dashboard/appointments/new',
 		);
+		expect(screen.queryByRole('link', {name: 'Join visit'})).not.toBeInTheDocument();
 	});
 
 	it('hides the schedule link without write:appointments', () => {
 		useSessionStatus.mockReturnValue({
-			session: {permissions: DEFAULT_ROLE_PERMISSIONS.NURSE},
+			session: {permissions: DEFAULT_ROLE_PERMISSIONS.NURSE, userRole: 'NURSE'},
 			isLoading: false,
 		});
 		mockAppointments();
@@ -99,5 +100,42 @@ describe('AppointmentList', () => {
 		expect(screen.getByRole('list', {name: 'Appointments'})).toBeInTheDocument();
 		expect(screen.getByText(/Avery Carter/)).toBeInTheDocument();
 		expect(screen.queryByText(/mock-only until the appointment API is available/)).not.toBeInTheDocument();
+	});
+
+	it('links joinable telehealth visits and hides join for office visits', () => {
+		const telehealthAppointment: Appointment = {
+			...sampleAppointment,
+			id: 'demo-appointment-002',
+			type: 'telehealth',
+			state: 'confirmed',
+			patientName: 'Taylor Bennett',
+			providerName: 'Dr. Casey Walsh',
+		};
+		mockAppointments({data: [sampleAppointment, telehealthAppointment]});
+		render(<AppointmentList />);
+
+		expect(screen.getByRole('link', {name: 'Join visit'})).toHaveAttribute(
+			'href',
+			'/dashboard/telehealth/session-demo-appointment-002',
+		);
+	});
+
+	it('hides join visit for a receptionist', () => {
+		useSessionStatus.mockReturnValue({
+			session: {permissions: DEFAULT_ROLE_PERMISSIONS.RECEPTIONIST, userRole: 'RECEPTIONIST'},
+			isLoading: false,
+		});
+		const telehealthAppointment: Appointment = {
+			...sampleAppointment,
+			id: 'demo-appointment-002',
+			type: 'telehealth',
+			state: 'confirmed',
+			patientName: 'Taylor Bennett',
+			providerName: 'Dr. Casey Walsh',
+		};
+		mockAppointments({data: [telehealthAppointment]});
+		render(<AppointmentList />);
+
+		expect(screen.queryByRole('link', {name: 'Join visit'})).not.toBeInTheDocument();
 	});
 });

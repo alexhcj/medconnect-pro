@@ -8,6 +8,8 @@ import {
 	APPOINTMENT_TYPE_LABELS,
 } from '@/components/forms/appointment-form-schema';
 import {canWriteAppointments} from '@/lib/auth/appointment-access';
+import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
+import {isJoinableTelehealthAppointment, telehealthSessionPath} from '@/lib/telehealth/joinable';
 import {useAppointments} from '@/lib/hooks/use-medical';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {Appointment} from '@/types/medical/appointment';
@@ -32,6 +34,7 @@ function stateLabel(state: Appointment['state']) {
 const AppointmentList = () => {
 	const {session, isLoading: isSessionLoading} = useSessionStatus();
 	const canWrite = !isSessionLoading && canWriteAppointments(session?.permissions);
+	const canJoinTelehealth = !isSessionLoading && canAccessTelehealth(session?.userRole);
 	const appointments = useAppointments();
 
 	return (
@@ -83,9 +86,19 @@ const AppointmentList = () => {
 									</p>
 									<p className="mt-1 text-sm text-gray-700">{formatRange(appointment.start, appointment.end)}</p>
 								</div>
-								<p className="text-sm text-gray-600">
-									{typeLabel(appointment.type)} · {stateLabel(appointment.state)}
-								</p>
+								<div className="flex flex-col items-start gap-2 md:items-end">
+									<p className="text-sm text-gray-600">
+										{typeLabel(appointment.type)} · {stateLabel(appointment.state)}
+									</p>
+									{canJoinTelehealth && isJoinableTelehealthAppointment(appointment) && (
+										<Link
+											href={telehealthSessionPath(appointment.id)}
+											className="inline-flex h-10 items-center text-sm font-medium text-blue-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+										>
+											Join visit
+										</Link>
+									)}
+								</div>
 							</li>
 						))}
 					</ul>
