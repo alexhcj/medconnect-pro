@@ -9,6 +9,9 @@ estimate: 3
 dependencies: [FE-007, FE-012, BE-006, BE-009]
 related_adrs: [ADR-003-authentication.md]
 related_docs: [frontend-architecture.md,../contracts/api-endpoints.md,../contracts/data-contracts.md,../contracts/identity-and-access.md,../tasks/backend/BE-006-telehealth-session-api.md,../tasks/backend/BE-009-identity-and-access-http.md,FE-007-telehealth-session-shell.md]
+plane:
+  work_item_id: d9ec1aa4-1e3f-4c93-b3ac-ed22fa1a771e
+  identifier: MEDCONNECT-46
 ---
 
 # FE-014 — Telehealth UI on the Nest telehealth session API

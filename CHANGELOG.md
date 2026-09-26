@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.34.1] - 2026-09-26
+
+### Fixed
+
+- `npm run plane:sync` inserts a `plane:` block when a task file has none, then writes `work_item_id` and `identifier` after the Plane card is created.
+
 ## [0.34.0] - 2026-09-26
 
 ### Added

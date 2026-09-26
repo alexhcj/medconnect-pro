@@ -402,19 +402,41 @@ function setNestedField(block, key, value) {
   return `${block.replace(/\s*$/, "")}${nl}  ${key}: ${rendered}${nl}`;
 }
 
+function findPlaneBlock(front) {
+  return front.match(/^plane:[ \t]*\r?\n(?:[ \t]+[^\n]*\r?\n?)*/m);
+}
+
+/** Insert an empty plane block when the task was authored without one. */
+function withPlaneBlock(front) {
+  const existing = findPlaneBlock(front);
+  if (existing) return { front, match: existing };
+
+  const nl = front.includes("\r\n") ? "\r\n" : "\n";
+  const block = `plane:${nl}  work_item_id: null${nl}  identifier: null`;
+  // Keep a trailing CR so it still forms CRLF with the newline that starts the closing ---.
+  const carriage = front.endsWith("\r") ? "\r" : "";
+  const base = (carriage ? front.slice(0, -1) : front).replace(/\s*$/, "");
+  const next = `${base}${nl}${block}${carriage}`;
+  const match = findPlaneBlock(next);
+  if (!match) throw new Error("Could not write a plane: block");
+  return { front: next, match };
+}
+
 export function writePlaneMapping(source, workItemId, identifier) {
   if (!source.startsWith("---")) throw new Error("Task file is missing front matter");
   const end = source.indexOf("\n---", 3);
   if (end === -1) throw new Error("Invalid front matter");
 
-  const front = source.slice(0, end);
+  const located = withPlaneBlock(source.slice(0, end));
   const rest = source.slice(end);
-  const match = front.match(/^plane:[ \t]*\r?\n(?:[ \t]+[^\n]*\r?\n?)*/m);
-  if (!match) throw new Error("Task file is missing a plane: block");
-
-  let block = setNestedField(match[0], "work_item_id", workItemId);
+  let block = setNestedField(located.match[0], "work_item_id", workItemId);
   block = setNestedField(block, "identifier", identifier);
-  return front.slice(0, match.index) + block + front.slice(match.index + match[0].length) + rest;
+  return (
+    located.front.slice(0, located.match.index) +
+    block +
+    located.front.slice(located.match.index + located.match[0].length) +
+    rest
+  );
 }
 
 export function displayIdentifier(projectKey, sequenceId) {

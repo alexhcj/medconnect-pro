@@ -9,6 +9,9 @@ estimate: 3
 dependencies: [FE-003, FE-011, BE-005, BE-009]
 related_adrs: [ADR-003-authentication.md]
 related_docs: [frontend-architecture.md,../contracts/api-endpoints.md,../contracts/data-contracts.md,../tasks/backend/BE-005-clinical-record-api.md,../tasks/backend/BE-009-identity-and-access-http.md]
+plane:
+  work_item_id: e7a47dc2-4ceb-4ef8-9719-3fa0b5713655
+  identifier: MEDCONNECT-45
 ---
 
 # FE-013 — Clinical UI on the Nest clinical API

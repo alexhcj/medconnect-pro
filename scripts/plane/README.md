@@ -50,6 +50,49 @@ No arguments sync every task file. Task ids match front matter `id` and sync onl
 
 Dry-run lists the selected task files and whether each would be created or updated. It does not call Plane and does not edit task files. A real run with nothing selected does not call Plane.
 
+## Flow
+
+Author the task, sync it, then commit. Plane ids exist only after the work item is created, so the commit that should contain them comes after sync.
+
+```text
+Author docs/tasks/<area>/<ID>-….md
+        │
+        ▼
+npm run plane:sync:dry -- <ID>          optional; no Plane write, no file edit
+        │
+        ▼
+npm run plane:sync -- <ID>
+        │
+        ├─ plane.work_item_id empty → create a Backlog card
+        └─ plane.work_item_id set   → update title, description, and priority
+        │
+        ▼
+Script writes plane.work_item_id and plane.identifier into the task file
+(inserts the plane: block when the file does not have one)
+        │
+        ▼
+Commit the task file
+```
+
+A full run is the same write-back for every task:
+
+```text
+npm run plane:sync
+        │
+        ▼
+each task file → Plane card → plane: block in that file → commit
+```
+
+Leave `plane:` out of a new task file, or add an empty block before the first sync:
+
+```yaml
+plane:
+  work_item_id: null
+  identifier: null
+```
+
+Do not copy ids from Plane by hand on the normal path. If a card already exists and the file has no id, the next sync links that card when Plane returns HTTP 409 with the work-item id. If that response has no id, paste the existing card's id and identifier into the block before syncing so the run updates that card.
+
 ## What sync does
 
 1. Discover Markdown tasks under `docs/tasks` and skip files without an `id`.
@@ -57,7 +100,7 @@ Dry-run lists the selected task files and whether each would be created or updat
 3. Create a work item in the project Backlog state when `plane.work_item_id` is empty. The state list is requested only when a create is needed.
 4. On later runs, update name, description, and priority only. State, assignee, and cycle are left untouched.
 5. If Plane already has the task (`external_id` = task id, `external_source` = `medconnect-tasks`) but the file has no id, link that work item instead of creating a second one.
-6. Write `plane.work_item_id` and `plane.identifier` back into the task file.
+6. Write `plane.work_item_id` and `plane.identifier` back into the task file. A missing `plane:` block is inserted; an existing block is filled in place.
 
 Backlog is the state whose group is `backlog`. Set `PLANE_STATE_ID_BACKLOG` to force a state id. `PLANE_STATE_ID_PLANNED` is used only when the backlog id is unset.
 

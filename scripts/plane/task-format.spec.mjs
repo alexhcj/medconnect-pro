@@ -137,6 +137,40 @@ test("writePlaneMapping fills the plane block without rewriting other fields", (
   assert.equal(again.match(/work_item_id:/g).length, 1);
 });
 
+test("writePlaneMapping inserts a plane block when the file has none", () => {
+  const source = `---
+id: FE-014
+type: task
+priority: high
+---
+
+# FE-014 — Telehealth UI
+
+## Objective
+
+Connect the lobby.
+`;
+  const next = writePlaneMapping(source, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "MEDCONNECT-46");
+  assert.match(
+    next,
+    /priority: high\nplane:\n  work_item_id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa\n  identifier: MEDCONNECT-46\n---/
+  );
+  assert.match(next, /Connect the lobby\./);
+  const parsed = parseTaskSource(next);
+  assert.equal(parsed.plane.work_item_id, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+  assert.equal(parsed.plane.identifier, "MEDCONNECT-46");
+
+  const again = writePlaneMapping(next, "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "MEDCONNECT-47");
+  assert.equal(again.match(/^plane:/gm).length, 1);
+  assert.equal(again.match(/work_item_id:/g).length, 1);
+});
+
+test("writePlaneMapping inserts a CRLF plane block", () => {
+  const source = "---\r\nid: FE-014\r\npriority: high\r\n---\r\n\r\n# FE-014 — Title\r\n";
+  const next = writePlaneMapping(source, "id-1", "MED-1");
+  assert.match(next, /priority: high\r\nplane:\r\n  work_item_id: id-1\r\n  identifier: MED-1\r\n---/);
+});
+
 test("displayIdentifier uses the project key and sequence", () => {
   assert.equal(displayIdentifier("MED", 12), "MED-12");
   assert.equal(displayIdentifier(null, 12), "12");
