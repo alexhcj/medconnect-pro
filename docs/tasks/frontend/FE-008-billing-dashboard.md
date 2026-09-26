@@ -3,7 +3,7 @@ id: FE-008
 type: task
 area: frontend
 feature: billing
-status: planned
+status: implemented
 priority: medium
 estimate: 3
 dependencies: [FE-001]
@@ -34,11 +34,11 @@ Invoice list/detail presentation and payment/claims placeholders using synthetic
 
 ## Acceptance criteria
 
-- [ ] Billing dashboard route exists
-- [ ] Synthetic invoices render
-- [ ] Payment/claims boundaries are labeled as boundaries
-- [ ] Loading/empty/error states exist
-- [ ] Accessible on tablet
+- [x] Billing dashboard route exists
+- [x] Synthetic invoices render
+- [x] Payment/claims boundaries are labeled as boundaries
+- [x] Loading/empty/error states exist
+- [x] Accessible on tablet
 
 ## Implementation notes
 
@@ -46,7 +46,7 @@ Do not process real payments. Backend billing API is BE-007.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Billing dashboard at `/dashboard/billing` with invoice list/detail from `docs/mocks/invoices.json`. Payment (Stripe/ACH) and claims (EDI 837) cards are labeled boundaries; Record payment is disabled. Live mode returns 404 until BE-007. Access matches Billing nav roles (NURSE denied in UX).
+- Tests: Vitest for mock list/get, live reject, access helper, list/detail/boundary UI, and query states. Playwright tablet flow covers list, detail, and boundary labels.
 - PR:
-- Notes:
+- Notes: Nav visibility is not authorization. Nurse visit-context billing, Nest `/billing`, and real payments stay out of scope.

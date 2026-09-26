@@ -1,0 +1,95 @@
+{
+  "generated_at": "synthetic-demo-fixture",
+  "notice": "All records are fictional and must never be replaced with real billing data.",
+  "invoices": [
+    {
+      "id": "demo-invoice-001",
+      "practiceId": "demo-practice-001",
+      "patientId": "demo-patient-001",
+      "status": "issued",
+      "amountCents": 15000,
+      "currency": "USD",
+      "issuedAt": "2026-09-01T00:00:00.000Z",
+      "dueAt": "2026-09-15T00:00:00.000Z",
+      "lineItems": [
+        {
+          "description": "Office visit",
+          "amountCents": 15000
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-invoice-002",
+      "practiceId": "demo-practice-001",
+      "patientId": "demo-patient-004",
+      "status": "paid",
+      "amountCents": 8000,
+      "currency": "USD",
+      "issuedAt": "2026-08-10T00:00:00.000Z",
+      "dueAt": "2026-08-24T00:00:00.000Z",
+      "lineItems": [
+        {
+          "description": "Telehealth visit",
+          "amountCents": 8000
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-invoice-003",
+      "practiceId": "demo-practice-001",
+      "patientId": "demo-patient-001",
+      "status": "overdue",
+      "amountCents": 9500,
+      "currency": "USD",
+      "issuedAt": "2026-07-01T00:00:00.000Z",
+      "dueAt": "2026-07-15T00:00:00.000Z",
+      "lineItems": [
+        {
+          "description": "Follow-up visit",
+          "amountCents": 9500
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-invoice-004",
+      "practiceId": "demo-practice-002",
+      "patientId": "demo-patient-002",
+      "status": "issued",
+      "amountCents": 22000,
+      "currency": "USD",
+      "issuedAt": "2026-09-08T00:00:00.000Z",
+      "dueAt": "2026-09-22T00:00:00.000Z",
+      "lineItems": [
+        {
+          "description": "Office visit",
+          "amountCents": 18000
+        },
+        {
+          "description": "Lab panel",
+          "amountCents": 4000
+        }
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "demo-invoice-005",
+      "practiceId": "demo-practice-003",
+      "patientId": "demo-patient-003",
+      "status": "paid",
+      "amountCents": 12500,
+      "currency": "USD",
+      "issuedAt": "2026-08-20T00:00:00.000Z",
+      "dueAt": "2026-09-03T00:00:00.000Z",
+      "lineItems": [
+        {
+          "description": "Asthma follow-up",
+          "amountCents": 12500
+        }
+      ],
+      "synthetic": true
+    }
+  ]
+}

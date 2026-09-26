@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.36.0] - 2026-09-26
+
+### Added
+
+- Billing dashboard (FE-008): invoice list at `/dashboard/billing` and detail at `/dashboard/billing/[invoiceId]` from synthetic fixtures. Payment (Stripe/ACH) and claims (EDI 837) are labeled UI boundaries and do not process payments. Live mode rejects billing queries until BE-007. Nav visibility stays UX only; nurse visit-context billing is out of scope.
+
 ## [0.35.0] - 2026-09-26
 
 ### Added
