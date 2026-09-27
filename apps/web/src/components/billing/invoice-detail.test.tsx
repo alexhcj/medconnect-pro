@@ -2,7 +2,6 @@ import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {InvoiceDetail} from '@/components/billing/invoice-detail';
 import {ApiError} from '@/lib/api/http';
-import {BILLING_API_UNAVAILABLE} from '@/lib/api/billing-api';
 import {Invoice} from '@/types/billing/invoice';
 
 const {useInvoice, useSessionStatus} = vi.hoisted(() => ({
@@ -83,11 +82,11 @@ describe('InvoiceDetail', () => {
 
 	it('shows an error alert and retries', async () => {
 		const refetch = vi.fn();
-		mockInvoice({data: undefined, isError: true, error: new ApiError(BILLING_API_UNAVAILABLE, 404), refetch});
+		mockInvoice({data: undefined, isError: true, error: new ApiError('Unable to load this invoice.', 502), refetch});
 		const user = userEvent.setup();
 		render(<InvoiceDetail invoiceId="missing" />);
 
-		expect(screen.getByRole('alert')).toHaveTextContent(BILLING_API_UNAVAILABLE);
+		expect(screen.getByRole('alert')).toHaveTextContent('Unable to load this invoice.');
 		await user.click(screen.getByRole('button', {name: 'Retry'}));
 		expect(refetch).toHaveBeenCalledOnce();
 	});

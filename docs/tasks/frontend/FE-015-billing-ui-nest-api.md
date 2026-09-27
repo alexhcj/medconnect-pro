@@ -3,7 +3,7 @@ id: FE-015
 type: task
 area: frontend
 feature: billing
-status: planned
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-008, BE-007, BE-009]
@@ -37,11 +37,11 @@ Payment and claims cards stay labeled boundaries. Do not enable Record payment. 
 
 ## Acceptance criteria
 
-- [ ] With mocks off, list and detail call Nest invoices using the BE-009 session
-- [ ] `InvoiceListRdo` / `InvoiceRdo` map onto the UI `Invoice` type; `practiceId` is not used for authorization
-- [ ] Payment/claims remain labeled boundaries; Record payment stays disabled; no PAN fields
-- [ ] A synthetic seed plus a loginable practice admin makes the live dashboard demonstrable
-- [ ] One non-mock browser check covers seeded list and detail
+- [x] With mocks off, list and detail call Nest invoices using the BE-009 session
+- [x] `InvoiceListRdo` / `InvoiceRdo` map onto the UI `Invoice` type; `practiceId` is not used for authorization
+- [x] Payment/claims remain labeled boundaries; Record payment stays disabled; no PAN fields
+- [x] A synthetic seed plus a loginable practice admin makes the live dashboard demonstrable
+- [x] One non-mock browser check covers seeded list and detail
 
 ## Implementation notes
 
@@ -59,7 +59,7 @@ NURSE remains off Billing nav. Frontend checks stay UX only. PATIENT portal live
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Live invoice list and detail on the Nest billing API with the BE-009 bearer session. `GET /billing/invoices` unwraps `InvoiceListRdo.invoices`; detail uses the server UUID. `practiceId` is mapped onto the UI type only; tenant comes from the session. Payment/claims stay labeled boundaries and Record payment stays disabled.
+- Tests: Vitest covers `InvoiceRdo` mapping and live list/detail against `/billing/invoices` (Bearer, no client `practiceId`). `npm run e2e:live` covers seeded Avery Quinn Overdue and Paid invoices plus UUID detail; mock Playwright stays on `NEXT_PUBLIC_USE_MOCKS=true`.
 - PR:
-- Notes:
+- Notes: Seed `dueAt` of `2026-09-15` is unchanged; Nest returns `overdue` for the office-visit row. No `POST /billing/invoices`, `POST /billing/payments`, or `GET /billing/claims`. PATIENT portal live billing and nurse visit-context billing stay out of scope.

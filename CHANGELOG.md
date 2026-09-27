@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.38.0] - 2026-09-27
+
+### Added
+
+- Billing dashboard calls the Nest billing API when mocks are off (FE-015): list and detail with the bearer from `POST /auth/login`. `npm run seed:mock-identity` already inserts Avery Quinn invoices and a loginable `practice.admin@example.test`. `npm run e2e:live` covers seeded list plus UUID detail; `npm run e2e` stays on mocks. Payment and claims remain labeled boundaries; Record payment stays disabled.
+
 ## [0.37.0] - 2026-09-26
 
 ### Added
