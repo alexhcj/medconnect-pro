@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.41.0] - 2026-09-27
+
+### Added
+
+- Document access control (SEC-004): tenant-scoped `patient_documents` metadata in PostgreSQL,
+  multipart upload with PDF/PNG/JPEG magic-byte and 5 MiB validation, and authorized download at
+  `GET /patients/:id/documents/:documentId/content`. Bytes stay in a local filesystem adapter with
+  tenant-prefixed keys until S3 SSE-KMS exists. List, upload, and download write audit events
+  without filenames or payloads. Live patient profile lists and downloads seeded documents; upload
+  UI stays out of scope.
+
 ## [0.40.0] - 2026-09-27
 
 ### Added

@@ -1,11 +1,17 @@
+import {randomUUID} from 'node:crypto';
+import {mkdir, writeFile} from 'node:fs/promises';
+import {dirname, join, resolve} from 'node:path';
 import {Logger} from '@nestjs/common';
 import {DataSource} from 'typeorm';
+import {syntheticPdfBytes} from '../documents/document-file.js';
+import {documentStorageKey} from '../documents/document-storage-key.js';
 import {Appointment} from '../persistence/entities/appointment.entity.js';
 import {ClinicalCondition} from '../persistence/entities/clinical-condition.entity.js';
 import {ClinicalHistory} from '../persistence/entities/clinical-history.entity.js';
 import {InvoiceLineItem} from '../persistence/entities/invoice-line-item.entity.js';
 import {Invoice} from '../persistence/entities/invoice.entity.js';
 import {Medication} from '../persistence/entities/medication.entity.js';
+import {PatientDocument} from '../persistence/entities/patient-document.entity.js';
 import {Patient} from '../persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {Practice} from '../persistence/entities/practice.entity.js';
@@ -99,6 +105,7 @@ async function seed(): Promise<void> {
 		const conditionRows = dataSource.getRepository(ClinicalCondition);
 		const vitalRows = dataSource.getRepository(Vital);
 		const medicationRows = dataSource.getRepository(Medication);
+		const documentRows = dataSource.getRepository(PatientDocument);
 		const invoiceRows = dataSource.getRepository(Invoice);
 		const lineItemRows = dataSource.getRepository(InvoiceLineItem);
 
@@ -279,6 +286,31 @@ async function seed(): Promise<void> {
 				});
 			}
 
+			const existingDocument = await documentRows.findOne({
+				where: {practiceId: practice.id, patientId: seededPatient.id},
+			});
+			if (!existingDocument) {
+				const documentId = randomUUID();
+				const storageKey = documentStorageKey(practice.id, seededPatient.id, documentId);
+				const bytes = syntheticPdfBytes();
+				const storageRoot = resolve(process.env.DOCUMENT_STORAGE_DIR || '.document-storage');
+				const storagePath = join(storageRoot, storageKey);
+				await mkdir(dirname(storagePath), {recursive: true});
+				await writeFile(storagePath, bytes);
+				await documentRows.save({
+					id: documentId,
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					name: 'Intake summary.pdf',
+					contentType: 'application/pdf',
+					category: 'intake',
+					sizeBytes: bytes.length,
+					storageKey,
+					uploadedByUserId: provider.id,
+					synthetic: true,
+				});
+			}
+
 			const existingInvoice = await invoiceRows.findOne({
 				where: {practiceId: practice.id, patientId: seededPatient.id},
 			});
@@ -319,7 +351,7 @@ async function seed(): Promise<void> {
 		}
 
 		Logger.log(
-			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, a demo appointment, an in-window telehealth visit, clinical rows, and invoices`,
+			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, a demo appointment, an in-window telehealth visit, clinical rows, a document, and invoices`,
 			'MockIdentity',
 		);
 	} finally {

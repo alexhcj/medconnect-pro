@@ -24,6 +24,10 @@ out/
 /build
 apps/api/dist
 
+# local document object store (SEC-004 demo adapter; not S3)
+.document-storage/
+apps/api/.document-storage/
+
 # misc
 .DS_Store
 *.pem

@@ -10,7 +10,7 @@ async function openPatients(page: Page) {
 test.describe('Live clinical profile lists', () => {
 	test.use({viewport: {width: 768, height: 1024}});
 
-	test('shows seeded history, conditions, vitals, and medications for the live provider', async ({
+	test('shows seeded history, conditions, vitals, medications, and documents for the live provider', async ({
 		page,
 	}) => {
 		await signInAsLiveProvider(page);
@@ -33,6 +33,8 @@ test.describe('Live clinical profile lists', () => {
 		await expect(page.getByRole('heading', {level: 2, name: 'Medications'})).toBeVisible();
 		await expect(page.getByRole('list', {name: 'Medications'})).toContainText('Lisinopril');
 
-		await expect(page.getByRole('heading', {level: 2, name: 'Documents'})).toHaveCount(0);
+		await expect(page.getByRole('heading', {level: 2, name: 'Documents'})).toBeVisible();
+		await expect(page.getByRole('list', {name: 'Documents'})).toContainText('Intake summary.pdf');
+		await expect(page.getByRole('button', {name: 'Download Intake summary.pdf'})).toBeVisible();
 	});
 });

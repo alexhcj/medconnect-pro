@@ -115,6 +115,8 @@ exist ([DATA-001](../tasks/backend/DATA-001-postgresql-tenant-model.md),
 ([SEC-002](../tasks/security/SEC-002-tenant-isolation.md)): the application role is not the table
 owner, and policies filter tenant-owned rows by server-resolved `app.current_practice_id`. Cache
 keys and object-storage paths must include tenant scope when those stores exist.
+Document object keys use `practices/{practiceId}/patients/{patientId}/{documentId}`
+([SEC-004](../tasks/security/SEC-004-document-access-control.md)).
 
 **Mock mode:** the same chain applies. Identity and memberships come from fixtures. Mock
 authentication is not production identity infrastructure ([ADR-003](../decisions/ADR-003-authentication.md)).
@@ -158,6 +160,21 @@ Billing HTTP ([BE-007](../tasks/backend/BE-007-billing-api.md)) maps onto `read:
 
 Unknown and cross-tenant invoice ids return the same not-found response as other tenant-owned
 resources.
+
+Document HTTP ([SEC-004](../tasks/security/SEC-004-document-access-control.md)) maps onto
+`write:medical_records` / `read:own_patient` without new permission strings. Categories
+(`intake` | `insurance` | `clinical`) are labels, not a second ACL:
+
+- **Patient visibility first.** The patient must be readable under the existing demographics /
+  assignment / portal-self rules. Unknown, cross-tenant, and mismatched `practiceId` values return
+  the same not-found response as other tenant-owned resources.
+- **List / download:** `write:medical_records`, or a portal user with `read:own_patient` reading
+  their own record. Clinical reads follow write grants because the catalog has no separate
+  document-read string.
+- **Upload:** `write:medical_records` only. Default grants mean `PROVIDER` and `SUPER_ADMIN`.
+  `PRACTICE_ADMIN`, `NURSE`, `RECEPTIONIST`, and `PATIENT` cannot upload unless an extra grant
+  exists later.
+- Bytes stream through Nest after authorization. Object-store keys are not public URLs.
 
 Response DTOs expose only authorized fields ([data-contracts.md](data-contracts.md) `PatientRdo`).
 Clinical fields must not leak to `read:demographics`-only actors.

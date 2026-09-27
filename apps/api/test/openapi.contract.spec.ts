@@ -77,6 +77,11 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/patients/{id}/vitals']?.post?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/patients/{id}/medications']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/patients/{id}/medications']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/documents']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/documents']?.post?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/patients/{id}/documents/{documentId}/content']?.get?.security).toEqual([
+			{bearer: []},
+		]);
 		expect(document.paths?.['/telehealth/sessions']?.post?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/telehealth/sessions/{id}']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/telehealth/sessions/{id}/join']?.post?.security).toEqual([{bearer: []}]);
@@ -88,7 +93,6 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/billing/claims']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/admin/audit-events']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths).not.toHaveProperty('/providers');
-		expect(document.paths).not.toHaveProperty('/patients/{id}/documents');
 		expect(document.paths).not.toHaveProperty('/__test/validate');
 		expect(document.paths).not.toHaveProperty('/__test/authz');
 		expect(JSON.stringify(document)).not.toMatch(/Demo-Admin-1|Demo-Mfa-1|135790/);

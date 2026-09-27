@@ -52,8 +52,11 @@ identity-and-access contract. Do not duplicate the permission catalog here.
 - `POST /patients/:id/medications`
 - `GET /patients/:id/documents`
 - `POST /patients/:id/documents`
+- `GET /patients/:id/documents/:documentId/content`
 
-Clinical collections are the first EHR slice ([BE-005](../tasks/backend/BE-005-clinical-record-api.md)): history entries (visit/consultation/procedure events), conditions, vitals, and medications. Writes are create-only (`POST`). Documents remain a later boundary. History entries are not a bucket for diagnoses, vitals, or medications.
+Clinical collections are the first EHR slice ([BE-005](../tasks/backend/BE-005-clinical-record-api.md)): history entries (visit/consultation/procedure events), conditions, vitals, and medications. Writes are create-only (`POST`). History entries are not a bucket for diagnoses, vitals, or medications.
+
+Documents are a separate access-control boundary ([SEC-004](../tasks/security/SEC-004-document-access-control.md)): metadata list, multipart upload, and authorized binary download. Upload is `multipart/form-data` (`file` + `category`). Download streams through Nest; it is not a public blob URL. There is no PATCH or DELETE.
 
 ## Appointments
 

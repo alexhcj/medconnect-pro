@@ -253,12 +253,41 @@ describe('medicalRealAPI', () => {
 		);
 	});
 
-	it('does not request documents from Nest', async () => {
-		const fetchMock = vi.fn();
-		vi.stubGlobal('fetch', fetchMock);
+	it('loads documents from Nest', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					documents: [
+						{
+							id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa01',
+							patientId: rdo.id,
+							name: 'Intake summary.pdf',
+							contentType: 'application/pdf',
+							category: 'intake',
+							sizeBytes: 128,
+							uploadedAt: '2025-07-15T10:40:00.000Z',
+							uploadedById: LIVE_DEMO_PROVIDER_ID,
+							synthetic: true,
+						},
+					],
+				}),
+			}),
+		);
 
-		await expect(medicalRealAPI.getPatientDocuments('patient-1')).rejects.toMatchObject({status: 404});
-		expect(fetchMock).not.toHaveBeenCalled();
+		await expect(medicalRealAPI.getPatientDocuments(rdo.id)).resolves.toEqual([
+			expect.objectContaining({
+				name: 'Intake summary.pdf',
+				type: 'application/pdf',
+				patientId: rdo.id,
+			}),
+		]);
+		expect(fetch).toHaveBeenCalledWith(
+			`http://localhost:3001/patients/${rdo.id}/documents`,
+			expect.any(Object),
+		);
 	});
 
 	it('returns the seeded provider without calling Nest', async () => {

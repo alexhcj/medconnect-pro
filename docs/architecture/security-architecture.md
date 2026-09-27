@@ -62,7 +62,8 @@ Use:
 - a non-owner application database role (`medconnect_app`) so table owners cannot be the runtime role;
 - tenant-aware indexes;
 - tenant-aware cache keys when Redis exists;
-- tenant-aware object-storage paths when S3 exists;
+- tenant-aware object-storage paths (`practices/{practiceId}/patients/{patientId}/{documentId}`
+  on the local document adapter; the same prefix applies when S3 exists);
 - cross-tenant authorization tests.
 
 Resolution order and `SUPER_ADMIN` vs practice vs patient rules are in the identity contract.

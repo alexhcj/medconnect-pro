@@ -38,10 +38,11 @@ state and join timestamps), `clinical_history`, `clinical_conditions`, `vitals`,
 (tenant-owned clinical collections keyed by `practice_id` and `patient_id`), `invoices`,
 `invoice_line_items`, and `payments` (tenant-owned billing rows keyed by `practice_id` and
 `patient_id` / `invoice_id`; payments store a synthetic processor reference, never card or bank
-account numbers), and `audit_events` (actor,
+account numbers), `patient_documents` (tenant-owned file metadata keyed by `practice_id` and
+`patient_id`; bytes live in an object store, not in PostgreSQL), and `audit_events` (actor,
 tenant, action, resource type/id, correlation; no payload). Authentication, authenticated denials, patient
-access/mutations, appointment mutations, clinical creates, telehealth session create/join/end, and
-billing invoice create and payment records write
+access/mutations, appointment mutations, clinical creates, telehealth session create/join/end,
+billing invoice create and payment records, and document list/upload/download write
 rows. Restricted HTTP list is
 [SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,
 `admin:practice`). The administration UI viewer remains
@@ -50,14 +51,17 @@ demographics HTTP is [BE-003](../tasks/backend/BE-003-patient-api.md). Appointme
 [BE-004](../tasks/backend/BE-004-appointment-api.md). Clinical HTTP is
 [BE-005](../tasks/backend/BE-005-clinical-record-api.md). Telehealth session HTTP is
 [BE-006](../tasks/backend/BE-006-telehealth-session-api.md). Billing HTTP is
-[BE-007](../tasks/backend/BE-007-billing-api.md).
+[BE-007](../tasks/backend/BE-007-billing-api.md). Document HTTP is
+[SEC-004](../tasks/security/SEC-004-document-access-control.md).
 PostgreSQL row-level security is enabled on tenant-owned business tables
 ([SEC-002](../tasks/security/SEC-002-tenant-isolation.md)). Policies compare `practice_id` (or
 `practices.id`) to the server-set GUC `app.current_practice_id`. Identity-resolution tables
 (`users`, `auth_sessions`, `practice_memberships`) have no RLS so login can derive tenant
 before that GUC is set. The Nest runtime connects as non-owner role `medconnect_app`;
-migrations, seed, and test fixtures use table-owner `DATABASE_ADMIN_URL`. Cache keys and
-object-storage paths remain future work until Redis/S3 exist.
+migrations, seed, and test fixtures use table-owner `DATABASE_ADMIN_URL`. Cache keys remain
+future work until Redis exists. Document objects use tenant-prefixed paths
+(`practices/{practiceId}/patients/{patientId}/{documentId}`) on a local filesystem adapter
+until S3 SSE-KMS is available.
 
 ## Clinical data
 

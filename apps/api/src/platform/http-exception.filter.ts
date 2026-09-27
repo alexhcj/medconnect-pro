@@ -15,6 +15,7 @@ import {
 	SessionInvalidError,
 } from '../identity/auth.errors.js';
 import {InvalidProviderAssignmentError, PatientNotFoundError} from '../patient/patient.errors.js';
+import {DocumentFileInvalidError, DocumentNotFoundError} from '../documents/document.errors.js';
 import {
 	AppointmentConflictError,
 	AppointmentNotFoundError,
@@ -115,7 +116,8 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 			exception instanceof PatientNotFoundError ||
 			exception instanceof AppointmentNotFoundError ||
 			exception instanceof TelehealthSessionNotFoundError ||
-			exception instanceof InvoiceNotFoundError
+			exception instanceof InvoiceNotFoundError ||
+			exception instanceof DocumentNotFoundError
 		) {
 			return this.authError(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Resource not found');
 		}
@@ -221,6 +223,26 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 				},
 			};
 		}
+		if (exception instanceof DocumentFileInvalidError) {
+			return {
+				status: HttpStatus.BAD_REQUEST,
+				error: {
+					code: 'VALIDATION_ERROR',
+					message: 'Request validation failed',
+					details: [{path: exception.path, message: exception.message}],
+				},
+			};
+		}
+		if (isMulterFileTooLarge(exception)) {
+			return {
+				status: HttpStatus.BAD_REQUEST,
+				error: {
+					code: 'VALIDATION_ERROR',
+					message: 'Request validation failed',
+					details: [{path: 'file', message: 'File must be 5 MiB or smaller'}],
+				},
+			};
+		}
 		if (exception instanceof InvalidProviderAssignmentError) {
 			return {
 				status: HttpStatus.BAD_REQUEST,
@@ -253,6 +275,17 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 	} {
 		const status = exception.getStatus();
 		const payload = exception.getResponse();
+
+		if (status === HttpStatus.PAYLOAD_TOO_LARGE) {
+			return {
+				status: HttpStatus.BAD_REQUEST,
+				error: {
+					code: 'VALIDATION_ERROR',
+					message: 'Request validation failed',
+					details: [{path: 'file', message: 'File must be 5 MiB or smaller'}],
+				},
+			};
+		}
 
 		if (typeof payload === 'object' && payload !== null) {
 			const record = payload as Record<string, unknown>;
@@ -317,6 +350,14 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 		}
 		return exception.message || 'Request failed';
 	}
+}
+
+function isMulterFileTooLarge(exception: unknown): boolean {
+	if (!exception || typeof exception !== 'object') {
+		return false;
+	}
+	const record = exception as {name?: unknown; code?: unknown};
+	return record.name === 'MulterError' && record.code === 'LIMIT_FILE_SIZE';
 }
 
 function formatIssuePath(

@@ -396,6 +396,16 @@ export const medicalMockAPI = {
 			return documents.filter((entry) => entry.patientId === patientId);
 		}, 'Mock: Failed to fetch patient documents'),
 
+	downloadPatientDocument: async (patientId: string, documentId: string): Promise<Blob> =>
+		withMock(() => {
+			requirePatient(patientId);
+			const entry = documents.find((item) => item.patientId === patientId && item.id === documentId);
+			if (!entry) {
+				throw new Error('Document not found');
+			}
+			return new Blob([`synthetic-demo:${entry.name}`], {type: entry.type});
+		}, 'Mock: Failed to download patient document'),
+
 	listProviders: async (): Promise<Provider[]> =>
 		withMock(() => providers.map((provider) => ({...provider})), 'Mock: Failed to list providers'),
 

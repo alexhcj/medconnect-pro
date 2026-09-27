@@ -128,6 +128,36 @@ a later concern. Documents are a separate boundary.
 come from the session, not from the client. Create DTOs accept only the mutable clinical fields for
 that collection.
 
+## Documents
+
+Patient-attached files with metadata in PostgreSQL and bytes in an object store
+([SEC-004](../tasks/security/SEC-004-document-access-control.md)). This is **not** a FHIR
+DocumentReference server. Conceptual DocumentReference alignment is metadata-only.
+
+Request concepts (upload, `multipart/form-data`):
+
+- `file` (single part; PDF, PNG, or JPEG; max 5 MiB)
+- `category` (`intake` | `insurance` | `clinical`)
+- optional client `practiceId` is ignored for authorization and rejected on mismatch
+
+Response concepts (metadata):
+
+- document identity (server-generated UUID)
+- patient identity
+- display `name` (sanitized original filename)
+- `contentType` (`application/pdf` | `image/png` | `image/jpeg`)
+- `category`
+- `sizeBytes`
+- `uploadedAt`
+- `uploadedById` (session actor)
+- `synthetic` (always true)
+
+The object-store key is persistence-only and must not appear on the RDO. Download is
+`GET /patients/:id/documents/:documentId/content` (authorized octet-stream), not a public URL.
+The demo object store is a local filesystem adapter with tenant-prefixed keys
+(`practices/{practiceId}/patients/{patientId}/{documentId}`). S3 SSE-KMS remains the target when
+infrastructure exists.
+
 ## Billing
 
 Practice-scoped invoices, a Stripe/ACH adapter boundary, and a labeled claims envelope. Billing

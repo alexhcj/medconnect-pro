@@ -3,7 +3,6 @@ import {toast} from 'react-hot-toast';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {medicalAPI, PatientDemographicsInput, PatientNameSort, PatientStatusFilter} from '@/lib/api/medical-api';
 import {ApiError} from '@/lib/api/http';
-import {isMockMode} from '@/lib/api/mocks/runtime';
 import {AppointmentCreateInput} from '@/types/medical/appointment';
 import {Patient} from '@/types/medical/patient';
 
@@ -120,7 +119,7 @@ export function usePatientDocuments(patientId: string, enabled = true) {
 	return useQuery({
 		queryKey: ['patient', patientId, 'documents'],
 		queryFn: () => medicalAPI.getPatientDocuments(patientId),
-		enabled: !!patientId && enabled && isMockMode(),
+		enabled: !!patientId && enabled,
 		staleTime: 5 * 60 * 1000,
 		gcTime: 15 * 60 * 1000,
 	});

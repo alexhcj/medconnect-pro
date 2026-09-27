@@ -2,6 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {DataSource} from 'typeorm';
 import {Invoice} from '../src/persistence/entities/invoice.entity.js';
+import {PatientDocument} from '../src/persistence/entities/patient-document.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
 import {Practice} from '../src/persistence/entities/practice.entity.js';
@@ -22,6 +23,7 @@ describe('PostgreSQL row-level security', () => {
 	let patientB: Patient;
 	let vitalB: Vital;
 	let invoiceB: Invoice;
+	let documentB: PatientDocument;
 
 	beforeAll(async () => {
 		admin = await createAdminDataSource();
@@ -83,6 +85,17 @@ describe('PostgreSQL row-level security', () => {
 			dueAt: new Date('2025-08-14T10:15:00.000Z'),
 			synthetic: true,
 		});
+		documentB = await admin.getRepository(PatientDocument).save({
+			practiceId: practiceB.id,
+			patientId: patientB.id,
+			name: 'Intake summary.pdf',
+			contentType: 'application/pdf',
+			category: 'intake',
+			sizeBytes: 32,
+			storageKey: `practices/${practiceB.id}/patients/${patientB.id}/00000000-0000-4000-8000-00000000000d`,
+			uploadedByUserId: userB.id,
+			synthetic: true,
+		});
 	});
 
 	afterAll(async () => {
@@ -91,6 +104,8 @@ describe('PostgreSQL row-level security', () => {
 			await admin.getRepository(Vital).delete({practiceId: practiceB.id});
 			await admin.getRepository(Invoice).delete({practiceId: practiceA.id});
 			await admin.getRepository(Invoice).delete({practiceId: practiceB.id});
+			await admin.getRepository(PatientDocument).delete({practiceId: practiceA.id});
+			await admin.getRepository(PatientDocument).delete({practiceId: practiceB.id});
 			await admin.getRepository(Patient).delete([patientA.id, patientB.id]);
 			await admin.getRepository(PracticeMembership).delete({practiceId: practiceA.id});
 			await admin.getRepository(PracticeMembership).delete({practiceId: practiceB.id});
@@ -107,10 +122,12 @@ describe('PostgreSQL row-level security', () => {
 		const patients = await appDataSource.query('SELECT id FROM patients');
 		const vitals = await appDataSource.query('SELECT id FROM vitals');
 		const invoices = await appDataSource.query('SELECT id FROM invoices');
+		const documents = await appDataSource.query('SELECT id FROM patient_documents');
 		expect(patients.map((row: {id: string}) => row.id)).not.toContain(patientA.id);
 		expect(patients.map((row: {id: string}) => row.id)).not.toContain(patientB.id);
 		expect(vitals.map((row: {id: string}) => row.id)).not.toContain(vitalB.id);
 		expect(invoices.map((row: {id: string}) => row.id)).not.toContain(invoiceB.id);
+		expect(documents.map((row: {id: string}) => row.id)).not.toContain(documentB.id);
 
 		await expectRlsWriteFailure({
 			practiceId: practiceA.id,
@@ -134,6 +151,9 @@ describe('PostgreSQL row-level security', () => {
 
 			const invoices = await appDataSource.query('SELECT id FROM invoices');
 			expect(invoices.map((row: {id: string}) => row.id)).not.toContain(invoiceB.id);
+
+			const documents = await appDataSource.query('SELECT id FROM patient_documents');
+			expect(documents.map((row: {id: string}) => row.id)).not.toContain(documentB.id);
 		});
 	});
 

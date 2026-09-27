@@ -27,6 +27,8 @@ import {
 	type MedicationListRdo,
 	type VitalListRdo,
 } from '@/lib/api/clinical-rdo';
+import {documentFromRdo, type PatientDocumentListRdo} from '@/lib/api/document-rdo';
+import {loginUrl} from '@/lib/auth/paths';
 import {patientFromRdo, type PatientRdo, type PatientSearchResultRdo} from '@/lib/api/patient-rdo';
 
 export type PatientStatusFilter = 'active' | 'inactive' | 'all';
@@ -56,8 +58,23 @@ function appointmentsUrl(path = ''): string {
 	return `${nestApiBaseUrl()}/appointments${path}`;
 }
 
-function clinicalUnavailable(message: string): Promise<never> {
-	return Promise.reject(new ApiError(message, 404));
+async function fetchAuthorizedBlob(path: string): Promise<Blob> {
+	const headers = new Headers();
+	const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+	if (token) {
+		headers.set('Authorization', `Bearer ${token}`);
+	}
+	const response = await fetch(path, {headers});
+	if (response.status === 401) {
+		if (typeof window !== 'undefined') {
+			window.location.href = loginUrl('unauthorized');
+		}
+		throw new ApiError('Unauthorized', 401);
+	}
+	if (!response.ok) {
+		throw new ApiError('Failed to download document', response.status);
+	}
+	return response.blob();
 }
 
 export const medicalRealAPI = {
@@ -163,8 +180,23 @@ export const medicalRealAPI = {
 		}
 	},
 
-	getPatientDocuments: async (_patientId: string): Promise<PatientDocument[]> => {
-		return clinicalUnavailable('Patient documents are not available from the patient API');
+	getPatientDocuments: async (patientId: string): Promise<PatientDocument[]> => {
+		try {
+			const result = await apiFetch<PatientDocumentListRdo>(patientsUrl(`/${patientId}/documents`));
+			return result.documents.map(documentFromRdo);
+		} catch (error) {
+			toast.error('Failed to load documents');
+			throw error;
+		}
+	},
+
+	downloadPatientDocument: async (patientId: string, documentId: string): Promise<Blob> => {
+		try {
+			return await fetchAuthorizedBlob(patientsUrl(`/${patientId}/documents/${documentId}/content`));
+		} catch (error) {
+			toast.error('Failed to download document');
+			throw error;
+		}
 	},
 
 	listProviders: async (): Promise<Provider[]> => {

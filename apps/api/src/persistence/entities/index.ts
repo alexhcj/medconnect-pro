@@ -7,6 +7,7 @@ import {InvoiceLineItem} from './invoice-line-item.entity.js';
 import {Invoice} from './invoice.entity.js';
 import {Medication} from './medication.entity.js';
 import {PatientAssignment} from './patient-assignment.entity.js';
+import {PatientDocument} from './patient-document.entity.js';
 import {Patient} from './patient.entity.js';
 import {Payment} from './payment.entity.js';
 import {PracticeMembership} from './practice-membership.entity.js';
@@ -21,6 +22,7 @@ export const persistenceEntities = [
 	PracticeMembership,
 	Patient,
 	PatientAssignment,
+	PatientDocument,
 	AuthSession,
 	Appointment,
 	AuditEvent,
@@ -45,6 +47,7 @@ export {
 	Medication,
 	Patient,
 	PatientAssignment,
+	PatientDocument,
 	Payment,
 	Practice,
 	PracticeMembership,

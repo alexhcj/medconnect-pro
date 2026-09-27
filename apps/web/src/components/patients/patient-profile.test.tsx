@@ -239,7 +239,7 @@ describe('PatientProfile', () => {
 		expect(screen.queryByText('Hypertension')).not.toBeInTheDocument();
 	});
 
-	it('shows live clinical lists for a provider without documents', () => {
+	it('shows live clinical lists for a provider including documents', () => {
 		vi.mocked(isMockMode).mockReturnValue(false);
 		mockSession(DEFAULT_ROLE_PERMISSIONS.PROVIDER);
 		usePatient.mockReturnValue(queryState({data: samplePatient}));
@@ -256,6 +256,22 @@ describe('PatientProfile', () => {
 				],
 			}),
 		);
+		usePatientDocuments.mockReturnValue(
+			queryState({
+				data: [
+					{
+						id: 'demo-doc-001',
+						patientId: 'demo-patient-001',
+						name: 'Intake summary.pdf',
+						type: 'application/pdf',
+						category: 'intake',
+						uploadedAt: '2025-07-15T10:40:00Z',
+						url: '/patients/demo-patient-001/documents/demo-doc-001/content',
+						synthetic: true,
+					},
+				],
+			}),
+		);
 
 		render(<PatientProfile patientId="demo-patient-001" />);
 
@@ -264,8 +280,9 @@ describe('PatientProfile', () => {
 		expect(screen.getByText('Essential hypertension')).toBeInTheDocument();
 		expect(screen.getByRole('heading', {level: 2, name: 'Vitals'})).toBeInTheDocument();
 		expect(screen.getByRole('heading', {level: 2, name: 'Medications'})).toBeInTheDocument();
-		expect(screen.queryByRole('heading', {level: 2, name: 'Documents'})).not.toBeInTheDocument();
-		expect(usePatientDocuments).toHaveBeenCalledWith('demo-patient-001', false);
+		expect(screen.getByRole('heading', {level: 2, name: 'Documents'})).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Download Intake summary.pdf'})).toBeInTheDocument();
+		expect(usePatientDocuments).toHaveBeenCalledWith('demo-patient-001', true);
 		expect(screen.queryByText('Hypertension')).not.toBeInTheDocument();
 	});
 });

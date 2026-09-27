@@ -34,6 +34,12 @@ export const envSchema = z.object({
 	SWAGGER_UI_ENABLED: booleanFromEnv,
 	DATABASE_URL: postgresUrl('DATABASE_URL', DEFAULT_DATABASE_URL),
 	DATABASE_ADMIN_URL: postgresUrl('DATABASE_ADMIN_URL', DEFAULT_DATABASE_ADMIN_URL),
+	DOCUMENT_STORAGE_DIR: z.preprocess((value) => {
+		if (value === undefined || value === '') {
+			return undefined;
+		}
+		return value;
+	}, z.string().min(1).default('.document-storage')),
 });
 
 export type Env = z.infer<typeof envSchema>;

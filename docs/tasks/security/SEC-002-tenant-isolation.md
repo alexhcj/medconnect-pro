@@ -53,6 +53,6 @@ Consider PostgreSQL RLS where appropriate.
   lookup); existing tenant-isolation and domain HTTP suites now seed via `DATABASE_ADMIN_URL`
   (`npm run test:api` with Compose Postgres).
 - PR:
-- Notes: Redis cache keys and S3 object-storage path prefixes are not in this slice; those stores
-  do not exist yet (SEC-004 / later infra). Pointing runtime `DATABASE_URL` at table owner
-  `medconnect` bypasses RLS.
+- Notes: Redis cache keys remain future work until Redis exists. Document object-storage path
+  prefixes are implemented in [SEC-004](SEC-004-document-access-control.md) on a local adapter
+  until S3 exists. Pointing runtime `DATABASE_URL` at table owner `medconnect` bypasses RLS.

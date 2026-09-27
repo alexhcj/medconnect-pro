@@ -33,4 +33,6 @@ ORM, which keeps persistence inside the modular Nest application without a secon
 - Runtime Nest uses `DATABASE_URL` (`medconnect_app`). CLI migrations and `seed:mock-identity` use
   `DATABASE_ADMIN_URL` (table owner). Pointing runtime `DATABASE_URL` at the owner silently bypasses
   RLS.
-- Cache keys and object-storage paths remain future work with those stores.
+- Cache keys remain future work until Redis exists. Document object-storage paths are
+  tenant-prefixed on a local adapter until S3 exists
+  ([SEC-004](../tasks/security/SEC-004-document-access-control.md)).

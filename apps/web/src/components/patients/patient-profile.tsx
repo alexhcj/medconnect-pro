@@ -20,8 +20,8 @@ import {
 	usePatientVitals,
 	useProvider,
 } from '@/lib/hooks/use-medical';
-import {isMockMode} from '@/lib/api/mocks/runtime';
 import {useSessionStatus} from '@/lib/hooks/use-session';
+import {medicalAPI} from '@/lib/api/medical-api';
 import {ClinicalCondition} from '@/types/medical/clinical-condition';
 import {HistoryEntry} from '@/types/medical/history';
 import {Medication} from '@/types/medical/medication';
@@ -326,16 +326,32 @@ function MedicationsSection({
 }
 
 function DocumentsSection({
+	patientId,
 	entries,
 	isPending,
 	isError,
 	onRetry,
 }: {
+	patientId: string;
 	entries: PatientDocument[] | undefined;
 	isPending: boolean;
 	isError: boolean;
 	onRetry: () => void;
 }) {
+	async function download(entry: PatientDocument) {
+		try {
+			const blob = await medicalAPI.downloadPatientDocument(patientId, entry.id);
+			const url = URL.createObjectURL(blob);
+			const link = window.document.createElement('a');
+			link.href = url;
+			link.download = entry.name;
+			link.click();
+			URL.revokeObjectURL(url);
+		} catch {
+			return;
+		}
+	}
+
 	return (
 		<section id="documents" aria-labelledby="documents-heading" className="scroll-mt-6">
 			<Card>
@@ -361,6 +377,15 @@ function DocumentsSection({
 									<p className="mt-1 text-sm text-gray-700">
 										{entry.category} · {entry.type} · {entry.uploadedAt.slice(0, 10)}
 									</p>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										className="mt-3"
+										onClick={() => download(entry)}
+									>
+										Download {entry.name}
+									</Button>
 								</li>
 							))}
 						</ul>
@@ -398,7 +423,7 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 	const canSchedule = canView && canWriteAppointments(permissions);
 	const showMedicalRecords = canView && canViewMedicalRecords(permissions);
 	const showVitals = canView && canViewVitals(permissions);
-	const showDocuments = isMockMode() && showMedicalRecords;
+	const showDocuments = showMedicalRecords;
 
 	const patient = usePatient(canView ? patientId : '');
 	const history = usePatientHistory(patientId, showMedicalRecords);
@@ -543,6 +568,7 @@ const PatientProfile = ({patientId}: PatientProfileProps) => {
 				)}
 				{showDocuments && (
 					<DocumentsSection
+						patientId={record.id}
 						entries={documents.data}
 						isPending={documents.isPending}
 						isError={documents.isError}

@@ -32,6 +32,10 @@ Copy [`.env.example`](./.env.example) to `.env.development` for local overrides.
 secrets. Compose credentials are local demo values only. **`DATABASE_URL` must be `medconnect_app`.**
 An old override that still uses owner `medconnect` silently bypasses row-level security.
 
+Document bytes use a local directory (`DOCUMENT_STORAGE_DIR`, default `.document-storage`) with
+tenant-prefixed keys. That adapter is the S3 stand-in until object storage exists. Do not commit
+blobs.
+
 ## Platform routes
 
 - `GET /health` — liveness `{ "status": "ok" }` (unauthenticated; process only)
