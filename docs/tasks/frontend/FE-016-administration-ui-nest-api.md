@@ -3,7 +3,7 @@ id: FE-016
 type: task
 area: frontend
 feature: administration
-status: ready
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-009, BE-010, SEC-003, BE-009]
@@ -53,13 +53,13 @@ Do not reopen FE-009, BE-010, SEC-003, or BE-009. Existing Playwright specs stay
 
 ## Acceptance criteria
 
-- [ ] With mocks off, both lists call Nest using the BE-009 session; no client 404 stub; no client
+- [x] With mocks off, both lists call Nest using the BE-009 session; no client 404 stub; no client
   `practiceId` for authorization
-- [ ] User and audit RDOs map onto the UI `PracticeUser` and `AuditEvent` types; `practiceId` is
+- [x] User and audit RDOs map onto the UI `PracticeUser` and `AuditEvent` types; `practiceId` is
   display only
-- [ ] Seeded admin and provider emails render; the audit list shows at least a login event after
+- [x] Seeded admin and provider emails render; the audit list shows at least a login event after
   sign-in
-- [ ] One non-mock browser check covers `/dashboard/admin` users and an audit action
+- [x] One non-mock browser check covers `/dashboard/admin` users and an audit action
 
 ## Implementation notes
 
@@ -97,3 +97,18 @@ least one audit action (for example `auth.login.succeeded`). Do not move
 
 Administration nav stays `SUPER_ADMIN` and `PRACTICE_ADMIN`. Frontend checks stay UX only. Nest
 `admin:users` / `admin:practice` remain authoritative.
+
+## Completion
+
+- Implementation: Live administration user list and audit viewer on Nest with the BE-009 bearer
+  session. `GET /admin/users` unwraps `PracticeUserListRdo.users`; `GET /admin/audit-events` unwraps
+  `AuditEventSearchResultRdo.events`. `practiceId` is mapped onto the UI types only; tenant comes
+  from the session. Demo notice no longer claims Nest administration APIs are disconnected. Roles
+  remain presentation only.
+- Tests: Vitest covers RDO mapping and live list calls against `/admin/users` and
+  `/admin/audit-events` (Bearer, no client `practiceId`). `npm run e2e:live` covers seeded
+  `practice.admin@example.test` and `jordan.ellis@synthetic.example` plus `auth.login.succeeded`;
+  mock Playwright stays on `NEXT_PUBLIC_USE_MOCKS=true`.
+- PR:
+- Notes: No `PATCH /admin/users/:id/roles`, `GET /admin/security-events`, extra seed roles, or
+  Bell → `GET /notifications`. No fake `audit_events` rows. Version 0.43.0 → 0.44.0 (MINOR).

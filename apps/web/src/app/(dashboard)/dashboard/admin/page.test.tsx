@@ -64,7 +64,7 @@ describe('AdministrationPage', () => {
 
 		expect(screen.getByRole('heading', {level: 1, name: 'Administration'})).toBeInTheDocument();
 		expect(
-			screen.getByText('Synthetic demo. User roles are presentation only. Nest administration APIs are not connected.'),
+			screen.getByText('Synthetic demo. User roles are presentation only.'),
 		).toBeInTheDocument();
 		expect(screen.getByRole('list', {name: 'Practice users'})).toHaveTextContent('practice.admin@example.test');
 		expect(screen.getByRole('list', {name: 'Audit events'})).toHaveTextContent('auth.login.succeeded');

@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.44.0] - 2026-09-27
+
+### Added
+
+- Administration UI calls Nest admin APIs when mocks are off (FE-016): user list (`GET /admin/users`)
+  and audit viewer (`GET /admin/audit-events`) with the bearer from `POST /auth/login`.
+  `npm run seed:mock-identity` already inserts a loginable `practice.admin@example.test` and
+  provider `jordan.ellis@synthetic.example`. `npm run e2e:live` covers seeded emails plus
+  `auth.login.succeeded`; `npm run e2e` stays on mocks. Roles remain presentation only; role
+  assignment and security-events stay unwired.
+
 ## [0.43.0] - 2026-09-27
 
 ### Added
