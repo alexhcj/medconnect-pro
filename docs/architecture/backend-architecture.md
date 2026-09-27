@@ -60,6 +60,17 @@ Database/external service
 Response DTO
 ```
 
+## Notification delivery
+
+Target path: business service → SNS topic → SQS queues → workers. Use SNS when one event must
+fan out; use SQS when work must wait safely for a consumer.
+
+Current path ([BE-008](../tasks/backend/BE-008-notification-domain.md)): the same `DeliveryBus`
+port is an in-process dispatcher. Email and SMS use demo adapters (no SMTP or carrier). In-app
+rows persist synchronously. Retry is three attempts with 1s then 4s between them;
+exhausted jobs persist `failed` as the local dead-letter equivalent. Kafka and AWS SDKs are
+out of scope until infrastructure exists.
+
 ## Future extraction candidates
 
 Only when justified:

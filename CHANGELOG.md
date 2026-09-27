@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.42.0] - 2026-09-27
+
+### Added
+
+- Notification domain (BE-008): tenant-scoped in-app inbox and channel preferences, demo email/SMS
+  adapters, and an in-process delivery bus with three-attempt exponential backoff. SNS/SQS remains
+  the target; there is no AWS SDK. Authenticated users read and update only their own rows. Frontend
+  wiring stays out of scope.
+
 ## [0.41.1] - 2026-09-27
 
 ### Added

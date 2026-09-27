@@ -21,7 +21,8 @@ Practice
  ├── Telehealth Sessions
  ├── Clinical Records
  ├── Documents
- └── Billing Data
+ ├── Billing Data
+ └── Notifications
 ```
 
 Tenant-owned rows persist `practice_id` (FK to `practices`, `ON DELETE RESTRICT`) with tenant-aware
@@ -39,11 +40,13 @@ state and join timestamps), `clinical_history`, `clinical_conditions`, `vitals`,
 `invoice_line_items`, and `payments` (tenant-owned billing rows keyed by `practice_id` and
 `patient_id` / `invoice_id`; payments store a synthetic processor reference, never card or bank
 account numbers), `patient_documents` (tenant-owned file metadata keyed by `practice_id` and
-`patient_id`; bytes live in an object store, not in PostgreSQL), and `audit_events` (actor,
+`patient_id`; bytes live in an object store, not in PostgreSQL), `notifications` and
+`notification_preferences` (tenant-owned in-app inbox and channel flags keyed by `practice_id`
+and recipient/user; email/SMS ledger rows are not a live carrier), and `audit_events` (actor,
 tenant, action, resource type/id, correlation; no payload). Authentication, authenticated denials, patient
 access/mutations, appointment mutations, clinical creates, telehealth session create/join/end,
-billing invoice create and payment records, and document list/upload/download write
-rows. Restricted HTTP list is
+billing invoice create and payment records, document list/upload/download, and notification
+preference updates write rows. Restricted HTTP list is
 [SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,
 `admin:practice`). The administration UI viewer remains
 [FE-009](../tasks/frontend/FE-009-administration-security-ui.md). Patient
@@ -52,7 +55,8 @@ demographics HTTP is [BE-003](../tasks/backend/BE-003-patient-api.md). Appointme
 [BE-005](../tasks/backend/BE-005-clinical-record-api.md). Telehealth session HTTP is
 [BE-006](../tasks/backend/BE-006-telehealth-session-api.md). Billing HTTP is
 [BE-007](../tasks/backend/BE-007-billing-api.md). Document HTTP is
-[SEC-004](../tasks/security/SEC-004-document-access-control.md).
+[SEC-004](../tasks/security/SEC-004-document-access-control.md). Notification HTTP is
+[BE-008](../tasks/backend/BE-008-notification-domain.md).
 PostgreSQL row-level security is enabled on tenant-owned business tables
 ([SEC-002](../tasks/security/SEC-002-tenant-isolation.md)). Policies compare `practice_id` (or
 `practices.id`) to the server-set GUC `app.current_practice_id`. Identity-resolution tables

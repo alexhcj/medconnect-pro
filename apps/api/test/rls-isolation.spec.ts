@@ -2,6 +2,8 @@ import {randomUUID} from 'node:crypto';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {DataSource} from 'typeorm';
 import {Invoice} from '../src/persistence/entities/invoice.entity.js';
+import {NotificationPreference} from '../src/persistence/entities/notification-preference.entity.js';
+import {Notification} from '../src/persistence/entities/notification.entity.js';
 import {PatientDocument} from '../src/persistence/entities/patient-document.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
@@ -24,6 +26,8 @@ describe('PostgreSQL row-level security', () => {
 	let vitalB: Vital;
 	let invoiceB: Invoice;
 	let documentB: PatientDocument;
+	let notificationB: Notification;
+	let preferenceB: NotificationPreference;
 
 	beforeAll(async () => {
 		admin = await createAdminDataSource();
@@ -96,6 +100,25 @@ describe('PostgreSQL row-level security', () => {
 			uploadedByUserId: userB.id,
 			synthetic: true,
 		});
+		notificationB = await admin.getRepository(Notification).save({
+			practiceId: practiceB.id,
+			recipientUserId: userB.id,
+			channel: 'in_app',
+			type: 'generic',
+			title: 'Appointment updated',
+			body: 'Your visit time changed.',
+			status: 'delivered',
+			attemptCount: 0,
+			synthetic: true,
+		});
+		preferenceB = await admin.getRepository(NotificationPreference).save({
+			practiceId: practiceB.id,
+			userId: userB.id,
+			inAppEnabled: true,
+			emailEnabled: true,
+			smsEnabled: true,
+			synthetic: true,
+		});
 	});
 
 	afterAll(async () => {
@@ -106,6 +129,10 @@ describe('PostgreSQL row-level security', () => {
 			await admin.getRepository(Invoice).delete({practiceId: practiceB.id});
 			await admin.getRepository(PatientDocument).delete({practiceId: practiceA.id});
 			await admin.getRepository(PatientDocument).delete({practiceId: practiceB.id});
+			await admin.getRepository(Notification).delete({practiceId: practiceA.id});
+			await admin.getRepository(Notification).delete({practiceId: practiceB.id});
+			await admin.getRepository(NotificationPreference).delete({practiceId: practiceA.id});
+			await admin.getRepository(NotificationPreference).delete({practiceId: practiceB.id});
 			await admin.getRepository(Patient).delete([patientA.id, patientB.id]);
 			await admin.getRepository(PracticeMembership).delete({practiceId: practiceA.id});
 			await admin.getRepository(PracticeMembership).delete({practiceId: practiceB.id});
@@ -123,11 +150,15 @@ describe('PostgreSQL row-level security', () => {
 		const vitals = await appDataSource.query('SELECT id FROM vitals');
 		const invoices = await appDataSource.query('SELECT id FROM invoices');
 		const documents = await appDataSource.query('SELECT id FROM patient_documents');
+		const notifications = await appDataSource.query('SELECT id FROM notifications');
+		const preferences = await appDataSource.query('SELECT id FROM notification_preferences');
 		expect(patients.map((row: {id: string}) => row.id)).not.toContain(patientA.id);
 		expect(patients.map((row: {id: string}) => row.id)).not.toContain(patientB.id);
 		expect(vitals.map((row: {id: string}) => row.id)).not.toContain(vitalB.id);
 		expect(invoices.map((row: {id: string}) => row.id)).not.toContain(invoiceB.id);
 		expect(documents.map((row: {id: string}) => row.id)).not.toContain(documentB.id);
+		expect(notifications.map((row: {id: string}) => row.id)).not.toContain(notificationB.id);
+		expect(preferences.map((row: {id: string}) => row.id)).not.toContain(preferenceB.id);
 
 		await expectRlsWriteFailure({
 			practiceId: practiceA.id,
@@ -154,6 +185,12 @@ describe('PostgreSQL row-level security', () => {
 
 			const documents = await appDataSource.query('SELECT id FROM patient_documents');
 			expect(documents.map((row: {id: string}) => row.id)).not.toContain(documentB.id);
+
+			const notifications = await appDataSource.query('SELECT id FROM notifications');
+			expect(notifications.map((row: {id: string}) => row.id)).not.toContain(notificationB.id);
+
+			const preferences = await appDataSource.query('SELECT id FROM notification_preferences');
+			expect(preferences.map((row: {id: string}) => row.id)).not.toContain(preferenceB.id);
 		});
 	});
 

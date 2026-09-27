@@ -207,6 +207,54 @@ Response concepts (claims):
 This is not Stripe, ACH origination, or EDI 837 generation. `POST /billing/payments` calls an
 in-process demo adapter. `GET /billing/claims` does not persist claim rows or emit X12.
 
+## Notifications
+
+Practice-scoped in-app inbox plus email/SMS delivery ledger
+([BE-008](../tasks/backend/BE-008-notification-domain.md)). This is not a push service, SMTP, or
+a carrier. Titles and bodies are synthetic only; they must not contain clinical notes, emails,
+passwords, or other PHI-like fields.
+
+Request concepts (update preferences):
+
+- optional `inAppEnabled`, `emailEnabled`, `smsEnabled` (booleans)
+- optional client `practiceId` is ignored for authorization and rejected on mismatch
+
+There is no client create DTO. Enqueue is an internal application call (`recipientUserId`,
+`type`, `title`, `body`, channels derived from preferences).
+
+Response concepts (in-app notification):
+
+- notification identity (server-generated UUID)
+- `channel` `in_app` (inbox list does not include email/SMS ledger rows)
+- `type` (`generic` | `appointment_changed`)
+- `title`, `body`
+- `status` (`delivered` for in-app rows that reached the inbox)
+- `readAt` (null until `PATCH .../read`)
+- `createdAt`
+- `synthetic` (always true)
+
+Response concepts (preferences):
+
+- `inAppEnabled`, `emailEnabled`, `smsEnabled`
+- `synthetic` (always true)
+
+Missing preference rows return all channels enabled (defaults). Disabled channels are not
+dispatched.
+
+### Async delivery and retry (demo policy)
+
+Not a production SLA. Target infrastructure is SNS fan-out to SQS queues consumed by workers.
+The current Nest adapter is an in-process `DeliveryBus` (no AWS SDK).
+
+- **In-app:** persist synchronously as `delivered`. No retry.
+- **Email / SMS:** persist `pending`, enqueue on the bus, deliver through demo adapters that
+  log/capture only.
+- **Retry:** up to 3 attempts, waiting 1s then 4s between them (exponential backoff) using the
+  injected clock.
+- **Dead letter:** after max attempts, persist `status = failed`. There is no AWS DLQ.
+
+Appointment reminder jobs stay out of scope ([BE-004](../tasks/backend/BE-004-appointment-api.md)).
+
 ## Audit events
 
 `GET /admin/audit-events` returns tenant-scoped rows from `audit_events`. Response fields are

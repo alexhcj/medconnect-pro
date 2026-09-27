@@ -17,6 +17,8 @@ import {ClinicalHistory} from '../src/persistence/entities/clinical-history.enti
 import {InvoiceLineItem} from '../src/persistence/entities/invoice-line-item.entity.js';
 import {Invoice} from '../src/persistence/entities/invoice.entity.js';
 import {Medication} from '../src/persistence/entities/medication.entity.js';
+import {NotificationPreference} from '../src/persistence/entities/notification-preference.entity.js';
+import {Notification} from '../src/persistence/entities/notification.entity.js';
 import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
 import {PatientDocument} from '../src/persistence/entities/patient-document.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
@@ -316,6 +318,8 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 				await dataSource.getRepository(Payment).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(InvoiceLineItem).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(Invoice).delete({practiceId: In(practiceIds)});
+				await dataSource.getRepository(Notification).delete({practiceId: In(practiceIds)});
+				await dataSource.getRepository(NotificationPreference).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(TelehealthSession).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(Appointment).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(PatientDocument).delete({practiceId: In(practiceIds)});

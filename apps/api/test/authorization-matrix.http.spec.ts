@@ -317,6 +317,13 @@ function buildCases(): MatrixCase[] {
 				expectedStatus: (harness) => invoiceListStatus(roleFor(harness)),
 			},
 			{
+				name: `${actor} GET /notifications`,
+				actor,
+				method: 'get',
+				path: () => '/notifications',
+				expectedStatus: () => 200,
+			},
+			{
 				name: `${actor} GET assigned invoice`,
 				actor,
 				method: 'get',
@@ -381,6 +388,13 @@ function buildCases(): MatrixCase[] {
 			method: 'get',
 			path: (harness) => `/patients/${harness.assignedPatientId}`,
 			expectedStatus: () => 404,
+		},
+		{
+			name: 'outsider GET /notifications',
+			actor: 'outsider',
+			method: 'get',
+			path: () => '/notifications',
+			expectedStatus: () => 200,
 		},
 		{
 			name: 'receptionist POST patients with client practiceId',

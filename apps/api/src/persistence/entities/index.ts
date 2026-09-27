@@ -6,6 +6,8 @@ import {ClinicalHistory} from './clinical-history.entity.js';
 import {InvoiceLineItem} from './invoice-line-item.entity.js';
 import {Invoice} from './invoice.entity.js';
 import {Medication} from './medication.entity.js';
+import {NotificationPreference} from './notification-preference.entity.js';
+import {Notification} from './notification.entity.js';
 import {PatientAssignment} from './patient-assignment.entity.js';
 import {PatientDocument} from './patient-document.entity.js';
 import {Patient} from './patient.entity.js';
@@ -34,6 +36,8 @@ export const persistenceEntities = [
 	Invoice,
 	InvoiceLineItem,
 	Payment,
+	Notification,
+	NotificationPreference,
 ];
 
 export {
@@ -45,6 +49,8 @@ export {
 	Invoice,
 	InvoiceLineItem,
 	Medication,
+	Notification,
+	NotificationPreference,
 	Patient,
 	PatientAssignment,
 	PatientDocument,

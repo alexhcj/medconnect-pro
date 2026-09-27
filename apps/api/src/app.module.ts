@@ -8,6 +8,7 @@ import {DocumentsModule} from './documents/documents.module.js';
 import {EhrModule} from './ehr/ehr.module.js';
 import {HealthModule} from './health/health.module.js';
 import {IdentityModule} from './identity/identity.module.js';
+import {NotificationsModule} from './notifications/notifications.module.js';
 import {PatientModule} from './patient/patient.module.js';
 import {PersistenceModule} from './persistence/persistence.module.js';
 import {SchedulingModule} from './scheduling/scheduling.module.js';
@@ -35,6 +36,7 @@ import {TenantRlsInterceptor} from './tenancy/tenant-rls.interceptor.js';
 		TelehealthModule,
 		BillingModule,
 		DocumentsModule,
+		NotificationsModule,
 		IdentityModule,
 		HealthModule,
 	],

@@ -9,6 +9,7 @@ import {Billing1760000000006} from './migrations/1760000000006-Billing.js';
 import {TelehealthSessions1760000000005} from './migrations/1760000000005-TelehealthSessions.js';
 import {TenantRowLevelSecurity1760000000007} from './migrations/1760000000007-TenantRowLevelSecurity.js';
 import {PatientDocuments1760000000008} from './migrations/1760000000008-PatientDocuments.js';
+import {Notifications1760000000009} from './migrations/1760000000009-Notifications.js';
 import {TenantRlsSubscriber} from './tenant-rls.subscriber.js';
 
 export function postgresConnectionOptions(databaseUrl: string): DataSourceOptions {
@@ -27,6 +28,7 @@ export function postgresConnectionOptions(databaseUrl: string): DataSourceOption
 			Billing1760000000006,
 			TenantRowLevelSecurity1760000000007,
 			PatientDocuments1760000000008,
+			Notifications1760000000009,
 		],
 		synchronize: false,
 		migrationsRun: false,

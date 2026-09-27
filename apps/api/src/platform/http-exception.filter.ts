@@ -28,6 +28,7 @@ import {
 	InvoiceNotFoundError,
 	InvalidInvoicePatientError,
 } from '../billing/billing.errors.js';
+import {NotificationNotFoundError} from '../notifications/notification.errors.js';
 import {
 	InvalidTelehealthAppointmentError,
 	SessionAlreadyEndedError,
@@ -117,7 +118,8 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 			exception instanceof AppointmentNotFoundError ||
 			exception instanceof TelehealthSessionNotFoundError ||
 			exception instanceof InvoiceNotFoundError ||
-			exception instanceof DocumentNotFoundError
+			exception instanceof DocumentNotFoundError ||
+			exception instanceof NotificationNotFoundError
 		) {
 			return this.authError(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Resource not found');
 		}

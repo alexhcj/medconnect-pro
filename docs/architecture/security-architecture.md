@@ -80,6 +80,7 @@ Audit sensitive actions such as:
 - appointment changes;
 - telehealth session create, join, and end;
 - billing changes;
+- notification preference updates (no title or body in the audit row);
 - administrative security changes.
 
 ## Encryption

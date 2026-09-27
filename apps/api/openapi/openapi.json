@@ -2942,6 +2942,244 @@
         ]
       }
     },
+    "/notifications": {
+      "get": {
+        "description": "Inbox is self-scope only. Email and SMS ledger rows are not returned. Tenant comes from the session. synthetic is always true.",
+        "operationId": "NotificationController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List in-app notifications for the current user",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/preferences": {
+      "get": {
+        "description": "Missing rows return all channels enabled. Preferences are always the session user’s. Tenant comes from the session.",
+        "operationId": "NotificationController_getPreferences",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationPreference"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Read notification channel preferences",
+        "tags": [
+          "notifications"
+        ]
+      },
+      "patch": {
+        "description": "Updates the session user’s channel flags. Client practiceId is ignored for authorization and rejected on mismatch. Disabled channels are not dispatched.",
+        "operationId": "NotificationController_updatePreferences",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "inAppEnabled": {
+                    "type": "boolean"
+                  },
+                  "emailEnabled": {
+                    "type": "boolean"
+                  },
+                  "smsEnabled": {
+                    "type": "boolean"
+                  },
+                  "practiceId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationPreference"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update notification channel preferences",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/{id}/read": {
+      "patch": {
+        "description": "Unknown ids, cross-tenant ids, other users’ rows, and non-inbox channels return the same not-found response.",
+        "operationId": "NotificationController_markRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark an in-app notification as read",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "description": "Password-shaped stand-in for a mock identity provider. Not the production OAuth 2.0 authorization-code + PKCE flow. Practice selection is limited to server-side memberships.",
@@ -4572,6 +4810,131 @@
         "required": [
           "file",
           "category"
+        ]
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "in_app"
+            ],
+            "example": "in_app"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "generic",
+              "appointment_changed"
+            ],
+            "example": "generic"
+          },
+          "title": {
+            "type": "string",
+            "example": "Appointment updated"
+          },
+          "body": {
+            "type": "string",
+            "example": "Your visit time changed. Open the schedule for details."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "delivered",
+              "failed"
+            ],
+            "example": "delivered"
+          },
+          "readAt": {
+            "type": "string",
+            "nullable": true,
+            "example": null
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-09-27T12:00:00.000Z"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "practiceId",
+          "channel",
+          "type",
+          "title",
+          "body",
+          "status",
+          "readAt",
+          "createdAt",
+          "synthetic"
+        ]
+      },
+      "NotificationList": {
+        "type": "object",
+        "properties": {
+          "notifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Notification"
+            }
+          }
+        },
+        "required": [
+          "notifications"
+        ]
+      },
+      "NotificationPreference": {
+        "type": "object",
+        "properties": {
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "inAppEnabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "emailEnabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "smsEnabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "practiceId",
+          "userId",
+          "inAppEnabled",
+          "emailEnabled",
+          "smsEnabled",
+          "synthetic"
         ]
       },
       "TokenPair": {

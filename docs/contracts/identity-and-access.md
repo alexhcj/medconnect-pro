@@ -161,6 +161,15 @@ Billing HTTP ([BE-007](../tasks/backend/BE-007-billing-api.md)) maps onto `read:
 Unknown and cross-tenant invoice ids return the same not-found response as other tenant-owned
 resources.
 
+Notification HTTP ([BE-008](../tasks/backend/BE-008-notification-domain.md)) maps onto
+authenticated self-scope without new permission strings:
+
+- **List / mark read / get and update preferences:** any authenticated member of the resolved
+  tenant, limited to the session actor (`recipient_user_id` / preference `user_id` must match).
+- Unknown, cross-tenant, other-user, and mismatched `practiceId` values return the same
+  not-found or tenant-mismatch response as other tenant-owned resources.
+- There is no practice-wide inbox. Staff do not read another user’s notifications by role.
+
 Document HTTP ([SEC-004](../tasks/security/SEC-004-document-access-control.md)) maps onto
 `write:medical_records` / `read:own_patient` without new permission strings. Categories
 (`intake` | `insurance` | `clinical`) are labels, not a second ACL:

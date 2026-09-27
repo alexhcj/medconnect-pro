@@ -93,6 +93,17 @@ Do not send card or bank account numbers. `GET /billing/claims` is not claim sub
 - `POST /billing/payments`
 - `GET /billing/claims`
 
+## Notifications
+
+In-app inbox and channel preferences for the authenticated user. There is no client `POST` to
+create notifications; other domains enqueue internally when they exist. Email/SMS are adapter
+boundaries, not live carriers ([BE-008](../tasks/backend/BE-008-notification-domain.md)).
+
+- `GET /notifications`
+- `PATCH /notifications/:id/read`
+- `GET /notifications/preferences`
+- `PATCH /notifications/preferences`
+
 ## Administration
 
 - `GET /admin/users`
