@@ -14,7 +14,7 @@ Domain order (not historical ship order). Join to demo milestones in the
 9. Billing (BE-007).
 10. Notifications (BE-008).
 11. Analytics.
-12. Administration/compliance (SEC-002–004, QA-004).
+12. Administration/compliance (SEC-002–004, QA-004, BE-010 user directory HTTP).
 13. Scale/reliability.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without

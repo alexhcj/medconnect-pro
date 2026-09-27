@@ -44,7 +44,8 @@ Slices below are sequencing, not a calendar independent of
 
 ## Slice 8 — Settings and security administration (M7)
 
-- FE-009.
+- FE-009;
+- administration UI against the Nest admin APIs (FE-016).
 
 ## Slice 9 — Responsive polish
 

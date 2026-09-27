@@ -32,6 +32,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-008 — Billing dashboard
 - FE-015 — Billing UI on the Nest billing API
 - FE-009 — Administration/security UI
+- FE-016 — Administration UI on the Nest admin APIs
 
 ## Backend
 
@@ -42,6 +43,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-006 — Telehealth session API
 - BE-007 — Billing API
 - BE-008 — Notification domain
+- BE-010 — Practice user directory HTTP
 
 ## Security
 
