@@ -17,6 +17,8 @@ The project uses deterministic synthetic data for development and demonstrations
 ## Files
 
 - `demo-users.json` — synthetic mock-IdP accounts for FE-010 (email/password/role only; not a real IdP).
+- `admin-users.json` — synthetic practice directory for FE-009 (id/email/role/practice; no passwords).
+- `audit-events.json` — synthetic audit rows for FE-009 (actor, tenant, action, resource ids only; no payloads).
 - `patients.json` — patient RDO-oriented demographics, contact, emergency contact, insurance, tenant/provider assignment.
 - `dashboard.json` — aggregate overview metrics only (no patient names or identifiers).
 - `providers.json` — providers referenced by `providerId`.

@@ -1,0 +1,66 @@
+{
+	"generated_at": "synthetic-demo-fixture",
+	"notice": "All records are fictional. Events store actor, tenant, action, and resource ids only — no emails, notes, or clinical text.",
+	"events": [
+		{
+			"id": "demo-audit-001",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_practice_admin",
+			"action": "auth.login.succeeded",
+			"resourceType": "session",
+			"resourceId": null,
+			"correlationId": "demo-correlation-001",
+			"createdAt": "2026-09-26T14:00:00.000Z"
+		},
+		{
+			"id": "demo-audit-002",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_practice_admin",
+			"action": "patient.accessed",
+			"resourceType": "patient",
+			"resourceId": "demo-patient-001",
+			"correlationId": "demo-correlation-002",
+			"createdAt": "2026-09-26T13:45:00.000Z"
+		},
+		{
+			"id": "demo-audit-003",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_nurse",
+			"action": "access.denied",
+			"resourceType": "invoice",
+			"resourceId": "demo-invoice-001",
+			"correlationId": "demo-correlation-003",
+			"createdAt": "2026-09-26T13:30:00.000Z"
+		},
+		{
+			"id": "demo-audit-004",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_provider",
+			"action": "appointment.created",
+			"resourceType": "appointment",
+			"resourceId": "demo-appointment-001",
+			"correlationId": "demo-correlation-004",
+			"createdAt": "2026-09-26T12:00:00.000Z"
+		},
+		{
+			"id": "demo-audit-005",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_practice_admin",
+			"action": "invoice.created",
+			"resourceType": "invoice",
+			"resourceId": "demo-invoice-001",
+			"correlationId": "demo-correlation-005",
+			"createdAt": "2026-09-25T16:20:00.000Z"
+		},
+		{
+			"id": "demo-audit-006",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_provider",
+			"action": "telehealth_session.created",
+			"resourceType": "telehealth_session",
+			"resourceId": "demo-telehealth-001",
+			"correlationId": "demo-correlation-006",
+			"createdAt": "2026-09-25T15:00:00.000Z"
+		}
+	]
+}

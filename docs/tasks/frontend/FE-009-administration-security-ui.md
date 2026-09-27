@@ -3,7 +3,7 @@ id: FE-009
 type: task
 area: frontend
 feature: administration
-status: planned
+status: implemented
 priority: medium
 estimate: 3
 dependencies: [FE-001, FE-010]
@@ -35,11 +35,11 @@ default grants is out of M1.
 
 ## Acceptance criteria
 
-- [ ] Administration route exists
-- [ ] User/role list renders
-- [ ] Audit viewer renders synthetic events
-- [ ] Loading/empty/error states exist
-- [ ] Navigation visibility is not treated as authorization
+- [x] Administration route exists
+- [x] User/role list renders
+- [x] Audit viewer renders synthetic events
+- [x] Loading/empty/error states exist
+- [x] Navigation visibility is not treated as authorization
 
 ## Implementation notes
 
@@ -47,7 +47,7 @@ Server authorization remains authoritative (BE-009, SEC-002–004, QA-004).
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Administration at `/dashboard/admin` with a read-only user/role list from `docs/mocks/admin-users.json` and a synthetic audit viewer from `docs/mocks/audit-events.json`. Settings placeholder is removed. Live mode 404s both lists until a later Nest connect task. Access matches Administration nav roles (`SUPER_ADMIN`, `PRACTICE_ADMIN`).
+- Tests: Vitest for mock list/get, live reject, access helper, list/viewer query states, and page deny. Playwright tablet flow covers users and audit events.
 - PR:
-- Notes:
+- Notes: Nav visibility is not authorization. Role assignment, permission management, `GET /admin/security-events`, and Nest `GET /admin/audit-events` stay out of scope.

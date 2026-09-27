@@ -1,0 +1,48 @@
+{
+	"generated_at": "synthetic-demo-fixture",
+	"notice": "All records are fictional and must never be replaced with real user directories or credentials. This is a practice directory, not a login source.",
+	"users": [
+		{
+			"id": "user_mock_super_admin",
+			"email": "super.admin@example.test",
+			"role": "SUPER_ADMIN",
+			"practiceId": "demo-practice-001",
+			"synthetic": true
+		},
+		{
+			"id": "user_mock_practice_admin",
+			"email": "practice.admin@example.test",
+			"role": "PRACTICE_ADMIN",
+			"practiceId": "demo-practice-001",
+			"synthetic": true
+		},
+		{
+			"id": "user_mock_provider",
+			"email": "provider@example.test",
+			"role": "PROVIDER",
+			"practiceId": "demo-practice-001",
+			"synthetic": true
+		},
+		{
+			"id": "user_mock_nurse",
+			"email": "nurse@example.test",
+			"role": "NURSE",
+			"practiceId": "demo-practice-001",
+			"synthetic": true
+		},
+		{
+			"id": "user_mock_receptionist",
+			"email": "receptionist@example.test",
+			"role": "RECEPTIONIST",
+			"practiceId": "demo-practice-001",
+			"synthetic": true
+		},
+		{
+			"id": "user_mock_patient",
+			"email": "patient@example.test",
+			"role": "PATIENT",
+			"practiceId": "demo-practice-001",
+			"synthetic": true
+		}
+	]
+}

@@ -19,7 +19,7 @@ describe('filterNavForRole', () => {
 		expect(hrefsFor('PRACTICE_ADMIN')).toEqual(DASHBOARD_NAV.map((item) => item.href));
 	});
 
-	it('hides settings and billing-only items appropriately for NURSE', () => {
+	it('hides administration and billing-only items appropriately for NURSE', () => {
 		expect(hrefsFor('NURSE')).toEqual([
 			'/dashboard',
 			'/dashboard/patients',

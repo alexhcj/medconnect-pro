@@ -1,5 +1,5 @@
 import type {LucideIcon} from 'lucide-react';
-import {Calendar, CreditCard, LayoutDashboard, Settings, Users, Video} from 'lucide-react';
+import {Calendar, CreditCard, LayoutDashboard, Shield, Users, Video} from 'lucide-react';
 import {parseRole, type Role, ROLES} from '@/types/auth/roles';
 
 /**
@@ -43,7 +43,7 @@ export const DASHBOARD_NAV: readonly DashboardNavItem[] = [
 	{name: 'Appointments', href: '/dashboard/appointments', icon: Calendar, roles: ALL_ROLES},
 	{name: 'Telehealth', href: '/dashboard/telehealth', icon: Video, roles: CLINICAL_ROLES},
 	{name: 'Billing', href: '/dashboard/billing', icon: CreditCard, roles: BILLING_ROLES},
-	{name: 'Settings', href: '/dashboard/settings', icon: Settings, roles: ADMIN_ROLES},
+	{name: 'Administration', href: '/dashboard/admin', icon: Shield, roles: ADMIN_ROLES},
 ];
 
 export function filterNavForRole(

@@ -9,7 +9,11 @@ import conditionsFixture from '@docs/mocks/conditions.json';
 import documentsFixture from '@docs/mocks/documents.json';
 import appointmentsFixture from '@docs/mocks/appointments.json';
 import invoicesFixture from '@docs/mocks/invoices.json';
+import adminUsersFixture from '@docs/mocks/admin-users.json';
+import auditEventsFixture from '@docs/mocks/audit-events.json';
 import {Invoice} from '@/types/billing/invoice';
+import type {PracticeUser} from '@/types/admin/practice-user';
+import type {AuditEvent} from '@/types/admin/audit-event';
 import {Appointment} from '@/types/medical/appointment';
 import {Patient} from '@/types/medical/patient';
 import {Provider} from '@/types/medical/provider';
@@ -41,3 +45,5 @@ export const fixtureAppointments = appointmentsFixture.appointments as Array<
 >;
 export const fixtureDashboardMetrics = dashboardFixture.metrics as DashboardMetric[];
 export const fixtureInvoices = invoicesFixture.invoices as Array<Omit<Invoice, 'patientName'>>;
+export const fixtureAdminUsers = adminUsersFixture.users as PracticeUser[];
+export const fixtureAuditEvents = auditEventsFixture.events as AuditEvent[];

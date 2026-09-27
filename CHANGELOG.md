@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.39.0] - 2026-09-27
+
+### Added
+
+- Administration UI (FE-009): practice user/role list and synthetic audit viewer at `/dashboard/admin`. The Settings placeholder is replaced. Live mode rejects admin queries until a later Nest connect task. Nav visibility stays UX only; role assignment and permission management stay out of scope.
+
 ## [0.38.0] - 2026-09-27
 
 ### Added
