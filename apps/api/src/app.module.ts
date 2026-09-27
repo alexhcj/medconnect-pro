@@ -15,6 +15,7 @@ import {CorrelationIdMiddleware} from './platform/correlation.middleware.js';
 import {envSchema} from './platform/env.schema.js';
 import {PracticeModule} from './practice/practice.module.js';
 import {TenancyModule} from './tenancy/tenant.module.js';
+import {TenantRlsInterceptor} from './tenancy/tenant-rls.interceptor.js';
 
 @Module({
 	imports: [
@@ -35,7 +36,10 @@ import {TenancyModule} from './tenancy/tenant.module.js';
 		IdentityModule,
 		HealthModule,
 	],
-	providers: [{provide: APP_INTERCEPTOR, useClass: AuditAccessDeniedInterceptor}],
+	providers: [
+		{provide: APP_INTERCEPTOR, useClass: AuditAccessDeniedInterceptor},
+		{provide: APP_INTERCEPTOR, useClass: TenantRlsInterceptor},
+	],
 })
 export class AppModule implements NestModule {
 	configure(consumer: MiddlewareConsumer): void {

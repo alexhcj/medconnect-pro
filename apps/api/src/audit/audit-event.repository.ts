@@ -4,6 +4,7 @@ import type {Request} from 'express';
 import {Repository} from 'typeorm';
 import {AuditEvent} from '../persistence/entities/audit-event.entity.js';
 import {getCorrelationId} from '../platform/correlation.js';
+import {tenantAls} from '../tenancy/tenant-als.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
 import {resourceTypeFromPath} from './audit-access.js';
 
@@ -49,15 +50,17 @@ export class AuditEventRepository {
 
 	async record(input: AuditEventWriteInput, scope?: AuditEventActorScope): Promise<AuditEvent> {
 		const {practiceId, actorUserId} = scope ?? this.tenant.require();
-		const row = this.rows.create({
-			practiceId,
-			actorUserId,
-			action: input.action,
-			resourceType: input.resourceType,
-			resourceId: input.resourceId,
-			correlationId: input.correlationId,
+		return tenantAls.run({practiceId}, async () => {
+			const row = this.rows.create({
+				practiceId,
+				actorUserId,
+				action: input.action,
+				resourceType: input.resourceType,
+				resourceId: input.resourceId,
+				correlationId: input.correlationId,
+			});
+			return this.rows.save(row);
 		});
-		return this.rows.save(row);
 	}
 
 	async list(query: AuditEventSearchQuery): Promise<AuditEventPage> {

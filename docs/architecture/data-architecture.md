@@ -51,8 +51,13 @@ demographics HTTP is [BE-003](../tasks/backend/BE-003-patient-api.md). Appointme
 [BE-005](../tasks/backend/BE-005-clinical-record-api.md). Telehealth session HTTP is
 [BE-006](../tasks/backend/BE-006-telehealth-session-api.md). Billing HTTP is
 [BE-007](../tasks/backend/BE-007-billing-api.md).
-PostgreSQL row-level security is deferred to
-[SEC-002](../tasks/security/SEC-002-tenant-isolation.md).
+PostgreSQL row-level security is enabled on tenant-owned business tables
+([SEC-002](../tasks/security/SEC-002-tenant-isolation.md)). Policies compare `practice_id` (or
+`practices.id`) to the server-set GUC `app.current_practice_id`. Identity-resolution tables
+(`users`, `auth_sessions`, `practice_memberships`) have no RLS so login can derive tenant
+before that GUC is set. The Nest runtime connects as non-owner role `medconnect_app`;
+migrations, seed, and test fixtures use table-owner `DATABASE_ADMIN_URL`. Cache keys and
+object-storage paths remain future work until Redis/S3 exist.
 
 ## Clinical data
 

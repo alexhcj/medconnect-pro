@@ -125,7 +125,9 @@ this setup.
 npm install
 ```
 
-4. Start local PostgreSQL and apply migrations:
+4. Start local PostgreSQL and apply migrations (owner role). Nest runtime must use `medconnect_app`
+   (`DATABASE_URL` in [`apps/api/.env.example`](./apps/api/.env.example)); do not point it at the
+   table owner or row-level security is bypassed:
 
 ```bash
 docker compose up -d

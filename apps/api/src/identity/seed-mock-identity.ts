@@ -12,7 +12,7 @@ import {Practice} from '../persistence/entities/practice.entity.js';
 import {TelehealthSession} from '../persistence/entities/telehealth-session.entity.js';
 import {User} from '../persistence/entities/user.entity.js';
 import {Vital} from '../persistence/entities/vital.entity.js';
-import {DEFAULT_DATABASE_URL} from '../persistence/default-database-url.js';
+import {resolveAdminDatabaseUrl} from '../persistence/default-database-url.js';
 import {postgresConnectionOptions} from '../persistence/typeorm.options.js';
 import {defaultMockIdpAccounts} from './mock-idp.js';
 
@@ -85,9 +85,7 @@ async function seed(): Promise<void> {
 		throw new Error('Demo mock IdP account is missing');
 	}
 
-	const dataSource = new DataSource(
-		postgresConnectionOptions(process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL),
-	);
+	const dataSource = new DataSource(postgresConnectionOptions(resolveAdminDatabaseUrl()));
 	await dataSource.initialize();
 	try {
 		await dataSource.runMigrations();

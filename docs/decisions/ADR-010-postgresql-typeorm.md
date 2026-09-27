@@ -14,9 +14,10 @@ Practice/tenant scope is enforced in **repositories and services** from server-r
 `TenantContext`. Client-supplied `practice_id` is never the authorization source
 ([ADR-002](ADR-002-tenant-isolation.md)).
 
-PostgreSQL **row-level security** is deferred to
-[SEC-002](../tasks/security/SEC-002-tenant-isolation.md). When RLS is added, the application
-database role should not be a superuser or table owner that bypasses RLS.
+PostgreSQL **row-level security** is enabled on tenant-owned business tables
+([SEC-002](../tasks/security/SEC-002-tenant-isolation.md)). The application database role
+(`medconnect_app`) is not a superuser or table owner and does not bypass RLS. Migrations, seed,
+and fixture CRUD use a separate owner URL (`DATABASE_ADMIN_URL`).
 
 ## Rationale
 
@@ -29,4 +30,7 @@ ORM, which keeps persistence inside the modular Nest application without a secon
 - HTTP requests resolve `TenantContext` from practice memberships
   ([BE-009](../tasks/backend/BE-009-identity-and-access-http.md)). Repository tests may still inject
   `TenantContext`. Production OAuth is not required for that scoping.
+- Runtime Nest uses `DATABASE_URL` (`medconnect_app`). CLI migrations and `seed:mock-identity` use
+  `DATABASE_ADMIN_URL` (table owner). Pointing runtime `DATABASE_URL` at the owner silently bypasses
+  RLS.
 - Cache keys and object-storage paths remain future work with those stores.

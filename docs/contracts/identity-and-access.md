@@ -111,9 +111,10 @@ Ordered rules:
 
 Tenant-owned records persist `practice_id` (or equivalent). PostgreSQL and TypeORM tenant scoping
 exist ([DATA-001](../tasks/backend/DATA-001-postgresql-tenant-model.md),
-[ADR-010](../decisions/ADR-010-postgresql-typeorm.md)). PostgreSQL RLS may add defense in depth in
-[SEC-002](../tasks/security/SEC-002-tenant-isolation.md). Cache keys and object-storage paths must
-include tenant scope when those stores exist.
+[ADR-010](../decisions/ADR-010-postgresql-typeorm.md)). PostgreSQL RLS adds defense in depth
+([SEC-002](../tasks/security/SEC-002-tenant-isolation.md)): the application role is not the table
+owner, and policies filter tenant-owned rows by server-resolved `app.current_practice_id`. Cache
+keys and object-storage paths must include tenant scope when those stores exist.
 
 **Mock mode:** the same chain applies. Identity and memberships come from fixtures. Mock
 authentication is not production identity infrastructure ([ADR-003](../decisions/ADR-003-authentication.md)).

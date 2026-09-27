@@ -5,11 +5,15 @@ import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {AppModule} from '../src/app.module.js';
 import {configureApp} from '../src/platform/configure-app.js';
 import {ValidationProbeController} from './validation-probe.controller.js';
+import {createAdminDataSource} from './admin-data-source.js';
+import type {DataSource} from 'typeorm';
 
 describe('platform HTTP', () => {
 	let app: INestApplication;
+	let admin: DataSource;
 
 	beforeAll(async () => {
+		admin = await createAdminDataSource();
 		const moduleRef = await Test.createTestingModule({
 			imports: [AppModule],
 			controllers: [ValidationProbeController],
@@ -22,6 +26,9 @@ describe('platform HTTP', () => {
 
 	afterAll(async () => {
 		await app.close();
+		if (admin?.isInitialized) {
+			await admin.destroy();
+		}
 	});
 
 	it('GET /health returns liveness without auth', async () => {

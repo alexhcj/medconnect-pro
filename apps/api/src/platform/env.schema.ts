@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {DEFAULT_DATABASE_URL} from '../persistence/default-database-url.js';
+import {DEFAULT_DATABASE_ADMIN_URL, DEFAULT_DATABASE_URL} from '../persistence/default-database-url.js';
 
 const booleanFromEnv = z.preprocess((value) => {
 	if (value === undefined || value === '') {
@@ -20,18 +20,20 @@ const booleanFromEnv = z.preprocess((value) => {
 	return value;
 }, z.boolean().optional());
 
-const databaseUrl = z.preprocess((value) => {
-	if (value === undefined || value === '') {
-		return undefined;
-	}
-	return value;
-}, z.string().regex(/^postgres(ql)?:\/\//, 'DATABASE_URL must be a PostgreSQL connection URL').default(DEFAULT_DATABASE_URL));
+const postgresUrl = (label: string, fallback: string) =>
+	z.preprocess((value) => {
+		if (value === undefined || value === '') {
+			return undefined;
+		}
+		return value;
+	}, z.string().regex(/^postgres(ql)?:\/\//, `${label} must be a PostgreSQL connection URL`).default(fallback));
 
 export const envSchema = z.object({
 	NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 	PORT: z.coerce.number().int().positive().default(3001),
 	SWAGGER_UI_ENABLED: booleanFromEnv,
-	DATABASE_URL: databaseUrl,
+	DATABASE_URL: postgresUrl('DATABASE_URL', DEFAULT_DATABASE_URL),
+	DATABASE_ADMIN_URL: postgresUrl('DATABASE_ADMIN_URL', DEFAULT_DATABASE_ADMIN_URL),
 });
 
 export type Env = z.infer<typeof envSchema>;

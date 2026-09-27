@@ -8,7 +8,8 @@ Listen port: **3001** (matches Postman local `baseUrl`). OpenAPI is generated fr
 and resolves tenant context from practice memberships. It is not a production OAuth/OIDC provider.
 Persistence is PostgreSQL + TypeORM
 ([DATA-001](../../docs/tasks/backend/DATA-001-postgresql-tenant-model.md),
-[ADR-010](../../docs/decisions/ADR-010-postgresql-typeorm.md)).
+[ADR-010](../../docs/decisions/ADR-010-postgresql-typeorm.md)). Tenant isolation at the database
+boundary is PostgreSQL RLS ([SEC-002](../../docs/tasks/security/SEC-002-tenant-isolation.md)).
 
 ## Commands (from repository root)
 
@@ -25,10 +26,11 @@ npm run seed:mock-identity
 ```
 
 `npm run test:api` requires PostgreSQL (`docker compose up -d`). Isolation tests run migrations if
-needed.
+needed. Runtime tests connect as `medconnect_app`; fixture seed/cleanup uses `DATABASE_ADMIN_URL`.
 
 Copy [`.env.example`](./.env.example) to `.env.development` for local overrides. Do not commit
-secrets. Compose credentials are local demo values only.
+secrets. Compose credentials are local demo values only. **`DATABASE_URL` must be `medconnect_app`.**
+An old override that still uses owner `medconnect` silently bypasses row-level security.
 
 ## Platform routes
 

@@ -4,6 +4,7 @@ import type {Request} from 'express';
 import {AuditEventRepository} from '../audit/audit-event.repository.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
+import type {RequestTenantScope} from '../tenancy/tenant-rls.interceptor.js';
 import {IS_PUBLIC_KEY} from './auth.decorators.js';
 import {SessionInvalidError} from './auth.errors.js';
 import {AuthService} from './auth.service.js';
@@ -23,7 +24,7 @@ export class AuthGuard implements CanActivate {
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const request = context.switchToHttp().getRequest<Request & RequestAuth>();
+		const request = context.switchToHttp().getRequest<Request & RequestAuth & RequestTenantScope>();
 		if (this.isPublic(context) || isOpenApiPath(request.path || request.url || '')) {
 			return true;
 		}
@@ -48,6 +49,7 @@ export class AuthGuard implements CanActivate {
 			actorUserId: resolved.membership.userId,
 			role: resolved.membership.role,
 		});
+		request.tenantPracticeId = resolved.membership.practiceId;
 		request.authSessionId = resolved.session.id;
 		request.authUserId = resolved.session.userId;
 		return true;

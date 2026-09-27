@@ -7,12 +7,15 @@ import {InitialTenantModel1760000000000} from './migrations/1760000000000-Initia
 import {PatientDemographics1760000000002} from './migrations/1760000000002-PatientDemographics.js';
 import {Billing1760000000006} from './migrations/1760000000006-Billing.js';
 import {TelehealthSessions1760000000005} from './migrations/1760000000005-TelehealthSessions.js';
+import {TenantRowLevelSecurity1760000000007} from './migrations/1760000000007-TenantRowLevelSecurity.js';
+import {TenantRlsSubscriber} from './tenant-rls.subscriber.js';
 
 export function postgresConnectionOptions(databaseUrl: string): DataSourceOptions {
 	return {
 		type: 'postgres',
 		url: databaseUrl,
 		entities: persistenceEntities,
+		subscribers: [TenantRlsSubscriber],
 		migrations: [
 			InitialTenantModel1760000000000,
 			AuthSessions1760000000001,
@@ -21,6 +24,7 @@ export function postgresConnectionOptions(databaseUrl: string): DataSourceOption
 			ClinicalRecords1760000000004,
 			TelehealthSessions1760000000005,
 			Billing1760000000006,
+			TenantRowLevelSecurity1760000000007,
 		],
 		synchronize: false,
 		migrationsRun: false,

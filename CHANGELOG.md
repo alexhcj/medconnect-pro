@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.40.0] - 2026-09-27
+
+### Added
+
+- Tenant isolation at the PostgreSQL boundary (SEC-002): row-level security on tenant-owned tables,
+  non-owner runtime role `medconnect_app`, and server-set `app.current_practice_id`. Nest
+  `DATABASE_URL` must not use table owner `medconnect` or RLS is bypassed. Migrations and seed use
+  `DATABASE_ADMIN_URL`. Cache keys and object-storage paths remain deferred until Redis/S3 exist.
+
 ## [0.39.0] - 2026-09-27
 
 ### Added

@@ -2,22 +2,19 @@ import {randomUUID} from 'node:crypto';
 import {beforeAll, afterAll, describe, expect, it} from 'vitest';
 import {DataSource} from 'typeorm';
 import {VitalRepository} from '../src/ehr/vital.repository.js';
-import {DEFAULT_DATABASE_URL} from '../src/persistence/default-database-url.js';
 import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
 import {Practice} from '../src/persistence/entities/practice.entity.js';
 import {User} from '../src/persistence/entities/user.entity.js';
 import {Vital} from '../src/persistence/entities/vital.entity.js';
-import {postgresConnectionOptions} from '../src/persistence/typeorm.options.js';
 import {MembershipRepository} from '../src/practice/membership.repository.js';
 import {PatientRepository} from '../src/practice/patient.repository.js';
 import {PracticeRepository} from '../src/practice/practice.repository.js';
 import {TenantContext} from '../src/tenancy/tenant-context.js';
 import {TenantMismatchError, TenantScopeMissingError} from '../src/tenancy/tenant-errors.js';
+import {createAdminDataSource} from './admin-data-source.js';
 import {syntheticDemographics, syntheticPatientColumns} from './synthetic-patient.js';
-
-const databaseUrl = process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
 
 describe('tenant isolation', () => {
 	let dataSource: DataSource;
@@ -31,16 +28,7 @@ describe('tenant isolation', () => {
 	let vitalB: Vital;
 
 	beforeAll(async () => {
-		dataSource = new DataSource(postgresConnectionOptions(databaseUrl));
-		try {
-			await dataSource.initialize();
-		} catch (error) {
-			throw new Error(
-				`PostgreSQL is required for API tests. Start it with docker compose up -d. DATABASE_URL=${databaseUrl}`,
-				{cause: error},
-			);
-		}
-		await dataSource.runMigrations();
+		dataSource = await createAdminDataSource();
 
 		const suffix = randomUUID();
 		practiceA = await dataSource.getRepository(Practice).save({

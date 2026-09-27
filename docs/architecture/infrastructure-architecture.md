@@ -8,8 +8,10 @@ Local work is the Next.js app in `apps/web` (mock-first environment files) and t
 need API overrides. Do not commit secrets.
 
 Local PostgreSQL is Docker Compose (`docker compose up -d` at the repository root). Apply schema
-with `npm run migration:run`. Demo credentials in Compose and `DATABASE_URL` are not production
-secrets. Redis and GitHub Actions remain deferred.
+with `npm run migration:run` (uses `DATABASE_ADMIN_URL`, default table owner `medconnect`). Nest
+runtime `DATABASE_URL` must be the non-owner role `medconnect_app` or RLS is bypassed. Demo
+credentials in Compose and those URLs are not production secrets. Redis and GitHub Actions remain
+deferred.
 
 See the root [README](../../README.md) for setup and validation commands.
 

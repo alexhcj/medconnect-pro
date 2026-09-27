@@ -1,16 +1,13 @@
 import {randomUUID} from 'node:crypto';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {DataSource, In} from 'typeorm';
-import {DEFAULT_DATABASE_URL} from '../persistence/default-database-url.js';
 import {AuditEvent} from '../persistence/entities/audit-event.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {Practice} from '../persistence/entities/practice.entity.js';
 import {User} from '../persistence/entities/user.entity.js';
-import {postgresConnectionOptions} from '../persistence/typeorm.options.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
+import {createAdminDataSource} from '../../test/admin-data-source.js';
 import {AuditEventRepository} from './audit-event.repository.js';
-
-const databaseUrl = process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
 
 describe('AuditEventRepository', () => {
 	let dataSource: DataSource;
@@ -23,16 +20,7 @@ describe('AuditEventRepository', () => {
 
 	beforeAll(async () => {
 		const suffix = randomUUID().slice(0, 8);
-		dataSource = new DataSource(postgresConnectionOptions(databaseUrl));
-		try {
-			await dataSource.initialize();
-		} catch (error) {
-			throw new Error(
-				`PostgreSQL is required for API tests. Start it with docker compose up -d. DATABASE_URL=${databaseUrl}`,
-				{cause: error},
-			);
-		}
-		await dataSource.runMigrations();
+		dataSource = await createAdminDataSource();
 		practiceA = await dataSource.getRepository(Practice).save({name: `Audit Repo A ${suffix}`});
 		practiceB = await dataSource.getRepository(Practice).save({name: `Audit Repo B ${suffix}`});
 		userA = await dataSource.getRepository(User).save({

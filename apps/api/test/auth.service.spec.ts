@@ -10,15 +10,13 @@ import {IdentityMembershipLookup} from '../src/identity/membership-lookup.js';
 import {SessionRepository} from '../src/identity/session.repository.js';
 import {ACCESS_TTL_MS, IDLE_TTL_MS, MFA_TTL_MS} from '../src/identity/session-policy.js';
 import {hashToken} from '../src/identity/token.js';
-import {DEFAULT_DATABASE_URL} from '../src/persistence/default-database-url.js';
 import {AuthSession} from '../src/persistence/entities/auth-session.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
 import {Practice} from '../src/persistence/entities/practice.entity.js';
 import {User} from '../src/persistence/entities/user.entity.js';
-import {postgresConnectionOptions} from '../src/persistence/typeorm.options.js';
 import {TenantMismatchError} from '../src/tenancy/tenant-errors.js';
+import {createAdminDataSource} from './admin-data-source.js';
 
-const databaseUrl = process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
 const password = 'Synthetic-Pass-1';
 const mfaCode = '246810';
 
@@ -61,16 +59,7 @@ describe('AuthService', () => {
 			{email: orphanEmail, password, role: 'RECEPTIONIST'},
 		];
 
-		dataSource = new DataSource(postgresConnectionOptions(databaseUrl));
-		try {
-			await dataSource.initialize();
-		} catch (error) {
-			throw new Error(
-				`PostgreSQL is required for API tests. Start it with docker compose up -d. DATABASE_URL=${databaseUrl}`,
-				{cause: error},
-			);
-		}
-		await dataSource.runMigrations();
+		dataSource = await createAdminDataSource();
 
 		practiceA = await dataSource.getRepository(Practice).save({
 			name: `Harbor Synthetic ${suffix}`,

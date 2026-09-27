@@ -1,5 +1,6 @@
 import {Injectable, Scope} from '@nestjs/common';
 import type {PracticeRole} from './practice-role.js';
+import {tenantAls} from './tenant-als.js';
 import {TenantScopeMissingError} from './tenant-errors.js';
 
 export type TenantScope = {
@@ -14,6 +15,7 @@ export class TenantContext {
 
 	set(scope: TenantScope): void {
 		this.scope = scope;
+		tenantAls.enterWith({practiceId: scope.practiceId});
 	}
 
 	current(): TenantScope | undefined {
@@ -29,5 +31,6 @@ export class TenantContext {
 
 	clear(): void {
 		this.scope = undefined;
+		tenantAls.enterWith({practiceId: ''});
 	}
 }

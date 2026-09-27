@@ -3,7 +3,7 @@ id: SEC-002
 type: task
 area: security
 feature: tenant-isolation
-status: planned
+status: implemented
 priority: critical
 estimate: 4
 dependencies: [DATA-001]
@@ -34,10 +34,10 @@ Tenant-aware queries, indexes, cache keys and tests.
 
 ## Acceptance criteria
 
-- [ ] Cross-tenant reads denied
-- [ ] Cross-tenant writes denied
-- [ ] Tenant IDs not trusted from client
-- [ ] Sensitive queries tested
+- [x] Cross-tenant reads denied
+- [x] Cross-tenant writes denied
+- [x] Tenant IDs not trusted from client
+- [x] Sensitive queries tested
 
 ## Implementation notes
 
@@ -45,7 +45,14 @@ Consider PostgreSQL RLS where appropriate.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: PostgreSQL RLS on tenant-owned business tables; non-owner runtime role
+  `medconnect_app`; GUC `app.current_practice_id` bound from server-resolved `TenantContext`.
+  Existing repository/HTTP isolation from DATA-001 and domain APIs remains. Identity tables
+  (`users`, `auth_sessions`, `practice_memberships`) are not RLS-gated so login can derive tenant.
+- Tests: `apps/api/test/rls-isolation.spec.ts` (unscoped SQL, fail-closed GUC, WITH CHECK, identity
+  lookup); existing tenant-isolation and domain HTTP suites now seed via `DATABASE_ADMIN_URL`
+  (`npm run test:api` with Compose Postgres).
 - PR:
-- Notes:
+- Notes: Redis cache keys and S3 object-storage path prefixes are not in this slice; those stores
+  do not exist yet (SEC-004 / later infra). Pointing runtime `DATABASE_URL` at table owner
+  `medconnect` bypasses RLS.

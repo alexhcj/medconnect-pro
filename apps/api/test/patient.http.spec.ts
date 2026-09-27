@@ -15,6 +15,7 @@ import {PracticeMembership} from '../src/persistence/entities/practice-membershi
 import {Practice} from '../src/persistence/entities/practice.entity.js';
 import {User} from '../src/persistence/entities/user.entity.js';
 import type {PatientDemographics} from '../src/practice/patient.repository.js';
+import {createAdminDataSource} from './admin-data-source.js';
 import {syntheticDemographics, syntheticPatientColumns} from './synthetic-patient.js';
 
 const password = 'Synthetic-Pass-1';
@@ -80,11 +81,10 @@ describe('patient HTTP', () => {
 			.useValue(catalog)
 			.compile();
 
+		dataSource = await createAdminDataSource();
 		app = moduleRef.createNestApplication();
 		configureApp(app);
 		await app.init();
-		dataSource = app.get(DataSource);
-		await dataSource.runMigrations();
 
 		practiceA = await dataSource.getRepository(Practice).save({
 			name: `North Synthetic ${suffix}`,
@@ -150,6 +150,9 @@ describe('patient HTTP', () => {
 			await dataSource.getRepository(Practice).delete({id: In(practiceIds)});
 		}
 		await app?.close();
+		if (dataSource?.isInitialized) {
+			await dataSource.destroy();
+		}
 	});
 
 	async function login(email: string): Promise<string> {

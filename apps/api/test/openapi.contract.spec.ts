@@ -9,6 +9,8 @@ import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {AppModule} from '../src/app.module.js';
 import {configureApp} from '../src/platform/configure-app.js';
 import {setupOpenApi, validateOpenApiDocument} from '../src/platform/openapi.js';
+import {createAdminDataSource} from './admin-data-source.js';
+import type {DataSource} from 'typeorm';
 
 const committedSpecPath = join(dirname(fileURLToPath(import.meta.url)), '../openapi/openapi.json');
 
@@ -18,8 +20,10 @@ function loadCommittedSpec(): OpenAPIObject {
 
 describe('OpenAPI contract', () => {
 	let app: INestApplication;
+	let admin: DataSource;
 
 	beforeAll(async () => {
+		admin = await createAdminDataSource();
 		const moduleRef = await Test.createTestingModule({
 			imports: [AppModule],
 		}).compile();
@@ -32,6 +36,9 @@ describe('OpenAPI contract', () => {
 
 	afterAll(async () => {
 		await app.close();
+		if (admin?.isInitialized) {
+			await admin.destroy();
+		}
 	});
 
 	it('GET /health matches the documented liveness schema', async () => {
