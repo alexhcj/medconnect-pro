@@ -9,13 +9,16 @@ import {TenancyModule} from '../tenancy/tenant.module.js';
 import {MembershipRepository} from './membership.repository.js';
 import {PatientRepository} from './patient.repository.js';
 import {PracticeRepository} from './practice.repository.js';
+import {PracticeUserController} from './practice-user.controller.js';
+import {PracticeUserService} from './practice-user.service.js';
 
 @Module({
 	imports: [
 		TenancyModule,
 		TypeOrmModule.forFeature([Practice, User, PracticeMembership, Patient, PatientAssignment]),
 	],
-	providers: [PracticeRepository, PatientRepository, MembershipRepository],
+	controllers: [PracticeUserController],
+	providers: [PracticeRepository, PatientRepository, MembershipRepository, PracticeUserService],
 	exports: [PracticeRepository, PatientRepository, MembershipRepository],
 })
 export class PracticeModule {}

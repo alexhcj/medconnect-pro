@@ -166,6 +166,15 @@ describe('tenant isolation', () => {
 		expect(listed.every((row) => row.practiceId === practiceA.id)).toBe(true);
 	});
 
+	it('joins directory users only for the current practice', async () => {
+		const listed = await scopedMembershipRepo(practiceA.id, userA.id).listWithUsers();
+		expect(listed.map((row) => row.userId)).toContain(userA.id);
+		expect(listed.map((row) => row.userId)).not.toContain(userB.id);
+		expect(listed.every((row) => row.practiceId === practiceA.id)).toBe(true);
+		expect(listed.every((row) => row.user.id === row.userId)).toBe(true);
+		expect(listed.find((row) => row.userId === userA.id)?.user.email).toBe(userA.email);
+	});
+
 	it('resolves the current practice only from tenant context', async () => {
 		const tenant = new TenantContext();
 		tenant.set({practiceId: practiceA.id, actorUserId: userA.id, role: 'PROVIDER'});

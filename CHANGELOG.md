@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.43.0] - 2026-09-27
+
+### Added
+
+- Practice user directory HTTP (BE-010): tenant-scoped `GET /admin/users` joins `practice_memberships`
+  and `users` for the session practice. Requires `admin:users`. `id` is the user id; `synthetic` is
+  always true. Client `practiceId` is rejected on mismatch. Identity tables remain without RLS;
+  application scoping is mandatory. Frontend live wiring stays FE-016.
+
 ## [0.42.0] - 2026-09-27
 
 ### Added

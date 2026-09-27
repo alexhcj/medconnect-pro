@@ -262,6 +262,21 @@ identity and action metadata only: `id`, `practiceId`, `actorUserId`, `action`, 
 `resourceId`, `correlationId`, `createdAt`. There is no payload object. Emails, passwords, notes,
 and clinical text must not appear. Reads require `admin:practice`. Tenant comes from the session.
 
+## Practice user directory
+
+`GET /admin/users` returns session-tenant memberships joined from `practice_memberships` and
+`users`. Response fields:
+
+- `id` (user id, not membership id)
+- `email`
+- `role` (membership role for the resolved practice)
+- `practiceId` (session tenant; display only)
+- `synthetic` (always true)
+
+Identity tables have no RLS. Filter memberships by server-resolved tenant. Optional client
+`practiceId` is ignored for authorization and rejected on mismatch. Passwords, MFA secrets, and
+session hashes must not appear. Reads require `admin:users`.
+
 ## Validation
 
 Use server-side DTO validation as authoritative.

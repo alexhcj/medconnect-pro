@@ -3,7 +3,7 @@ id: BE-010
 type: task
 area: backend
 feature: administration
-status: ready
+status: implemented
 priority: high
 estimate: 3
 dependencies: [BE-009, DATA-001, SEC-002]
@@ -55,13 +55,13 @@ Do not reopen [BE-009](BE-009-identity-and-access-http.md). Frontend live wiring
 
 ## Acceptance criteria
 
-- [ ] `GET /admin/users` returns session-tenant memberships (user id, email, role, practiceId,
+- [x] `GET /admin/users` returns session-tenant memberships (user id, email, role, practiceId,
   synthetic)
-- [ ] Anonymous access is 401; roles without `admin:users` are 403; client `practiceId` mismatch is
+- [x] Anonymous access is 401; roles without `admin:users` are 403; client `practiceId` mismatch is
   rejected; cross-tenant and unknown ids do not oracle
-- [ ] OpenAPI includes the path; HTTP tests plus a matrix row cover this GET (extend the matrix
+- [x] OpenAPI includes the path; HTTP tests plus a matrix row cover this GET (extend the matrix
   file; do not reopen QA-004’s task)
-- [ ] Seeded `practice.admin@example.test` and `jordan.ellis@synthetic.example` are enough to
+- [x] Seeded `practice.admin@example.test` and `jordan.ellis@synthetic.example` are enough to
   demonstrate a list; do not add a six-role directory unless two rows cannot make the screen
   demonstrable
 
@@ -98,3 +98,18 @@ Extend `apps/api/test/authorization-matrix.http.spec.ts` with `GET /admin/users`
 cross-practice HTTP stays out of QA-004.
 
 Frontend `adminRealAPI` 404 stubs stay until FE-016.
+
+## Completion
+
+- Implementation: NestJS `GET /admin/users` on PracticeModule lists session-tenant memberships
+  joined to `users` (`admin:users`). RDO `id` is the user id; `synthetic` is always true. Identity
+  tables remain without RLS; `MembershipRepository.listWithUsers()` filters by
+  `TenantContext.practiceId`. Client `practiceId` mismatch is rejected by AuthGuard. Seed is
+  unchanged (practice admin + provider). Frontend live wiring stays FE-016.
+- Tests: Tenant-isolation join; HTTP tests for anonymous 401, non-admin 403, practice-admin and
+  session-scoped SUPER_ADMIN lists, client/unknown `practiceId` mismatch, and no foreign-row oracle
+  (`apps/api/test/practice-users.http.spec.ts`); matrix row for `GET /admin/users`; OpenAPI path
+  (`npm run test:api` with Compose Postgres).
+- PR:
+- Notes: No PATCH roles, security-events, extra seed roles, pagination, or new permission string.
+  Version 0.42.0 → 0.43.0 (MINOR).

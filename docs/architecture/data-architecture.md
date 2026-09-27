@@ -48,7 +48,9 @@ access/mutations, appointment mutations, clinical creates, telehealth session cr
 billing invoice create and payment records, document list/upload/download, and notification
 preference updates write rows. Restricted HTTP list is
 [SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,
-`admin:practice`). The administration UI viewer remains
+`admin:practice`). Practice user directory HTTP is
+[BE-010](../tasks/backend/BE-010-practice-user-directory-api.md) (`GET /admin/users`,
+`admin:users`). The administration UI viewer remains
 [FE-009](../tasks/frontend/FE-009-administration-security-ui.md). Patient
 demographics HTTP is [BE-003](../tasks/backend/BE-003-patient-api.md). Appointment HTTP is
 [BE-004](../tasks/backend/BE-004-appointment-api.md). Clinical HTTP is

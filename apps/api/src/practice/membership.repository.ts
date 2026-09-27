@@ -28,6 +28,15 @@ export class MembershipRepository {
 		});
 	}
 
+	async listWithUsers(): Promise<PracticeMembership[]> {
+		const {practiceId} = this.tenant.require();
+		return this.rows.find({
+			where: {practiceId},
+			relations: {user: true},
+			order: {createdAt: 'ASC'},
+		});
+	}
+
 	async getById(id: string): Promise<PracticeMembership | undefined> {
 		const {practiceId} = this.tenant.require();
 		const row = await this.rows.findOne({where: {id, practiceId}});

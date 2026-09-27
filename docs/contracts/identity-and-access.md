@@ -185,6 +185,22 @@ Document HTTP ([SEC-004](../tasks/security/SEC-004-document-access-control.md)) 
   exists later.
 - Bytes stream through Nest after authorization. Object-store keys are not public URLs.
 
+Practice user directory HTTP ([BE-010](../tasks/backend/BE-010-practice-user-directory-api.md))
+maps onto `admin:users` without a new catalog permission string:
+
+- **List (`GET /admin/users`):** `admin:users` for `PRACTICE_ADMIN` and `SUPER_ADMIN`. Session-tenant
+  scoped, including `SUPER_ADMIN` (same rule as [SEC-003](../tasks/security/SEC-003-audit-event-model.md)
+  audit list). Join `practice_memberships` and `users` filtered by server-resolved
+  `TenantContext.practiceId`.
+- Identity tables (`users`, `auth_sessions`, `practice_memberships`) have no RLS so login can derive
+  tenant. Application scoping on `practice_memberships.practice_id` is mandatory. Do not query users
+  across practices.
+- Client `practiceId` is ignored for authorization and rejected on mismatch. Unknown and cross-tenant
+  ids must not oracle.
+- `id` is the user id, not the membership id. `role` is the membership role for the resolved
+  practice. `synthetic` is always true (`users` has no `synthetic` column). Passwords, MFA secrets,
+  and session hashes are not returned.
+
 Response DTOs expose only authorized fields ([data-contracts.md](data-contracts.md) `PatientRdo`).
 Clinical fields must not leak to `read:demographics`-only actors.
 

@@ -1,6 +1,54 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/admin/users": {
+      "get": {
+        "description": "Requires admin:users. Returns session-tenant memberships only, including for SUPER_ADMIN. id is the user id, not the membership id. Tenant comes from the session, not from the client. synthetic is always true. Passwords, MFA secrets, and session hashes are not returned.",
+        "operationId": "PracticeUserController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PracticeUserList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List practice memberships in the resolved practice",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/admin/audit-events": {
       "get": {
         "description": "Requires admin:practice. Newest first. Page size defaults to 50 (max 100). Tenant comes from the session, not from the client. Events store actor, tenant, action, and resource ids only — no emails, notes, or clinical text.",
@@ -3589,6 +3637,64 @@
         "required": [
           "error",
           "correlationId"
+        ]
+      },
+      "PracticeUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id, not the membership id."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "practice.admin@example.test"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "SUPER_ADMIN",
+              "PRACTICE_ADMIN",
+              "PROVIDER",
+              "NURSE",
+              "RECEPTIONIST",
+              "PATIENT"
+            ],
+            "example": "PRACTICE_ADMIN"
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-resolved practice id. Clients must not send this field for authorization."
+          },
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "practiceId",
+          "synthetic"
+        ]
+      },
+      "PracticeUserList": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PracticeUser"
+            }
+          }
+        },
+        "required": [
+          "users"
         ]
       },
       "AuditEvent": {
