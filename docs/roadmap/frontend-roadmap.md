@@ -39,7 +39,8 @@ Slices below are sequencing, not a calendar independent of
 
 ## Slice 7 — Billing (M6)
 
-- FE-008.
+- billing dashboard and payment/claims boundaries (FE-008);
+- billing UI against the Nest billing API (FE-015).
 
 ## Slice 8 — Settings and security administration (M7)
 

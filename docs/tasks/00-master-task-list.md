@@ -30,6 +30,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-007 — Telehealth session shell
 - FE-014 — Telehealth UI on the Nest telehealth session API
 - FE-008 — Billing dashboard
+- FE-015 — Billing UI on the Nest billing API
 - FE-009 — Administration/security UI
 
 ## Backend

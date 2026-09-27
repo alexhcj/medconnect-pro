@@ -52,7 +52,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M3 Scheduling | FE-005, FE-006, BE-004, QA-003, FE-012 | Frontend appointment mocks may start after FE-010. Appointment API waits on BE-009. FE-012 connects the shipped UI to that API. |
 | M4 Clinical | BE-005, SEC-003, FE-013 | Clinical records plus audit model. FE-013 connects the patient-profile lists to Nest. |
 | M5 Telehealth | FE-007, BE-006, FE-014 | Session shell plus Nest API. FE-014 connects the lobby and session shell to Nest. |
-| M6 Billing | FE-008, BE-007 | |
+| M6 Billing | FE-008, BE-007, FE-015 | Frontend billing mocks may start after FE-010. Billing API waits on BE-009. FE-015 connects the shipped dashboard to that API. |
 | M7 Administration | FE-009, SEC-002, SEC-004, QA-004, BE-008 as needed | Practice/user admin, isolation hardening, authorization matrix. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
