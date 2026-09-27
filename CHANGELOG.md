@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.41.1] - 2026-09-27
+
+### Added
+
+- Reusable authorization and tenant-isolation HTTP matrix (QA-004): role × resource × tenant cases
+  for provider, nurse, receptionist, patient, and practice admin against shipped Nest surfaces,
+  plus cross-tenant not-found and client `practiceId` rejection.
+
 ## [0.41.0] - 2026-09-27
 
 ### Added

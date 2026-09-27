@@ -3,7 +3,7 @@ id: QA-004
 type: task
 area: qa
 feature: security
-status: planned
+status: implemented
 priority: critical
 estimate: 3
 dependencies: [SEC-001,SEC-002,BE-003]
@@ -34,11 +34,11 @@ Cover role × resource × tenant boundaries.
 
 ## Acceptance criteria
 
-- [ ] Provider access tested
-- [ ] Nurse access tested
-- [ ] Receptionist restrictions tested
-- [ ] Patient self-scope tested
-- [ ] Cross-tenant access denied
+- [x] Provider access tested
+- [x] Nurse access tested
+- [x] Receptionist restrictions tested
+- [x] Patient self-scope tested
+- [x] Cross-tenant access denied
 
 ## Implementation notes
 
@@ -46,7 +46,14 @@ This is one of the highest-value portfolio security demonstrations.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: No product surface change. Expected allow/deny status comes from existing
+  access helpers; the HTTP matrix asserts the Nest boundary.
+- Tests: Reusable two-tenant harness in `apps/api/test/authorization-matrix-harness.ts`. Table-driven
+  Nest HTTP matrix in `apps/api/test/authorization-matrix.http.spec.ts` for provider, nurse,
+  receptionist, patient, and practice admin against patients, clinical, documents, appointments,
+  telehealth, billing, and audit, plus foreign-id not-found and client `practiceId` rejection
+  (`npm run test:api` with Compose Postgres). Existing domain HTTP specs stay in place.
 - PR:
-- Notes:
+- Notes: Version 0.41.0 → 0.41.1 (PATCH). Test coverage only; no API or UX contract change.
+  SUPER_ADMIN cross-practice HTTP and a Playwright role matrix stay out of scope. Browser checks
+  remain UX only.
