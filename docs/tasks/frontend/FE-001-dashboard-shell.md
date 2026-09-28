@@ -50,4 +50,5 @@ Do not make navigation visibility the authorization mechanism.
 - Tests: Vitest unit tests for nav/metric filters; RTL shell accessibility and mobile-nav tests; Playwright dashboard→patients navigation.
 - PR:
 - Notes: Menu visibility is not authorization. Session gate and mock login are FE-010. Server
-  enforcement is BE-009; SEC-001 remains the model.
+  enforcement is BE-009; SEC-001 remains the model. Live dashboard overview metrics are not a Nest
+  route; that remains frontend Slice 2.

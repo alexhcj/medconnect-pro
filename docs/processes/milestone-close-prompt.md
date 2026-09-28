@@ -18,7 +18,7 @@ does not produce an implementation plan.
 
 ---
 
-Audit milestone close for M2.
+Audit milestone close for [MILESTONE-ID].
 
 Before proposing work:
 

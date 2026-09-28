@@ -42,7 +42,8 @@ Plane and GitHub IDs are external references and may differ.
 
 ## Status ownership
 
-Repository status expresses implementation/documentation intent.
+Repository status expresses implementation/documentation intent (`pending`, `implemented`, or
+`completed`).
 
 Plane owns operational project-management status.
 
@@ -50,8 +51,8 @@ Plane owns operational project-management status.
 
 Examples:
 
-- `FE-001-patient-list.md`
-- `BE-001-authentication-foundation.md`
-- `SEC-001-tenant-authorization.md`
+- `FE-001-dashboard-shell.md`
+- `BE-001-nestjs-core-platform-foundation.md`
+- `SEC-001-authentication-and-authorization-model.md`
 - `INFRA-001-local-development-foundation.md`
-- `QA-001-patient-workflow-e2e.md`
+- `QA-001-test-foundation.md`

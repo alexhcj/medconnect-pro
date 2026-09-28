@@ -50,8 +50,9 @@ preference updates write rows. Restricted HTTP list is
 [SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,
 `admin:practice`). Practice user directory HTTP is
 [BE-010](../tasks/backend/BE-010-practice-user-directory-api.md) (`GET /admin/users`,
-`admin:users`). The administration UI viewer remains
-[FE-009](../tasks/frontend/FE-009-administration-security-ui.md). Patient
+`admin:users`). The administration UI is
+[FE-009](../tasks/frontend/FE-009-administration-security-ui.md) (mocks) plus
+[FE-016](../tasks/frontend/FE-016-administration-ui-nest-api.md) (live Nest). Patient
 demographics HTTP is [BE-003](../tasks/backend/BE-003-patient-api.md). Appointment HTTP is
 [BE-004](../tasks/backend/BE-004-appointment-api.md). Clinical HTTP is
 [BE-005](../tasks/backend/BE-005-clinical-record-api.md). Telehealth session HTTP is

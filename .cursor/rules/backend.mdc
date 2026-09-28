@@ -1,12 +1,12 @@
 ---
-description: Backend conventions for the planned NestJS MedConnect backend
+description: Backend conventions for the NestJS MedConnect API
 globs: ["apps/api/**/*.{ts,tsx,js}"]
 alwaysApply: false
 ---
 
 # Backend
 
-The planned backend is a modular NestJS application.
+The backend is a modular NestJS application.
 
 Use clear layers:
 

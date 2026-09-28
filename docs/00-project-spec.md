@@ -55,7 +55,9 @@ healthcare-workflow-aware SaaS product.
 Role meanings, the permission catalog, and default grants are defined in
 [identity-and-access.md](contracts/identity-and-access.md).
 
-## Planned technology
+## Technology
+
+Current stack is listed first. Items marked planned are not in the repository.
 
 Frontend:
 - Next.js App Router
@@ -70,39 +72,39 @@ Frontend:
 - Recharts
 - React Big Calendar
 
-Backend:
+Backend (current):
 - Node.js current LTS
-- NestJS current stable
-- PostgreSQL
+- NestJS 12
+- PostgreSQL (local Compose + TypeORM)
+- REST/OpenAPI
+
+Backend / infrastructure (planned):
 - Redis
 - S3/KMS
-- REST/OpenAPI
 - WebSockets/Socket.IO where appropriate
-- WebRTC/Daily for telehealth
-
-Infrastructure:
-- AWS
-- Docker
-- ECS/Fargate initially
-- Terraform
-- GitHub Actions
-- CloudWatch
-- dev/staging/prod separation
+- WebRTC/Daily for telehealth media
+- AWS, Docker, ECS/Fargate, Terraform, GitHub Actions, CloudWatch
+- development / staging / production separation
 
 ## Demo-data policy
 
 All data is synthetic. Patient names, addresses, dates of birth, identifiers, conditions,
 medications and appointments are fictional.
 
-## Current frontend state
+## Current implementation state
 
-The repository is an npm workspace. The Next.js frontend lives in `apps/web` with mock-mode
-scripts for the planned feature set. `apps/api` is reserved for a separate modular NestJS
-application; do not force backend concerns into the Next.js frontend.
+The repository is an npm workspace. The Next.js frontend lives in `apps/web` (mock-first scripts
+plus `dev:real` against Nest). `apps/api` is a separate modular NestJS application; do not fold
+backend domain logic into the Next.js frontend.
+
+Demo vertical slices 1–12 below shipped in milestones M0–M7. Current position:
+[post-mvp-baseline.md](roadmap/post-mvp-baseline.md). Next: marketing website foundation (M8 /
+[FE-017](tasks/frontend/FE-017-marketing-website-foundation.md)). Deployment/preview is a later
+milestone.
 
 ## Implementation strategy
 
-Start with complete vertical slices:
+Complete vertical slices (shipped through M7):
 
 1. authentication;
 2. dashboard shell;

@@ -302,8 +302,9 @@ JSON error responses from `apps/api` use this shape (no stack traces, tokens, or
 - Validation failures use `code` `VALIDATION_ERROR` and HTTP 400.
 - Unexpected failures use `INTERNAL_ERROR` with a generic message.
 - `GET /ready` uses HTTP 503 and `code` `SERVICE_UNAVAILABLE` when PostgreSQL is unreachable.
-- `UNAUTHORIZED` and `FORBIDDEN` are reserved for later identity work and are not emitted by the
-  platform foundation.
+- Missing or invalid credentials use `code` `UNAUTHENTICATED` and HTTP 401.
+- Authenticated callers without permission, or a client `practiceId` that does not match the
+  session tenant, use `code` `FORBIDDEN` and HTTP 403.
 - Clients may send `X-Correlation-ID`; the API always returns it (incoming value or a generated UUID).
 
 ## Correlation

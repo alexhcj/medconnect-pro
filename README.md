@@ -23,9 +23,11 @@ A multi-tenant practice platform covering:
 - analytics
 - administration and audit / compliance
 
-The portfolio MVP focuses on authentication, dashboard shell, patient management, scheduling, basic
-audit logging, and basic analytics. EHR, telehealth, billing, and administration follow as expansion
-slices.
+Demo milestones M0–M7 are shipped (auth, dashboard shell, patients, scheduling, clinical
+foundation, telehealth session shell, billing invoices, administration). Current position:
+[`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). Next: marketing website
+foundation. Dashboard analytics, notifications UI, live video, payments, and production OAuth remain
+deferred.
 
 All data is **synthetic**. Do not introduce real patient records, credentials, or other PHI.
 
@@ -48,8 +50,8 @@ medconnect-pro/
 The backend is a **separate modular NestJS application** under `apps/api`. Do not fold backend
 domain logic into the Next.js app.
 
-Frontend checks are UX only. Server-side authorization and tenant isolation are the planned
-authoritative controls.
+Frontend role and nav checks are UX only. Server-side authorization and tenant isolation in
+`apps/api` are the authoritative controls.
 
 ## Stack
 
@@ -81,15 +83,12 @@ Significant architectural choices are recorded as ADRs under [`docs/decisions/`]
 
 ## Security model
 
-The demo models healthcare-oriented engineering patterns:
+The demo models healthcare-oriented engineering patterns. **Implemented:** mock IdP sessions, mock
+MFA challenge, RBAC and resource-level authorization, tenant isolation (including PostgreSQL RLS),
+audit logging, least-privilege database role, secrets outside source control.
 
-- OAuth 2.0 / OpenID Connect (Authorization Code + PKCE)
-- MFA
-- RBAC and resource-level authorization
-- tenant isolation
-- audit logging
-- encryption at rest and TLS in transit
-- least-privilege access and secure secrets handling
+**Target, not implemented:** OAuth 2.0 / OpenID Connect (Authorization Code + PKCE), production MFA,
+encryption at rest as an infrastructure property, TLS at the deployment edge.
 
 The frontend may use a **mock identity / session** for demonstration. Mock authentication is not
 production identity infrastructure.
@@ -134,16 +133,19 @@ docker compose up -d
 npm run migration:run
 ```
 
-5. Start the frontend with mocks (recommended until domain APIs exist):
+5. Start the frontend with mocks for UX-only work:
 
 ```bash
 npm run dev:mocks
 ```
 
-6. Optionally start the NestJS API (health/readiness on port 3001; readiness requires Postgres):
+6. For live Nest APIs, start PostgreSQL (step 4), seed demo identity, start the API, then the
+   frontend with mocks off:
 
 ```bash
+npm run seed:mock-identity
 npm run dev:api
+npm run dev:real
 ```
 
 7. Open [http://localhost:3000](http://localhost:3000).
@@ -151,9 +153,9 @@ npm run dev:api
 `npm run dev` starts Next.js using `.env.development` (mock-first in the example).
 `npm run dev:real` sets `NEXT_PUBLIC_USE_MOCKS=false`. The browser then calls Nest at
 `NEXT_PUBLIC_API_BASE_URL` (default `http://localhost:3001`) with the bearer from `POST /auth/login`.
-Seed the practice admin, provider, and demo patients with `npm run seed:mock-identity` first.
 When calling the Nest API from Next.js BFF routes, set `API_BASE_URL=http://localhost:3001` in
-`.env.development`. The same commands exist as `dev:web` aliases.
+`.env.development`. Live dashboard overview metrics still use that BFF path and are **not** a
+shipped Nest route; use mocks for overview cards. The same commands exist as `dev:web` aliases.
 
 ### Useful commands
 
@@ -198,6 +200,7 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | [`postman/`](./postman/README.md) | Postman environment templates |
 | [`docs/tasks/`](./docs/tasks/) | Implementation task contracts |
 | [`docs/roadmap/`](./docs/roadmap/) | Sequencing |
+| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M7 baseline and next milestone |
 
 Plane can mirror task metadata for project management. Git remains canonical for requirements,
 architecture, ADRs, and task definitions.

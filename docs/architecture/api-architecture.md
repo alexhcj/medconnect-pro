@@ -44,7 +44,8 @@ Application service
   ↓
 Repository / integration
   ↓
-PostgreSQL / Redis / S3 / external API
+PostgreSQL (current)
+  Redis / S3 / external API (planned)
   ↓
 Response DTO
   ↓

@@ -24,7 +24,7 @@ engineering patterns without claiming to be a deployed HIPAA-certified productio
 npm workspaces:
 
 - `apps/web` — Next.js frontend
-- `apps/api` — reserved for the future NestJS backend (not initialized)
+- `apps/api` — NestJS 12 modular API (OpenAPI via `npm run openapi:generate`)
 - `packages/` — reserved for future shared packages
 - `/docs` — canonical documentation
 - `.cursor/rules/` — project Cursor rules
@@ -43,20 +43,18 @@ npm workspaces:
 - Daily SDK for the planned telehealth slice
 - Socket.IO client for planned application realtime features
 
-## Planned backend
+## Current backend
 
-- Node.js current LTS
-- NestJS current stable major
-- TypeScript
+- Node.js current LTS, NestJS 12, TypeScript
 - REST + OpenAPI
+- PostgreSQL (local Compose + TypeORM)
+- Mock IdP HTTP sessions (opaque bearer), RBAC, tenant isolation, audit events
+
+## Planned infrastructure (not initialized)
+
+- Redis, S3 + KMS
 - WebSockets / Socket.IO where justified
-- PostgreSQL
-- Redis
-- S3 + KMS
-- AWS
-- Docker / ECS Fargate initially
-- Terraform
-- GitHub Actions
+- AWS, Docker / ECS Fargate, Terraform, GitHub Actions
 
 ## Domain boundaries
 
@@ -74,19 +72,14 @@ Do not prematurely split these into independently deployed microservices.
 
 ## Security model
 
-The application models:
+The application models healthcare-oriented engineering patterns.
 
-- OAuth 2.0 / OpenID Connect
-- Authorization Code + PKCE
-- MFA
-- RBAC
-- tenant isolation
-- resource-level authorization
-- audit logging
-- encryption at rest
-- TLS in transit
-- least-privilege access
-- secure secrets handling
+Implemented in the demo: mock IdP sessions, MFA challenge (not completed in the live UI), RBAC,
+tenant isolation, resource-level authorization, audit logging, least-privilege DB role, secrets
+outside source control.
+
+Target, not implemented: OAuth 2.0 / OpenID Connect (Authorization Code + PKCE), production MFA,
+encryption at rest as an infrastructure property, TLS at the deployment edge.
 
 The application uses synthetic demo data only. Never introduce real PHI.
 

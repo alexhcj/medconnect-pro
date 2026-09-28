@@ -69,7 +69,11 @@ Documents are a separate access-control boundary ([SEC-004](../tasks/security/SE
 
 ## Dashboard
 
-- `GET /dashboard/overview`
+Planned analytics surface (frontend Slice 2). **Not implemented** in Nest. Live Next.js
+`/api/dashboard/overview` is a leftover BFF that expects a cookie token and a Nest route that does
+not exist. Mock mode renders overview cards from fixtures.
+
+- `GET /dashboard/overview` — planned; not a current controller
 
 ## Telehealth
 
@@ -107,9 +111,9 @@ boundaries, not live carriers ([BE-008](../tasks/backend/BE-008-notification-dom
 ## Administration
 
 - `GET /admin/users`
-- `PATCH /admin/users/:id/roles`
 - `GET /admin/audit-events`
-- `GET /admin/security-events`
+- `PATCH /admin/users/:id/roles` — planned; not implemented
+- `GET /admin/security-events` — planned; not implemented
 
 ## API conventions
 

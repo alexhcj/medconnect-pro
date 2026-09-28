@@ -9,7 +9,8 @@ Accepted
 MedConnect Pro is an **npm workspaces** monorepo.
 
 - `apps/web` — Next.js frontend (current application).
-- `apps/api` — reserved for the NestJS backend; not initialized in this decision.
+- `apps/api` — reserved for the NestJS backend; not initialized in this decision (later added in
+  place; see Consequences).
 - `packages/` — reserved for future shared packages; no extraction until a concrete cross-app reuse need exists.
 - `/docs` and `.cursor/rules/` remain at the repository root.
 - The package manager stays **npm**. No Turborepo, Nx, or pnpm migration.
@@ -32,4 +33,5 @@ package exists.
 - Install from the repository root (`npm install`).
 - Next.js env files live next to the Next project in `apps/web`.
 - Canonical demo version remains the **root** `package.json` version ([ADR-007](ADR-007-semantic-versioning.md)).
-- NestJS is added later under `apps/api` without another repository restructure.
+- NestJS was added later under `apps/api` without another repository restructure, as this decision
+  required. `packages/` remains unused until a concrete cross-app reuse need exists.

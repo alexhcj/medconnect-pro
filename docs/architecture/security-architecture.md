@@ -10,16 +10,18 @@ rules, and session policy live in
 
 ## Identity
 
+**Implemented (demo):** mock IdP email/password, opaque bearer sessions, refresh-token rotation,
+idle/absolute expiry, mock MFA challenge. See [ADR-003](../decisions/ADR-003-authentication.md).
+
+**Target, not implemented:**
+
 - OAuth 2.0
 - OpenID Connect
 - Authorization Code + PKCE
-- MFA/TOTP
-- access-token lifecycle
-- refresh-token rotation
-- secure session handling
+- production MFA/TOTP or WebAuthn
+- cookie/BFF production session handling
 
-Mock identity/session is allowed for the demo and must not be described as production identity
-infrastructure. See [ADR-003](../decisions/ADR-003-authentication.md).
+Mock identity/session must not be described as production identity infrastructure.
 
 ## Authorization
 
@@ -84,6 +86,8 @@ Audit sensitive actions such as:
 - administrative security changes.
 
 ## Encryption
+
+Target infrastructure properties (not demonstrated in local Compose):
 
 At rest:
 

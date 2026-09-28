@@ -31,7 +31,8 @@ HTTP API
 - patient workflows;
 - appointment workflows;
 - telehealth workflows;
-- billing workflows.
+- billing workflows;
+- public marketing pages (M8 / FE-017; isolated from the dashboard shell).
 
 ### Query/data layer
 
@@ -58,6 +59,15 @@ Use local React state for local UI concerns.
 Use Zustand only for cross-component client state that is not server state.
 
 Do not put server data into Zustand simply to duplicate TanStack Query.
+
+## Public vs authenticated
+
+Marketing routes must not inherit the dashboard shell or session gate. `(auth)` and `(dashboard)`
+stay isolated from the public `(marketing)` group ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)).
+
+Dashboard overview cards in mock mode use fixtures. Live `GET /dashboard/overview` is not a Nest
+controller; the Next BFF path is not a supported live integration. That gap belongs to frontend
+Slice 2, not to a failed M0–M7 join.
 
 ## Accessibility
 

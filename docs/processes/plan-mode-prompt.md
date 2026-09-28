@@ -18,7 +18,7 @@
 
 ---
 
-Generate an implementation plan for `[TASK-ID]`.
+Generate an implementation plan for [TASK-ID].
 
 Before planning:
 

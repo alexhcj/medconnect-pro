@@ -12,10 +12,13 @@ Slices below are sequencing, not a calendar independent of
 - loading/error patterns;
 - dashboard shell (FE-001; shipped with M0).
 
-## Slice 2 — Dashboard product surfaces (after M1)
+## Slice 2 — Dashboard product surfaces (deferred)
+
+Not closed with M0–M7. No task IDs yet. Live Nest `GET /dashboard/overview` does not exist; mock
+mode still renders overview cards.
 
 - analytics;
-- notifications;
+- notifications UI (BE-008 HTTP exists; frontend unwired);
 - alert banners.
 
 ## Slice 3 — Patient management (M2)
@@ -50,3 +53,8 @@ Slices below are sequencing, not a calendar independent of
 ## Slice 9 — Responsive polish
 
 - mobile/PWA-oriented polish and responsive workflows.
+
+## Slice 10 — Marketing website foundation (M8)
+
+- public marketing route group, layout, and placeholder pages ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)).
+- Design, finished copy, feature pages, and deploy/preview are later work.

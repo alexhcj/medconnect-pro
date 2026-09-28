@@ -24,13 +24,15 @@ implementation tasks, roadmaps and development workflows.
 - `contracts/` — API/data contracts, including
   [identity and access](contracts/identity-and-access.md).
 - `tasks/` — implementation work.
-- `roadmap/` — sequencing and delivery milestones.
+- `roadmap/` — sequencing and delivery milestones, including the
+  [post-MVP baseline](roadmap/post-mvp-baseline.md).
 - `decisions/` — ADRs, including [ADR-009](decisions/ADR-009-npm-workspace-monorepo.md) for the
   npm workspace layout and [ADR-010](decisions/ADR-010-postgresql-typeorm.md) for PostgreSQL and
   TypeORM.
 - `workflows/` — repeatable engineering processes, including [versioning](workflows/versioning.md),
   [frontend testing](workflows/frontend-testing.md), and
   [API contract / Postman / OpenAPI](workflows/api-contract-workflow.md).
+- `processes/` — plan-mode and milestone-close prompts.
 - `mocks/` — synthetic demo data and mock-data conventions.
 
 ## Documentation rules

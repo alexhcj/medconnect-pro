@@ -28,4 +28,5 @@ Playwright's browser runner.
 ## Consequences
 
 - Frontend QA-001 conventions live in [frontend-testing.md](../workflows/frontend-testing.md).
-- Backend/Nest test infrastructure remains a later slice (BE-001).
+- NestJS tests use Vitest under `apps/api` (`npm run test:api`), including HTTP, RLS, authorization
+  matrix, and OpenAPI contract specs. Do not add Jest for the API.

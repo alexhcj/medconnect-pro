@@ -12,10 +12,13 @@ Domain order (not historical ship order). Join to demo milestones in the
 7. EHR (BE-005).
 8. Telehealth (BE-006).
 9. Billing (BE-007).
-10. Notifications (BE-008).
-11. Analytics.
-12. Administration/compliance (SEC-002–004, QA-004, BE-010 user directory HTTP).
-13. Scale/reliability.
+10. Notifications (BE-008; frontend wiring deferred).
+11. Analytics (deferred; no Nest `GET /dashboard/overview`).
+12. Administration/compliance (SEC-002–004, QA-004, BE-010 user directory HTTP; shipped in M7).
+13. Scale/reliability (deferred with deploy/preview).
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.
+
+M0–M7 domain HTTP listed above is in the repository. Next demo milestone is frontend marketing
+foundation (M8 / FE-017), not a new backend domain.
