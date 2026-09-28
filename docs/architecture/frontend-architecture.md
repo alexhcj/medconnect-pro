@@ -65,6 +65,25 @@ Do not put server data into Zustand simply to duplicate TanStack Query.
 Marketing routes must not inherit the dashboard shell or session gate. `(auth)` and `(dashboard)`
 stay isolated from the public `(marketing)` group ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)).
 
+Implemented App Router groups in `apps/web/src/app`:
+
+```text
+(marketing)/          # public; MarketingShell; no session gate
+  page.tsx            # /
+  platform/page.tsx   # /platform
+  security/page.tsx   # /security
+  about/page.tsx      # /about
+  demo/page.tsx       # /demo → existing /login (mock IdP)
+(auth)/               # /login, /register, /email-verification
+(dashboard)/          # DashboardAuthGate + DashboardShell
+```
+
+Marketing chrome lives in `apps/web/src/components/marketing/` (`MarketingShell`, header, footer,
+mobile nav, page container). It reuses `components/ui` primitives and Tailwind tokens, not the
+dashboard shell. `/demo` links to `LOGIN_PATH` (`/login`); it does not add a second identity stack.
+Placeholder copy must not claim HIPAA certification, production OAuth, live video, or hosted
+payments. Design, `/platform/*` feature pages, screenshots, and deploy/preview are later work.
+
 Dashboard overview cards in mock mode use fixtures. Live `GET /dashboard/overview` is not a Nest
 controller; the Next BFF path is not a supported live integration. That gap belongs to frontend
 Slice 2, not to a failed M0–M7 join.

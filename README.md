@@ -23,11 +23,11 @@ A multi-tenant practice platform covering:
 - analytics
 - administration and audit / compliance
 
-Demo milestones M0–M7 are shipped (auth, dashboard shell, patients, scheduling, clinical
-foundation, telehealth session shell, billing invoices, administration). Current position:
-[`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). Next: marketing website
-foundation. Dashboard analytics, notifications UI, live video, payments, and production OAuth remain
-deferred.
+Demo milestones M0–M8 are shipped (auth, dashboard shell, patients, scheduling, clinical
+foundation, telehealth session shell, billing invoices, administration, marketing placeholders).
+Current position: [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). Next:
+deployment/preview (later milestone). Dashboard analytics, notifications UI, live video, payments,
+and production OAuth remain deferred.
 
 All data is **synthetic**. Do not introduce real patient records, credentials, or other PHI.
 

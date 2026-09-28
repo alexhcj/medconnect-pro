@@ -1,8 +1,8 @@
 # Product Roadmap
 
 Current ship state is [post-mvp-baseline.md](post-mvp-baseline.md), not the historical labels below.
-Demo milestones M0–M7 are in the repository. Next: **M8 Marketing Website Foundation**
-([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)). Deployment/preview is a
+Demo milestones M0–M8 are in the repository (marketing placeholders via
+[FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)). Deployment/preview is a
 **later** milestone.
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that

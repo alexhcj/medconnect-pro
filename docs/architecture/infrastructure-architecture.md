@@ -16,8 +16,9 @@ Actions remain deferred. Notification email/SMS use in-process demo adapters
 
 See the root [README](../../README.md) for setup and validation commands.
 
-The next product milestone is marketing website foundation (M8). Docker images, GitHub Actions,
-preview environments, and AWS remain this target architecture and are **not** part of M8.
+M8 marketing placeholders are in the repository ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)).
+Docker images, GitHub Actions, preview environments, and AWS remain this target architecture and
+are a later milestone, not M8.
 
 ## Target
 

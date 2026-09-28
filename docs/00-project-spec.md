@@ -97,10 +97,9 @@ The repository is an npm workspace. The Next.js frontend lives in `apps/web` (mo
 plus `dev:real` against Nest). `apps/api` is a separate modular NestJS application; do not fold
 backend domain logic into the Next.js frontend.
 
-Demo vertical slices 1–12 below shipped in milestones M0–M7. Current position:
-[post-mvp-baseline.md](roadmap/post-mvp-baseline.md). Next: marketing website foundation (M8 /
-[FE-017](tasks/frontend/FE-017-marketing-website-foundation.md)). Deployment/preview is a later
-milestone.
+Demo vertical slices 1–12 below shipped in milestones M0–M7. Marketing placeholders shipped in M8
+([FE-017](tasks/frontend/FE-017-marketing-website-foundation.md)). Current position:
+[post-mvp-baseline.md](roadmap/post-mvp-baseline.md). Next: deployment/preview (later milestone).
 
 ## Implementation strategy
 

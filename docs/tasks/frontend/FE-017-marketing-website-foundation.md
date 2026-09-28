@@ -3,7 +3,7 @@ id: FE-017
 type: task
 area: frontend
 feature: marketing
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-001, FE-010]
@@ -17,8 +17,8 @@ related_docs:
     ../../marketing-website-foundation-proposal.md,
   ]
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 9f41b297-b3bb-4bce-a80d-d570f4e16a2d
+  identifier: MEDCONNECT-50
 ---
 
 # FE-017 — Marketing Website Foundation
@@ -41,7 +41,7 @@ Structural foundation only for M8:
   dashboard chrome would leak into public pages.
 
 Planning brief (not a second implementation contract):
-[marketing-website-foundation-proposal.md](../design/marketing-website-foundation-proposal.md).
+[marketing-website-foundation-proposal.md](../../marketing-website-foundation-proposal.md).
 Capability wording must match [post-mvp-baseline.md](../../roadmap/post-mvp-baseline.md).
 
 ## Out of scope
@@ -64,27 +64,32 @@ Capability wording must match [post-mvp-baseline.md](../../roadmap/post-mvp-base
 
 ## Acceptance criteria
 
-- [ ] `(marketing)` route group exists and does not inherit dashboard shell or auth gates
-- [ ] Shared marketing layout renders header, footer, and accessible mobile navigation
-- [ ] Routes `/`, `/platform`, `/security`, `/about`, and `/demo` render placeholder content
-- [ ] `/demo` links into the existing login/demo path rather than inventing a new auth mechanism
-- [ ] Each marketing page has a document title and description
-- [ ] Marketing layout is keyboard-accessible with semantic landmarks
-- [ ] Layout is usable at desktop, tablet, and mobile widths
-- [ ] Placeholder copy does not claim HIPAA compliance, production OAuth, live video, or payments
-- [ ] Vitest covers marketing nav/layout smoke; Playwright mock suite covers public nav to the
+- [x] `(marketing)` route group exists and does not inherit dashboard shell or auth gates
+- [x] Shared marketing layout renders header, footer, and accessible mobile navigation
+- [x] Routes `/`, `/platform`, `/security`, `/about`, and `/demo` render placeholder content
+- [x] `/demo` links into the existing login/demo path rather than inventing a new auth mechanism
+- [x] Each marketing page has a document title and description
+- [x] Marketing layout is keyboard-accessible with semantic landmarks
+- [x] Layout is usable at desktop, tablet, and mobile widths
+- [x] Placeholder copy does not claim HIPAA compliance, production OAuth, live video, or payments
+- [x] Vitest covers marketing nav/layout smoke; Playwright mock suite covers public nav to the
       placeholder pages
-- [ ] Frontend architecture and release/frontend roadmaps describe the marketing group
+- [x] Frontend architecture and release/frontend roadmaps describe the marketing group
 
 ## Implementation notes
 
 Keep dashboard information density; marketing can be more spacious. Share tokens/primitives, not
-the dashboard shell. `/` is currently a placeholder `h1` in `apps/web/src/app/page.tsx` — that is
-the home slot for this task.
+the dashboard shell. Home lives at `apps/web/src/app/(marketing)/page.tsx`.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Public `(marketing)` group with `MarketingShell` (header, footer, Headless UI
+  mobile nav) isolated from `(auth)` and `(dashboard)`. Placeholder pages at `/`, `/platform`,
+  `/security`, `/about`, and `/demo`. `/demo` uses `LOGIN_PATH` (`/login`). Per-page title and
+  description metadata. Qualified demo copy only.
+- Tests: Vitest `marketing-shell` landmarks/mobile-nav and `marketing-nav` hrefs; Playwright mock
+  `e2e/marketing.spec.ts` public nav plus demo → login.
 - PR:
-- Notes:
+- Notes: Existing `/privacy-policy` and `/terms-of-service` remain outside marketing chrome (they
+  still claim HIPAA). Deploy/preview is a later milestone. Planning brief path is
+  `docs/marketing-website-foundation-proposal.md`.

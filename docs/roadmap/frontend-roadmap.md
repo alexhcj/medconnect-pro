@@ -56,5 +56,6 @@ mode still renders overview cards.
 
 ## Slice 10 — Marketing website foundation (M8)
 
-- public marketing route group, layout, and placeholder pages ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)).
-- Design, finished copy, feature pages, and deploy/preview are later work.
+- public `(marketing)` route group, layout, and placeholder pages ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)):
+  `/`, `/platform`, `/security`, `/about`, `/demo` (`/demo` → existing `/login`).
+- Design, finished copy, `/platform/*` feature pages, and deploy/preview are later work.

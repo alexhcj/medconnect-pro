@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.45.0] - 2026-09-28
+
+### Added
+
+- Public marketing website foundation (FE-017): `(marketing)` route group with shared header,
+  footer, and accessible mobile navigation, isolated from the dashboard shell and auth gate.
+  Placeholder pages at `/`, `/platform`, `/security`, `/about`, and `/demo`. `/demo` links to the
+  existing mock login at `/login`. Per-page document title and description. Copy describes the
+  portfolio demo only (not HIPAA certification, production OAuth, live video, or hosted payments).
+
 ## [0.44.0] - 2026-09-27
 
 ### Added
