@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.47.0] - 2026-09-29
+
+### Added
+
+- Marketing homepage at `/` (FE-019): hero, practice modules, connected workflow, labeled product
+  UI placeholder, UX and security principles, intended roles, and demo CTAs to `/platform` and
+  `/demo`. Copy follows the capability matrix. Product screenshots remain placeholders until FE-023.
+
 ## [0.46.0] - 2026-09-29
 
 ### Added

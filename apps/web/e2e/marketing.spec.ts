@@ -5,7 +5,12 @@ test.describe('Marketing public navigation', () => {
 		await page.goto('/');
 
 		const primaryNav = page.getByRole('navigation', {name: 'Primary'});
-		await expect(page.getByRole('heading', {level: 1, name: 'MedConnect Pro'})).toBeVisible();
+		await expect(
+			page.getByRole('heading', {
+				level: 1,
+				name: 'Connected care workflows for the modern practice',
+			}),
+		).toBeVisible();
 		await expect(page).toHaveTitle(/Home/);
 		await expect(page.getByRole('banner')).toBeVisible();
 		await expect(primaryNav).toBeVisible();
@@ -35,5 +40,22 @@ test.describe('Marketing public navigation', () => {
 		await expect(page).toHaveURL(/\/login$/);
 		await expect(page.getByRole('heading', {level: 1, name: 'Sign in'})).toBeVisible();
 		await expect(page.getByRole('note')).toContainText('mock identity provider');
+	});
+
+	test('homepage CTAs reach platform and demo login', async ({page}) => {
+		await page.goto('/');
+
+		await page.getByRole('link', {name: 'Explore the platform'}).click();
+		await expect(page).toHaveURL(/\/platform$/);
+		await expect(page.getByRole('heading', {level: 1, name: 'Platform'})).toBeVisible();
+
+		await page.goto('/');
+		await page.getByRole('link', {name: 'Go to demo'}).click();
+		await expect(page).toHaveURL(/\/demo$/);
+		await expect(page.getByRole('heading', {level: 1, name: 'Explore the demo'})).toBeVisible();
+
+		await page.getByRole('link', {name: 'Sign in to the demo'}).click();
+		await expect(page).toHaveURL(/\/login$/);
+		await expect(page.getByRole('heading', {level: 1, name: 'Sign in'})).toBeVisible();
 	});
 });

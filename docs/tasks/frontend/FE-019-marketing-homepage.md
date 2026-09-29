@@ -3,7 +3,7 @@ id: FE-019
 type: task
 area: frontend
 feature: marketing
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-018]
@@ -22,11 +22,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=20-50"
+  frame: "Homepage / Desktop 1440 (20:50)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -88,20 +88,22 @@ approved Home frame. Repeat the Figma URL in Markdown Dependencies.
 
 ## Acceptance criteria
 
-- [ ] `/` matches the approved Home frame
-- [ ] CTAs reach `/platform` and `/demo` or `/login`
-- [ ] Copy follows the capability matrix
-- [ ] Page is keyboard-accessible with semantic landmarks
-- [ ] Layout is usable at desktop, tablet, and mobile widths
-- [ ] Vitest covers homepage section/CTA smoke; Playwright covers home → platform and
+- [x] `/` matches the approved Home frame
+- [x] CTAs reach `/platform` and `/demo` or `/login`
+- [x] Copy follows the capability matrix
+- [x] Page is keyboard-accessible with semantic landmarks
+- [x] Layout is usable at desktop, tablet, and mobile widths
+- [x] Vitest covers homepage section/CTA smoke; Playwright covers home → platform and
       home → demo/login
 
 ## Dependencies
 
 - Blocked by: [FE-018](FE-018-design-system-and-visual-language.md) (`design.status: approved`)
 - Blocks: [FE-023](FE-023-marketing-polish-and-product-visuals.md)
-- Figma URL (fill when approved):
-- Frame (fill when approved):
+- Figma URL (approved):
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=20-50
+- Canonical frame: Homepage / Desktop 1440 (`20:50`)
+- Layout frames: Homepage / Tablet 768 (`21:97`), Homepage / Mobile 390 (`21:143`)
 
 ## Validation
 
@@ -120,7 +122,14 @@ components over expanding `MarketingPage` into a one-off layout.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Replaced the `/` placeholder with composed marketing sections (hero, modules,
+  workflow, labeled product preview, UX/security principles, roles, demo CTA) using FE-018 tokens,
+  `Button`/`Card`, and existing `MarketingShell`. Canonical Figma frame Homepage / Desktop 1440
+  (`20:50`); tablet/mobile used as layout breakpoints. Product UI remains a labeled placeholder
+  until FE-023.
+- Tests: Vitest `marketing-home.test.tsx` (sections + CTA hrefs); Playwright marketing spec
+  updated for the new home `h1` plus home → platform and home → demo → login. Type-check passed.
 - PR:
-- Notes:
+- Notes: Version 0.46.0 → 0.47.0 (MINOR, new public UI). `design.required: true` with
+  `file_url` node-id `20-50`. Full Vitest suite still has two pre-existing `patient-form`
+  timeouts unrelated to this task. Dev-mode hydration overlay on `MarketingShell` is pre-existing.
