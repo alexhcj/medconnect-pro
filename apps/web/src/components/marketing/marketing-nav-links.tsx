@@ -30,10 +30,10 @@ export function MarketingNavLinks({
 							href={item.href}
 							aria-current={isActive ? 'page' : undefined}
 							className={cn(
-								'block rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
+								'block rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
 								isActive
-									? 'bg-blue-50 text-blue-700'
-									: 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+									? 'bg-brand-subtle text-brand-hover'
+									: 'text-foreground-secondary hover:bg-muted hover:text-foreground',
 							)}
 						>
 							{item.name}

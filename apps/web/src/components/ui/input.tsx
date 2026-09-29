@@ -12,26 +12,27 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 		return (
 			<div className="space-y-2">
 				{label && (
-					<label className="text-sm font-medium text-gray-700">
+					<label className="text-sm font-medium text-foreground-label">
 						{label}
-						{props.required && <span className="text-red-500 ml-1">*</span>}
+						{props.required && <span className="ml-1 text-danger">*</span>}
 					</label>
 				)}
 				<input
 					type={type}
 					className={cn(
-						"flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
-						error && "border-red-500 focus:ring-red-500",
+						"flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-foreground-placeholder focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
+						error && "border-danger focus-visible:ring-ring-danger",
 						className
 					)}
 					ref={ref}
 					{...props}
+					aria-invalid={error ? true : undefined}
 				/>
 				{error && (
-					<p className="text-sm text-red-600">{error}</p>
+					<p className="text-sm text-danger">{error}</p>
 				)}
 				{helperText && !error && (
-					<p className="text-sm text-gray-500">{helperText}</p>
+					<p className="text-sm text-foreground-muted">{helperText}</p>
 				)}
 			</div>
 		)

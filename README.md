@@ -23,9 +23,10 @@ A multi-tenant practice platform covering:
 - analytics
 - administration and audit / compliance
 
-Demo milestones M0–M7 are shipped, plus M8 marketing placeholders
-([FE-017](./docs/tasks/frontend/FE-017-marketing-website-foundation.md)). Remaining M8 is the
-design system and finished marketing site (FE-018–FE-023). Current position:
+Demo milestones M0–M7 are shipped, plus M8 marketing placeholders and shared design tokens
+([FE-017](./docs/tasks/frontend/FE-017-marketing-website-foundation.md),
+[FE-018](./docs/tasks/frontend/FE-018-design-system-and-visual-language.md)). Remaining M8 is the
+finished marketing site (FE-019–FE-023). Current position:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). Next after M8:
 deployment/preview (later milestone). Dashboard analytics, notifications UI, live video, payments,
 and production OAuth remain deferred.

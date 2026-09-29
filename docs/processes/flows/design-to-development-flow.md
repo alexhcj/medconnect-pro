@@ -10,8 +10,9 @@ Related: [design-requirements.md](../../workflows/design-requirements.md) (workf
 Design references live on the **same** implementation task (`design` YAML plus Markdown
 Dependencies). Do not create a separate design task or Plane item.
 
-Visual source is **one shared Figma file** ([ADR-011](../../decisions/ADR-011-figma-canonical-visual-source.md)).
-Create it in [FE-018](../../tasks/frontend/FE-018-design-system-and-visual-language.md). Later
+Visual source is **one shared Figma file** ([ADR-011](../../decisions/ADR-011-figma-canonical-visual-source.md)):
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+Created in [FE-018](../../tasks/frontend/FE-018-design-system-and-visual-language.md). Later
 tasks record page frames in that file (`design.file_url` is the same URL; `design.frame` is the
 page or component). Pencil is exploration only
 ([pencil-design-prompt.md](../prompts/pencil-design-prompt.md)).

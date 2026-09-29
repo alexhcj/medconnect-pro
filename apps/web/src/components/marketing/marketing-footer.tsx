@@ -4,9 +4,9 @@ import {MARKETING_NAV} from '@/lib/navigation/marketing-nav';
 
 export function MarketingFooter() {
 	return (
-		<footer className="border-t border-gray-200 bg-gray-50">
+		<footer className="border-t border-border bg-canvas">
 			<div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-				<p className="text-sm text-gray-600">
+				<p className="text-sm text-foreground-secondary">
 					MedConnect Pro is a portfolio demonstration with synthetic data. It is not a
 					certified production healthcare system.
 				</p>
@@ -16,7 +16,7 @@ export function MarketingFooter() {
 							<li key={item.href}>
 								<Link
 									href={item.href}
-									className="text-sm font-medium text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+									className="text-sm font-medium text-foreground-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 								>
 									{item.name}
 								</Link>
@@ -25,7 +25,7 @@ export function MarketingFooter() {
 						<li>
 							<Link
 								href={LOGIN_PATH}
-								className="text-sm font-medium text-blue-600 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+								className="text-sm font-medium text-brand hover:text-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 							>
 								Sign in
 							</Link>

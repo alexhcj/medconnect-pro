@@ -1,14 +1,21 @@
 import React from "react";
+import {Inter} from "next/font/google";
 import {QueryClientProvider} from "@tanstack/react-query";
 import {queryClient} from '@/lib/api/api'
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {Toaster} from "react-hot-toast";
 import "./globals.css";
 
+const inter = Inter({
+	subsets: ["latin"],
+	display: "swap",
+	variable: "--font-inter",
+});
+
 export default function RootLayout({children}: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
-		<body>
+		<html lang="en" className={inter.variable}>
+		<body className="font-sans antialiased text-foreground">
 		<QueryClientProvider client={queryClient}>
 			{children}
 			<Toaster
@@ -16,20 +23,20 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
 				toastOptions={{
 					duration: 4000,
 					style: {
-						background: '#fff',
-						color: '#374151',
-						border: '1px solid #e5e7eb',
+						background: 'var(--color-bg-surface)',
+						color: 'var(--color-text-label)',
+						border: '1px solid var(--color-border-default)',
 					},
 					success: {
 						iconTheme: {
-							primary: '#10b981',
-							secondary: '#fff',
+							primary: 'var(--color-bg-success)',
+							secondary: 'var(--color-text-inverse)',
 						},
 					},
 					error: {
 						iconTheme: {
-							primary: '#ef4444',
-							secondary: '#fff',
+							primary: 'var(--color-focus-danger)',
+							secondary: 'var(--color-text-inverse)',
 						},
 					},
 				}}

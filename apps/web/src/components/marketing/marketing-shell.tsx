@@ -19,10 +19,10 @@ export function MarketingShell({children}: MarketingShellProps) {
 	}, [pathname]);
 
 	return (
-		<div className="flex min-h-screen flex-col bg-white">
+		<div className="flex min-h-screen flex-col bg-surface">
 			<a
 				href="#main-content"
-				className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:m-3 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-blue-700 focus:shadow"
+				className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:m-3 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-brand-hover focus:shadow"
 			>
 				Skip to content
 			</a>

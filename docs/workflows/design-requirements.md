@@ -14,8 +14,9 @@ Canonical visual source: [ADR-011](../decisions/ADR-011-figma-canonical-visual-s
 - Record design on the implementation task. Do not create a separate design task or Plane item.
 - Use **one shared Figma file** for tokens, primitives, marketing frames, and app reference
   screens. Later UI tasks add or reference frames in that file; they do not start a parallel
-  library. The file is created in
-  [FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md).
+  library. The file is
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+  ([FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md)).
 - Pencil may explore near code ([pencil-design-prompt.md](../processes/prompts/pencil-design-prompt.md)).
   It is not a second implementation architecture.
 - Marketing copy and frames must follow [capability-matrix.md](../marketing/capability-matrix.md).

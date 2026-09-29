@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.46.0] - 2026-09-29
+
+### Added
+
+- Shared design tokens mapped from the approved Figma library (FE-018): CSS variables and
+  Tailwind `@theme` aliases for color, type, radius, shadow, and the 4px spacing grid. Inter is
+  `--font-sans`. `Button`, `Card`, and `Input` (and marketing chrome) consume the tokens. The
+  dashboard layout was not restyled.
+
 ## [0.45.0] - 2026-09-28
 
 ### Added

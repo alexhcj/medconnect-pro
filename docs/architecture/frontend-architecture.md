@@ -33,7 +33,7 @@ HTTP API
 - telehealth workflows;
 - billing workflows;
 - public marketing pages (M8; isolated from the dashboard shell). Foundation is FE-017;
-  remaining visual language and pages are FE-018–FE-023.
+  tokens are FE-018; remaining pages are FE-019–FE-023.
 
 ### Query/data layer
 
@@ -91,11 +91,19 @@ certification, production OAuth, live video, or hosted payments. Sitemap:
 
 ### Design tokens
 
-One Figma file is the canonical visual source ([ADR-011](../decisions/ADR-011-figma-canonical-visual-source.md)).
-FE-018 maps color, type, space, radius, and shadow into the Tailwind theme and/or CSS variables
-and keeps `Button`, `Card`, and `Input` as shared primitives. Marketing is spacious; the
-dashboard stays information-dense. Do not add a second design-system package. Deploy/preview is a
-later milestone.
+One Figma file is the canonical visual source ([ADR-011](../decisions/ADR-011-figma-canonical-visual-source.md)):
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+
+FE-018 maps color, type, space, radius, and shadow into `apps/web/src/styles/tokens.css`.
+`:root` keeps Figma WEB names (`--color-bg-surface`, `--radius-md`, `--space-4`). `@theme`
+aliases those values to Tailwind utilities (`bg-brand`, `text-foreground`, `border-input`,
+`ring-ring`, `font-sans`). Inter is `--font-sans` via `next/font` (`--font-inter` on `<html>`).
+`primary-*` aliases the blue scale. Spacing stays the default 4px Tailwind scale.
+
+Shared primitives remain `Button`, `Card`, and `Input` in `components/ui`. Marketing chrome
+under `components/marketing/` consumes the same tokens and primitives. Marketing is spacious;
+the dashboard stays information-dense — do not restyle dashboard layout from this mapping. Do
+not add a second design-system package. Deploy/preview is a later milestone.
 
 Dashboard overview cards in mock mode use fixtures. Live `GET /dashboard/overview` is not a Nest
 controller; the Next BFF path is not a supported live integration. That gap belongs to frontend

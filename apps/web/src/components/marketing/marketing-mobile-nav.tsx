@@ -14,16 +14,16 @@ interface MarketingMobileNavProps {
 export function MarketingMobileNav({open, onClose}: MarketingMobileNavProps) {
 	return (
 		<Dialog open={open} onClose={onClose} className="relative z-50 lg:hidden">
-			<div className="fixed inset-0 bg-black/25" aria-hidden />
+			<div className="fixed inset-0 bg-overlay" aria-hidden />
 			<div className="fixed inset-0 flex justify-end">
 				<DialogPanel
 					id="marketing-mobile-navigation"
-					className="flex w-72 max-w-[80vw] flex-col bg-white shadow-lg"
+					className="flex w-72 max-w-[80vw] flex-col bg-surface shadow-lg"
 				>
-					<div className="flex h-16 items-center justify-between border-b border-gray-200 px-4">
-						<DialogTitle className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+					<div className="flex h-16 items-center justify-between border-b border-border px-4">
+						<DialogTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
 							<span
-								className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white"
+								className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-sm font-bold text-inverse"
 								aria-hidden
 							>
 								MC

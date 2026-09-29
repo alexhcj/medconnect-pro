@@ -3,7 +3,7 @@ id: FE-018
 type: task
 area: frontend
 feature: marketing
-status: pending
+status: implemented
 priority: high
 estimate: 5
 dependencies: [FE-017]
@@ -23,11 +23,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd"
+  frame: "Cover (8:2)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -101,20 +101,21 @@ the file exists.
 
 ## Acceptance criteria
 
-- [ ] Figma file URL is recorded on this task (`design.file_url`, `design.status: approved`) and
+- [x] Figma file URL is recorded on this task (`design.file_url`, `design.status: approved`) and
       repeated in Markdown Dependencies
-- [ ] Tokens for color, type, space, radius, and shadow exist in Figma and are mapped in code
-- [ ] Marketing requirements, sitemap, and capability matrix exist and match post-mvp-baseline
+- [x] Tokens for color, type, space, radius, and shadow exist in Figma and are mapped in code
+- [x] Marketing requirements, sitemap, and capability matrix exist and match post-mvp-baseline
       (no HIPAA, production OAuth, live video, or hosted-payments claims)
-- [ ] Frontend architecture describes marketing component folders and token mapping
-- [ ] Design workflow docs name the shared Figma file as the visual source
-- [ ] No second design-system package or unused UI kit is introduced
+- [x] Frontend architecture describes marketing component folders and token mapping
+- [x] Design workflow docs name the shared Figma file as the visual source
+- [x] No second design-system package or unused UI kit is introduced
 
 ## Dependencies
 
 - Blocked by: [FE-017](FE-017-marketing-website-foundation.md) (shipped)
 - Blocks: FE-019, FE-020, FE-021, FE-022, FE-023
-- Figma URL (fill when approved):
+- Figma URL (approved):
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 
 ## Validation
 
@@ -136,7 +137,13 @@ Keep `components/ui` (`Button`, `Card`, `Input`) as the shared primitives.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Figma library on team alex_hcj; `apps/web/src/styles/tokens.css` maps color,
+  type, space, radius, and shadow into `:root` + Tailwind `@theme`; `Button`, `Card`, and `Input`
+  consume those utilities; Inter is `--font-sans`. Marketing chrome uses the same tokens.
+  Dashboard layout classes were not restyled.
+- Tests: `tokens.test.ts`, `button.test.tsx`, `card.test.tsx`, `input.test.tsx`; full Vitest
+  suite (222 passed); type-check. `npm run lint` is blocked by a pre-existing typescript-eslint /
+  TS 7 incompatibility, not this change.
 - PR:
-- Notes:
+- Notes: Shared Figma file https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd (Cover 8:2).
+  `design.status: approved`. Token mapping is 0.46.0.

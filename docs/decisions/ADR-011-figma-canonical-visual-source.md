@@ -21,8 +21,9 @@ primitives, marketing frames, and reference frames of existing application scree
 - Do not open a design-only Plane item. Design metadata lives on the implementation task
   ([design-requirements.md](../workflows/design-requirements.md)).
 
-The shared file is created in
-[FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md). Later UI tasks add or
+The shared file is
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+([FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md)). Later UI tasks add or
 reference frames in that file; they do not start a parallel Figma library.
 
 ## Rationale
