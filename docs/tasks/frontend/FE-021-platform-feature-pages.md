@@ -32,8 +32,8 @@ validation:
   accessibility: true
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 165e2978-5829-45b6-8cf1-a369f7ff195b
+  identifier: MEDCONNECT-56
 ---
 
 # FE-021 — Platform feature pages

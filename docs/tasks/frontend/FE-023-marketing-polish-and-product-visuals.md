@@ -32,8 +32,8 @@ validation:
   accessibility: true
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 9cf31950-11a3-456f-958b-18c71fb2bafc
+  identifier: MEDCONNECT-58
 ---
 
 # FE-023 — Marketing polish and product visuals

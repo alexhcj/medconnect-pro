@@ -32,8 +32,8 @@ validation:
   accessibility: true
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: a186ca9a-cec1-467a-a4de-423eb1482b93
+  identifier: MEDCONNECT-54
 ---
 
 # FE-019 — Marketing homepage

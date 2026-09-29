@@ -33,8 +33,8 @@ validation:
   accessibility: true
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: a8eda17c-1c3f-4790-bf7a-7e2a35099672
+  identifier: MEDCONNECT-53
 ---
 
 # FE-018 — Design system and visual language

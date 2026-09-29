@@ -32,8 +32,8 @@ validation:
   accessibility: true
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: a713c8c5-9193-4438-b507-c6d942e549c6
+  identifier: MEDCONNECT-55
 ---
 
 # FE-020 — Platform overview
