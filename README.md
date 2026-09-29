@@ -197,6 +197,8 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | [`docs/architecture/`](./docs/architecture/) | System structure |
 | [`docs/contracts/`](./docs/contracts/) | API and data contracts |
 | [`docs/workflows/api-contract-workflow.md`](./docs/workflows/api-contract-workflow.md) | OpenAPI, Postman, optional Swagger UI |
+| [`docs/workflows/design-requirements.md`](./docs/workflows/design-requirements.md) | Design workflow before Figma/Pencil |
+| [`docs/processes/`](./docs/processes/) | Cursor prompts and process flows |
 | [`postman/`](./postman/README.md) | Postman environment templates |
 | [`docs/tasks/`](./docs/tasks/) | Implementation task contracts |
 | [`docs/roadmap/`](./docs/roadmap/) | Sequencing |

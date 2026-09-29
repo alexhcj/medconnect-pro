@@ -15,7 +15,9 @@ Before coding:
 - inspect referenced architecture;
 - inspect API/data contracts;
 - inspect existing code and patterns;
-- identify security and accessibility implications.
+- identify security and accessibility implications;
+- for UI/design tasks, inspect `docs/workflows/design-requirements.md` and the Figma/design
+  metadata on the task.
 
 During coding:
 

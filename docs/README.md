@@ -30,9 +30,16 @@ implementation tasks, roadmaps and development workflows.
   npm workspace layout and [ADR-010](decisions/ADR-010-postgresql-typeorm.md) for PostgreSQL and
   TypeORM.
 - `workflows/` — repeatable engineering processes, including [versioning](workflows/versioning.md),
-  [frontend testing](workflows/frontend-testing.md), and
-  [API contract / Postman / OpenAPI](workflows/api-contract-workflow.md).
-- `processes/` — plan-mode and milestone-close prompts.
+  [frontend testing](workflows/frontend-testing.md),
+  [API contract / Postman / OpenAPI](workflows/api-contract-workflow.md), and
+  [design requirements](workflows/design-requirements.md) (workflow, not a paste prompt).
+- `processes/prompts/` — paste-in Cursor prompts: [plan-mode](processes/prompts/plan-mode-prompt.md),
+  [generate-new-task](processes/prompts/generate-new-task-prompt.md),
+  [design-brief](processes/prompts/design-brief-prompt.md), and
+  [milestone-close](processes/prompts/milestone-close-prompt.md).
+- `processes/flows/` — [vibecoding](processes/flows/vibecoding-flow.md),
+  [design-to-development](processes/flows/design-to-development-flow.md), and
+  [design-checklist](processes/flows/design-checklist-flow.md).
 - `mocks/` — synthetic demo data and mock-data conventions.
 
 ## Documentation rules

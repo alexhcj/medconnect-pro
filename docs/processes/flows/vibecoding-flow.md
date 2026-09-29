@@ -8,7 +8,7 @@ ADR
       ↓
 Implementation Task
       ↓
-AI implementation plan
+AI implementation plan (see [plan-mode-prompt.md](../prompts/plan-mode-prompt.md))
       ↓
 Human review
       ↓

@@ -5,7 +5,7 @@ not a task spec and not a second source of truth. The implementation contract is
 product claims must follow [post-mvp-baseline.md](../../roadmap/post-mvp-baseline.md).
 Deployment/preview is a later milestone, not M8.
 
-Use this brief when generating the FE-017 implementation plan (`docs/processes/plan-mode-prompt.md`).
+Use this brief when generating the FE-017 implementation plan (`docs/processes/prompts/plan-mode-prompt.md`).
 
 ---
 

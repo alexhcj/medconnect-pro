@@ -5,7 +5,9 @@ alwaysApply: true
 
 # Documentation Rules
 
-`/docs` is the canonical repository documentation.
+`/docs` is the canonical repository documentation. Cursor paste prompts live in
+`docs/processes/prompts/`; process flows live in `docs/processes/flows/`; engineering process
+workflows live in `docs/workflows/`.
 
 Before non-trivial implementation:
 

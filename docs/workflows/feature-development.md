@@ -1,6 +1,10 @@
 # Feature Development Workflow
 
-1. Select/create task.
+1. Select/create task. For UI work, follow the
+   [design-requirements.md](design-requirements.md) workflow and
+   [design-to-development-flow.md](../processes/flows/design-to-development-flow.md). Paste
+   [design-brief-prompt.md](../processes/prompts/design-brief-prompt.md) when the task needs a
+   design brief.
 2. Read requirements, architecture, contracts and ADRs.
 3. Confirm dependencies.
 4. Define acceptance criteria.

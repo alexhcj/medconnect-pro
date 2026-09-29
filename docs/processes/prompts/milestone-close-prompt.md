@@ -14,7 +14,8 @@
 
 This is not a substitute for [plan-mode-prompt.md](plan-mode-prompt.md). That file plans one task.
 This file audits a finished milestone. Its output is a gap list and, at most, new task specs. It
-does not produce an implementation plan.
+does not produce an implementation plan. When authoring gap task specs, follow
+[generate-new-task-prompt.md](generate-new-task-prompt.md).
 
 ---
 
