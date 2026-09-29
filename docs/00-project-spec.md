@@ -98,8 +98,10 @@ plus `dev:real` against Nest). `apps/api` is a separate modular NestJS applicati
 backend domain logic into the Next.js frontend.
 
 Demo vertical slices 1–12 below shipped in milestones M0–M7. Marketing placeholders shipped in M8
-([FE-017](tasks/frontend/FE-017-marketing-website-foundation.md)). Current position:
-[post-mvp-baseline.md](roadmap/post-mvp-baseline.md). Next: deployment/preview (later milestone).
+([FE-017](tasks/frontend/FE-017-marketing-website-foundation.md)). Remaining M8 is the shared
+visual language and finished marketing site (FE-018–FE-023). Current position:
+[post-mvp-baseline.md](roadmap/post-mvp-baseline.md). Next after M8: deployment/preview (later
+milestone).
 
 ## Implementation strategy
 

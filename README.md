@@ -23,9 +23,10 @@ A multi-tenant practice platform covering:
 - analytics
 - administration and audit / compliance
 
-Demo milestones M0–M8 are shipped (auth, dashboard shell, patients, scheduling, clinical
-foundation, telehealth session shell, billing invoices, administration, marketing placeholders).
-Current position: [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). Next:
+Demo milestones M0–M7 are shipped, plus M8 marketing placeholders
+([FE-017](./docs/tasks/frontend/FE-017-marketing-website-foundation.md)). Remaining M8 is the
+design system and finished marketing site (FE-018–FE-023). Current position:
+[`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). Next after M8:
 deployment/preview (later milestone). Dashboard analytics, notifications UI, live video, payments,
 and production OAuth remain deferred.
 
@@ -198,11 +199,12 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | [`docs/contracts/`](./docs/contracts/) | API and data contracts |
 | [`docs/workflows/api-contract-workflow.md`](./docs/workflows/api-contract-workflow.md) | OpenAPI, Postman, optional Swagger UI |
 | [`docs/workflows/design-requirements.md`](./docs/workflows/design-requirements.md) | Design workflow before Figma/Pencil |
+| [`docs/marketing/`](./docs/marketing/requirements.md) | Public-site requirements, sitemap, capability matrix |
 | [`docs/processes/`](./docs/processes/) | Cursor prompts and process flows |
 | [`postman/`](./postman/README.md) | Postman environment templates |
 | [`docs/tasks/`](./docs/tasks/) | Implementation task contracts |
 | [`docs/roadmap/`](./docs/roadmap/) | Sequencing |
-| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M7 baseline and next milestone |
+| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M7 baseline; M8 remaining vs later deploy |
 
 Plane can mirror task metadata for project management. Git remains canonical for requirements,
 architecture, ADRs, and task definitions.

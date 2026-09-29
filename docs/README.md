@@ -28,19 +28,25 @@ implementation tasks, roadmaps and development workflows.
 - `roadmap/` — sequencing and delivery milestones, including the
   [post-MVP baseline](roadmap/post-mvp-baseline.md).
 - `decisions/` — ADRs, including [ADR-009](decisions/ADR-009-npm-workspace-monorepo.md) for the
-  npm workspace layout and [ADR-010](decisions/ADR-010-postgresql-typeorm.md) for PostgreSQL and
-  TypeORM.
+  npm workspace layout, [ADR-010](decisions/ADR-010-postgresql-typeorm.md) for PostgreSQL and
+  TypeORM, and [ADR-011](decisions/ADR-011-figma-canonical-visual-source.md) for Figma as the
+  canonical visual source.
 - `workflows/` — repeatable engineering processes, including [versioning](workflows/versioning.md),
   [frontend testing](workflows/frontend-testing.md),
   [API contract / Postman / OpenAPI](workflows/api-contract-workflow.md), and
   [design requirements](workflows/design-requirements.md) (workflow, not a paste prompt).
 - `processes/prompts/` — paste-in Cursor prompts: [plan-mode](processes/prompts/plan-mode-prompt.md),
   [generate-new-task](processes/prompts/generate-new-task-prompt.md),
-  [design-brief](processes/prompts/design-brief-prompt.md), and
+  [design-brief](processes/prompts/design-brief-prompt.md),
+  [figma design system](processes/prompts/figma-design-system-prompt.md),
+  [Pencil exploration](processes/prompts/pencil-design-prompt.md), and
   [milestone-close](processes/prompts/milestone-close-prompt.md).
 - `processes/flows/` — [vibecoding](processes/flows/vibecoding-flow.md),
   [design-to-development](processes/flows/design-to-development-flow.md), and
   [design-checklist](processes/flows/design-checklist-flow.md).
+- `marketing/` — public-site [requirements](marketing/requirements.md),
+  [sitemap](marketing/sitemap.md), and
+  [capability matrix](marketing/capability-matrix.md). Implementation contracts are FE-018–FE-023.
 - `mocks/` — synthetic demo data and mock-data conventions.
 
 ## Documentation rules

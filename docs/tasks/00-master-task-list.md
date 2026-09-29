@@ -34,6 +34,12 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-009 — Administration/security UI
 - FE-016 — Administration UI on the Nest admin APIs
 - FE-017 — Marketing website foundation
+- FE-018 — Design system and visual language
+- FE-019 — Marketing homepage
+- FE-020 — Platform overview
+- FE-021 — Platform feature pages
+- FE-022 — Security, About, and Demo pages
+- FE-023 — Marketing polish and product visuals
 
 ## Backend
 

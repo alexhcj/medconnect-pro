@@ -8,9 +8,11 @@ Canonical application version at this baseline: **0.44.0** (FE-016, 2026-09-27).
 ## Current position
 
 M0–M7 in [release-roadmap.md](release-roadmap.md) are shipped in the repository. All 38 original
-task files are `implemented` or `completed`. The next demo milestone is **M8 — Marketing Website
-Foundation** ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)). Deployment,
-preview environments, and CI/CD are a **later** milestone, not part of M8.
+task files are `implemented` or `completed`. M8 foundation placeholders shipped as
+[FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md) (0.45.0). Remaining M8 is the
+shared visual language and finished marketing site: FE-018–FE-023. Public copy must follow
+[capability-matrix.md](../marketing/capability-matrix.md). Deployment, preview environments, and
+CI/CD are a **later** milestone, not part of M8.
 
 ## Actually complete
 
@@ -42,4 +44,5 @@ preview environments, and CI/CD are a **later** milestone, not part of M8.
 
 Do not describe mock identity as production OAuth, telehealth session shell as live video, invoice
 list as payments, or local engineering patterns as HIPAA compliance. Public copy must follow
-[00-project-spec.md](../00-project-spec.md) and this baseline.
+[00-project-spec.md](../00-project-spec.md), this baseline, and
+[capability-matrix.md](../marketing/capability-matrix.md).

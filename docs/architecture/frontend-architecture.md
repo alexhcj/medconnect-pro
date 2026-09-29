@@ -32,7 +32,8 @@ HTTP API
 - appointment workflows;
 - telehealth workflows;
 - billing workflows;
-- public marketing pages (M8 / FE-017; isolated from the dashboard shell).
+- public marketing pages (M8; isolated from the dashboard shell). Foundation is FE-017;
+  remaining visual language and pages are FE-018–FE-023.
 
 ### Query/data layer
 
@@ -71,6 +72,7 @@ Implemented App Router groups in `apps/web/src/app`:
 (marketing)/          # public; MarketingShell; no session gate
   page.tsx            # /
   platform/page.tsx   # /platform
+  platform/*/page.tsx # feature pages (FE-021)
   security/page.tsx   # /security
   about/page.tsx      # /about
   demo/page.tsx       # /demo → existing /login (mock IdP)
@@ -79,10 +81,21 @@ Implemented App Router groups in `apps/web/src/app`:
 ```
 
 Marketing chrome lives in `apps/web/src/components/marketing/` (`MarketingShell`, header, footer,
-mobile nav, page container). It reuses `components/ui` primitives and Tailwind tokens, not the
-dashboard shell. `/demo` links to `LOGIN_PATH` (`/login`); it does not add a second identity stack.
-Placeholder copy must not claim HIPAA certification, production OAuth, live video, or hosted
-payments. Design, `/platform/*` feature pages, screenshots, and deploy/preview are later work.
+mobile nav, page container, and later section/feature-page composition). It reuses
+`components/ui` primitives and shared tokens, not the dashboard shell. `/demo` links to
+`LOGIN_PATH` (`/login`); it does not add a second identity stack.
+
+Copy must follow [capability-matrix.md](../marketing/capability-matrix.md). Do not claim HIPAA
+certification, production OAuth, live video, or hosted payments. Sitemap:
+[sitemap.md](../marketing/sitemap.md).
+
+### Design tokens
+
+One Figma file is the canonical visual source ([ADR-011](../decisions/ADR-011-figma-canonical-visual-source.md)).
+FE-018 maps color, type, space, radius, and shadow into the Tailwind theme and/or CSS variables
+and keeps `Button`, `Card`, and `Input` as shared primitives. Marketing is spacious; the
+dashboard stays information-dense. Do not add a second design-system package. Deploy/preview is a
+later milestone.
 
 Dashboard overview cards in mock mode use fixtures. Live `GET /dashboard/overview` is not a Nest
 controller; the Next BFF path is not a supported live integration. That gap belongs to frontend

@@ -3,6 +3,7 @@ Related: [design-to-development-flow.md](design-to-development-flow.md),
 [design-brief-prompt.md](../prompts/design-brief-prompt.md) (human paste).
 
 Run this checklist before setting `design.status: approved` on the implementation task.
+The design system is the shared Figma file ([ADR-011](../../decisions/ADR-011-figma-canonical-visual-source.md)).
 
 ### Flow
 

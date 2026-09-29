@@ -54,8 +54,14 @@ mode still renders overview cards.
 
 - mobile/PWA-oriented polish and responsive workflows.
 
-## Slice 10 — Marketing website foundation (M8)
+## Slice 10 — Marketing website and visual language (M8)
 
-- public `(marketing)` route group, layout, and placeholder pages ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)):
+- public `(marketing)` route group, layout, and placeholder pages ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md), shipped):
   `/`, `/platform`, `/security`, `/about`, `/demo` (`/demo` → existing `/login`).
-- Design, finished copy, `/platform/*` feature pages, and deploy/preview are later work.
+- Shared Figma design system and code tokens ([FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md)).
+- Homepage ([FE-019](../tasks/frontend/FE-019-marketing-homepage.md)).
+- Platform overview ([FE-020](../tasks/frontend/FE-020-platform-overview.md)).
+- `/platform/*` feature pages ([FE-021](../tasks/frontend/FE-021-platform-feature-pages.md)).
+- Security, About, and Demo ([FE-022](../tasks/frontend/FE-022-security-about-and-demo-pages.md)).
+- Polish and product visuals ([FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md)).
+- Deploy/preview remains a later milestone.

@@ -1,9 +1,9 @@
 # Product Roadmap
 
 Current ship state is [post-mvp-baseline.md](post-mvp-baseline.md), not the historical labels below.
-Demo milestones M0–M8 are in the repository (marketing placeholders via
-[FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)). Deployment/preview is a
-**later** milestone.
+Demo milestones M0–M7 are shipped. M8 foundation placeholders are in the repository via
+[FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md); remaining M8 is FE-018–FE-023
+(design system and finished marketing site). Deployment/preview is a **later** milestone.
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
 expansion is still unshipped.
