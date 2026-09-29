@@ -28,5 +28,9 @@ The design brief must include:
 - Existing components and design tokens to reuse
 - Design decisions that require my approval
 
+This brief is stage 2 input on the same implementation task. Do not set
+`design.status: approved` until an approved Figma/Pencil artifact exists (`file_url` and
+`frame` filled). Do not implement application code from this prompt.
+
 The design will be created separately in Figma/Pencil.
 Do not invent new product requirements.

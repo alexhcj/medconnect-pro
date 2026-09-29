@@ -40,6 +40,67 @@ test("parseTaskSource skips markdown without a task id", () => {
   assert.equal(parseTaskSource("---\ntype: note\n---\n\n# Note\n"), null);
 });
 
+const nestedDesignSample = `---
+id: FE-018
+type: task
+area: frontend
+status: pending
+priority: high
+design:
+  required: true
+  tool: figma
+  file_url: https://www.figma.com/design/example
+  frame: Homepage
+  status: approved
+implementation:
+  status: not_started
+validation:
+  responsive: true
+  accessibility: true
+  tests_required: true
+plane:
+  work_item_id: null
+  identifier: null
+---
+
+# FE-018 — Marketing homepage
+
+## Objective
+
+Ship the approved homepage.
+
+## Dependencies
+
+Figma: https://www.figma.com/design/example
+`;
+
+test("parseTaskSource still reads id when nested design blocks are present", () => {
+  const parsed = parseTaskSource(nestedDesignSample);
+  assert.equal(parsed.data.id, "FE-018");
+  assert.equal(parsed.data.priority, "high");
+  assert.equal(parsed.data.status, "pending");
+  assert.equal(parsed.title, "Marketing homepage");
+  assert.equal(parsed.plane.work_item_id, null);
+});
+
+test("writePlaneMapping fills plane without dropping nested design blocks", () => {
+  const next = writePlaneMapping(
+    nestedDesignSample,
+    "11111111-1111-1111-1111-111111111111",
+    "MEDCONNECT-51"
+  );
+  assert.match(next, /id: FE-018/);
+  assert.match(next, /design:\n  required: true/);
+  assert.match(next, /implementation:\n  status: not_started/);
+  assert.match(next, /validation:\n  responsive: true/);
+  assert.match(next, /work_item_id: 11111111-1111-1111-1111-111111111111/);
+  assert.match(next, /identifier: MEDCONNECT-51/);
+  const parsed = parseTaskSource(next);
+  assert.equal(parsed.data.id, "FE-018");
+  assert.equal(parsed.plane.work_item_id, "11111111-1111-1111-1111-111111111111");
+  assert.equal(parsed.plane.identifier, "MEDCONNECT-51");
+});
+
 test("workItemContent maps critical to urgent and omits state", () => {
   const parsed = parseTaskSource(sample);
   const content = workItemContent({

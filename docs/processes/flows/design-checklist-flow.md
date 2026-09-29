@@ -2,6 +2,8 @@ Related: [design-to-development-flow.md](design-to-development-flow.md),
 [design-requirements.md](../../workflows/design-requirements.md) (workflow),
 [design-brief-prompt.md](../prompts/design-brief-prompt.md) (human paste).
 
+Run this checklist before setting `design.status: approved` on the implementation task.
+
 ### Flow
 
 | Category       | Review question                                                    |

@@ -23,7 +23,8 @@ implementation tasks, roadmaps and development workflows.
 - `architecture/` — system structure.
 - `contracts/` — API/data contracts, including
   [identity and access](contracts/identity-and-access.md).
-- `tasks/` — implementation work.
+- `tasks/` — implementation work, including optional nested design/implementation/validation
+  metadata on new tasks (see [tasks/README.md](tasks/README.md)).
 - `roadmap/` — sequencing and delivery milestones, including the
   [post-MVP baseline](roadmap/post-mvp-baseline.md).
 - `decisions/` — ADRs, including [ADR-009](decisions/ADR-009-npm-workspace-monorepo.md) for the

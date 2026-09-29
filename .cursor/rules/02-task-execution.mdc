@@ -16,8 +16,9 @@ Before coding:
 - inspect API/data contracts;
 - inspect existing code and patterns;
 - identify security and accessibility implications;
-- for UI/design tasks, inspect `docs/workflows/design-requirements.md` and the Figma/design
-  metadata on the task.
+- for UI/design tasks, inspect `docs/workflows/design-requirements.md` and the task's
+  `design.required`, `design.status`, `design.file_url`, and `design.frame`;
+- do not implement UI work when `design.required` is true and `design.status` is not `approved`.
 
 During coding:
 
@@ -44,4 +45,5 @@ After coding:
 - inspect authorization/tenant boundaries;
 - classify SemVer impact and bump `package.json` / changelog per `.cursor/rules/05-versioning.mdc`;
 - report changed files, the version bump (old → new), and any deviations;
-- update task completion information.
+- update task completion information (top-level status, Markdown Completion, and
+  `implementation.status: complete` when that block is present).

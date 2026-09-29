@@ -20,6 +20,10 @@ Git is authoritative for:
 - dependencies;
 - ADR/document references.
 
+Nested `design` / `implementation` / `validation` blocks are Git-only. Sync parses top-level
+scalars and the `plane:` block; it does not map those nested fields to Plane. Put the Figma URL
+in Markdown Dependencies so the work-item description still includes it.
+
 Plane is authoritative for operational project-management state such as:
 
 - cycle;

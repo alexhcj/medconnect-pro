@@ -1,8 +1,12 @@
 Related: [design-requirements.md](../../workflows/design-requirements.md) (workflow),
+[feature-development.md](../../workflows/feature-development.md) (lifecycle),
 [design-brief-prompt.md](../prompts/design-brief-prompt.md) (human paste),
 [plan-mode-prompt.md](../prompts/plan-mode-prompt.md),
 [generate-new-task-prompt.md](../prompts/generate-new-task-prompt.md),
 [design-checklist-flow.md](design-checklist-flow.md).
+
+Design references live on the **same** implementation task (`design` YAML plus Markdown
+Dependencies). Do not create a separate design task or Plane item.
 
 ### Diagram
                     MEDCONNECT PRO
@@ -12,30 +16,33 @@ Related: [design-requirements.md](../../workflows/design-requirements.md) (workf
         Product Docs              Design System
           /docs                    Figma
              │                         │
-       Feature Specs              Approved UI
+     1. Requirements            2. Design
+       Task spec              Approved UI
              │                         │
              └────────────┬────────────┘
                           │
-                    Design Task
+                   MD / Plane Task
+                  (design metadata)
                           │
-                    Plane / MD Task
+              3. Cursor Plan Mode
                           │
-                Cursor Plan Mode
-                          │
-                 Cursor Agent
+                 4. Cursor Agent
                           │
                   Implementation
                           │
-                Browser Validation
+             5. Browser Validation
                           │
                    QA / Review
                           │
-                    Task Done
+                 6. Task Done
 
 ### Design Flow:
 
 1. Create a Figma file for the feature.
-2. Approve the relevant screen and components.
-3. Include the Figma design reference in the implementation task.
+2. Approve the relevant screen and components using
+   [design-checklist-flow.md](design-checklist-flow.md).
+3. Put `design.file_url`, `design.frame`, and `design.status: approved` on the implementation
+   task. Repeat the Figma URL in Markdown Dependencies so Plane descriptions still show it.
 4. Ask Cursor to inspect the design and existing code before planning.
-5. Implement the design while preserving your architecture and existing components.
+5. Implement the design while preserving architecture and existing components. Do not start
+   implementation while `design.required: true` and `design.status` is not `approved`.

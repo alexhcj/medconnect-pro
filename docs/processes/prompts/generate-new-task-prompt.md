@@ -80,22 +80,33 @@ Do not artificially split a small cohesive task.
 
 ## 5. Determine Task Metadata
 
-Generate metadata according to the project's existing task conventions.
+Generate metadata according to [docs/tasks/README.md](../../tasks/README.md). Keep `type: task`,
+top-level `status: pending` (not `planned`), heading title (not a YAML `title` field), and
+top-level `dependencies` (do not nest `implementation.dependencies`).
 
 Determine:
 
 * Task ID
-* Task title
-* Task type/category
-* Status
+* Task title (Markdown heading only)
+* Task type/category (`type: task`; area is frontend/backend/etc.)
+* Status (`pending` until implemented)
 * Priority, if the project defines one
 * Roadmap phase/milestone
 * Tags
 * Dependencies
 * Related tasks
-* Design dependency/status
+* Nested `design`, `implementation`, and `validation` blocks (see below)
 * Affected layer(s)
 * Relevant epic/feature, if applicable
+
+For nested metadata:
+
+* UI tasks: include `design` with `required: true`, `tool`, empty `file_url`/`frame` until a
+  design exists, and `status: not_started`.
+* Non-UI tasks: omit `design`, or set `required: false` / `status: not_required`.
+* Always include `implementation.status: not_started` on new tasks.
+* Set `validation.responsive`, `validation.accessibility`, and `validation.tests_required` as
+  applies-to flags, not pass/fail. User-facing UI defaults all three to `true`.
 
 For the Task ID:
 
@@ -113,14 +124,15 @@ For tags:
 
 If the task involves design, UX, UI, Figma, visual direction, or interaction design, follow
 [design-requirements.md](../../workflows/design-requirements.md) for task metadata and brief
-contents. Humans generate a brief by pasting [design-brief-prompt.md](design-brief-prompt.md).
+contents. Put design references on **this** task; do not create a separate design task.
+Humans generate a brief by pasting [design-brief-prompt.md](design-brief-prompt.md).
 
 Determine whether it is:
 
-* Design-only
-* Design + implementation
-* Implementation dependent on an existing design
+* UI work that needs a new approved design on this task (`design.required: true`)
+* Implementation dependent on an existing design (copy `file_url` / `frame` if already approved)
 * A design-system/component task
+* Non-UI work (omit `design`)
 
 Check existing design-system conventions and related screens/components.
 
@@ -135,7 +147,7 @@ Include:
 * Figma/design dependencies
 * Design deliverables
 
-Do not assume that a design task requires implementation unless the description says so or the project workflow explicitly couples them.
+Do not create a separate design-only task. Design metadata belongs on the implementation task.
 
 ## 7. Define the Task Specification
 
@@ -212,7 +224,7 @@ Only create relationships supported by repository/documentation evidence or by t
 
 ## 10. Task Metadata for Plane
 
-Prepare the task metadata in the project's existing YAML format/convention so that it can later be imported into Plane.
+Prepare the task metadata in the project's existing YAML format/convention so that it can later be imported into Plane. Include nested `design` / `implementation` / `validation` when applicable. Plane sync ignores those nested blocks; still emit them for Git, and put the Figma URL in Markdown Dependencies as well.
 
 Do not call Plane or attempt to create the task remotely.
 
@@ -290,7 +302,9 @@ List dependencies and related tasks.
 
 ### 7. Plane Metadata YAML
 
-Provide the final YAML metadata using the project's established format.
+Provide the final YAML metadata using [docs/tasks/README.md](../../tasks/README.md). Include
+`design` for UI tasks (`required: true`), omit it for non-UI, and always include
+`implementation` and `validation` on new tasks.
 
 ### 8. Open Questions
 

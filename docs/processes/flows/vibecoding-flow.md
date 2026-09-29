@@ -1,3 +1,7 @@
+Canonical lifecycle (requirements → design when required → plan → implement → validate →
+complete): [feature-development.md](../../workflows/feature-development.md). This file is the
+coding loop inside stages 3–6.
+
 ### Flow
 
 Requirements

@@ -41,7 +41,9 @@ Generated OpenAPI (`apps/api/openapi/openapi.json`) is not hand-maintained docum
 duplicate those schemas in `/docs`. See [docs/workflows/api-contract-workflow.md](../../docs/workflows/api-contract-workflow.md).
 
 Task files use YAML front matter for machine-readable metadata and Markdown for the human-readable
-execution contract.
+execution contract. New tasks may include optional nested `design`, `implementation`, and
+`validation` blocks; see [docs/tasks/README.md](../../docs/tasks/README.md). Do not backfill
+shipped tasks.
 
 Plane is a project-management projection of tasks. It is not the canonical source for product
 requirements, architecture, ADRs or technical constraints.

@@ -1,20 +1,24 @@
 ### Flow
 
-1. Select next task from docs/tasks/
+Canonical lifecycle: [feature-development.md](../../workflows/feature-development.md).
+
+1. Select next task from docs/tasks/ (stage 1)
            ↓
-2. Cursor audits task + dependencies + repository
+2. For UI tasks, confirm design is approved on the same task (stage 2)
            ↓
-3. Cursor generates implementation plan
+3. Cursor audits task + dependencies + repository
            ↓
-4. You review/approve the plan
+4. Cursor generates implementation plan (stage 3)
            ↓
-5. Cursor implements the approved plan
+5. You review/approve the plan
            ↓
-6. Cursor validates acceptance criteria
+6. Cursor implements the approved plan (stage 4)
            ↓
-7. You review changes and release the task
+7. Cursor validates acceptance criteria (stage 5)
            ↓
-8. Update task status/docs/Plane
+8. You review changes and release the task (stage 6)
+           ↓
+9. Update task status/docs/Plane
 
 ---
 
@@ -54,11 +58,13 @@ Before analyzing implementation, determine and explicitly report the task metada
 * Blocking dependencies
 * Related tasks
 * Relevant tags
-* Design dependency/status, if applicable
+* Design dependency/status (`design.required`, `design.status`, `design.file_url`, `design.frame`)
+* Implementation nested status, if present
+* Validation flags (`responsive`, `accessibility`, `tests_required`), if present
 * API/backend/frontend/infrastructure scope, if applicable
 * Any other metadata required by the project's task specification
 
-Preserve the project's existing metadata conventions. Do not invent new metadata fields unless the existing task specification requires them.
+Preserve the project's existing metadata conventions. Do not invent new metadata fields unless the existing task specification requires them. Do not treat missing nested blocks on shipped tasks as an error.
 
 If metadata is missing, contradictory, or stale, identify the discrepancy instead of silently correcting it.
 
@@ -91,6 +97,10 @@ For tasks that depend on design, explicitly identify:
 * Design dependencies
 * Components/tokens/patterns that should be reused
 * What must be designed before implementation can proceed
+
+If `design.required` is true and `design.status` is not `approved`, treat that as a **blocker**.
+Do not produce an implementation plan (code stages) until the design is approved on this task,
+unless this run is generating a design brief via [design-brief-prompt.md](design-brief-prompt.md).
 
 Do not create or modify designs during planning unless the task explicitly requires a design-generation workflow.
 
@@ -284,7 +294,7 @@ Before finalizing the plan, identify:
 
 * Missing requirements
 * Contradictory documentation
-* Unresolved design decisions
+* Unresolved design decisions (`design.required: true` without `design.status: approved` is a blocker)
 * Missing dependencies
 * Missing credentials/external services
 * Architecture decisions that require confirmation
