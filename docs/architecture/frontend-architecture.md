@@ -81,7 +81,7 @@ Implemented App Router groups in `apps/web/src/app`:
 ```
 
 Marketing chrome lives in `apps/web/src/components/marketing/` (`MarketingShell`, header, footer,
-mobile nav, page container, and later section/feature-page composition). It reuses
+mobile nav, page container, section composition, and `FeaturePageLayout` for `/platform/*`). It reuses
 `components/ui` primitives and shared tokens, not the dashboard shell. `/demo` links to
 `LOGIN_PATH` (`/login`); it does not add a second identity stack.
 

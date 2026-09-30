@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.48.0] - 2026-09-30
+
+### Added
+
+- Platform overview at `/platform` (FE-020): designed feature map with honest module status and
+  sitemap links to `/platform/*` (pages may 404 until FE-021). Shared `FeaturePageLayout`
+  primitives for upcoming feature pages. Copy follows the capability matrix.
+
 ## [0.47.0] - 2026-09-29
 
 ### Added

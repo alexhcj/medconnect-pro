@@ -3,7 +3,7 @@ id: FE-020
 type: task
 area: frontend
 feature: marketing
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-018]
@@ -22,11 +22,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=34-3"
+  frame: "Platform overview / Desktop 1440 (34:3)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -86,20 +86,23 @@ Dependencies.
 
 ## Acceptance criteria
 
-- [ ] `/platform` matches the approved Platform overview frame
-- [ ] Each module links to its `/platform/*` path
-- [ ] Copy does not claim unimplemented completeness
-- [ ] Page is keyboard-accessible with semantic landmarks
-- [ ] Layout is usable at desktop, tablet, and mobile widths
-- [ ] Tests cover nav to `/platform` and in-page module links
+- [x] `/platform` matches the approved Platform overview frame
+- [x] Each module links to its `/platform/*` path
+- [x] Copy does not claim unimplemented completeness
+- [x] Page is keyboard-accessible with semantic landmarks
+- [x] Layout is usable at desktop, tablet, and mobile widths
+- [x] Tests cover nav to `/platform` and in-page module links
 
 ## Dependencies
 
 - Blocked by: [FE-018](FE-018-design-system-and-visual-language.md) (`design.status: approved`)
 - Blocks: [FE-021](FE-021-platform-feature-pages.md),
   [FE-023](FE-023-marketing-polish-and-product-visuals.md)
-- Figma URL (fill when approved):
-- Frame (fill when approved):
+- Figma URL (approved):
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=34-3
+- Canonical frame: Platform overview / Desktop 1440 (`34:3`)
+- Layout frames: Platform overview / Tablet 768 (`34:7`), Platform overview / Mobile 390 (`34:13`)
+- Feature page template: Feature page / Desktop 1440 (`21:195`); tablet (`21:282`) and mobile (`21:311`)
 
 ## Validation
 
@@ -119,7 +122,15 @@ chrome next to other marketing components, not in the dashboard tree.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `/platform` uses designed hero, capability-qualified module cards with sitemap
+  `/platform/*` links, and a demo CTA. `FeaturePageLayout` lives in `components/marketing/` for
+  FE-021. Header/footer remain `MarketingShell`. Linked feature routes 404 until FE-021.
+- Tests: `marketing-platform.test.tsx`, `feature-page-layout.test.tsx`; Playwright marketing
+  spec covers Primary → `/platform` and six in-page module hrefs. Vitest 232 passed; Playwright
+  mock e2e 20 passed; type-check passed.
 - PR:
-- Notes:
+- Notes: Design approved on the shared Figma file
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=34-3
+  (Platform overview / Desktop 1440 `34:3`; tablet `34:7`; mobile `34:13`).
+  Feature page template extended at Feature page / Desktop 1440 (`21:195`).
+  Version 0.48.0.

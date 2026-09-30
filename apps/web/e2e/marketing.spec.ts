@@ -18,7 +18,9 @@ test.describe('Marketing public navigation', () => {
 
 		await primaryNav.getByRole('link', {name: 'Platform'}).click();
 		await expect(page).toHaveURL(/\/platform$/);
-		await expect(page.getByRole('heading', {level: 1, name: 'Platform'})).toBeVisible();
+		await expect(
+			page.getByRole('heading', {level: 1, name: 'Practice modules in one platform'}),
+		).toBeVisible();
 		await expect(page).toHaveTitle(/Platform/);
 
 		await primaryNav.getByRole('link', {name: 'Security'}).click();
@@ -47,7 +49,9 @@ test.describe('Marketing public navigation', () => {
 
 		await page.getByRole('link', {name: 'Explore the platform'}).click();
 		await expect(page).toHaveURL(/\/platform$/);
-		await expect(page.getByRole('heading', {level: 1, name: 'Platform'})).toBeVisible();
+		await expect(
+			page.getByRole('heading', {level: 1, name: 'Practice modules in one platform'}),
+		).toBeVisible();
 
 		await page.goto('/');
 		await page.getByRole('link', {name: 'Go to demo'}).click();
@@ -57,5 +61,25 @@ test.describe('Marketing public navigation', () => {
 		await page.getByRole('link', {name: 'Sign in to the demo'}).click();
 		await expect(page).toHaveURL(/\/login$/);
 		await expect(page.getByRole('heading', {level: 1, name: 'Sign in'})).toBeVisible();
+	});
+
+	test('platform overview exposes sitemap module links', async ({page}) => {
+		await page.goto('/platform');
+
+		const moduleHrefs = [
+			'/platform/patient-management',
+			'/platform/appointments',
+			'/platform/telehealth',
+			'/platform/billing',
+			'/platform/analytics',
+			'/platform/administration',
+		];
+
+		for (const href of moduleHrefs) {
+			await expect(page.getByRole('link', {name: href})).toHaveAttribute('href', href);
+		}
+
+		await page.getByRole('link', {name: '/platform/patient-management'}).click();
+		await expect(page).toHaveURL(/\/platform\/patient-management$/);
 	});
 });
