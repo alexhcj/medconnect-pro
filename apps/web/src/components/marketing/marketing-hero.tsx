@@ -14,6 +14,7 @@ interface MarketingHeroProps {
 	body: string;
 	primaryCta: MarketingHeroCta;
 	secondaryCta: MarketingHeroCta;
+	stackUntilLg?: boolean;
 }
 
 export function MarketingHero({
@@ -23,6 +24,7 @@ export function MarketingHero({
 	body,
 	primaryCta,
 	secondaryCta,
+	stackUntilLg = false,
 }: MarketingHeroProps) {
 	return (
 		<section aria-labelledby={headingId} className="bg-surface">
@@ -35,7 +37,14 @@ export function MarketingHero({
 					{heading}
 				</h1>
 				<p className="mt-4 max-w-3xl text-lg leading-relaxed text-foreground-secondary">{body}</p>
-				<div className="mt-8 flex flex-col gap-3 md:flex-row md:items-center">
+				<div
+					className={cn(
+						'mt-8 flex flex-col gap-3',
+						stackUntilLg
+							? 'items-start lg:flex-row lg:items-center'
+							: 'md:flex-row md:items-center',
+					)}
+				>
 					<Link href={primaryCta.href} className={cn(buttonVariants({size: 'lg'}))}>
 						{primaryCta.label}
 					</Link>

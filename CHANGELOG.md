@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.49.0] - 2026-09-30
+
+### Added
+
+- Platform feature pages (FE-021) at `/platform/patient-management`, `/platform/appointments`,
+  `/platform/telehealth`, `/platform/billing`, `/platform/analytics`, and
+  `/platform/administration`. Shared `FeaturePageLayout` with Figma-approved, capability-matrix
+  copy, labeled walkthrough placeholders until FE-023, and related-module links. CTAs use `/demo`
+  and `/platform`; sign-in remains `/login`.
+
 ## [0.48.0] - 2026-09-30
 
 ### Added

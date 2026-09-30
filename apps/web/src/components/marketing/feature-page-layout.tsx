@@ -80,10 +80,11 @@ export function FeaturePageLayout({
 				body={hero.body}
 				primaryCta={hero.primaryCta}
 				secondaryCta={hero.secondaryCta}
+				stackUntilLg
 			/>
 			<div className="mx-auto max-w-6xl space-y-10 px-4 pb-16 sm:px-6 lg:space-y-12 lg:px-8 lg:pb-24">
 				<MarketingSection headingId={capabilities.headingId} title={capabilities.heading}>
-					<ul className={marketingSectionGridClassName(3)}>
+					<ul className="grid gap-4 lg:grid-cols-3">
 						{capabilities.items.map((item) => (
 							<li key={item.title}>
 								<Card className="h-full">
@@ -104,7 +105,7 @@ export function FeaturePageLayout({
 				<MarketingSection headingId={walkthrough.headingId} title={walkthrough.heading}>
 					<p className="text-sm text-foreground-secondary">{walkthrough.caption}</p>
 					<div
-						className="mt-4 flex min-h-[16rem] items-center justify-center rounded-xl border border-border bg-subtle px-6 py-16 text-center sm:min-h-[20rem] lg:min-h-[24rem]"
+						className="mt-4 flex min-h-[16rem] items-center justify-center rounded-xl border border-border bg-subtle px-6 py-16 text-center sm:min-h-[20rem] lg:min-h-[26.25rem]"
 						role="img"
 						aria-label={walkthrough.slotLabel}
 					>
@@ -166,6 +167,7 @@ export function FeaturePageLayout({
 					body={cta.body}
 					primaryCta={cta.primaryCta}
 					secondaryCta={cta.secondaryCta}
+					stackUntilLg
 				/>
 			</div>
 		</div>

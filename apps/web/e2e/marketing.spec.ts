@@ -82,4 +82,42 @@ test.describe('Marketing public navigation', () => {
 		await page.getByRole('link', {name: '/platform/patient-management'}).click();
 		await expect(page).toHaveURL(/\/platform\/patient-management$/);
 	});
+
+	test('platform overview reaches each feature page', async ({page}) => {
+		const featurePages = [
+			{
+				href: '/platform/patient-management',
+				heading: 'Patient records for the practice',
+			},
+			{
+				href: '/platform/appointments',
+				heading: 'Calendar, appointments, and availability',
+			},
+			{
+				href: '/platform/telehealth',
+				heading: 'Appointment-linked virtual-visit workflow',
+			},
+			{
+				href: '/platform/billing',
+				heading: 'Invoice list and detail',
+			},
+			{
+				href: '/platform/analytics',
+				heading: 'Dashboard overview as it exists',
+			},
+			{
+				href: '/platform/administration',
+				heading: 'Users and audit viewer',
+			},
+		];
+
+		for (const featurePage of featurePages) {
+			await page.goto('/platform');
+			await page.getByRole('link', {name: featurePage.href}).click();
+			await expect(page).toHaveURL(new RegExp(`${featurePage.href}$`));
+			await expect(
+				page.getByRole('heading', {level: 1, name: featurePage.heading}),
+			).toBeVisible();
+		}
+	});
 });

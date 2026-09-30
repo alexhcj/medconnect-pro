@@ -13,6 +13,7 @@ interface MarketingCtaBandProps {
 	body: string;
 	primaryCta: MarketingCtaBandLink;
 	secondaryCta: MarketingCtaBandLink;
+	stackUntilLg?: boolean;
 }
 
 export function MarketingCtaBand({
@@ -21,6 +22,7 @@ export function MarketingCtaBand({
 	body,
 	primaryCta,
 	secondaryCta,
+	stackUntilLg = false,
 }: MarketingCtaBandProps) {
 	return (
 		<section
@@ -36,7 +38,12 @@ export function MarketingCtaBand({
 			<p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-foreground-secondary">
 				{body}
 			</p>
-			<div className="mt-8 flex flex-col items-center justify-center gap-3 md:flex-row">
+			<div
+				className={cn(
+					'mt-8 flex flex-col items-center justify-center gap-3',
+					stackUntilLg ? 'lg:flex-row' : 'md:flex-row',
+				)}
+			>
 				<Link href={primaryCta.href} className={cn(buttonVariants({size: 'lg'}))}>
 					{primaryCta.label}
 				</Link>

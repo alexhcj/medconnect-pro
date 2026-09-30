@@ -3,7 +3,7 @@ id: FE-021
 type: task
 area: frontend
 feature: marketing
-status: pending
+status: implemented
 priority: high
 estimate: 5
 dependencies: [FE-018, FE-020]
@@ -22,11 +22,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=36-82"
+  frame: "Patient management / Desktop 1440 (36:82)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -50,7 +50,8 @@ structure and product UI as the primary visual.
 Sign-in is **not** a marketing route; CTAs use existing `/login`.
 
 Do not start UI implementation while `design.status` is not `approved`. Use the same Figma file as
-FE-018; record the feature-page frames. Repeat the Figma URL in Markdown Dependencies.
+FE-018; record the feature-page frames. Repeat the Figma URL in Markdown Dependencies. Design is
+approved on the Feature Pages canvas; implementation is a separate plan.
 
 ## Scope
 
@@ -106,13 +107,13 @@ Capability copy must match [capability-matrix.md](../../marketing/capability-mat
 
 ## Acceptance criteria
 
-- [ ] All six routes render the shared structure
-- [ ] Walkthrough uses product UI or a labeled placeholder until FE-023
-- [ ] Related-module links resolve to the other feature pages or `/platform`
-- [ ] Copy is capability-matrix accurate
-- [ ] Pages are keyboard-accessible with semantic landmarks
-- [ ] Layouts are usable at desktop, tablet, and mobile widths
-- [ ] Playwright covers platform overview → each feature page
+- [x] All six routes render the shared structure
+- [x] Walkthrough uses product UI or a labeled placeholder until FE-023
+- [x] Related-module links resolve to the other feature pages or `/platform`
+- [x] Copy is capability-matrix accurate
+- [x] Pages are keyboard-accessible with semantic landmarks
+- [x] Layouts are usable at desktop, tablet, and mobile widths
+- [x] Playwright covers platform overview → each feature page
 
 ## Dependencies
 
@@ -120,8 +121,15 @@ Capability copy must match [capability-matrix.md](../../marketing/capability-mat
   [FE-020](FE-020-platform-overview.md)
 - Blocks: [FE-023](FE-023-marketing-polish-and-product-visuals.md)
 - Related shipped product UI: FE-001–FE-016 (visual source, not restyle)
-- Figma URL (fill when approved):
-- Frame (fill when approved):
+- Figma URL (approved):
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=36-82
+- Canonical frame: Patient management / Desktop 1440 (`36:82`)
+- Desktop set: Appointments (`36:105`), Telehealth (`36:128`), Billing (`36:151`),
+  Analytics (`36:174`), Administration (`36:197`)
+- Layout frames: Patient management / Tablet 768 (`38:397`),
+  Patient management / Mobile 390 (`38:463`)
+- Feature Pages canvas: `36:81`
+- Generic template (FE-020): Feature page / Desktop 1440 (`21:195`)
 
 ## Validation
 
@@ -140,7 +148,16 @@ rather than six one-off pages.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Six `/platform/*` routes compose `FeaturePageLayout` via
+  `MarketingFeaturePage` and Figma-transcribed copy in `marketing-feature-pages-copy.ts`.
+  Walkthroughs remain labeled placeholders until FE-023. Header/footer stay `MarketingShell`.
+  Hero/CTA stack until `lg` to match tablet/mobile frames; capabilities are one column below
+  `lg`. CTAs use `/demo` and `/platform`; sign-in remains `/login`.
+- Tests: `marketing-feature-pages.test.tsx`; Playwright marketing spec covers `/platform` → each
+  feature-page `h1`. Vitest 247 passed; Playwright marketing spec 4 passed; type-check passed.
 - PR:
-- Notes:
+- Notes: Design approved on the shared Figma file
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=36-82
+  (Patient management / Desktop 1440 `36:82`; tablet `38:397`; mobile `38:463`).
+  Desktop frames: Appointments `36:105`, Telehealth `36:128`, Billing `36:151`,
+  Analytics `36:174`, Administration `36:197`. Version 0.49.0.
