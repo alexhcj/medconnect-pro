@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.50.0] - 2026-09-30
+
+### Added
+
+- Security, About, and Demo marketing pages (FE-022) replacing the remaining FE-017 placeholders.
+  Copy follows the capability matrix: implemented controls (mock identity, RBAC, tenant isolation,
+  audit, RLS, document ACL), portfolio/architecture context, and demo entry through existing
+  `/login`. Login-chrome visuals stay a labeled placeholder until FE-023. Optional login form
+  token mapping only; mock IdP behavior is unchanged.
+
 ## [0.49.0] - 2026-09-30
 
 ### Added

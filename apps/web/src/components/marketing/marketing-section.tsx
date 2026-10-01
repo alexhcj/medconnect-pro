@@ -21,9 +21,13 @@ export function MarketingSection({headingId, title, children, className}: Market
 	);
 }
 
-export function marketingSectionGridClassName(columns: 3 | 4): string {
+export function marketingSectionGridClassName(columns: 3 | 4 | 5): string {
 	return cn(
 		'grid gap-4',
-		columns === 4 ? 'lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3',
+		columns === 5
+			? 'sm:grid-cols-2 lg:grid-cols-5'
+			: columns === 4
+				? 'lg:grid-cols-4'
+				: 'sm:grid-cols-2 lg:grid-cols-3',
 	);
 }

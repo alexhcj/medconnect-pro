@@ -54,18 +54,20 @@ export function LoginForm() {
 	};
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-			<div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-				<h1 className="text-2xl font-bold text-gray-900">Sign in</h1>
-				<p className="mt-2 text-sm text-gray-600">Sign in to the MedConnect Pro dashboard.</p>
-				<p className="mt-3 rounded-md bg-amber-50 p-3 text-xs text-amber-900" role="note">
+		<div className="flex min-h-screen items-center justify-center bg-canvas p-4">
+			<div className="w-full max-w-md rounded-xl border border-border bg-surface p-8 shadow-sm">
+				<h1 className="text-2xl font-bold text-foreground">Sign in</h1>
+				<p className="mt-2 text-sm text-foreground-secondary">
+					Sign in to the MedConnect Pro dashboard.
+				</p>
+				<p className="mt-3 rounded-md bg-warning-subtle p-3 text-xs text-warning" role="note">
 					This is a <strong>mock identity provider</strong> for the demo. It is not production
 					identity infrastructure.
 				</p>
 
 				{demoUser && (
-					<div className="mt-4 rounded-md border border-gray-200 bg-gray-50 p-3 text-xs text-gray-700">
-						<p className="font-medium text-gray-900">Demo account</p>
+					<div className="mt-4 rounded-md border border-border bg-subtle p-3 text-xs text-foreground-secondary">
+						<p className="font-medium text-foreground">Demo account</p>
 						<p className="mt-1">
 							Email: <span className="font-mono">{demoUser.email}</span>
 						</p>
@@ -77,43 +79,43 @@ export function LoginForm() {
 
 				<form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
 					<div>
-						<label htmlFor="email" className="block text-sm font-medium text-gray-700">
+						<label htmlFor="email" className="block text-sm font-medium text-foreground-label">
 							Email
 						</label>
 						<input
 							id="email"
 							type="email"
 							autoComplete="username"
-							className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+							className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 							{...register('email')}
 						/>
 						{errors.email && (
-							<p className="mt-1 text-sm text-red-600" role="alert">
+							<p className="mt-1 text-sm text-danger" role="alert">
 								{errors.email.message}
 							</p>
 						)}
 					</div>
 
 					<div>
-						<label htmlFor="password" className="block text-sm font-medium text-gray-700">
+						<label htmlFor="password" className="block text-sm font-medium text-foreground-label">
 							Password
 						</label>
 						<input
 							id="password"
 							type="password"
 							autoComplete="current-password"
-							className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+							className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 							{...register('password')}
 						/>
 						{errors.password && (
-							<p className="mt-1 text-sm text-red-600" role="alert">
+							<p className="mt-1 text-sm text-danger" role="alert">
 								{errors.password.message}
 							</p>
 						)}
 					</div>
 
 					{formError && (
-						<p className="text-sm text-red-600" role="alert">
+						<p className="text-sm text-danger" role="alert">
 							{formError}
 						</p>
 					)}
@@ -123,12 +125,12 @@ export function LoginForm() {
 					</Button>
 				</form>
 
-				<p className="mt-6 text-center text-sm text-gray-500">
-					<Link href="/password-reset" className="text-blue-600 hover:underline">
+				<p className="mt-6 text-center text-sm text-foreground-muted">
+					<Link href="/password-reset" className="text-brand hover:underline">
 						Password reset
 					</Link>
 					{' · '}
-					<Link href="/register" className="text-blue-600 hover:underline">
+					<Link href="/register" className="text-brand hover:underline">
 						Practice registration
 					</Link>
 				</p>

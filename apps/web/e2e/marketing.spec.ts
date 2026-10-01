@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/test';
 
 test.describe('Marketing public navigation', () => {
-	test('navigates placeholder pages and the existing mock login', async ({page}) => {
+	test('navigates marketing pages and the existing mock login', async ({page}) => {
 		await page.goto('/');
 
 		const primaryNav = page.getByRole('navigation', {name: 'Primary'});
@@ -25,20 +25,32 @@ test.describe('Marketing public navigation', () => {
 
 		await primaryNav.getByRole('link', {name: 'Security'}).click();
 		await expect(page).toHaveURL(/\/security$/);
-		await expect(page.getByRole('heading', {level: 1, name: 'Security'})).toBeVisible();
+		await expect(
+			page.getByRole('heading', {
+				level: 1,
+				name: 'Security-focused architecture, not a certified production system',
+			}),
+		).toBeVisible();
 		await expect(page).toHaveTitle(/Security/);
 
 		await primaryNav.getByRole('link', {name: 'About'}).click();
 		await expect(page).toHaveURL(/\/about$/);
-		await expect(page.getByRole('heading', {level: 1, name: 'About'})).toBeVisible();
+		await expect(
+			page.getByRole('heading', {
+				level: 1,
+				name: 'A portfolio demonstration of a multi-tenant healthcare SaaS',
+			}),
+		).toBeVisible();
 		await expect(page).toHaveTitle(/About/);
 
 		await primaryNav.getByRole('link', {name: 'Demo'}).click();
 		await expect(page).toHaveURL(/\/demo$/);
-		await expect(page.getByRole('heading', {level: 1, name: 'Explore the demo'})).toBeVisible();
+		await expect(
+			page.getByRole('heading', {level: 1, name: 'Explore the demo with mock identity'}),
+		).toBeVisible();
 		await expect(page).toHaveTitle(/Demo/);
 
-		await page.getByRole('link', {name: 'Sign in to the demo'}).click();
+		await page.getByRole('link', {name: 'Sign in to the demo'}).first().click();
 		await expect(page).toHaveURL(/\/login$/);
 		await expect(page.getByRole('heading', {level: 1, name: 'Sign in'})).toBeVisible();
 		await expect(page.getByRole('note')).toContainText('mock identity provider');
@@ -56,11 +68,30 @@ test.describe('Marketing public navigation', () => {
 		await page.goto('/');
 		await page.getByRole('link', {name: 'Go to demo'}).click();
 		await expect(page).toHaveURL(/\/demo$/);
-		await expect(page.getByRole('heading', {level: 1, name: 'Explore the demo'})).toBeVisible();
+		await expect(
+			page.getByRole('heading', {level: 1, name: 'Explore the demo with mock identity'}),
+		).toBeVisible();
 
-		await page.getByRole('link', {name: 'Sign in to the demo'}).click();
+		await page.getByRole('link', {name: 'Sign in to the demo'}).first().click();
 		await expect(page).toHaveURL(/\/login$/);
 		await expect(page.getByRole('heading', {level: 1, name: 'Sign in'})).toBeVisible();
+	});
+
+	test('security, about, and demo copy does not over-claim', async ({page}) => {
+		const routes = ['/security', '/about', '/demo'] as const;
+
+		for (const route of routes) {
+			await page.goto(route);
+			await expect(page.getByText(/HIPAA compliant/i)).toHaveCount(0);
+			await expect(page.getByText(/live video visits/i)).toHaveCount(0);
+			await expect(page.getByText(/accept payments/i)).toHaveCount(0);
+		}
+
+		await page.goto('/demo');
+		const signInLinks = page.getByRole('link', {name: 'Sign in to the demo'});
+		await expect(signInLinks).toHaveCount(2);
+		await expect(signInLinks.nth(0)).toHaveAttribute('href', '/login');
+		await expect(signInLinks.nth(1)).toHaveAttribute('href', '/login');
 	});
 
 	test('platform overview exposes sitemap module links', async ({page}) => {

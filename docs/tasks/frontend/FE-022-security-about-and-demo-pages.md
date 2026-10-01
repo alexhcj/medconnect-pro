@@ -3,7 +3,7 @@ id: FE-022
 type: task
 area: frontend
 feature: marketing
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-018]
@@ -24,11 +24,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=41-3"
+  frame: "Security / Desktop 1440 (41:3)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -92,20 +92,27 @@ FE-018. Repeat the Figma URL in Markdown Dependencies.
 
 ## Acceptance criteria
 
-- [ ] `/security`, `/about`, and `/demo` match their approved frames
-- [ ] Demo continues to `/login` (`LOGIN_PATH`)
-- [ ] Copy does not over-claim compliance, OAuth, live video, or payments
-- [ ] Pages are keyboard-accessible with semantic landmarks
-- [ ] Layouts are usable at desktop, tablet, and mobile widths
-- [ ] Playwright covers those routes and demo → login
+- [x] `/security`, `/about`, and `/demo` match their approved frames
+- [x] Demo continues to `/login` (`LOGIN_PATH`)
+- [x] Copy does not over-claim compliance, OAuth, live video, or payments
+- [x] Pages are keyboard-accessible with semantic landmarks
+- [x] Layouts are usable at desktop, tablet, and mobile widths
+- [x] Playwright covers those routes and demo → login
 
 ## Dependencies
 
 - Blocked by: [FE-018](FE-018-design-system-and-visual-language.md) (`design.status: approved`)
 - Blocks: [FE-023](FE-023-marketing-polish-and-product-visuals.md)
 - Related: [FE-010](FE-010-mock-authentication-ui.md)
-- Figma URL (fill when approved):
-- Frame (fill when approved):
+- Figma URL (approved):
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=41-3
+- Canonical frame: Security / Desktop 1440 (`41:3`)
+- Desktop set: About (`41:7`), Demo (`41:11`)
+- Layout frames: Security / Tablet 768 (`44:388`), Security / Mobile 390 (`44:455`);
+  About / Tablet 768 (`44:522`), About / Mobile 390 (`44:584`);
+  Demo / Tablet 768 (`44:646`), Demo / Mobile 390 (`44:690`)
+- Login chrome (optional token mapping): Login chrome / Token mapping (`41:15`)
+- Canvas: Security / About / Demo
 
 ## Validation
 
@@ -125,7 +132,17 @@ Keep routes at `apps/web/src/app/(marketing)/security/page.tsx`, `about/page.tsx
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Replaced FE-017 placeholders at `/security`, `/about`, and `/demo` with
+  Figma-approved composed pages (`MarketingSecurity`, `MarketingAbout`, `MarketingDemo`) using
+  FE-018 tokens, `MarketingHero`, `MarketingCtaBand`, `MarketingSection`, `Card`/`Button`, and
+  shared status-card/callout primitives. Demo CTAs use `LOGIN_PATH`. Login chrome on `/demo` is a
+  labeled placeholder until FE-023. Optional token mapping on `LoginForm` only.
+- Tests: Vitest `marketing-security.test.tsx`, `marketing-about.test.tsx`,
+  `marketing-demo.test.tsx`; Playwright marketing spec updated for new h1s, demo → login, and
+  over-claim negatives.
 - PR:
-- Notes:
+- Notes: Design approved on the shared Figma file
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=41-3
+  (Security / Desktop 1440 `41:3`; About `41:7`; Demo `41:11`; login chrome `41:15`).
+  Tablet/mobile: Security `44:388` / `44:455`, About `44:522` / `44:584`,
+  Demo `44:646` / `44:690`. Version 0.49.0 → 0.50.0 (MINOR, new public UI).
