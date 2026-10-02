@@ -32,8 +32,7 @@ HTTP API
 - appointment workflows;
 - telehealth workflows;
 - billing workflows;
-- public marketing pages (M8; isolated from the dashboard shell). Foundation is FE-017;
-  tokens are FE-018; remaining pages are FE-019–FE-023.
+- public marketing pages (M8; isolated from the dashboard shell). FE-017–FE-023 shipped.
 
 ### Query/data layer
 

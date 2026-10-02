@@ -18,7 +18,8 @@ Canonical lifecycle: [feature-development.md](../../workflows/feature-developmen
            ↓
 8. You review changes and release the task (stage 6)
            ↓
-9. Update task status/docs/Plane
+9. Update task status/docs/Plane, including the
+   `docs/roadmap/release-roadmap.md` crosswalk shipped/pending split
 
 ---
 
@@ -242,6 +243,17 @@ Specify how the completed stage should be verified.
 
 Prefer existing project validation tools and conventions.
 
+### Release-roadmap index
+
+If this task is listed on a milestone in `docs/roadmap/release-roadmap.md`, include a completion
+step that updates that crosswalk row (and the current-position paragraph when it still names the
+task as remaining). Move the completed task ID into the shipped group; leave later IDs pending.
+
+Example: `FE-017–FE-018 (shipped), FE-019–FE-023 (pending)` becomes
+`FE-017–FE-019 (shipped), FE-020–FE-023 (pending)` after FE-019 ships. When every mapped ID on
+the milestone is shipped, the row should read like `FE-017–FE-023 (shipped)` and current position
+should no longer call that work remaining.
+
 ## 8. Preserve Project Conventions
 
 The plan must follow the current project's established:
@@ -342,7 +354,9 @@ List only the work that remains for **[TASK-ID]**.
 
 ### 3. Ordered Implementation Plan
 
-Provide the stages in execution order, including dependencies between stages.
+Provide the stages in execution order, including dependencies between stages. Include a step that
+updates `docs/roadmap/release-roadmap.md` shipped/pending status for this task when it is on a
+milestone crosswalk.
 
 ### 4. Blockers / Open Questions
 

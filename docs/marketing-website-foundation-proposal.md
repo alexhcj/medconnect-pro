@@ -1,16 +1,17 @@
 # Marketing Website Foundation — planning brief
 
 This file is **planning input** for [FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md),
-not a task spec and not a second source of truth. FE-017 is implemented. Remaining M8 contracts
-are [FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md) through
-[FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md). Canonical marketing
+not a task spec and not a second source of truth. FE-017 is implemented. Later M8 contracts
+[FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md) through
+[FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md) are also implemented.
+Canonical marketing
 docs are [requirements.md](marketing/requirements.md), [sitemap.md](marketing/sitemap.md), and
 [capability-matrix.md](marketing/capability-matrix.md). Current product claims must follow
 [post-mvp-baseline.md](roadmap/post-mvp-baseline.md).
 Deployment/preview is a later milestone, not M8.
 
-Use this brief only as historical FE-017 planning input. Remaining M8 implementation contracts
-are FE-018–FE-023.
+Use this brief only as historical FE-017 planning input. M8 implementation contracts
+FE-018–FE-023 are shipped.
 
 ---
 

@@ -20,5 +20,5 @@ Domain order (not historical ship order). Join to demo milestones in the
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.
 
-M0–M7 domain HTTP listed above is in the repository. Remaining demo work is frontend M8
-(design system and marketing site, FE-018–FE-023), not a new backend domain.
+M0–M7 domain HTTP listed above is in the repository. M8 is frontend marketing (FE-017–FE-023),
+not a new backend domain. Remaining demo work is **Later — Deployment / preview**.

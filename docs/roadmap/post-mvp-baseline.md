@@ -7,11 +7,9 @@ Canonical application version at this baseline: **0.44.0** (FE-016, 2026-09-27).
 
 ## Current position
 
-M0–M7 in [release-roadmap.md](release-roadmap.md) are shipped in the repository. All 38 original
-task files are `implemented` or `completed`. M8 foundation placeholders shipped as
-[FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md) (0.45.0). Shared design tokens
-shipped as [FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md) (0.46.0).
-Remaining M8 marketing pages shipped as FE-019–FE-023. Public copy must follow
+M0–M8 in [release-roadmap.md](release-roadmap.md) are shipped in the repository. All 38 original
+task files plus M8 (FE-017–FE-023) are `implemented` or `completed`. M8 marketing site shipped as
+FE-017–FE-023 (0.45.0–0.51.1). Public copy must follow
 [capability-matrix.md](../marketing/capability-matrix.md). Deployment, preview environments, and
 CI/CD are a **later** milestone, not part of M8.
 

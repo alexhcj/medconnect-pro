@@ -4,11 +4,9 @@ This is the scheduling source for demo milestones. Frontend and backend roadmaps
 calendars; they do not replace this join table. Task files in `docs/tasks/` remain the
 implementation contracts.
 
-**Current position:** M0–M7 are shipped. M8 foundation placeholders and shared design tokens are
-shipped ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md),
-[FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md)); remaining M8 is the
-finished marketing site (FE-019–FE-023). Baseline:
-[post-mvp-baseline.md](post-mvp-baseline.md). Next after M8 is **Later — Deployment / preview**.
+**Current position:** M0–M8 are shipped ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)
+through [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md)). Baseline:
+[post-mvp-baseline.md](post-mvp-baseline.md). Next is **Later — Deployment / preview**.
 CI/CD and preview/production hosting are not part of M8.
 
 ## Demo milestones
@@ -47,11 +45,10 @@ Practice/user administration and audit viewer.
 
 ### M8 — Marketing website and visual language
 
-Public `(marketing)` route group, layout, and placeholder pages at `/`, `/platform`, `/security`,
-`/about`, and `/demo` (FE-017, shipped). Shared Figma design system and code tokens (FE-018,
-shipped). Remaining: homepage (FE-019), platform overview (FE-020), `/platform/*` feature pages
-(FE-021), Security / About / Demo (FE-022), polish and product visuals (FE-023). Not hosted
-deployment.
+Public `(marketing)` route group, layout, and pages at `/`, `/platform`, `/platform/*`,
+`/security`, `/about`, and `/demo` (FE-017–FE-023, shipped). Shared Figma design system and code
+tokens (FE-018). Homepage, platform overview, feature pages, Security / About / Demo, and product
+visuals. Not hosted deployment. **Closed** at 0.51.1.
 
 ### Later — Deployment / preview
 
@@ -73,7 +70,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M5 Telehealth | FE-007, BE-006, FE-014 | Session shell plus Nest API. FE-014 connects the lobby and session shell to Nest. |
 | M6 Billing | FE-008, BE-007, FE-015 | Frontend billing mocks may start after FE-010. Billing API waits on BE-009. FE-015 connects the shipped dashboard to that API. |
 | M7 Administration | FE-009, FE-016, BE-010, SEC-002, SEC-004, QA-004, BE-008 as needed | User directory HTTP plus admin UI on Nest. Isolation hardening and authorization matrix remain. BE-008 is the notifications domain, not admin UI. **Closed** at 0.44.0. |
-| M8 Marketing website and visual language | FE-017–FE-018 (shipped), FE-019–FE-023 (pending) | Placeholders and tokens shipped. Remaining: finished marketing pages and product visuals. Deploy/preview stays later. |
+| M8 Marketing website and visual language | FE-017–FE-023 (shipped) | Public marketing site and shared visual language. Deploy/preview stays later. **Closed** at 0.51.1. |
 | Later Deployment / preview | (no task yet) | GitHub Actions, images, preview, production. Do not pull into M8. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,

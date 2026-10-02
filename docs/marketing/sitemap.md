@@ -4,10 +4,8 @@ Public pages, why they exist, and how they map to Next.js. Requirements:
 [requirements.md](requirements.md). Status of each capability:
 [capability-matrix.md](capability-matrix.md).
 
-Foundation routes already exist from
-[FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md). Remaining M8 tasks replace
-placeholders and add `/platform/*` pages. Do not mix marketing chrome into `(auth)` or
-`(dashboard)`.
+Foundation and finished pages exist from FE-017–FE-023. Do not mix marketing chrome into `(auth)`
+or `(dashboard)`.
 
 ## Top-level pages
 

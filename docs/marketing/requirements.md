@@ -9,7 +9,7 @@ Product claims must follow [post-mvp-baseline.md](../roadmap/post-mvp-baseline.m
 
 [marketing-website-foundation-proposal.md](../marketing-website-foundation-proposal.md) remains
 planning input for shipped [FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md). It
-is not the contract for remaining M8 work.
+is not the contract for FE-018–FE-023 (shipped).
 
 ## Purpose
 

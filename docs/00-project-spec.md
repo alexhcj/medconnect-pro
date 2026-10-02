@@ -97,11 +97,9 @@ The repository is an npm workspace. The Next.js frontend lives in `apps/web` (mo
 plus `dev:real` against Nest). `apps/api` is a separate modular NestJS application; do not fold
 backend domain logic into the Next.js frontend.
 
-Demo vertical slices 1–12 below shipped in milestones M0–M7. Marketing placeholders shipped in M8
-([FE-017](tasks/frontend/FE-017-marketing-website-foundation.md)). Shared design tokens shipped
-([FE-018](tasks/frontend/FE-018-design-system-and-visual-language.md)). Remaining M8 is the
-finished marketing site (FE-019–FE-023). Current position:
-[post-mvp-baseline.md](roadmap/post-mvp-baseline.md). Next after M8: deployment/preview (later
+Demo vertical slices 1–12 below shipped in milestones M0–M7. M8 marketing site shipped
+(FE-017–FE-023). Current position:
+[post-mvp-baseline.md](roadmap/post-mvp-baseline.md). Next: deployment/preview (later
 milestone).
 
 ## Implementation strategy
