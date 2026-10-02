@@ -26,7 +26,7 @@ design:
   frame: "Product visual (78:25)"
   status: approved
 implementation:
-  status: in_progress
+  status: complete
 validation:
   responsive: true
   accessibility: true
