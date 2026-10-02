@@ -26,7 +26,6 @@ export function MarketingSecurity() {
 				body={MARKETING_SECURITY_HERO.body}
 				primaryCta={MARKETING_SECURITY_HERO.primaryCta}
 				secondaryCta={MARKETING_SECURITY_HERO.secondaryCta}
-				stackUntilLg
 			/>
 			<div className="mx-auto max-w-6xl space-y-10 px-4 pb-16 sm:px-6 lg:space-y-12 lg:px-8 lg:pb-24">
 				<MarketingCallout

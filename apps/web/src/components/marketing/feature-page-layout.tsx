@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {MarketingCtaBand, type MarketingCtaBandLink} from '@/components/marketing/marketing-cta-band';
 import {MarketingHero, type MarketingHeroCta} from '@/components/marketing/marketing-hero';
+import {MarketingProductVisual} from '@/components/marketing/marketing-product-visual';
 import {
 	MarketingSection,
 	marketingSectionGridClassName,
@@ -16,7 +17,10 @@ export interface FeaturePageWalkthrough {
 	heading: string;
 	headingId: string;
 	caption: string;
-	slotLabel: string;
+	image: {
+		src: string;
+		alt: string;
+	};
 }
 
 export interface FeaturePageWorkflowStep {
@@ -80,7 +84,6 @@ export function FeaturePageLayout({
 				body={hero.body}
 				primaryCta={hero.primaryCta}
 				secondaryCta={hero.secondaryCta}
-				stackUntilLg
 			/>
 			<div className="mx-auto max-w-6xl space-y-10 px-4 pb-16 sm:px-6 lg:space-y-12 lg:px-8 lg:pb-24">
 				<MarketingSection headingId={capabilities.headingId} title={capabilities.heading}>
@@ -103,14 +106,11 @@ export function FeaturePageLayout({
 				</MarketingSection>
 
 				<MarketingSection headingId={walkthrough.headingId} title={walkthrough.heading}>
-					<p className="text-sm text-foreground-secondary">{walkthrough.caption}</p>
-					<div
-						className="mt-4 flex min-h-[16rem] items-center justify-center rounded-xl border border-border bg-subtle px-6 py-16 text-center sm:min-h-[20rem] lg:min-h-[26.25rem]"
-						role="img"
-						aria-label={walkthrough.slotLabel}
-					>
-						<p className="max-w-md text-sm text-foreground-muted">{walkthrough.slotLabel}</p>
-					</div>
+					<MarketingProductVisual
+						src={walkthrough.image.src}
+						alt={walkthrough.image.alt}
+						caption={walkthrough.caption}
+					/>
 				</MarketingSection>
 
 				<MarketingSection headingId={workflow.headingId} title={workflow.heading}>

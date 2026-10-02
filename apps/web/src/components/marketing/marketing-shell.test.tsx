@@ -2,11 +2,17 @@ import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MarketingShell} from '@/components/marketing/marketing-shell';
 
+const navigation = vi.hoisted(() => ({pathname: '/'}));
+
 vi.mock('next/navigation', () => ({
-	usePathname: () => '/',
+	usePathname: () => navigation.pathname,
 }));
 
 describe('MarketingShell', () => {
+	beforeEach(() => {
+		navigation.pathname = '/';
+	});
+
 	it('renders skip navigation, header, labelled primary nav, main, and footer', () => {
 		render(
 			<MarketingShell>
@@ -33,6 +39,26 @@ describe('MarketingShell', () => {
 		expect(screen.getByRole('contentinfo')).toBeInTheDocument();
 		expect(screen.getByText('Placeholder')).toBeInTheDocument();
 		expect(screen.getAllByRole('link', {name: 'Sign in'})[0]).toHaveAttribute('href', '/login');
+
+		const footer = screen.getByRole('navigation', {name: 'Footer'});
+		const footerHome = footer.querySelector('a[href="/"]');
+		expect(footerHome).toHaveAttribute('aria-current', 'page');
+		expect(footerHome).toHaveClass('text-brand');
+	});
+
+	it('highlights Platform in the footer on nested platform routes', () => {
+		navigation.pathname = '/platform/appointments';
+		render(
+			<MarketingShell>
+				<p>Placeholder</p>
+			</MarketingShell>,
+		);
+
+		const footer = screen.getByRole('navigation', {name: 'Footer'});
+		const footerPlatform = footer.querySelector('a[href="/platform"]');
+		expect(footerPlatform).toHaveAttribute('aria-current', 'page');
+		expect(footerPlatform).toHaveClass('text-brand');
+		expect(footer.querySelector('a[href="/"]')).not.toHaveAttribute('aria-current');
 	});
 
 	it('opens and closes mobile navigation from the header control', async () => {

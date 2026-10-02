@@ -20,13 +20,13 @@ export function MarketingHomeHero() {
 				<div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
 					<Link
 						href={MARKETING_HOME_HERO.primaryCta.href}
-						className={cn(buttonVariants({size: 'lg'}))}
+						className={cn(buttonVariants({size: 'lg'}), 'w-full sm:w-auto')}
 					>
 						{MARKETING_HOME_HERO.primaryCta.label}
 					</Link>
 					<Link
 						href={MARKETING_HOME_HERO.secondaryCta.href}
-						className={cn(buttonVariants({variant: 'outline', size: 'lg'}))}
+						className={cn(buttonVariants({variant: 'outline', size: 'lg'}), 'w-full sm:w-auto')}
 					>
 						{MARKETING_HOME_HERO.secondaryCta.label}
 					</Link>

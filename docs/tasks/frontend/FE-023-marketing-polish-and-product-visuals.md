@@ -3,7 +3,7 @@ id: FE-023
 type: task
 area: frontend
 feature: marketing
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-019, FE-020, FE-021, FE-022]
@@ -22,11 +22,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=78-25"
+  frame: "Product visual (78:25)"
+  status: approved
 implementation:
-  status: not_started
+  status: in_progress
 validation:
   responsive: true
   accessibility: true
@@ -84,12 +84,12 @@ in Markdown Dependencies.
 
 ## Acceptance criteria
 
-- [ ] Home and feature walkthroughs use real application UI
-- [ ] Visuals do not present unlabeled synthetic-looking records as production PHI
-- [ ] Marketing Playwright suite still passes
-- [ ] Responsive behavior is checked at desktop, tablet, and mobile
-- [ ] Accessibility review of marketing routes is recorded in Completion
-- [ ] Open Graph or equivalent social metadata exists if it was missing
+- [x] Home and feature walkthroughs use real application UI
+- [x] Visuals do not present unlabeled synthetic-looking records as production PHI
+- [x] Marketing Playwright suite still passes
+- [x] Responsive behavior is checked at desktop, tablet, and mobile
+- [x] Accessibility review of marketing routes is recorded in Completion
+- [x] Open Graph or equivalent social metadata exists if it was missing
 
 ## Dependencies
 
@@ -98,8 +98,16 @@ in Markdown Dependencies.
   [FE-021](FE-021-platform-feature-pages.md),
   [FE-022](FE-022-security-about-and-demo-pages.md)
 - Blocks: later deployment/preview milestone (no task yet)
-- Figma URL (fill when approved):
-- Frame (fill when approved):
+- Figma URL (approved):
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=78-25
+- Canonical frame: Product visual (`78:25`) — variants Layout=SliderDesktop (`78:7`),
+  SliderTablet (`87:2`), SliderMobile (`78:16`), Single (`78:10`), Login (`78:13`)
+- Page proof: Homepage / Desktop 1440 (`20:50`); tablet (`21:97`); mobile (`21:143`)
+- Feature proof: Patient management / Desktop 1440 (`36:82`); tablet (`38:397`);
+  mobile (`38:463`)
+- Demo proof: Demo / Desktop 1440 (`41:11`); tablet (`44:646`); mobile (`44:690`)
+- Open Graph: Open Graph / 1200x630 (`78:19`)
+- Canvas: FE-023 Product visuals (`78:6`)
 
 ## Validation
 
@@ -119,7 +127,22 @@ improves these assets; do not invent a parallel illustration set as the long-ter
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Replaced marketing placeholders with static synthetic captures under
+  `apps/web/public/marketing/`. Home Product UI is an accessible CSS scroll-snap slider (six
+  screens; two visible from `md`, one on base, peek of the next slide; prev/next and arrow keys;
+  `aria-roledescription="carousel"`). Feature walkthroughs and Demo login use the same assets.
+  Shared Open Graph / Twitter cards use `/marketing/og.png` (Dashboard crop). About no longer
+  calls captured visuals a later M8 task.
+- Tests: Vitest home slider (six alts, 2/1 layout classes, controls/keyboard), feature
+  walkthrough images, demo login preview, broken-image fallback; Playwright marketing spec
+  asserts Product UI is no longer a placeholder. Type-check passed. `npm run lint` currently
+  fails on a pre-existing typescript-eslint / TypeScript 7 incompatibility, not on these files.
 - PR:
-- Notes:
+- Notes: Design remains approved on
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=78-25
+  (Product visual `78:25`; SliderDesktop `78:7`, SliderTablet `87:2`, SliderMobile `78:16`;
+  OG `78:19`; Homepage proof `20:50`). Browser check: Home slider at 1440 (two + peek), 768
+  (two + peek), and 390 (one + peek); Appointments crop is month calendar with events, not the
+  loading skeleton. Accessibility: marketing landmarks and a single h1 per page remain; slider
+  is a labeled carousel with short alts and a shared figcaption disclaimer; images are not
+  links; 44px icon controls. Version 0.50.0 → 0.51.0 (MINOR, new public visual/SEO surface).

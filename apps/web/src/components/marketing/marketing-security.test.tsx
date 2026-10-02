@@ -38,6 +38,13 @@ describe('MarketingSecurity', () => {
 		expect(
 			screen.getByRole('note', {name: MARKETING_SECURITY_CALLOUT.heading}),
 		).toBeInTheDocument();
+		expect(screen.getByRole('link', {name: MARKETING_SECURITY_HERO.primaryCta.label}).parentElement).toHaveClass(
+			'sm:flex-row',
+		);
+		expect(screen.getByRole('link', {name: MARKETING_SECURITY_HERO.primaryCta.label})).toHaveClass(
+			'w-full',
+			'sm:w-auto',
+		);
 	});
 
 	it('points hero and CTA links at demo, about, login, and administration', () => {

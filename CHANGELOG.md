@@ -6,6 +6,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.51.1] - 2026-10-02
+
+### Changed
+
+- Marketing chrome polish: footer nav marks the current route with `text-brand` and
+  `aria-current="page"` (Sign in stays brand), Demo sign-in crop is capped at 540px, hero CTAs
+  stack full-width on mobile and sit in a row from `sm` (matching Home), and Product UI slider
+  controls sit on the section heading row.
+
+## [0.51.0] - 2026-10-01
+
+### Added
+
+- Marketing product visuals (FE-023): a six-slide Product UI slider on Home (two slides on
+  desktop/tablet, one on mobile, with a peek of the next screen), captured synthetic module
+  screens on the six feature walkthroughs, a captured mock login on Demo, and shared Open Graph /
+  Twitter metadata from the Dashboard crop. Copy keeps the synthetic-demo disclaimer and does not
+  claim HIPAA certification or hosted production.
+
 ## [0.50.0] - 2026-09-30
 
 ### Added

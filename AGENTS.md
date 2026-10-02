@@ -1,7 +1,7 @@
 <!-- Project agent notes. Next.js app-specific agent files live in apps/web. -->
 
-Canonical documentation: `/docs`. Current demo position: M0–M7 shipped; M8 foundation and
-shared design tokens shipped (FE-017, FE-018); remaining M8 is marketing pages (FE-019–FE-023)
+Canonical documentation: `/docs`. Current demo position: M0–M7 shipped; M8 marketing site shipped
+(FE-017–FE-023)
 ([docs/roadmap/post-mvp-baseline.md](docs/roadmap/post-mvp-baseline.md)). Next after M8 is later
 deployment/preview.
 

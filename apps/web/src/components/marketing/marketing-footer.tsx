@@ -1,6 +1,4 @@
-import Link from 'next/link';
-import {LOGIN_PATH} from '@/lib/auth/paths';
-import {MARKETING_NAV} from '@/lib/navigation/marketing-nav';
+import {MarketingFooterNav} from '@/components/marketing/marketing-footer-nav';
 
 export function MarketingFooter() {
 	return (
@@ -10,28 +8,7 @@ export function MarketingFooter() {
 					MedConnect Pro is a portfolio demonstration with synthetic data. It is not a
 					certified production healthcare system.
 				</p>
-				<nav aria-label="Footer">
-					<ul className="flex flex-wrap items-center gap-x-4 gap-y-2">
-						{MARKETING_NAV.map((item) => (
-							<li key={item.href}>
-								<Link
-									href={item.href}
-									className="text-sm font-medium text-foreground-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-								>
-									{item.name}
-								</Link>
-							</li>
-						))}
-						<li>
-							<Link
-								href={LOGIN_PATH}
-								className="text-sm font-medium text-brand hover:text-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-							>
-								Sign in
-							</Link>
-						</li>
-					</ul>
-				</nav>
+				<MarketingFooterNav />
 			</div>
 		</footer>
 	);

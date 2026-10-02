@@ -5,17 +5,32 @@ interface MarketingSectionProps {
 	title: string;
 	children: React.ReactNode;
 	className?: string;
+	actions?: React.ReactNode;
 }
 
-export function MarketingSection({headingId, title, children, className}: MarketingSectionProps) {
+export function MarketingSection({
+	headingId,
+	title,
+	children,
+	className,
+	actions,
+}: MarketingSectionProps) {
 	return (
 		<section aria-labelledby={headingId} className={className}>
-			<h2
-				id={headingId}
-				className="text-2xl font-semibold tracking-tight text-foreground"
-			>
-				{title}
-			</h2>
+			<div className="relative flex min-h-10 items-center">
+				<h2
+					id={headingId}
+					className={cn(
+						'text-2xl font-semibold tracking-tight text-foreground',
+						actions ? 'pr-24' : undefined,
+					)}
+				>
+					{title}
+				</h2>
+				{actions ? (
+					<div className="absolute right-0 top-1/2 flex -translate-y-1/2 gap-2">{actions}</div>
+				) : null}
+			</div>
 			<div className="mt-6">{children}</div>
 		</section>
 	);

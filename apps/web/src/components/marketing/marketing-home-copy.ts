@@ -65,9 +65,6 @@ export const MARKETING_HOME_WORKFLOW = {
 export const MARKETING_HOME_PREVIEW = {
 	heading: 'Product UI',
 	headingId: 'product-ui',
-	caption:
-		'Placeholder until FE-023. Final visuals come from existing app screens, not invented product chrome.',
-	slotLabel: 'Labeled placeholder: dashboard / calendar / patient profile',
 } as const;
 
 export const MARKETING_HOME_UX_PRINCIPLES = {

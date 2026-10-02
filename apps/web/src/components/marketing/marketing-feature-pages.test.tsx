@@ -59,7 +59,9 @@ describe.each(FEATURE_PAGE_SLUGS)('MarketingFeaturePage (%s)', (slug: FeaturePag
 
 		expect(screen.getByRole('region', {name: page.hero.heading})).toBeInTheDocument();
 		expect(screen.getByRole('region', {name: page.capabilities.heading})).toBeInTheDocument();
-		expect(screen.getByLabelText(page.walkthrough.slotLabel)).toBeInTheDocument();
+		expect(screen.getByAltText(page.walkthrough.image.alt).getAttribute('src')).toContain(
+			page.walkthrough.image.src,
+		);
 		expect(screen.getByText(page.walkthrough.caption)).toBeInTheDocument();
 	});
 

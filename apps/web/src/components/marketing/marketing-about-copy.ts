@@ -60,8 +60,8 @@ export const MARKETING_ABOUT_STATE = {
 			title: 'M8 marketing',
 			description:
 				'This public site describes implemented capabilities without inventing unshipped product features.',
-			detail: 'Polish and captured product visuals are a later M8 task.',
-			status: 'In progress',
+			detail: 'Public pages include captured synthetic demo screens.',
+			status: 'Shipped',
 		},
 		{
 			title: 'Later: deploy',

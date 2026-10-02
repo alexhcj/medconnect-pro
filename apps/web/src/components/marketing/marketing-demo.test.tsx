@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import {MarketingDemo} from '@/components/marketing/marketing-demo';
 import {
 	MARKETING_DEMO_CTA,
@@ -33,7 +33,16 @@ describe('MarketingDemo', () => {
 
 		expect(screen.getByRole('region', {name: MARKETING_DEMO_HERO.heading})).toBeInTheDocument();
 		expect(screen.getByRole('note', {name: MARKETING_DEMO_SAFETY.heading})).toBeInTheDocument();
-		expect(screen.getByLabelText(MARKETING_DEMO_LOGIN_PREVIEW.slotLabel)).toBeInTheDocument();
+		expect(screen.getByAltText(MARKETING_DEMO_LOGIN_PREVIEW.image.alt).getAttribute('src')).toContain(
+			MARKETING_DEMO_LOGIN_PREVIEW.image.src,
+		);
+		expect(screen.getByAltText(MARKETING_DEMO_LOGIN_PREVIEW.image.alt)).toHaveClass('max-h-[540px]');
+		const demoHero = screen.getByRole('region', {name: MARKETING_DEMO_HERO.heading});
+		const demoPrimary = within(demoHero).getByRole('link', {
+			name: MARKETING_DEMO_HERO.primaryCta.label,
+		});
+		expect(demoPrimary.parentElement).toHaveClass('sm:flex-row');
+		expect(demoPrimary).toHaveClass('w-full', 'sm:w-auto');
 	});
 
 	it('continues every demo sign-in control to /login', () => {

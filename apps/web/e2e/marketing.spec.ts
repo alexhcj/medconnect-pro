@@ -11,6 +11,10 @@ test.describe('Marketing public navigation', () => {
 				name: 'Connected care workflows for the modern practice',
 			}),
 		).toBeVisible();
+		await expect(page.getByRole('heading', {level: 2, name: 'Product UI'})).toBeVisible();
+		await expect(page.getByRole('region', {name: 'Product screens'})).toBeVisible();
+		await expect(page.getByAltText('Patients directory with synthetic demo records')).toBeVisible();
+		await expect(page.getByText('Placeholder until FE-023')).toHaveCount(0);
 		await expect(page).toHaveTitle(/Home/);
 		await expect(page.getByRole('banner')).toBeVisible();
 		await expect(primaryNav).toBeVisible();

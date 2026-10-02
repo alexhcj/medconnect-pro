@@ -1,20 +1,54 @@
+'use client';
+
+import {useRef} from 'react';
+import {ChevronLeft, ChevronRight} from 'lucide-react';
 import {MARKETING_HOME_PREVIEW} from '@/components/marketing/marketing-home-copy';
+import {
+	MarketingProductUiSlider,
+	scrollProductUiTrack,
+} from '@/components/marketing/marketing-product-ui-slider';
 import {MarketingSection} from '@/components/marketing/marketing-section';
+import {Button} from '@/components/ui/button';
 
 export function MarketingHomePreview() {
+	const trackRef = useRef<HTMLDivElement>(null);
+
+	function scrollBySlide(direction: -1 | 1) {
+		scrollProductUiTrack(trackRef.current, direction);
+	}
+
 	return (
 		<MarketingSection
 			headingId={MARKETING_HOME_PREVIEW.headingId}
 			title={MARKETING_HOME_PREVIEW.heading}
+			actions={
+				<>
+					<Button
+						type="button"
+						variant="outline"
+						size="icon"
+						aria-label="Previous product screen"
+						onClick={() => {
+							scrollBySlide(-1);
+						}}
+					>
+						<ChevronLeft className="h-4 w-4" aria-hidden />
+					</Button>
+					<Button
+						type="button"
+						variant="outline"
+						size="icon"
+						aria-label="Next product screen"
+						onClick={() => {
+							scrollBySlide(1);
+						}}
+					>
+						<ChevronRight className="h-4 w-4" aria-hidden />
+					</Button>
+				</>
+			}
 		>
-			<p className="text-sm text-foreground-secondary">{MARKETING_HOME_PREVIEW.caption}</p>
-			<div
-				className="mt-4 flex min-h-[16rem] items-center justify-center rounded-xl border border-border bg-subtle px-6 py-16 text-center sm:min-h-[20rem] lg:min-h-[24rem]"
-				role="img"
-				aria-label={MARKETING_HOME_PREVIEW.slotLabel}
-			>
-				<p className="max-w-md text-sm text-foreground-muted">{MARKETING_HOME_PREVIEW.slotLabel}</p>
-			</div>
+			<MarketingProductUiSlider trackRef={trackRef} onScrollBySlide={scrollBySlide} />
 		</MarketingSection>
 	);
 }

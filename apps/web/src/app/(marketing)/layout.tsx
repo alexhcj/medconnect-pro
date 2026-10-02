@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import {MarketingShell} from '@/components/marketing/marketing-shell';
 
 export const metadata: Metadata = {
+	metadataBase: new URL('http://localhost:3000'),
 	title: {
 		default: 'MedConnect Pro',
 		template: '%s · MedConnect Pro',

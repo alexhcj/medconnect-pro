@@ -1,4 +1,8 @@
 import type {FeaturePageLayoutProps} from '@/components/marketing/feature-page-layout';
+import {
+	MARKETING_PRODUCT_SLIDE_BY_FEATURE,
+	MARKETING_PRODUCT_VISUAL_CAPTION,
+} from '@/components/marketing/marketing-product-visuals';
 
 export const FEATURE_PAGE_SLUGS = [
 	'patient-management',
@@ -16,8 +20,7 @@ const FEATURE_PAGE_HERO_CTAS = {
 	secondaryCta: {label: 'View platform', href: '/platform'},
 } as const;
 
-const FEATURE_PAGE_WALKTHROUGH_CAPTION =
-	'Placeholder until FE-023. Final visuals come from existing app screens, not invented product chrome.';
+const FEATURE_PAGE_WALKTHROUGH_CAPTION = MARKETING_PRODUCT_VISUAL_CAPTION;
 
 const FEATURE_PAGE_CTA_BAND = {
 	heading: 'Explore the demo',
@@ -94,7 +97,10 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			heading: 'Product walkthrough',
 			headingId: 'patient-management-walkthrough',
 			caption: FEATURE_PAGE_WALKTHROUGH_CAPTION,
-			slotLabel: 'Labeled placeholder until FE-023 · patient directory / patient profile',
+			image: {
+				src: MARKETING_PRODUCT_SLIDE_BY_FEATURE['patient-management'].src,
+				alt: MARKETING_PRODUCT_SLIDE_BY_FEATURE['patient-management'].alt,
+			},
 		},
 		workflow: {
 			heading: 'How this module fits the platform',
@@ -162,7 +168,10 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			heading: 'Product walkthrough',
 			headingId: 'appointments-walkthrough',
 			caption: FEATURE_PAGE_WALKTHROUGH_CAPTION,
-			slotLabel: 'Labeled placeholder until FE-023 · appointments calendar',
+			image: {
+				src: MARKETING_PRODUCT_SLIDE_BY_FEATURE.appointments.src,
+				alt: MARKETING_PRODUCT_SLIDE_BY_FEATURE.appointments.alt,
+			},
 		},
 		workflow: {
 			heading: 'How this module fits the platform',
@@ -232,7 +241,10 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			heading: 'Product walkthrough',
 			headingId: 'telehealth-walkthrough',
 			caption: FEATURE_PAGE_WALKTHROUGH_CAPTION,
-			slotLabel: 'Labeled placeholder until FE-023 · telehealth lobby / session shell',
+			image: {
+				src: MARKETING_PRODUCT_SLIDE_BY_FEATURE.telehealth.src,
+				alt: MARKETING_PRODUCT_SLIDE_BY_FEATURE.telehealth.alt,
+			},
 		},
 		workflow: {
 			heading: 'How this module fits the platform',
@@ -301,7 +313,10 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			heading: 'Product walkthrough',
 			headingId: 'billing-walkthrough',
 			caption: FEATURE_PAGE_WALKTHROUGH_CAPTION,
-			slotLabel: 'Labeled placeholder until FE-023 · billing invoice list',
+			image: {
+				src: MARKETING_PRODUCT_SLIDE_BY_FEATURE.billing.src,
+				alt: MARKETING_PRODUCT_SLIDE_BY_FEATURE.billing.alt,
+			},
 		},
 		workflow: {
 			heading: 'How this module fits the platform',
@@ -369,7 +384,10 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			heading: 'Product walkthrough',
 			headingId: 'analytics-walkthrough',
 			caption: FEATURE_PAGE_WALKTHROUGH_CAPTION,
-			slotLabel: 'Labeled placeholder until FE-023 · dashboard overview cards',
+			image: {
+				src: MARKETING_PRODUCT_SLIDE_BY_FEATURE.analytics.src,
+				alt: MARKETING_PRODUCT_SLIDE_BY_FEATURE.analytics.alt,
+			},
 		},
 		workflow: {
 			heading: 'How this module fits the platform',
@@ -437,7 +455,10 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			heading: 'Product walkthrough',
 			headingId: 'administration-walkthrough',
 			caption: FEATURE_PAGE_WALKTHROUGH_CAPTION,
-			slotLabel: 'Labeled placeholder until FE-023 · admin users / audit viewer',
+			image: {
+				src: MARKETING_PRODUCT_SLIDE_BY_FEATURE.administration.src,
+				alt: MARKETING_PRODUCT_SLIDE_BY_FEATURE.administration.alt,
+			},
 		},
 		workflow: {
 			heading: 'How this module fits the platform',

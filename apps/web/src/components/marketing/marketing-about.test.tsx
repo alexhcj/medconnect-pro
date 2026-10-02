@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import {MarketingAbout} from '@/components/marketing/marketing-about';
 import {
 	MARKETING_ABOUT_ARCHITECTURE,
@@ -36,6 +36,12 @@ describe('MarketingAbout', () => {
 
 		expect(screen.getByRole('region', {name: MARKETING_ABOUT_HERO.heading})).toBeInTheDocument();
 		expect(screen.getByRole('region', {name: MARKETING_ABOUT_PURPOSE.heading})).toBeInTheDocument();
+		const aboutHero = screen.getByRole('region', {name: MARKETING_ABOUT_HERO.heading});
+		const aboutPrimary = within(aboutHero).getByRole('link', {
+			name: MARKETING_ABOUT_HERO.primaryCta.label,
+		});
+		expect(aboutPrimary.parentElement).toHaveClass('sm:flex-row');
+		expect(aboutPrimary).toHaveClass('w-full', 'sm:w-auto');
 	});
 
 	it('lists intended roles and points CTAs at /demo and /platform', () => {

@@ -9,6 +9,7 @@ import {
 	MARKETING_DEMO_WALKTHROUGH,
 } from '@/components/marketing/marketing-demo-copy';
 import {MarketingHero} from '@/components/marketing/marketing-hero';
+import {MarketingProductVisual} from '@/components/marketing/marketing-product-visual';
 import {
 	MarketingSection,
 	marketingSectionGridClassName,
@@ -25,7 +26,6 @@ export function MarketingDemo() {
 				body={MARKETING_DEMO_HERO.body}
 				primaryCta={MARKETING_DEMO_HERO.primaryCta}
 				secondaryCta={MARKETING_DEMO_HERO.secondaryCta}
-				stackUntilLg
 			/>
 			<div className="mx-auto max-w-6xl space-y-10 px-4 pb-16 sm:px-6 lg:space-y-12 lg:px-8 lg:pb-24">
 				<MarketingSection
@@ -65,18 +65,13 @@ export function MarketingDemo() {
 					headingId={MARKETING_DEMO_LOGIN_PREVIEW.headingId}
 					title={MARKETING_DEMO_LOGIN_PREVIEW.heading}
 				>
-					<p className="text-sm text-foreground-secondary">
-						{MARKETING_DEMO_LOGIN_PREVIEW.caption}
-					</p>
-					<div
-						className="mt-4 flex min-h-[16rem] items-center justify-center rounded-xl border border-border bg-subtle px-6 py-16 text-center sm:min-h-[17.5rem]"
-						role="img"
-						aria-label={MARKETING_DEMO_LOGIN_PREVIEW.slotLabel}
-					>
-						<p className="max-w-md text-sm text-foreground-muted">
-							{MARKETING_DEMO_LOGIN_PREVIEW.slotLabel}
-						</p>
-					</div>
+					<MarketingProductVisual
+						src={MARKETING_DEMO_LOGIN_PREVIEW.image.src}
+						alt={MARKETING_DEMO_LOGIN_PREVIEW.image.alt}
+						caption={MARKETING_DEMO_LOGIN_PREVIEW.caption}
+						frameClassName="mt-4 min-h-[16rem] bg-subtle sm:min-h-[17.5rem]"
+						imageClassName="h-auto max-h-[540px] w-full object-contain object-top"
+					/>
 				</MarketingSection>
 
 				<MarketingCtaBand

@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import {
 	FeaturePageLayout,
 	type FeaturePageLayoutProps,
@@ -37,8 +37,11 @@ const FEATURE_PAGE_TEMPLATE: FeaturePageLayoutProps = {
 		heading: 'Product walkthrough',
 		headingId: 'feature-walkthrough',
 		caption:
-			'Placeholder until FE-023. Final visuals come from existing app screens, not invented product chrome.',
-		slotLabel: 'Labeled placeholder · dashboard / calendar / patient profile',
+			'Synthetic demo screens. Not a production medical record and not a HIPAA-certified system.',
+		image: {
+			src: '/marketing/patients.png',
+			alt: 'Patients directory with synthetic demo records',
+		},
 	},
 	workflow: {
 		heading: 'How this module fits the platform',
@@ -110,7 +113,16 @@ describe('FeaturePageLayout', () => {
 		expect(
 			screen.getByRole('region', {name: FEATURE_PAGE_TEMPLATE.capabilities.heading}),
 		).toBeInTheDocument();
-		expect(screen.getByLabelText(FEATURE_PAGE_TEMPLATE.walkthrough.slotLabel)).toBeInTheDocument();
+		const featureHero = screen.getByRole('region', {name: FEATURE_PAGE_TEMPLATE.hero.heading});
+		const featurePrimary = within(featureHero).getByRole('link', {
+			name: FEATURE_PAGE_TEMPLATE.hero.primaryCta.label,
+		});
+		expect(featurePrimary.parentElement).toHaveClass('sm:flex-row');
+		expect(featurePrimary).toHaveClass('w-full', 'sm:w-auto');
+		expect(
+			screen.getByAltText(FEATURE_PAGE_TEMPLATE.walkthrough.image.alt).getAttribute('src'),
+		).toContain(FEATURE_PAGE_TEMPLATE.walkthrough.image.src);
+		expect(screen.getByText(FEATURE_PAGE_TEMPLATE.walkthrough.caption)).toBeInTheDocument();
 		expect(screen.getByText(/Not production OAuth/)).toBeInTheDocument();
 		expect(screen.getByText(/No live video/)).toBeInTheDocument();
 	});

@@ -1,4 +1,5 @@
 import {LOGIN_PATH} from '@/lib/auth/paths';
+import {MARKETING_LOGIN_PREVIEW_IMAGE} from '@/components/marketing/marketing-product-visuals';
 
 export const MARKETING_DEMO_HERO = {
 	eyebrow: 'Demo',
@@ -73,9 +74,8 @@ export const MARKETING_DEMO_LOGIN_PREVIEW = {
 	heading: 'Sign-in chrome',
 	headingId: 'sign-in-chrome',
 	caption:
-		'Labeled placeholder until product visuals are captured. This is not a second sign-in form. Continue to existing /login.',
-	slotLabel:
-		'Login chrome placeholder · mock identity at /login · synthetic credentials on the sign-in page',
+		'Captured mock identity sign-in. This is not a second sign-in form. Continue to existing /login.',
+	image: MARKETING_LOGIN_PREVIEW_IMAGE,
 } as const;
 
 export const MARKETING_DEMO_CTA = {
