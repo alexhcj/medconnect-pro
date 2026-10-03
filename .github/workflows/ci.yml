@@ -36,6 +36,26 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v4
+      - name: Guard committed secrets
+        run: npm run ci:secrets
+      - name: Test secret guard
+        run: npm run test:ci-secrets
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - uses: actions/cache@v4
+        with:
+          path: infra/terraform/.terraform
+          key: terraform-${{ runner.os }}-${{ hashFiles('infra/terraform/.terraform.lock.hcl') }}
+      - name: Terraform fmt
+        working-directory: infra/terraform
+        run: terraform fmt -check
+      - name: Terraform init
+        working-directory: infra/terraform
+        run: terraform init -backend=false
+      - name: Terraform validate
+        working-directory: infra/terraform
+        run: terraform validate
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc

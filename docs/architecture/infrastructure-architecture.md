@@ -18,9 +18,11 @@ in-process demo adapters
 See the root [README](../../README.md) for setup and validation commands.
 
 M8 marketing site is in the repository (FE-017–FE-023). GitHub Actions **quality gates** exist
-([INFRA-005](../tasks/infrastructure/INFRA-005-github-actions-ci-quality-gates.md)). Docker images,
-preview environments, and AWS hosting remain **M9**
-([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
+([INFRA-005](../tasks/infrastructure/INFRA-005-github-actions-ci-quality-gates.md)). Secrets
+classification and AWS secret retrieval exist
+([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)).
+Docker images, preview environments, and AWS hosting remain **M9**
+([INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
 not M8. Topology is [ADR-012](../decisions/ADR-012-deployment-topology.md): Amplify for Next.js,
 ECS/Fargate for NestJS, environments `local` / `preview` / `production`.
 
@@ -38,7 +40,7 @@ AWS.
 - S3
 - KMS
 - SNS / SQS (notification fan-out and durable delivery; local Nest `DeliveryBus` until then)
-- Secrets Manager / Parameter Store
+- Secrets Manager (runtime `DATABASE_*`; Parameter Store unused)
 - CloudWatch
 
 EKS/Kubernetes is deferred until scale, team size or operational requirements justify it.
@@ -77,7 +79,38 @@ The three databases are synthetic/demo only and must never contain real PHI
 
 ## IaC
 
-Terraform.
+Terraform root: [infra/terraform/](../../infra/terraform/). INFRA-006 bootstraps GitHub OIDC,
+distinct preview/production Secrets Manager containers (`medconnect/preview/api`,
+`medconnect/production/api`), and non-overlapping read policies. Apply is operator-run; quality
+CI only formats and validates. Remote state and VPC/RDS land in
+[INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md). Rotation
+and import notes: [deploy.md](../workflows/deploy.md).
+
+## Secrets retrieval
+
+Classification: [environment-configuration.md](../contracts/environment-configuration.md).
+
+Preview and production `DATABASE_URL` / `DATABASE_ADMIN_URL` come from Secrets Manager JSON keys.
+ECS (INFRA-008) injects them as task `secrets` (`valueFrom` `arn:…:DATABASE_URL::`). Nest reads
+process env; do not add an AWS SDK to `apps/api` for this. Non-secret hosted config (`APP_ENV`,
+`WEB_ORIGIN`, `PORT`, …) is ECS task environment. Amplify holds public `NEXT_PUBLIC_*` (and
+`API_BASE_URL`) only — no database URLs, no secret ARNs.
+
+GitHub Actions authenticates to AWS with those OIDC roles. Do not store long-lived AWS access
+keys as GitHub Secrets. Quality CI never assumes the roles.
+
+### API image contract
+
+The API image does not exist yet
+([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)). When it
+does:
+
+- `apps/api/Dockerfile` must not declare `ENV` or `ARG` for `DATABASE_URL`, `DATABASE_ADMIN_URL`,
+  AWS keys, or any secret.
+- `.dockerignore` must exclude `.env*`, keys, and document blobs.
+- Runtime configuration comes from the ECS task definition: plaintext for environment-specific
+  variables; Secrets Manager injection for `DATABASE_*`.
+- Preview and production use the same image digest; only injected env and secrets differ.
 
 ## CI/CD
 
@@ -87,18 +120,22 @@ Quality gates: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) (INF
 (`postgres:18-alpine` service, same demo credentials as Compose). Schema before API tests:
 `npm run migration:run`. Commands, in order:
 
-1. `npm run lint` / `npm run lint:api`
-2. `npm run type-check` / `npm run type-check:api`
-3. `npm test` (web Vitest)
-4. `npm run test:api` (API Vitest; requires the Postgres service)
-5. `npm run build:production` / `npm run build:api`
-6. `npm audit --omit=dev`
+1. `npm run ci:secrets` (tracked `.env`, AWS access-key material, Compose URLs in hosted/Terraform paths)
+2. `terraform fmt -check` / `terraform init -backend=false` / `terraform validate` in `infra/terraform`
+   (no AWS credentials)
+3. `npm run lint` / `npm run lint:api`
+4. `npm run type-check` / `npm run type-check:api`
+5. `npm test` (web Vitest)
+6. `npm run test:api` (API Vitest; requires the Postgres service)
+7. `npm run build:production` / `npm run build:api`
+8. `npm audit --omit=dev`
 
 A failing lint, type-check, test, or build fails the workflow. Mark the `ci` check required on
 `main` in GitHub branch protection so merge is fail-closed. Playwright mock e2e and `e2e:live` are
 not in this workflow (`e2e:live` is [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)).
-The workflow file contains no production secrets; Compose demo database credentials are not GitHub
-Secrets.
+The workflow file contains no production secrets and no AWS credentials; Compose demo database
+credentials are not GitHub Secrets. GitHub OIDC roles exist in Terraform for later deploy
+workflows only.
 
 Not in this workflow (later M9):
 

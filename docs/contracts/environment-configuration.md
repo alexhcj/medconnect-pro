@@ -4,7 +4,7 @@ Runtime configuration for `apps/web` and `apps/api`. This is not an OpenAPI sche
 duplicate generated API types.
 
 Topology and environment names: [ADR-012](../decisions/ADR-012-deployment-topology.md).
-INFRA-006 extends this catalog (secret retrieval); it must not fork it.
+Hosted secret retrieval (this catalog’s retrieval section, [INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)) extends these tables; it must not fork them.
 
 ## Environments
 
@@ -63,10 +63,73 @@ real `.env`, `.env.preview`, or `.env.production` files.
 
 No JWT signing secret, payment processor key, or OAuth client secret exists in the application.
 Do not invent them here. `NEXT_PUBLIC_*` must never hold `DATABASE_*` or AWS keys. Amplify
-configuration is public frontend values only.
+configuration is public frontend values only. The Amplify console must not hold `DATABASE_*`
+values or Secrets Manager ARNs as frontend environment variables.
 
 Plane `PLANE_API_KEY` is developer tooling, not application runtime, and must not be injected
 into ECS or Amplify.
+
+## Hosted retrieval
+
+Local (`APP_ENV=local`) keeps using process env and optional gitignored `.env` files. Preview and
+production do not bake secrets into Git, images, or Amplify.
+
+### Secrets Manager
+
+Runtime secrets live in AWS Secrets Manager JSON (not Parameter Store). Names are distinct;
+preview IAM cannot read the production secret and production IAM cannot read the preview secret.
+
+| Secret name | Environment | JSON keys |
+| --- | --- | --- |
+| `medconnect/preview/api` | preview | `DATABASE_URL`, `DATABASE_ADMIN_URL` |
+| `medconnect/production/api` | production | `DATABASE_URL`, `DATABASE_ADMIN_URL` |
+
+Terraform bootstrap: [infra/terraform/](../../infra/terraform/). Empty key values until
+[INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md) writes
+RDS URLs. Do not copy Compose `medconnect` / `medconnect_app` passwords into these secrets.
+
+ECS ([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md))
+injects keys as process environment via the task definition `secrets` block, for example
+`valueFrom` `arn:…:secret:medconnect/preview/api:DATABASE_URL::`. Nest `ConfigModule` still
+reads env; the API does not call the Secrets Manager SDK.
+
+Future session-signing material, if the application ever needs it, is a new key on the same
+per-environment secret. Do not create that key now.
+
+### Non-secret hosted configuration
+
+`APP_ENV`, `NODE_ENV`, `PORT`, `WEB_ORIGIN` / `WEB_ORIGINS`, and `SWAGGER_UI_ENABLED` are ECS
+task environment (plaintext), not Secrets Manager. Parameter Store is unused: a second store
+is not simpler than task env.
+
+Amplify receives only public frontend configuration (`NEXT_PUBLIC_*` and server `API_BASE_URL`
+for that environment’s API origin). No database URLs. No Secrets Manager ARNs.
+
+### AWS access and document storage
+
+GitHub Actions authenticates to AWS with OIDC (IAM roles in the Terraform bootstrap). Do not
+store `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY` as GitHub Secrets for this purpose. Quality
+CI ([`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)) stays free of AWS credentials;
+deploy workflows ([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md),
+[INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
+assume the OIDC roles.
+
+Hosted document-bucket access is the future ECS task role
+([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)), not
+static access keys.
+
+`PLANE_API_KEY` stays in gitignored `scripts/plane/.env` only.
+
+### API image contract
+
+The API image ([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)
+Dockerfile) must not declare `ENV` or `ARG` for `DATABASE_URL`, `DATABASE_ADMIN_URL`, AWS keys,
+or any secret. Runtime configuration comes from the ECS task definition: plaintext for
+environment-specific variables; Secrets Manager injection for `DATABASE_*`. Preview and
+production images are identical except for injected env and secrets. See
+[infrastructure-architecture.md](../architecture/infrastructure-architecture.md).
+
+Rotation: [deploy.md](../workflows/deploy.md).
 
 ## Fail-closed hosted database URLs
 

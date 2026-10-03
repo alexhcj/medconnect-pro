@@ -6,6 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.54.0] - 2026-10-03
+
+### Added
+
+- Secrets classification and AWS secret retrieval (INFRA-006): distinct Secrets Manager names
+  `medconnect/preview/api` and `medconnect/production/api`, GitHub OIDC IAM roles in
+  [infra/terraform/](infra/terraform/), a committed-secret CI guard
+  (`npm run ci:secrets`), and a short rotation runbook
+  ([docs/workflows/deploy.md](docs/workflows/deploy.md)). Amplify / `NEXT_PUBLIC_*` remains
+  public configuration only. The API image is still INFRA-008; the contract forbids secret
+  `ENV` / `ARG`.
+
+### Changed
+
+- Environment catalog
+  ([docs/contracts/environment-configuration.md](docs/contracts/environment-configuration.md))
+  now documents hosted retrieval (ECS injection, no Nest AWS SDK, Parameter Store unused).
+
 ## [0.53.0] - 2026-10-03
 
 ### Added

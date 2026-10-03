@@ -60,3 +60,18 @@ info.md
 # Postman personal copies (tokens must never be committed)
 postman/environments/*.local.json
 postman/**/*.local.json
+
+# Terraform (INFRA-006+). Keep *.tfvars.example committed.
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+*.tfvars
+!*.tfvars.example
+!**/*.tfvars.example

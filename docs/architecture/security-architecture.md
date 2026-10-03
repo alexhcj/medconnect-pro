@@ -119,8 +119,14 @@ secrets are `DATABASE_URL` and `DATABASE_ADMIN_URL` only. Do not invent JWT, pay
 client secrets that the application does not use.
 
 Use environment variables locally (`APP_ENV=local`). Hosted preview and production retrieve
-secrets from AWS Secrets Manager (Parameter Store only for non-secret configuration) in
-[INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md).
-Preview secrets and the preview/demo database must not be the production pair; production must
-not use local Compose or preview credentials
-([ADR-012](../decisions/ADR-012-deployment-topology.md)).
+`DATABASE_URL` and `DATABASE_ADMIN_URL` from AWS Secrets Manager JSON secrets
+`medconnect/preview/api` and `medconnect/production/api` (distinct names; preview IAM cannot
+read production). ECS injects those keys as process env
+([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md);
+task wiring is [INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)).
+Parameter Store is unused. GitHub Actions uses OIDC, not long-lived AWS access keys. Amplify
+holds public `NEXT_PUBLIC_*` only — no database URLs and no Secrets Manager ARNs. Preview
+secrets and the preview/demo database must not be the production pair; production must not use
+local Compose or preview credentials
+([ADR-012](../decisions/ADR-012-deployment-topology.md)). Rotation:
+[deploy.md](../workflows/deploy.md).

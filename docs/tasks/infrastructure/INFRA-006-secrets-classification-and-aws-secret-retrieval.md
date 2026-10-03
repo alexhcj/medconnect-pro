@@ -3,7 +3,7 @@ id: INFRA-006
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [INFRA-004]
@@ -12,10 +12,12 @@ related_docs:
   [
     security-architecture.md,
     infrastructure-architecture.md,
+    ../contracts/environment-configuration.md,
+    ../workflows/deploy.md,
     ../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -82,12 +84,12 @@ Already present: `.gitignore` for `.env*`, env-var loading, documented “do not
 
 ## Acceptance criteria
 
-- [ ] Classification documentation exists for public / environment-specific / secret
-- [ ] Preview and production secret names are distinct
-- [ ] A grep/CI guard or documented check exists so `.env` files, default Compose URLs, and
+- [x] Classification documentation exists for public / environment-specific / secret
+- [x] Preview and production secret names are distinct
+- [x] A grep/CI guard or documented check exists so `.env` files, default Compose URLs, and
       AWS access keys are not committed
-- [ ] The planned API image contract has no secret `ENV` / `ARG` values
-- [ ] Amplify / `NEXT_PUBLIC_*` is documented as public configuration only
+- [x] The planned API image contract has no secret `ENV` / `ARG` values
+- [x] Amplify / `NEXT_PUBLIC_*` is documented as public configuration only
 
 ## Dependencies
 
@@ -128,7 +130,13 @@ Later shipping of this slice is a MINOR bump on 0.x. Writing the spec is not.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Extended
+  [environment-configuration.md](../../contracts/environment-configuration.md) with hosted
+  retrieval (`medconnect/preview/api` vs `medconnect/production/api`). Terraform bootstrap in
+  [infra/terraform/](../../../infra/terraform/) (GitHub OIDC, secret containers, non-overlapping
+  read policies). API image contract documented (no Dockerfile). Deploy rotation:
+  [deploy.md](../../workflows/deploy.md). Live `terraform apply` remains an operator step.
+- Tests: `scripts/ci/reject-committed-secrets.mjs` plus `npm run test:ci-secrets`. Quality CI
+  runs the guard and `terraform fmt` / `validate` without AWS credentials.
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Version 0.53.0 → 0.54.0 (MINOR, hosted secrets/OIDC contract).

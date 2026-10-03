@@ -54,7 +54,10 @@ npm workspaces:
 
 - Redis, S3 + KMS
 - WebSockets / Socket.IO where justified
-- AWS, Docker / ECS Fargate, Terraform, GitHub Actions
+- Docker / ECS Fargate, Amplify, RDS (INFRA-007+)
+
+GitHub Actions quality gates exist. Terraform secrets/OIDC bootstrap lives in `infra/terraform/`
+(INFRA-006); operator apply, RDS, and ECS remain later M9.
 
 ## Domain boundaries
 

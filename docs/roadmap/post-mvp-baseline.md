@@ -11,8 +11,8 @@ M0–M8 in [release-roadmap.md](release-roadmap.md) are shipped in the repositor
 task files plus M8 (FE-017–FE-023) are `implemented` or `completed`. M8 marketing site shipped as
 FE-017–FE-023 (0.45.0–0.51.1). Public copy must follow
 [capability-matrix.md](../marketing/capability-matrix.md). Deployment and preview environments are
-**M9**. [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-005](../tasks/infrastructure/INFRA-005-github-actions-ci-quality-gates.md)
-are shipped; [INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
+**M9**. [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)
+are shipped; [INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
 remain pending. Not part of M8.
 
 ## Actually complete
@@ -24,6 +24,7 @@ remain pending. Not part of M8.
   appointments, telehealth session create/join/end, billing invoices, admin users, admin audit
 - Local Vitest (web + API), Playwright mock + live, API HTTP/RLS/authz-matrix/OpenAPI contract tests
 - GitHub Actions quality gates on pull requests and `main` (INFRA-005)
+- Secrets classification, GitHub OIDC, and Secrets Manager containers (INFRA-006; apply is operator-run)
 
 ## Intentionally incomplete
 
@@ -31,7 +32,7 @@ remain pending. Not part of M8.
 - Live video / Daily / Socket.IO
 - Payments, claims submission, role assignment HTTP, security-events HTTP
 - Notifications UI; dashboard analytics API (`GET /dashboard/overview`)
-- Cloud deploy, Dockerfiles, Terraform, Redis, S3, KMS
+- Cloud deploy (RDS, ECS, Amplify), Dockerfiles, Redis, S3, KMS
 - HIPAA certification
 
 ## Known non-defects
