@@ -1,7 +1,9 @@
 # Local demo Postgres for apps/api (DATA-001). Credentials are not production secrets.
+# PostgreSQL 18 is the current stable major (minimum 18). Recreate the volume after a major bump:
+# docker compose down -v && docker compose up -d
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     environment:
       POSTGRES_USER: medconnect
       POSTGRES_PASSWORD: medconnect
@@ -9,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - medconnect_pg:/var/lib/postgresql/data
+      - medconnect_pg18:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U medconnect -d medconnect"]
       interval: 5s
@@ -17,4 +19,4 @@ services:
       retries: 10
 
 volumes:
-  medconnect_pg:
+  medconnect_pg18:

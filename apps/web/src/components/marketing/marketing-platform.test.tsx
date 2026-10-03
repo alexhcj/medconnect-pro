@@ -47,8 +47,11 @@ describe('MarketingPlatform', () => {
 	it('links each module card footer to its /platform/* path', () => {
 		render(<MarketingPlatform />);
 
-		for (const module of MARKETING_PLATFORM_MODULES.items) {
-			expect(screen.getByRole('link', {name: module.href})).toHaveAttribute('href', module.href);
+		for (const platformModule of MARKETING_PLATFORM_MODULES.items) {
+			expect(screen.getByRole('link', {name: platformModule.href})).toHaveAttribute(
+				'href',
+				platformModule.href,
+			);
 		}
 	});
 

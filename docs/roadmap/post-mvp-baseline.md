@@ -10,9 +10,10 @@ Canonical application version at this baseline: **0.44.0** (FE-016, 2026-09-27).
 M0–M8 in [release-roadmap.md](release-roadmap.md) are shipped in the repository. All 38 original
 task files plus M8 (FE-017–FE-023) are `implemented` or `completed`. M8 marketing site shipped as
 FE-017–FE-023 (0.45.0–0.51.1). Public copy must follow
-[capability-matrix.md](../marketing/capability-matrix.md). Deployment, preview environments, and
-CI/CD are **M9** ([INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
-pending), not part of M8.
+[capability-matrix.md](../marketing/capability-matrix.md). Deployment and preview environments are
+**M9**. [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-005](../tasks/infrastructure/INFRA-005-github-actions-ci-quality-gates.md)
+are shipped; [INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
+remain pending. Not part of M8.
 
 ## Actually complete
 
@@ -22,6 +23,7 @@ pending), not part of M8.
 - Live integration: login/logout/refresh, patients, clinical lists, document list/download,
   appointments, telehealth session create/join/end, billing invoices, admin users, admin audit
 - Local Vitest (web + API), Playwright mock + live, API HTTP/RLS/authz-matrix/OpenAPI contract tests
+- GitHub Actions quality gates on pull requests and `main` (INFRA-005)
 
 ## Intentionally incomplete
 
@@ -29,7 +31,7 @@ pending), not part of M8.
 - Live video / Daily / Socket.IO
 - Payments, claims submission, role assignment HTTP, security-events HTTP
 - Notifications UI; dashboard analytics API (`GET /dashboard/overview`)
-- Cloud deploy, GitHub Actions, Dockerfiles, Terraform, Redis, S3, KMS
+- Cloud deploy, Dockerfiles, Terraform, Redis, S3, KMS
 - HIPAA certification
 
 ## Known non-defects

@@ -3,7 +3,7 @@ id: INFRA-005
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [INFRA-002, QA-001, BE-001]
@@ -15,7 +15,7 @@ related_docs:
     ../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -80,11 +80,11 @@ Already present: workspace scripts (`lint` / `lint:api`, `type-check` / `type-ch
 
 ## Acceptance criteria
 
-- [ ] `.github/workflows/ci.yml` runs on pull requests and on push to `main`
-- [ ] Failing lint, type-check, test, or build fails the workflow
-- [ ] API tests have PostgreSQL available in CI
-- [ ] Workflow files contain no secrets
-- [ ] [infrastructure-architecture.md](../../architecture/infrastructure-architecture.md) CI
+- [x] `.github/workflows/ci.yml` runs on pull requests and on push to `main`
+- [x] Failing lint, type-check, test, or build fails the workflow
+- [x] API tests have PostgreSQL available in CI
+- [x] Workflow files contain no secrets
+- [x] [infrastructure-architecture.md](../../architecture/infrastructure-architecture.md) CI
       section describes the jobs that actually run (replace the unused 11-step target list)
 
 ## Dependencies
@@ -123,7 +123,13 @@ not a version bump.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `.github/workflows/ci.yml` on `pull_request`, `push` to `main`, and
+  `workflow_dispatch`. Node 24, `npm ci`, Postgres 18 service, `migration:run`, then lint /
+  type-check / test / `build:production` / `build:api` / `npm audit --omit=dev`. No deploys or
+  Playwright. Compose Postgres bumped to `postgres:18-alpine`. Web lint entrypoint uses ESLint 9
+  + Next flat config so CI is not permanently red.
+- Tests: local `lint`, `lint:api`, `type-check`, `type-check:api`, web Vitest (259), API Vitest
+  (342) against Postgres 18, `build:production`, `build:api`, `npm audit --omit=dev`.
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Mark the GitHub `ci` check required on `main` for merge fail-closed. Production deploy
+  gates remain INFRA-011. Do not claim HIPAA compliance.

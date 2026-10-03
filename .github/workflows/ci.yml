@@ -1,0 +1,64 @@
+# Quality gates only. Deploy jobs stay out of this file (INFRA-010 / INFRA-011).
+# Compose demo credentials below match docker-compose.yml; they are not production secrets.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: medconnect
+          POSTGRES_PASSWORD: medconnect
+          POSTGRES_DB: medconnect
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U medconnect -d medconnect"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Lint web
+        run: npm run lint
+      - name: Lint api
+        run: npm run lint:api
+      - name: Type-check web
+        run: npm run type-check
+      - name: Type-check api
+        run: npm run type-check:api
+      - name: Test web
+        run: npm test
+      - name: Migrate API schema
+        run: npm run migration:run
+      - name: Test api
+        run: npm run test:api
+      - name: Build web (production)
+        run: npm run build:production
+      - name: Build api
+        run: npm run build:api
+      - name: Audit production dependencies
+        run: npm audit --omit=dev

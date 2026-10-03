@@ -24,9 +24,9 @@ A multi-tenant practice platform covering:
 - administration and audit / compliance
 
 Demo milestones M0–M8 are shipped (FE-017–FE-023). Current position:
-[`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). Next:
-**M9 — Deployment / preview infrastructure** (INFRA-004–INFRA-013, pending). Dashboard
-analytics, notifications UI, live video, payments, and production OAuth remain deferred.
+[`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). **M9 — Deployment /
+preview infrastructure** is in progress: INFRA-004–INFRA-005 shipped, INFRA-006–INFRA-013 pending.
+Dashboard analytics, notifications UI, live video, payments, and production OAuth remain deferred.
 
 All data is **synthetic**. Do not introduce real patient records, credentials, or other PHI.
 
@@ -42,6 +42,7 @@ medconnect-pro/
   packages/          Reserved for future shared packages
   postman/           Postman environments and collection conventions
   docs/              Canonical documentation
+  .github/workflows  GitHub Actions quality gates (`ci.yml`)
   .cursor/rules/     Project Cursor rules
   scripts/plane/     Plane task sync
 ```
@@ -75,8 +76,11 @@ Frontend role and nav checks are UX only. Server-side authorization and tenant i
 
 ### Planned infrastructure
 
-AWS, Docker, ECS/Fargate, Terraform, GitHub Actions, CloudWatch, with
+AWS, Docker, ECS/Fargate, Terraform, CloudWatch, with
 [local / preview / production](./docs/decisions/ADR-012-deployment-topology.md) separation.
+GitHub Actions **quality gates** already run on pull requests and `main`
+([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)). Preview and production deploys remain
+later M9 tasks.
 
 Significant architectural choices are recorded as ADRs under [`docs/decisions/`](./docs/decisions/).
 
@@ -102,8 +106,8 @@ ownership or assignment.
 ## Getting started
 
 Local development is the Next.js app in `apps/web` (mock-first) plus the NestJS API in `apps/api`.
-PostgreSQL is Docker Compose at the repository root (`docker compose up -d`). Redis is not part of
-this setup.
+PostgreSQL is Docker Compose at the repository root (`docker compose up -d`, image
+`postgres:18-alpine`). Redis is not part of this setup.
 
 ### Prerequisites
 
@@ -190,6 +194,12 @@ npm run dev:api                   # NestJS API on http://localhost:3001
 npm run openapi:generate          # Write apps/api/openapi/openapi.json
 npm run migration:run             # Apply TypeORM migrations to local Postgres
 ```
+
+Pull requests and pushes to `main` run the same lint, type-check, test, and build commands via
+[`.github/workflows/ci.yml`](./.github/workflows/ci.yml) (plus `npm run migration:run` before
+`test:api`, and `npm audit --omit=dev`). Playwright e2e is local/release smoke, not every PR.
+A failing quality-gate step fails the workflow. Mark the `ci` GitHub check required on `main` so
+merges stay fail-closed.
 
 Frontend testing conventions: [docs/workflows/frontend-testing.md](./docs/workflows/frontend-testing.md).
 

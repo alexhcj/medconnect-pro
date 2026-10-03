@@ -37,7 +37,7 @@ migrations, synthetic seed data, and connection guards.
 Why this task exists: local Compose is not a hosted database. Document upload/list and RLS
 require a real Postgres with the `medconnect_app` runtime role.
 
-Already present: `docker-compose.yml` Postgres 16, TypeORM migrations, `synchronize: false`,
+Already present: `docker-compose.yml` Postgres 18, TypeORM migrations, `synchronize: false`,
 `npm run migration:run`, `npm run seed:mock-identity` (synthetic only).
 
 This project uses **synthetic/demo data only**. Preview and production databases are demo

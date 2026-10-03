@@ -6,6 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.53.0] - 2026-10-03
+
+### Added
+
+- GitHub Actions CI quality gates (INFRA-005): [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+  runs lint, type-check, Vitest, production web build, API build, and `npm audit --omit=dev` on
+  pull requests and `main`, with PostgreSQL 18 for API tests. No deploy jobs.
+
+### Changed
+
+- Local Compose Postgres from 16 to 18 (`postgres:18-alpine`), matching CI.
+- Web lint toolchain so the quality gate can run: TypeScript 6.0.3, ESLint 9, Next.js 16.3.8
+  (also addresses `next/og` ImageResponse), and native `eslint-config-next` flat config.
+
 ## [0.52.0] - 2026-10-03
 
 ### Added

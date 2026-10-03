@@ -140,7 +140,9 @@ describe('BillingService', () => {
 			amountCents: 15000,
 			method: 'ach',
 		});
-		expect(JSON.stringify(own.gateway.charge.mock.calls)).not.toMatch(/cardNumber|cvv|PAN/i);
+		expect(JSON.stringify(vi.mocked(own.gateway.charge).mock.calls)).not.toMatch(
+			/cardNumber|cvv|PAN/i,
+		);
 		expect(own.audit.record).toHaveBeenCalledWith(
 			expect.objectContaining({action: 'payment.recorded', resourceType: 'payment'}),
 		);

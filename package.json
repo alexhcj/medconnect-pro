@@ -1,6 +1,6 @@
 {
   "name": "medconnect-pro",
-  "version": "0.52.0",
+  "version": "0.53.0",
   "private": true,
   "engines": {
     "node": ">=24 <25",
@@ -48,5 +48,9 @@
     "plane:sync": "node scripts/plane/sync-tasks.mjs",
     "plane:sync:dry": "node scripts/plane/sync-tasks.mjs --dry-run",
     "test:plane": "node --test scripts/plane/task-format.spec.mjs scripts/plane/select-tasks.spec.mjs"
+  },
+  "overrides": {
+    "moment": "2.31.0",
+    "typescript": "6.0.3"
   }
 }
