@@ -23,7 +23,7 @@ Columns:
 | Administration | User directory + audit viewer | Yes, with those limits | Role assignment HTTP, security-events HTTP |
 | RBAC, tenant isolation, audit, document ACL | Yes (demo patterns) | Yes, as implemented engineering patterns | — |
 | HIPAA certification | No | Must not claim | Organizational compliance is out of this demo |
-| Cloud deploy / preview / CI | No | Must not claim a hosted production | Later milestone |
+| Cloud deploy / preview / CI | No | Must not claim a hosted production | M9 (INFRA-004–INFRA-013, pending) |
 
 ## Copy examples
 

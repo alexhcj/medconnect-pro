@@ -17,7 +17,9 @@ Actions remain deferred. Notification email/SMS use in-process demo adapters
 See the root [README](../../README.md) for setup and validation commands.
 
 M8 marketing site is in the repository (FE-017–FE-023). Docker images, GitHub Actions, preview
-environments, and AWS remain this target architecture and are a later milestone, not M8.
+environments, and AWS remain this target architecture and are **M9**
+([INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
+not M8.
 
 ## Target
 

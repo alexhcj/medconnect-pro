@@ -63,3 +63,16 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - QA-002 — Patient vertical-slice tests
 - QA-003 — Appointment workflow tests
 - QA-004 — Authorization/tenant isolation tests
+
+## Deployment (M9)
+
+- INFRA-004 — Environment separation and configuration contract
+- INFRA-005 — GitHub Actions CI quality gates
+- INFRA-006 — Secrets classification and AWS secret retrieval
+- INFRA-007 — Preview and production demo databases
+- INFRA-008 — NestJS API container and ECS/Fargate deployment
+- INFRA-009 — AWS Amplify Hosting for Next.js
+- INFRA-010 — Preview environment and PR delivery workflow
+- INFRA-011 — Production delivery workflow and rollback
+- INFRA-012 — GitHub v1.0.0 release-notes template
+- INFRA-013 — v1.0.0 production release readiness

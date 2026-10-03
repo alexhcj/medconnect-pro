@@ -67,5 +67,5 @@ Marketing components live in `apps/web/src/components/marketing/`. Shared primit
 
 ## Deploy
 
-Hosted deployment and preview environments are a later milestone. They are not implied by this
+Hosted deployment and preview environments are **M9**. They are not implied by this
 sitemap.

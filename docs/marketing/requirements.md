@@ -81,4 +81,4 @@ the dashboard shell or session gate.
 ## Out of scope for marketing copy
 
 Do not invent product functionality to make the site appear complete. Deployment, preview
-environments, and CI/CD are a later milestone, not M8.
+environments, and CI/CD are **M9**, not M8.

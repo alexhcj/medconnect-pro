@@ -102,7 +102,8 @@ aliases those values to Tailwind utilities (`bg-brand`, `text-foreground`, `bord
 Shared primitives remain `Button`, `Card`, and `Input` in `components/ui`. Marketing chrome
 under `components/marketing/` consumes the same tokens and primitives. Marketing is spacious;
 the dashboard stays information-dense — do not restyle dashboard layout from this mapping. Do
-not add a second design-system package. Deploy/preview is a later milestone.
+not add a second design-system package. Deploy/preview is **M9** (INFRA-004–INFRA-013,
+pending).
 
 Dashboard overview cards in mock mode use fixtures. Live `GET /dashboard/overview` is not a Nest
 controller; the Next BFF path is not a supported live integration. That gap belongs to frontend

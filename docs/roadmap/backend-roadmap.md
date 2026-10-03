@@ -15,10 +15,11 @@ Domain order (not historical ship order). Join to demo milestones in the
 10. Notifications (BE-008; frontend wiring deferred).
 11. Analytics (deferred; no Nest `GET /dashboard/overview`).
 12. Administration/compliance (SEC-002–004, QA-004, BE-010 user directory HTTP; shipped in M7).
-13. Scale/reliability (deferred with deploy/preview).
+13. Scale/reliability (deferred with M9 deploy/preview).
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.
 
 M0–M7 domain HTTP listed above is in the repository. M8 is frontend marketing (FE-017–FE-023),
-not a new backend domain. Remaining demo work is **Later — Deployment / preview**.
+not a new backend domain. Remaining demo work is **M9 — Deployment / preview infrastructure**
+(INFRA-004–INFRA-013, pending).

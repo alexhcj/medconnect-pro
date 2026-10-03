@@ -1,7 +1,8 @@
 # Product Roadmap
 
 Current ship state is [post-mvp-baseline.md](post-mvp-baseline.md), not the historical labels below.
-Demo milestones M0–M8 are shipped (FE-017–FE-023). Deployment/preview is a **later** milestone.
+Demo milestones M0–M8 are shipped (FE-017–FE-023). Deployment/preview is **M9**
+(INFRA-004–INFRA-013, pending).
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
 expansion is still unshipped.
@@ -28,7 +29,7 @@ cloud).
 - billing foundation (invoices; payments/claims labeled boundaries);
 - administration (users + audit viewer; no role PATCH);
 - security hardening (partial: RBAC, RLS, document ACL, audit);
-- observability (deferred with deploy/preview).
+- observability (deferred with M9 deploy/preview).
 
 ## Maturity
 

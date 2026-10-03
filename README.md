@@ -25,8 +25,8 @@ A multi-tenant practice platform covering:
 
 Demo milestones M0–M8 are shipped (FE-017–FE-023). Current position:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). Next:
-deployment/preview (later milestone). Dashboard analytics, notifications UI, live video, payments,
-and production OAuth remain deferred.
+**M9 — Deployment / preview infrastructure** (INFRA-004–INFRA-013, pending). Dashboard
+analytics, notifications UI, live video, payments, and production OAuth remain deferred.
 
 All data is **synthetic**. Do not introduce real patient records, credentials, or other PHI.
 

@@ -11,7 +11,8 @@ M0–M8 in [release-roadmap.md](release-roadmap.md) are shipped in the repositor
 task files plus M8 (FE-017–FE-023) are `implemented` or `completed`. M8 marketing site shipped as
 FE-017–FE-023 (0.45.0–0.51.1). Public copy must follow
 [capability-matrix.md](../marketing/capability-matrix.md). Deployment, preview environments, and
-CI/CD are a **later** milestone, not part of M8.
+CI/CD are **M9** ([INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
+pending), not part of M8.
 
 ## Actually complete
 
