@@ -92,6 +92,20 @@ Sensitive data requires:
 - deletion/archival rules where appropriate;
 - backup/restore strategy.
 
+## Environment databases
+
+Three named PostgreSQL instances, all synthetic/demo only ([ADR-005](../decisions/ADR-005-synthetic-demo-data.md),
+[ADR-012](../decisions/ADR-012-deployment-topology.md)):
+
+- **local** — Docker Compose database `medconnect` (current).
+- **preview/demo** — isolated hosted instance for the shared preview API (INFRA-007).
+- **production/demo** — isolated hosted instance for production (INFRA-007).
+
+They must never contain real PHI. Preview must not point at the production database; production
+must not point at preview or local URLs. Hosted boot fails closed on missing or Compose
+`DATABASE_*` URLs ([environment-configuration.md](../contracts/environment-configuration.md)).
+
 ## Synthetic demo data
 
-All fixtures are fictional and must not resemble identifiable real patients.
+All fixtures are fictional and must not resemble identifiable real patients. Never introduce real
+PHI into local, preview/demo, or production/demo databases.

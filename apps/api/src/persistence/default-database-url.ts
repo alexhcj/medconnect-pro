@@ -6,6 +6,39 @@ export const DEFAULT_DATABASE_URL =
 export const DEFAULT_DATABASE_ADMIN_URL =
 	'postgresql://medconnect:medconnect@127.0.0.1:5432/medconnect';
 
+const LOCAL_HOSTS = new Set(['127.0.0.1', 'localhost', '::1']);
+
+function normalizePostgresScheme(url: string): string {
+	return url.replace(/^postgres:/i, 'postgresql:');
+}
+
+/** True when a URL is the local Compose demo (host or known Compose user/password). */
+export function isKnownLocalComposeDatabaseUrl(url: string): boolean {
+	let parsed: URL;
+	try {
+		parsed = new URL(normalizePostgresScheme(url));
+	} catch {
+		return false;
+	}
+
+	const host = parsed.hostname.replace(/^\[|\]$/g, '').toLowerCase();
+	if (LOCAL_HOSTS.has(host)) {
+		return true;
+	}
+
+	const user = decodeURIComponent(parsed.username);
+	const password = decodeURIComponent(parsed.password);
+	if (
+		(user === 'medconnect_app' && password === 'medconnect_app') ||
+		(user === 'medconnect' && password === 'medconnect')
+	) {
+		return true;
+	}
+
+	const withoutQuery = normalizePostgresScheme(url).split('?')[0] ?? '';
+	return withoutQuery === DEFAULT_DATABASE_URL || withoutQuery === DEFAULT_DATABASE_ADMIN_URL;
+}
+
 export function resolveDatabaseUrl(): string {
 	return process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
 }

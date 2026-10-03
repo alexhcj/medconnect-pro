@@ -84,7 +84,7 @@ Backend / infrastructure (planned):
 - WebSockets/Socket.IO where appropriate
 - WebRTC/Daily for telehealth media
 - AWS, Docker, ECS/Fargate, Terraform, GitHub Actions, CloudWatch
-- development / staging / production separation
+- local / preview / production separation ([ADR-012](decisions/ADR-012-deployment-topology.md))
 
 ## Demo-data policy
 

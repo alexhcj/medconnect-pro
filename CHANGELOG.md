@@ -6,6 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.52.0] - 2026-10-03
+
+### Added
+
+- Environment separation contract (INFRA-004): [ADR-012](docs/decisions/ADR-012-deployment-topology.md)
+  locks Amplify + ECS Fargate with `local` / `preview` / `production`, a runtime variable catalog,
+  hosted `.env.preview.example` / `.env.production.example` placeholders, and Nest fail-closed
+  boot when `APP_ENV` is hosted and `DATABASE_*` URLs are missing or still point at Compose.
+
+### Changed
+
+- Architecture environment names from development / staging / production to local / preview /
+  production. CORS origin-list parsing and AWS provisioning remain later M9 tasks.
+
 ## [0.51.1] - 2026-10-02
 
 ### Changed

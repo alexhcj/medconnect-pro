@@ -28,9 +28,14 @@ npm run seed:mock-identity
 `npm run test:api` requires PostgreSQL (`docker compose up -d`). Isolation tests run migrations if
 needed. Runtime tests connect as `medconnect_app`; fixture seed/cleanup uses `DATABASE_ADMIN_URL`.
 
-Copy [`.env.example`](./.env.example) to `.env.development` for local overrides. Do not commit
-secrets. Compose credentials are local demo values only. **`DATABASE_URL` must be `medconnect_app`.**
-An old override that still uses owner `medconnect` silently bypasses row-level security.
+Copy [`.env.example`](./.env.example) to `.env.development` for local overrides
+(`APP_ENV=local`). Do not commit secrets. Compose credentials are local demo values only.
+**`DATABASE_URL` must be `medconnect_app`.** An old override that still uses owner `medconnect`
+silently bypasses row-level security. Hosted preview and production use
+[`.env.preview.example`](./.env.preview.example) and
+[`.env.production.example`](./.env.production.example) as placeholders; the platform injects
+real values. Hosted boot refuses Compose URLs
+([environment-configuration.md](../../docs/contracts/environment-configuration.md)).
 
 Document bytes use a local directory (`DOCUMENT_STORAGE_DIR`, default `.document-storage`) with
 tenant-prefixed keys. That adapter is the S3 stand-in until object storage exists. Do not commit
@@ -51,7 +56,10 @@ The password stays in the mock fixture, not in `users`.
 
 The API allows browser calls from `WEB_ORIGIN` (default `http://localhost:3000`) with an
 `Authorization` bearer header. That is the local Next.js app in `npm run dev:real`. It is not a
-wildcard and it does not use credentialed cookies.
+wildcard and it does not use credentialed cookies. Hosted CORS origin lists and Amplify preview
+host patterns are defined in
+[environment-configuration.md](../../docs/contracts/environment-configuration.md); the parser
+is INFRA-008.
 
 Errors use the envelope in [data-contracts.md](../../docs/contracts/data-contracts.md). Requests
 accept and return `X-Correlation-ID`.

@@ -1,5 +1,9 @@
 import {z} from 'zod';
-import {DEFAULT_DATABASE_ADMIN_URL, DEFAULT_DATABASE_URL} from '../persistence/default-database-url.js';
+import {
+	DEFAULT_DATABASE_ADMIN_URL,
+	DEFAULT_DATABASE_URL,
+	isKnownLocalComposeDatabaseUrl,
+} from '../persistence/default-database-url.js';
 
 const booleanFromEnv = z.preprocess((value) => {
 	if (value === undefined || value === '') {
@@ -20,26 +24,69 @@ const booleanFromEnv = z.preprocess((value) => {
 	return value;
 }, z.boolean().optional());
 
-const postgresUrl = (label: string, fallback: string) =>
+const optionalPostgresUrl = (label: string) =>
 	z.preprocess((value) => {
 		if (value === undefined || value === '') {
 			return undefined;
 		}
 		return value;
-	}, z.string().regex(/^postgres(ql)?:\/\//, `${label} must be a PostgreSQL connection URL`).default(fallback));
+	}, z.string().regex(/^postgres(ql)?:\/\//, `${label} must be a PostgreSQL connection URL`).optional());
 
-export const envSchema = z.object({
-	NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-	PORT: z.coerce.number().int().positive().default(3001),
-	SWAGGER_UI_ENABLED: booleanFromEnv,
-	DATABASE_URL: postgresUrl('DATABASE_URL', DEFAULT_DATABASE_URL),
-	DATABASE_ADMIN_URL: postgresUrl('DATABASE_ADMIN_URL', DEFAULT_DATABASE_ADMIN_URL),
-	DOCUMENT_STORAGE_DIR: z.preprocess((value) => {
-		if (value === undefined || value === '') {
-			return undefined;
+function addHostedDatabaseIssue(
+	ctx: z.RefinementCtx,
+	key: 'DATABASE_URL' | 'DATABASE_ADMIN_URL',
+	value: string | undefined,
+): void {
+	if (value === undefined) {
+		ctx.addIssue({
+			code: 'custom',
+			path: [key],
+			message: `${key} is required when APP_ENV is preview or production`,
+		});
+		return;
+	}
+	if (isKnownLocalComposeDatabaseUrl(value)) {
+		ctx.addIssue({
+			code: 'custom',
+			path: [key],
+			message: `${key} must not use known local Compose credentials when APP_ENV is preview or production`,
+		});
+	}
+}
+
+export const envSchema = z
+	.object({
+		APP_ENV: z.enum(['local', 'preview', 'production']).default('local'),
+		NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+		PORT: z.coerce.number().int().positive().default(3001),
+		SWAGGER_UI_ENABLED: booleanFromEnv,
+		DATABASE_URL: optionalPostgresUrl('DATABASE_URL'),
+		DATABASE_ADMIN_URL: optionalPostgresUrl('DATABASE_ADMIN_URL'),
+		DOCUMENT_STORAGE_DIR: z.preprocess((value) => {
+			if (value === undefined || value === '') {
+				return undefined;
+			}
+			return value;
+		}, z.string().min(1).default('.document-storage')),
+	})
+	.superRefine((env, ctx) => {
+		if (env.APP_ENV !== 'preview' && env.APP_ENV !== 'production') {
+			return;
 		}
-		return value;
-	}, z.string().min(1).default('.document-storage')),
-});
+		if (env.NODE_ENV !== 'production') {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['NODE_ENV'],
+				message: `NODE_ENV must be production when APP_ENV is ${env.APP_ENV}`,
+			});
+		}
+		addHostedDatabaseIssue(ctx, 'DATABASE_URL', env.DATABASE_URL);
+		addHostedDatabaseIssue(ctx, 'DATABASE_ADMIN_URL', env.DATABASE_ADMIN_URL);
+	})
+	.transform((env) => ({
+		...env,
+		DATABASE_URL: env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
+		DATABASE_ADMIN_URL: env.DATABASE_ADMIN_URL ?? DEFAULT_DATABASE_ADMIN_URL,
+	}));
 
-export type Env = z.infer<typeof envSchema>;
+export type Env = z.output<typeof envSchema>;

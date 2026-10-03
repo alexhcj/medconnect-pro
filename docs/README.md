@@ -22,15 +22,17 @@ implementation tasks, roadmaps and development workflows.
 - `01-product-requirements.md` — functional/non-functional product requirements.
 - `architecture/` — system structure.
 - `contracts/` — API/data contracts, including
-  [identity and access](contracts/identity-and-access.md).
+  [identity and access](contracts/identity-and-access.md) and
+  [environment configuration](contracts/environment-configuration.md).
 - `tasks/` — implementation work, including optional nested design/implementation/validation
   metadata on new tasks (see [tasks/README.md](tasks/README.md)).
 - `roadmap/` — sequencing and delivery milestones, including the
   [post-MVP baseline](roadmap/post-mvp-baseline.md).
 - `decisions/` — ADRs, including [ADR-009](decisions/ADR-009-npm-workspace-monorepo.md) for the
   npm workspace layout, [ADR-010](decisions/ADR-010-postgresql-typeorm.md) for PostgreSQL and
-  TypeORM, and [ADR-011](decisions/ADR-011-figma-canonical-visual-source.md) for Figma as the
-  canonical visual source.
+  TypeORM, [ADR-011](decisions/ADR-011-figma-canonical-visual-source.md) for Figma as the
+  canonical visual source, and [ADR-012](decisions/ADR-012-deployment-topology.md) for Amplify +
+  ECS topology and local / preview / production.
 - `workflows/` — repeatable engineering processes, including [versioning](workflows/versioning.md),
   [frontend testing](workflows/frontend-testing.md),
   [API contract / Postman / OpenAPI](workflows/api-contract-workflow.md), and

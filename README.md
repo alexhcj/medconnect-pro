@@ -75,8 +75,8 @@ Frontend role and nav checks are UX only. Server-side authorization and tenant i
 
 ### Planned infrastructure
 
-AWS, Docker, ECS/Fargate, Terraform, GitHub Actions, CloudWatch, with development / staging /
-production separation.
+AWS, Docker, ECS/Fargate, Terraform, GitHub Actions, CloudWatch, with
+[local / preview / production](./docs/decisions/ADR-012-deployment-topology.md) separation.
 
 Significant architectural choices are recorded as ADRs under [`docs/decisions/`](./docs/decisions/).
 
@@ -155,6 +155,17 @@ npm run dev:real
 When calling the Nest API from Next.js BFF routes, set `API_BASE_URL=http://localhost:3001` in
 `.env.development`. Live dashboard overview metrics still use that BFF path and are **not** a
 shipped Nest route; use mocks for overview cards. The same commands exist as `dev:web` aliases.
+
+### Local versus hosted
+
+Local development (`APP_ENV=local`) uses Compose PostgreSQL and the committed `.env.example`
+files. It does not require AWS credentials. Preview and production are separate hosted
+environments with isolated demo databases
+([ADR-012](./docs/decisions/ADR-012-deployment-topology.md),
+[environment-configuration.md](./docs/contracts/environment-configuration.md)). Copy
+`.env.preview.example` / `.env.production.example` only as placeholders; real
+`.env.preview` / `.env.production` stay gitignored. Hosted API boot fails closed if database
+URLs are missing or still point at Compose. All three databases are synthetic/demo only.
 
 ### Useful commands
 

@@ -19,7 +19,8 @@ See the root [README](../../README.md) for setup and validation commands.
 M8 marketing site is in the repository (FE-017–FE-023). Docker images, GitHub Actions, preview
 environments, and AWS remain this target architecture and are **M9**
 ([INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
-not M8.
+not M8. Topology is [ADR-012](../decisions/ADR-012-deployment-topology.md): Amplify for Next.js,
+ECS/Fargate for NestJS, environments `local` / `preview` / `production`.
 
 ## Target
 
@@ -39,6 +40,7 @@ AWS.
 - CloudWatch
 
 EKS/Kubernetes is deferred until scale, team size or operational requirements justify it.
+Per-PR ECS or RDS is out of scope ([ADR-012](../decisions/ADR-012-deployment-topology.md)).
 
 ## Networking
 
@@ -49,9 +51,27 @@ EKS/Kubernetes is deferred until scale, team size or operational requirements ju
 
 ## Environments
 
-- development
-- staging
-- production
+`APP_ENV` is `local` | `preview` | `production`. Preview and production keep `NODE_ENV=production`.
+Do not use development / staging / production as environment names.
+
+- **local** — Next.js and Nest on the developer machine; Compose PostgreSQL (`medconnect`). No
+  cloud credentials required.
+- **preview** — Amplify PR/branch frontend; one shared preview ECS API; one preview/demo RDS
+  instance. Isolated from production secrets and the production database.
+- **production** — Amplify `main`; one production ECS API; one production/demo RDS instance.
+  Isolated from local and preview credentials.
+
+The three databases are synthetic/demo only and must never contain real PHI
+([ADR-005](../decisions/ADR-005-synthetic-demo-data.md)). Runtime configuration classification is
+[environment-configuration.md](../contracts/environment-configuration.md).
+
+## Databases
+
+| Name | Role | Current provision |
+| --- | --- | --- |
+| local Compose `medconnect` | Developer and API tests | [docker-compose.yml](../../docker-compose.yml) |
+| preview/demo | Shared hosted preview | Planned (INFRA-007) |
+| production/demo | Hosted production | Planned (INFRA-007) |
 
 ## IaC
 
@@ -69,8 +89,8 @@ GitHub Actions:
 6. backend build
 7. Docker build
 8. dependency/security scan
-9. development deployment
-10. staging deployment
+9. preview deployment (shared preview API + Amplify PR preview)
+10. production deployment
 11. production approval gate
 
 ## Reliability

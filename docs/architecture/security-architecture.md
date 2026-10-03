@@ -113,5 +113,14 @@ Secrets never belong in:
 - mock data;
 - Plane task descriptions.
 
-Use environment variables locally and AWS Secrets Manager/Parameter Store in the planned cloud
-environment.
+Classification (public / environment-specific / secret) is
+[environment-configuration.md](../contracts/environment-configuration.md). Current application
+secrets are `DATABASE_URL` and `DATABASE_ADMIN_URL` only. Do not invent JWT, payment, or OAuth
+client secrets that the application does not use.
+
+Use environment variables locally (`APP_ENV=local`). Hosted preview and production retrieve
+secrets from AWS Secrets Manager (Parameter Store only for non-secret configuration) in
+[INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md).
+Preview secrets and the preview/demo database must not be the production pair; production must
+not use local Compose or preview credentials
+([ADR-012](../decisions/ADR-012-deployment-topology.md)).

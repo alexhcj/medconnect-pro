@@ -3,7 +3,7 @@ id: INFRA-004
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [INFRA-001, INFRA-002, DATA-001]
@@ -16,7 +16,7 @@ related_docs:
     ../roadmap/post-mvp-baseline.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -91,13 +91,13 @@ in `apps/api/src/platform/env.schema.ts`.
 
 ## Acceptance criteria
 
-- [ ] ADR-012 is accepted and referenced from infrastructure and security architecture
-- [ ] An environment-variable catalog exists in `/docs` (not a copy of OpenAPI)
-- [ ] Preview and production env examples are committed with placeholders only
-- [ ] Real `.env` / `.env.preview` / `.env.production` files remain gitignored
-- [ ] The API refuses to boot when `APP_ENV` is `preview` or `production` and database URLs are
+- [x] ADR-012 is accepted and referenced from infrastructure and security architecture
+- [x] An environment-variable catalog exists in `/docs` (not a copy of OpenAPI)
+- [x] Preview and production env examples are committed with placeholders only
+- [x] Real `.env` / `.env.preview` / `.env.production` files remain gitignored
+- [x] The API refuses to boot when `APP_ENV` is `preview` or `production` and database URLs are
       missing or match known local Compose credentials
-- [ ] Local, preview/demo, and production/demo databases are named and the no-PHI rule is explicit
+- [x] Local, preview/demo, and production/demo databases are named and the no-PHI rule is explicit
 
 ## Dependencies
 
@@ -138,7 +138,15 @@ Do not provision AWS in this task. Later shipping of this slice is a MINOR bump 
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: [ADR-012](../../decisions/ADR-012-deployment-topology.md) (Amplify + ECS,
+  local / preview / production, shared preview API, no per-PR backend). Environment catalog
+  [environment-configuration.md](../../contracts/environment-configuration.md). Hosted
+  `.env.preview.example` / `.env.production.example` for api and web. `APP_ENV` plus
+  fail-closed `DATABASE_*` rules in `apps/api/src/platform/env.schema.ts`. CORS parser left to
+  INFRA-008. No AWS provisioning.
+- Tests: `apps/api/src/platform/env.schema.spec.ts` (missing URL, Compose URL, valid hosted
+  URL, local defaults). `git check-ignore` on `.env` / `.env.preview` / `.env.production`
+  (ignored) vs `.env*.example` (not ignored). `npm run lint:api` passed. `npm run type-check:api`
+  still fails on a pre-existing `billing.service.spec.ts` mock typing error, not on these files.
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Version 0.51.1 → 0.52.0 (MINOR, hosted configuration/security contract).
