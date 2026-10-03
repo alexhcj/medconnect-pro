@@ -19,10 +19,12 @@ See the root [README](../../README.md) for setup and validation commands.
 
 M8 marketing site is in the repository (FE-017–FE-023). GitHub Actions **quality gates** exist
 ([INFRA-005](../tasks/infrastructure/INFRA-005-github-actions-ci-quality-gates.md)). Secrets
-classification and AWS secret retrieval exist
-([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)).
-Docker images, preview environments, and AWS hosting remain **M9**
-([INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
+classification, AWS secret retrieval, remote Terraform state, VPC, and preview/production demo
+RDS exist
+([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md),
+[INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)).
+Docker images, Amplify, preview environments, and ECS hosting remain **M9**
+([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
 not M8. Topology is [ADR-012](../decisions/ADR-012-deployment-topology.md): Amplify for Next.js,
 ECS/Fargate for NestJS, environments `local` / `preview` / `production`.
 
@@ -48,10 +50,11 @@ Per-PR ECS or RDS is out of scope ([ADR-012](../decisions/ADR-012-deployment-top
 
 ## Networking
 
-- VPC
-- public/private subnet separation
-- security groups
+- VPC (one demo VPC; preview and production RDS isolated by security groups and secrets)
+- public/private subnet separation (no NAT in this slice; NAT waits on INFRA-008)
+- security groups (RDS is not reachable as public `0.0.0.0/0` Postgres)
 - least-privilege IAM
+- SSM bastion for operator migrate/seed port-forward until ECS exists
 
 ## Environments
 
@@ -74,17 +77,19 @@ The three databases are synthetic/demo only and must never contain real PHI
 | Name | Role | Current provision |
 | --- | --- | --- |
 | local Compose `medconnect` | Developer and API tests | [docker-compose.yml](../../docker-compose.yml) |
-| preview/demo | Shared hosted preview | Planned (INFRA-007) |
-| production/demo | Hosted production | Planned (INFRA-007) |
+| preview/demo | Shared hosted preview | RDS PostgreSQL 18 in private subnets ([INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)) |
+| production/demo | Hosted production | Distinct RDS PostgreSQL 18 in private subnets ([INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)) |
 
 ## IaC
 
 Terraform root: [infra/terraform/](../../infra/terraform/). INFRA-006 bootstraps GitHub OIDC,
 distinct preview/production Secrets Manager containers (`medconnect/preview/api`,
-`medconnect/production/api`), and non-overlapping read policies. Apply is operator-run; quality
-CI only formats and validates. Remote state and VPC/RDS land in
-[INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md). Rotation
-and import notes: [deploy.md](../workflows/deploy.md).
+`medconnect/production/api`), and non-overlapping read policies. INFRA-007 adds encrypted
+remote state (S3 AES-256 + DynamoDB lock), one VPC, two RDS PostgreSQL 18 demo instances
+(AWS-managed encryption at rest, 7-day backups, `db.t4g.micro`), placeholder API security
+groups, and an SSM bastion. Apply is operator-run; quality CI only formats and validates
+(`terraform init -backend=false`). Rotation, state migrate, and hosted migrate/seed:
+[deploy.md](../workflows/deploy.md).
 
 ## Secrets retrieval
 
@@ -121,14 +126,15 @@ Quality gates: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) (INF
 `npm run migration:run`. Commands, in order:
 
 1. `npm run ci:secrets` (tracked `.env`, AWS access-key material, Compose URLs in hosted/Terraform paths)
-2. `terraform fmt -check` / `terraform init -backend=false` / `terraform validate` in `infra/terraform`
+2. `npm run test:ci-secrets` / `npm run test:ensure-app-role`
+3. `terraform fmt -check` / `terraform init -backend=false` / `terraform validate` in `infra/terraform`
    (no AWS credentials)
-3. `npm run lint` / `npm run lint:api`
-4. `npm run type-check` / `npm run type-check:api`
-5. `npm test` (web Vitest)
-6. `npm run test:api` (API Vitest; requires the Postgres service)
-7. `npm run build:production` / `npm run build:api`
-8. `npm audit --omit=dev`
+4. `npm run lint` / `npm run lint:api`
+5. `npm run type-check` / `npm run type-check:api`
+6. `npm test` (web Vitest)
+7. `npm run test:api` (API Vitest; requires the Postgres service)
+8. `npm run build:production` / `npm run build:api`
+9. `npm audit --omit=dev`
 
 A failing lint, type-check, test, or build fails the workflow. Mark the `ci` check required on
 `main` in GitHub branch protection so merge is fail-closed. Playwright mock e2e and `e2e:live` are

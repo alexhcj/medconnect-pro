@@ -6,6 +6,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.55.0] - 2026-10-03
+
+### Added
+
+- Preview/demo and production/demo RDS PostgreSQL 18 in private subnets (INFRA-007): Terraform
+  VPC, SSM bastion for migrate/seed, generated non-Compose `DATABASE_*` URLs in
+  `medconnect/preview/api` and `medconnect/production/api`, encrypted remote state, and an
+  operator runbook ([docs/workflows/deploy.md](docs/workflows/deploy.md)). Synthetic seed only;
+  never real PHI. ECS API hosting remains INFRA-008.
+
+### Changed
+
+- Hosted Nest boot also rejects identical runtime/owner URLs and a runtime username other than
+  `medconnect_app`.
+
 ## [0.54.0] - 2026-10-03
 
 ### Added

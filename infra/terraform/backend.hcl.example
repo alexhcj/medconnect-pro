@@ -1,0 +1,17 @@
+# Copy to backend.hcl (gitignored) after the state bucket exists.
+# ACCOUNT_ID is the AWS account that owns the Terraform root.
+#
+# First apply (local state, creates the bucket and lock table):
+#   terraform init -backend=false
+#   terraform apply
+#
+# Then migrate:
+#   terraform init -backend-config=backend.hcl -migrate-state
+#
+# Quality CI uses terraform init -backend=false and never assumes AWS credentials.
+
+bucket         = "medconnect-terraform-state-<ACCOUNT_ID>"
+key            = "medconnect/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "medconnect-terraform-lock"
+encrypt        = true

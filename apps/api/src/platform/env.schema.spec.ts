@@ -7,9 +7,9 @@ import {
 import {envSchema} from './env.schema.js';
 
 const hostedRuntimeUrl =
-	'postgresql://preview_app:hosted-runtime-secret@preview-db.example.internal:5432/medconnect_preview';
+	'postgresql://medconnect_app:hosted-runtime-secret@preview-db.example.internal:5432/medconnect';
 const hostedAdminUrl =
-	'postgresql://preview_owner:hosted-admin-secret@preview-db.example.internal:5432/medconnect_preview';
+	'postgresql://medconnect:hosted-admin-secret@preview-db.example.internal:5432/medconnect';
 
 function issueMessages(result: ReturnType<typeof envSchema.safeParse>): string[] {
 	if (result.success) {
@@ -127,9 +127,9 @@ describe('envSchema', () => {
 
 	it('accepts production with valid hosted URLs', () => {
 		const productionRuntime =
-			'postgresql://prod_app:prod-runtime-secret@prod-db.example.internal:5432/medconnect_production';
+			'postgresql://medconnect_app:prod-runtime-secret@prod-db.example.internal:5432/medconnect';
 		const productionAdmin =
-			'postgresql://prod_owner:prod-admin-secret@prod-db.example.internal:5432/medconnect_production';
+			'postgresql://medconnect:prod-admin-secret@prod-db.example.internal:5432/medconnect';
 		const parsed = envSchema.safeParse({
 			APP_ENV: 'production',
 			NODE_ENV: 'production',
@@ -142,5 +142,36 @@ describe('envSchema', () => {
 		}
 		expect(parsed.data.APP_ENV).toBe('production');
 		expect(parsed.data.DATABASE_URL).toBe(productionRuntime);
+	});
+
+	it('refuses hosted boot when runtime and owner URLs are identical', () => {
+		const parsed = envSchema.safeParse({
+			APP_ENV: 'preview',
+			NODE_ENV: 'production',
+			DATABASE_URL: hostedRuntimeUrl,
+			DATABASE_ADMIN_URL: hostedRuntimeUrl,
+		});
+		expect(parsed.success).toBe(false);
+		const messages = issueMessages(parsed);
+		expect(messages).toContain(
+			'DATABASE_URL must not equal DATABASE_ADMIN_URL when APP_ENV is preview or production',
+		);
+		expect(messages).toContain(
+			'DATABASE_ADMIN_URL must not use the medconnect_app runtime role when APP_ENV is preview or production',
+		);
+	});
+
+	it('refuses hosted boot when DATABASE_URL is not medconnect_app', () => {
+		const parsed = envSchema.safeParse({
+			APP_ENV: 'production',
+			NODE_ENV: 'production',
+			DATABASE_URL:
+				'postgresql://medconnect:hosted-admin-secret@prod-db.example.internal:5432/medconnect',
+			DATABASE_ADMIN_URL: hostedAdminUrl,
+		});
+		expect(parsed.success).toBe(false);
+		expect(issueMessages(parsed)).toContain(
+			'DATABASE_URL username must be medconnect_app when APP_ENV is preview or production',
+		);
 	});
 });

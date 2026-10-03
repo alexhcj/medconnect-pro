@@ -91,7 +91,8 @@ Target infrastructure properties (not demonstrated in local Compose):
 
 At rest:
 
-- PostgreSQL encrypted storage;
+- PostgreSQL encrypted storage (local Compose is unencrypted demo disk; hosted RDS uses
+  AWS-managed encryption at rest, not a custom KMS key);
 - S3 SSE-KMS;
 - KMS-managed keys.
 
@@ -128,5 +129,7 @@ Parameter Store is unused. GitHub Actions uses OIDC, not long-lived AWS access k
 holds public `NEXT_PUBLIC_*` only — no database URLs and no Secrets Manager ARNs. Preview
 secrets and the preview/demo database must not be the production pair; production must not use
 local Compose or preview credentials
-([ADR-012](../decisions/ADR-012-deployment-topology.md)). Rotation:
+([ADR-012](../decisions/ADR-012-deployment-topology.md)). Hosted RDS is private-subnet only;
+runtime `DATABASE_URL` must be `medconnect_app` and must not equal `DATABASE_ADMIN_URL`.
+Operator migrate/seed uses an SSM tunnel ([deploy.md](../workflows/deploy.md)). Rotation:
 [deploy.md](../workflows/deploy.md).

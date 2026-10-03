@@ -1,3 +1,4 @@
+import type {TlsOptions} from 'node:tls';
 import type {DataSourceOptions} from 'typeorm';
 import {persistenceEntities} from './entities/index.js';
 import {Appointments1760000000003} from './migrations/1760000000003-Appointments.js';
@@ -12,10 +13,23 @@ import {PatientDocuments1760000000008} from './migrations/1760000000008-PatientD
 import {Notifications1760000000009} from './migrations/1760000000009-Notifications.js';
 import {TenantRlsSubscriber} from './tenant-rls.subscriber.js';
 
+function tunnelTlsOptions(): TlsOptions | undefined {
+	const servername = process.env.RDS_TLS_SERVERNAME;
+	if (!servername) {
+		return undefined;
+	}
+	return {
+		rejectUnauthorized: true,
+		servername,
+	} as TlsOptions;
+}
+
 export function postgresConnectionOptions(databaseUrl: string): DataSourceOptions {
+	const ssl = tunnelTlsOptions();
 	return {
 		type: 'postgres',
 		url: databaseUrl,
+		...(ssl ? {ssl} : {}),
 		entities: persistenceEntities,
 		subscribers: [TenantRlsSubscriber],
 		migrations: [

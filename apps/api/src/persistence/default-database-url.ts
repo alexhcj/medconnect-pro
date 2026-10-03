@@ -39,6 +39,19 @@ export function isKnownLocalComposeDatabaseUrl(url: string): boolean {
 	return withoutQuery === DEFAULT_DATABASE_URL || withoutQuery === DEFAULT_DATABASE_ADMIN_URL;
 }
 
+/** Username from a PostgreSQL URL, or undefined when the URL cannot be parsed. */
+export function postgresUrlUsername(url: string): string | undefined {
+	try {
+		const parsed = new URL(normalizePostgresScheme(url));
+		if (!parsed.username) {
+			return undefined;
+		}
+		return decodeURIComponent(parsed.username);
+	} catch {
+		return undefined;
+	}
+}
+
 export function resolveDatabaseUrl(): string {
 	return process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
 }

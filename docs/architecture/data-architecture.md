@@ -98,8 +98,10 @@ Three named PostgreSQL instances, all synthetic/demo only ([ADR-005](../decision
 [ADR-012](../decisions/ADR-012-deployment-topology.md)):
 
 - **local** — Docker Compose database `medconnect` (current).
-- **preview/demo** — isolated hosted instance for the shared preview API (INFRA-007).
-- **production/demo** — isolated hosted instance for production (INFRA-007).
+- **preview/demo** — isolated hosted RDS instance for the shared preview API
+  ([INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)).
+- **production/demo** — isolated hosted RDS instance for production
+  ([INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)).
 
 They must never contain real PHI. Preview must not point at the production database; production
 must not point at preview or local URLs. Hosted boot fails closed on missing or Compose

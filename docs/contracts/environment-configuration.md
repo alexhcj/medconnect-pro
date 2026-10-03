@@ -84,9 +84,11 @@ preview IAM cannot read the production secret and production IAM cannot read the
 | `medconnect/preview/api` | preview | `DATABASE_URL`, `DATABASE_ADMIN_URL` |
 | `medconnect/production/api` | production | `DATABASE_URL`, `DATABASE_ADMIN_URL` |
 
-Terraform bootstrap: [infra/terraform/](../../infra/terraform/). Empty key values until
-[INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md) writes
-RDS URLs. Do not copy Compose `medconnect` / `medconnect_app` passwords into these secrets.
+Terraform root: [infra/terraform/](../../infra/terraform/). Hosted `DATABASE_*` URLs are
+written at RDS provision
+([INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)).
+Do not copy Compose `medconnect` / `medconnect_app` passwords into these secrets. Do not
+store SSM-tunnel localhost URLs in Secrets Manager.
 
 ECS ([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md))
 injects keys as process environment via the task definition `secrets` block, for example
@@ -141,7 +143,15 @@ When `APP_ENV` is `preview` or `production`, Nest refuses to boot if `DATABASE_U
 - user/password `medconnect_app`/`medconnect_app` or `medconnect`/`medconnect`;
 - host `127.0.0.1`, `localhost`, or `::1`.
 
-When `APP_ENV` is `local`, those Compose URLs remain the documented local defaults.
+It also refuses when `DATABASE_URL` equals `DATABASE_ADMIN_URL`, when the runtime username is
+not `medconnect_app`, or when the admin URL uses the `medconnect_app` role. Preview versus
+production host isolation is distinct Secrets Manager names and IAM, not a hardcoded hostname
+list.
+
+When `APP_ENV` is `local`, those Compose URLs remain the documented local defaults. Operator
+migrate through an SSM tunnel must leave `APP_ENV` unset so localhost fail-closed does not
+reject the forwarded port. Optional `RDS_TLS_SERVERNAME` (the RDS hostname) lets TypeORM/`pg`
+verify TLS while the TCP target is `127.0.0.1`.
 
 ## CORS contract
 

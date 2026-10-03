@@ -24,7 +24,7 @@ Columns:
 | RBAC, tenant isolation, audit, document ACL | Yes (demo patterns) | Yes, as implemented engineering patterns | — |
 | HIPAA certification | No | Must not claim | Organizational compliance is out of this demo |
 | GitHub Actions CI | Yes (PR/`main` quality gates) | Not a hosted production | INFRA-005 |
-| Cloud deploy / preview | No | Must not claim a hosted production | M9 (INFRA-004–INFRA-006 shipped; INFRA-007–INFRA-013 pending) |
+| Cloud deploy / preview | No | Must not claim a hosted production | M9 (INFRA-004–INFRA-007 shipped; INFRA-008–INFRA-013 pending) |
 
 ## Copy examples
 

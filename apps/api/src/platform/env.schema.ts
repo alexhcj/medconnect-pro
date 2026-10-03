@@ -3,6 +3,7 @@ import {
 	DEFAULT_DATABASE_ADMIN_URL,
 	DEFAULT_DATABASE_URL,
 	isKnownLocalComposeDatabaseUrl,
+	postgresUrlUsername,
 } from '../persistence/default-database-url.js';
 
 const booleanFromEnv = z.preprocess((value) => {
@@ -82,6 +83,33 @@ export const envSchema = z
 		}
 		addHostedDatabaseIssue(ctx, 'DATABASE_URL', env.DATABASE_URL);
 		addHostedDatabaseIssue(ctx, 'DATABASE_ADMIN_URL', env.DATABASE_ADMIN_URL);
+		if (!env.DATABASE_URL || !env.DATABASE_ADMIN_URL) {
+			return;
+		}
+		if (env.DATABASE_URL === env.DATABASE_ADMIN_URL) {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['DATABASE_URL'],
+				message:
+					'DATABASE_URL must not equal DATABASE_ADMIN_URL when APP_ENV is preview or production',
+			});
+		}
+		if (postgresUrlUsername(env.DATABASE_URL) !== 'medconnect_app') {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['DATABASE_URL'],
+				message:
+					'DATABASE_URL username must be medconnect_app when APP_ENV is preview or production',
+			});
+		}
+		if (postgresUrlUsername(env.DATABASE_ADMIN_URL) === 'medconnect_app') {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['DATABASE_ADMIN_URL'],
+				message:
+					'DATABASE_ADMIN_URL must not use the medconnect_app runtime role when APP_ENV is preview or production',
+			});
+		}
 	})
 	.transform((env) => ({
 		...env,

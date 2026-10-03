@@ -3,7 +3,7 @@ id: INFRA-007
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [INFRA-004, INFRA-006, DATA-001]
@@ -15,7 +15,7 @@ related_docs:
     ../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -86,11 +86,11 @@ databases. They must never contain real PHI.
 
 ## Acceptance criteria
 
-- [ ] Local, preview/demo, and production/demo databases are documented and provisioned
-- [ ] Migrations apply on deploy to the intended instance
-- [ ] Seed data is synthetic; the runbook restates no real PHI
-- [ ] Mis-pointed connection URLs fail closed (INFRA-004 rules + distinct secrets)
-- [ ] Runtime remains `medconnect_app`; owner URL is migrate/seed only
+- [x] Local, preview/demo, and production/demo databases are documented and provisioned
+- [x] Migrations apply on deploy to the intended instance
+- [x] Seed data is synthetic; the runbook restates no real PHI
+- [x] Mis-pointed connection URLs fail closed (INFRA-004 rules + distinct secrets)
+- [x] Runtime remains `medconnect_app`; owner URL is migrate/seed only
 
 ## Dependencies
 
@@ -131,7 +131,14 @@ Later shipping of this slice is a MINOR bump on 0.x. Writing the spec is not.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Terraform VPC, two private-subnet RDS PostgreSQL 18 demo instances,
+  SSM bastion, generated non-Compose passwords, and Secrets Manager URL fill in
+  [infra/terraform/](../../../infra/terraform/). Remote state S3 + DynamoDB lock.
+  Operator migrate/seed: SSM port-forward, `npm run ensure:app-role`, `migration:run`,
+  first-init `seed:mock-identity` in [deploy.md](../../workflows/deploy.md). Live
+  `terraform apply` remains an operator step. `GET /ready` waits on INFRA-008.
+- Tests: hosted URL username/equality guards in `env.schema.spec.ts`;
+  `scripts/infra/ensure-app-role.spec.mjs`; quality CI `terraform fmt` / `validate`
+  (`init -backend=false`) and `npm run test:ensure-app-role` without AWS credentials.
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Version 0.54.0 → 0.55.0 (MINOR, hosted demo databases).
