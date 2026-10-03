@@ -22,8 +22,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 3ea5f691-a0aa-4c66-af23-9b51f7820aae
+  identifier: MEDCONNECT-67
 ---
 
 # INFRA-011 — Production delivery workflow and rollback

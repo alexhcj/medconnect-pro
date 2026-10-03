@@ -21,8 +21,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: f786a69a-5e8c-42ca-93d9-e8d95a2b2a47
+  identifier: MEDCONNECT-61
 ---
 
 # INFRA-005 — GitHub Actions CI quality gates

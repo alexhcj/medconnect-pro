@@ -21,8 +21,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 26e8f2bf-c459-45fd-bac5-12f24a2d929b
+  identifier: MEDCONNECT-66
 ---
 
 # INFRA-010 — Preview environment and PR delivery workflow

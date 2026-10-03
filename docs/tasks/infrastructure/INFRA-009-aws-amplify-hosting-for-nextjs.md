@@ -21,8 +21,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 8c27482e-e1a3-49f1-96eb-41ac62faa37d
+  identifier: MEDCONNECT-65
 ---
 
 # INFRA-009 — AWS Amplify Hosting for Next.js

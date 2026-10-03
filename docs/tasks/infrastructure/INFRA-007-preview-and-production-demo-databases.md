@@ -21,8 +21,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 9dc97618-cf45-46b4-923a-e1addf9ca437
+  identifier: MEDCONNECT-63
 ---
 
 # INFRA-007 — Preview and production demo databases

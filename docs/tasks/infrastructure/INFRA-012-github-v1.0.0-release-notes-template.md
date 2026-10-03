@@ -22,8 +22,8 @@ validation:
   accessibility: false
   tests_required: false
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: a182140a-cfa4-41f2-bbb2-6d19b2327c7c
+  identifier: MEDCONNECT-68
 ---
 
 # INFRA-012 — GitHub v1.0.0 release-notes template

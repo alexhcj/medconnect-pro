@@ -24,8 +24,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 3a9d46d5-9e44-4513-8905-66860957aa03
+  identifier: MEDCONNECT-69
 ---
 
 # INFRA-013 — v1.0.0 production release readiness

@@ -21,8 +21,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 33592f72-3e18-4764-b183-533284589abf
+  identifier: MEDCONNECT-62
 ---
 
 # INFRA-006 — Secrets classification and AWS secret retrieval

@@ -21,8 +21,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 8eafbbcd-d64c-417a-b871-4ee4b8ebd0ab
+  identifier: MEDCONNECT-64
 ---
 
 # INFRA-008 — NestJS API container and ECS/Fargate deployment

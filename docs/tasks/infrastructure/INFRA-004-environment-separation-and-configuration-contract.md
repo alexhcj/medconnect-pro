@@ -22,8 +22,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 2c286b2a-5a93-4194-87c6-5feacea722d6
+  identifier: MEDCONNECT-60
 ---
 
 # INFRA-004 — Environment separation and configuration contract
