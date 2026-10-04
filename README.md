@@ -1,36 +1,160 @@
 # MedConnect Pro
 
-Feature-rich healthcare SaaS demonstration for portfolio, technical interviews, and potential-client
-presentations.
+Feature-rich healthcare SaaS **demonstration** for portfolio, technical interviews, and
+potential-client presentations.
 
-The application is production-oriented in architecture and engineering practice. It is **not** a
-deployed healthcare service and must **not** be described as HIPAA certified or HIPAA compliant.
+The repository is a multi-tenant practice platform: a Next.js dashboard and public marketing
+site, plus a modular NestJS API with RBAC, PostgreSQL row-level security, and audit logging.
+Engineering is production-oriented. This is **not** a deployed healthcare service.
 
-Canonical product, architecture, contract, and task documentation lives in [`/docs`](./docs/README.md).
+Canonical product, architecture, contract, and task documentation lives in
+[`/docs`](./docs/README.md).
 
-## Product
+## Disclaimer
 
-A multi-tenant practice platform covering:
+All records, credentials, and clinical content are **synthetic demo data**. Do not introduce real
+patient records, identifiers, or other PHI ([ADR-005](./docs/decisions/ADR-005-synthetic-demo-data.md)).
 
-- identity and access
-- practice / provider management
-- patient management
-- scheduling
-- EHR / clinical data
-- telehealth
-- billing
-- notifications
-- analytics
-- administration and audit / compliance
+Healthcare-oriented and HIPAA-oriented describe demonstrated engineering patterns. The demo is
+**not** HIPAA certified, HIPAA compliant, or suitable for real patient data.
 
-Demo milestones M0–M8 are shipped (FE-017–FE-023). Current position:
-[`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). **M9 — Deployment /
-preview infrastructure** is in progress and not closed (close audit found no missing IDs):
-INFRA-004–INFRA-012 shipped, INFRA-014 pending (blocks INFRA-013), INFRA-013 paused.
-Product-feature work continues.
-Dashboard analytics, notifications UI, live video, payments, and production OAuth remain deferred.
+## Screenshots
 
-All data is **synthetic**. Do not introduce real patient records, credentials, or other PHI.
+Synthetic demo screens from the authenticated app. Not a production medical record. Dashboard
+cards are mock; telehealth is a session shell (not live video); identity is a labeled mock IdP.
+
+<p align="center">
+  <img src="./apps/web/public/marketing/patients.png" alt="Patients directory with synthetic demo records" width="100%">
+</p>
+
+<table>
+  <tr>
+    <td width="16%">
+      <img src="./apps/web/public/marketing/login.png" alt="Mock identity sign-in form with synthetic demo credentials" width="100%">
+    </td>
+    <td width="16%">
+      <img src="./apps/web/public/marketing/appointments.png" alt="Appointments calendar with synthetic demo visits" width="100%">
+    </td>
+    <td width="16%">
+      <img src="./apps/web/public/marketing/telehealth.png" alt="Telehealth lobby with a synthetic demo visit" width="100%">
+    </td>
+    <td width="16%">
+      <img src="./apps/web/public/marketing/billing.png" alt="Billing invoice list with synthetic demo invoices" width="100%">
+    </td>
+    <td width="16%">
+      <img src="./apps/web/public/marketing/dashboard.png" alt="Dashboard overview with synthetic demo metrics" width="100%">
+    </td>
+    <td width="16%">
+      <img src="./apps/web/public/marketing/admin.png" alt="Administration user list with synthetic demo accounts" width="100%">
+    </td>
+  </tr>
+</table>
+
+## Key capabilities
+
+What you can demonstrate **today**. Statused catalog:
+[`docs/product/`](./docs/product/README.md). Public-claim ceiling:
+[`docs/marketing/capability-matrix.md`](./docs/marketing/capability-matrix.md).
+
+| Module | In the demo | Limit |
+| --- | --- | --- |
+| Identity | Mock IdP login, logout, and opaque bearer sessions | Not production OAuth / OIDC; MFA challenge is not completed in the live UI |
+| Patients | Directory, profiles, clinical lists, document list/download | Synthetic data only; no external EHR |
+| Scheduling | Calendar, appointments, provider availability | No waitlist or check-in / check-out |
+| Telehealth | Create, join, and end an appointment-linked session shell | Not live video, Daily media, chat, or recording |
+| Billing | Invoice list and detail | Not hosted payments or claims submission |
+| Analytics | Mock dashboard overview cards | No Nest `GET /dashboard/overview` |
+| Administration | User directory and audit viewer | No role assignment HTTP or security-events HTTP |
+| Security | Server-side RBAC, tenant isolation (including RLS), audit logging, document ACL | Not HIPAA certification |
+
+Notification **domain HTTP** exists on Nest. There is no in-app notification center; do not
+present one as shipped.
+
+## Tech stack
+
+### Frontend (`apps/web`)
+
+- Next.js App Router, React, TypeScript
+- TanStack Query
+- React Hook Form + Zod
+- Tailwind CSS, Headless UI, Lucide React
+- Recharts, React Big Calendar
+
+Daily SDK and Socket.IO client are in the tree as boundaries. Live telehealth media and
+application realtime are **not** wired.
+
+### Backend (`apps/api`)
+
+- Node.js current LTS, NestJS 12, TypeScript
+- REST + OpenAPI (`npm run openapi:generate`, `/api/docs-json`, optional `/api/docs`)
+- PostgreSQL 18 (local Compose + TypeORM, including RLS)
+
+Redis, S3/KMS as a local runtime, WebSockets / Socket.IO, and WebRTC / Daily media are **not**
+wired in the running demo.
+
+### Infrastructure in the repository
+
+- Docker Compose for local PostgreSQL
+- GitHub Actions quality gates on pull requests and `main`
+  ([`.github/workflows/ci.yml`](./.github/workflows/ci.yml))
+- Terraform ([`infra/terraform/`](./infra/terraform/)), Amplify buildspec
+  ([`amplify.yml`](./amplify.yml)), ECS production workflow
+  ([`.github/workflows/production-deploy.yml`](./.github/workflows/production-deploy.yml))
+
+Hosted Amplify + ECS is coded; first AWS apply is still an operator step. Do not describe the
+demo as hosted on AWS.
+
+ADRs: [`docs/decisions/`](./docs/decisions/).
+
+## Architecture
+
+Implemented local / CI path. Marketing and dashboard share the Next.js app; Nest owns
+authorization and data.
+
+```mermaid
+flowchart LR
+  Marketing["Next.js marketing"]
+  Web["Next.js dashboard"]
+  Api["NestJS API"]
+  Pg["PostgreSQL plus RLS"]
+  Ci["GitHub Actions CI"]
+  Marketing --> Web
+  Web --> Api
+  Api --> Pg
+  Ci --> Web
+  Ci --> Api
+```
+
+Amplify Hosting and ECS/Fargate exist as infrastructure-as-code for a later operator apply
+([INFRA-014](./docs/tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)).
+They are not a live public deployment.
+
+## Development status
+
+Application version **0.59.0**. Snapshot:
+[`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md).
+
+- **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).
+- **M9 — Deployment / preview infrastructure** is not closed: INFRA-004–INFRA-012 shipped,
+  INFRA-014 pending (blocks INFRA-013), INFRA-013 paused.
+- Product-feature work continues.
+
+Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live
+video, hosted payments and claims, notifications UI, live dashboard analytics API, Redis, and
+HIPAA certification (out of scope for this demo).
+
+## Deployment / demo
+
+The runnable demo is **local**. There is no public hosted URL.
+
+- UX-only: `npm run dev:mocks`, then [http://localhost:3000](http://localhost:3000).
+- Live Nest: Compose PostgreSQL, migrations, `seed:mock-identity`, `dev:api`, `dev:real`.
+  Commands are in [Getting started](#getting-started).
+
+CI quality gates already run on pull requests and `main`. Preview/production topology is
+[ADR-012](./docs/decisions/ADR-012-deployment-topology.md). Operator AWS first-apply, Amplify
+console connect, and the GitHub `production` environment remain required before a hosted demo
+exists. All environments, if applied later, stay synthetic/demo only.
 
 ## Repository layout
 
@@ -56,39 +180,6 @@ domain logic into the Next.js app.
 
 Frontend role and nav checks are UX only. Server-side authorization and tenant isolation in
 `apps/api` are the authoritative controls.
-
-## Stack
-
-### Frontend (`apps/web`)
-
-- Next.js App Router, React, TypeScript
-- TanStack Query
-- React Hook Form + Zod
-- Tailwind CSS, Headless UI, Lucide React
-- Recharts, React Big Calendar
-- Daily SDK (telehealth client boundary)
-- Socket.IO client (planned realtime)
-
-### Backend (`apps/api`)
-
-- Node.js current LTS, NestJS 12, TypeScript
-- REST + OpenAPI (`npm run openapi:generate`, `/api/docs-json`, optional `/api/docs`)
-- PostgreSQL (local Compose + TypeORM), Redis (not wired yet)
-- S3 + KMS (planned)
-- WebSockets / Socket.IO where justified
-- WebRTC / Daily for telehealth
-
-### Planned infrastructure
-
-AWS, Docker, ECS/Fargate, Amplify Hosting ([amplify.yml](./amplify.yml)), Terraform
-([infra/terraform/](./infra/terraform/)), CloudWatch, with
-[local / preview / production](./docs/decisions/ADR-012-deployment-topology.md) separation.
-GitHub Actions **quality gates** already run on pull requests and `main`
-([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)). Amplify Git publishes `main`;
-production ECS migrate/deploy is [`.github/workflows/production-deploy.yml`](./.github/workflows/production-deploy.yml).
-The `v1.0.0` gate remains INFRA-013 (paused until INFRA-014 first-apply).
-
-Significant architectural choices are recorded as ADRs under [`docs/decisions/`](./docs/decisions/).
 
 ## Security model
 
@@ -219,21 +310,16 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | --- | --- |
 | [`docs/README.md`](./docs/README.md) | Documentation map and source-of-truth hierarchy |
 | [`docs/00-project-spec.md`](./docs/00-project-spec.md) | Project identity, goals, and constraints |
-| [`docs/01-product-requirements.md`](./docs/01-product-requirements.md) | Product behavior (vision) |
-| [`docs/product/`](./docs/product/README.md) | Statused capability catalog |
+| [`docs/product/`](./docs/product/README.md) | Statused capability catalog (what the demo is today) |
+| [`docs/marketing/capability-matrix.md`](./docs/marketing/capability-matrix.md) | Public-claim ceiling |
 | [`docs/architecture/`](./docs/architecture/) | System structure |
-| [`docs/contracts/`](./docs/contracts/) | API and data contracts |
-| [`docs/workflows/api-contract-workflow.md`](./docs/workflows/api-contract-workflow.md) | OpenAPI, Postman, optional Swagger UI |
-| [`docs/workflows/design-requirements.md`](./docs/workflows/design-requirements.md) | Design workflow before Figma/Pencil |
-| [`docs/marketing/`](./docs/marketing/requirements.md) | Public-site requirements, sitemap, claim matrix |
-| [`docs/processes/`](./docs/processes/) | Cursor prompts and process flows |
-| [`postman/`](./postman/README.md) | Postman environment templates |
-| [`docs/tasks/`](./docs/tasks/) | Implementation task contracts |
-| [`docs/roadmap/`](./docs/roadmap/) | Sequencing |
-| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M7 baseline; M8 remaining vs later deploy |
+| [`docs/decisions/`](./docs/decisions/) | Architectural decision records |
+| [`docs/contracts/`](./docs/contracts/) | API, identity, and environment contracts |
+| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot; M9 position |
 
-Plane can mirror task metadata for project management. Git remains canonical for requirements,
-architecture, ADRs, and task definitions.
+Process prompts, tasks, and remaining workflows are linked from
+[`docs/README.md`](./docs/README.md). Plane can mirror task metadata; Git remains canonical for
+requirements, architecture, ADRs, and task definitions.
 
 ## License
 
