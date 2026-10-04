@@ -125,7 +125,8 @@ Use environment variables locally (`APP_ENV=local`). Hosted preview and producti
 read production). ECS injects those keys as process env
 ([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)).
 Parameter Store is unused. GitHub Actions uses OIDC, not long-lived AWS access keys. Amplify
-holds public `NEXT_PUBLIC_*` only — no database URLs and no Secrets Manager ARNs. Preview
+holds public `NEXT_PUBLIC_*` and server `API_BASE_URL` only — no database URLs and no Secrets
+Manager ARNs. Preview
 secrets and the preview/demo database must not be the production pair; production must not use
 local Compose or preview credentials
 ([ADR-012](../decisions/ADR-012-deployment-topology.md)). Hosted RDS is private-subnet only;

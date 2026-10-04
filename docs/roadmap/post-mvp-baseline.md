@@ -11,8 +11,8 @@ M0–M8 in [release-roadmap.md](release-roadmap.md) are shipped in the repositor
 task files plus M8 (FE-017–FE-023) are `implemented` or `completed`. M8 marketing site shipped as
 FE-017–FE-023 (0.45.0–0.51.1). Public copy must follow
 [capability-matrix.md](../marketing/capability-matrix.md). Deployment and preview environments are
-**M9**. [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)
-are shipped; [INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
+**M9**. [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md)
+are shipped; [INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
 remain pending. Not part of M8.
 
 ## Actually complete
@@ -28,6 +28,8 @@ remain pending. Not part of M8.
 - Preview/production demo RDS (INFRA-007; apply is operator-run)
 - NestJS API image, ECS/Fargate, CloudFront HTTPS, and S3 document storage (INFRA-008; apply and
   image push are operator-run)
+- Amplify Hosting for Next.js (`amplify.yml`, production from `main`; INFRA-009; console connect
+  is operator-run)
 
 ## Intentionally incomplete
 
@@ -35,7 +37,7 @@ remain pending. Not part of M8.
 - Live video / Daily / Socket.IO
 - Payments, claims submission, role assignment HTTP, security-events HTTP
 - Notifications UI; dashboard analytics API (`GET /dashboard/overview`)
-- Cloud frontend hosting (Amplify) and deploy workflows (INFRA-009–INFRA-011)
+- Preview PR delivery and production deploy workflows (INFRA-010–INFRA-011)
 - Redis, custom KMS hierarchy
 - HIPAA certification
 

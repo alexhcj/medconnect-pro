@@ -1,6 +1,6 @@
 {
   "name": "medconnect-pro",
-  "version": "0.56.0",
+  "version": "0.57.0",
   "private": true,
   "engines": {
     "node": ">=24 <25",
@@ -50,6 +50,7 @@
     "test:plane": "node --test scripts/plane/task-format.spec.mjs scripts/plane/select-tasks.spec.mjs",
     "ci:secrets": "node scripts/ci/reject-committed-secrets.mjs",
     "test:ci-secrets": "node --test scripts/ci/reject-committed-secrets.spec.mjs",
+    "test:amplify-buildspec": "node --test scripts/ci/amplify-buildspec.spec.mjs",
     "ensure:app-role": "node scripts/infra/ensure-app-role.mjs",
     "test:ensure-app-role": "node --test scripts/infra/ensure-app-role.spec.mjs"
   },

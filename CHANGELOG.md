@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.57.0] - 2026-10-04
+
+### Added
+
+- AWS Amplify Hosting for Next.js (INFRA-009): root `amplify.yml` (npm workspace install from
+  `/`, SSR artifacts `apps/web/.next`, Node 24, `npm run build:production`), quality-CI
+  buildspec tests, and an operator runbook to Git-connect `main`, inject production API URLs,
+  and set exact `production_web_origins`. Amplify Git owns production web publish. Live
+  console connect remains an operator step. PR previews and ECS rolling deploy remain
+  INFRA-010–INFRA-011. Synthetic demo data only; never real PHI.
+
 ## [0.56.0] - 2026-10-03
 
 ### Added

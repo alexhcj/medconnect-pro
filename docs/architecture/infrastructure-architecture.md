@@ -20,12 +20,13 @@ See the root [README](../../README.md) for setup and validation commands.
 M8 marketing site is in the repository (FE-017–FE-023). GitHub Actions **quality gates** exist
 ([INFRA-005](../tasks/infrastructure/INFRA-005-github-actions-ci-quality-gates.md)). Secrets
 classification, AWS secret retrieval, remote Terraform state, VPC, preview/production demo RDS,
-the NestJS API image, and ECS/Fargate hosting exist
-([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)–[INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)).
-Amplify, preview PR delivery, and production deploy workflows remain **M9**
-([INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
+the NestJS API image, ECS/Fargate hosting, and Amplify Hosting for Next.js exist
+([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)–[INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md)).
+Preview PR delivery and production deploy workflows remain **M9**
+([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
 not M8. Topology is [ADR-012](../decisions/ADR-012-deployment-topology.md): Amplify for Next.js,
-ECS/Fargate for NestJS, environments `local` / `preview` / `production`.
+ECS/Fargate for NestJS, environments `local` / `preview` / `production`. Operator apply and the
+Amplify GitHub connection remain required.
 
 ## Target
 
@@ -80,6 +81,15 @@ and admits CloudFront’s origin-facing prefix list only — not a plaintext pub
 liveness is `GET /health`; ALB target-group health is `GET /ready`. Terraform outputs
 `preview_api_url` and `production_api_url`.
 
+## Hosted frontend
+
+`apps/web` is AWS Amplify Hosting compute (SSR), Git-connected to `main`
+([INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md)). Install and
+build run from the repository root ([amplify.yml](../../amplify.yml)). Production Amplify env
+points only at `production_api_url`. Failed builds do not replace the last successful publish.
+PR/branch previews remain [INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md).
+Console connect and `production_web_origins` apply: [deploy.md](../workflows/deploy.md).
+
 ## Databases
 
 | Name | Role | Current provision |
@@ -97,9 +107,11 @@ remote state (S3 AES-256 + DynamoDB lock), one VPC, two RDS PostgreSQL 18 demo i
 (AWS-managed encryption at rest, 7-day backups, `db.t4g.micro`), API security groups, and an
 SSM bastion. INFRA-008 adds NAT, ECR `medconnect-api`, one ECS cluster with preview and
 production Fargate services, ALB + CloudFront HTTPS, CloudWatch logs, and per-environment
-document buckets (SSE-KMS with the AWS-managed S3 key). Apply is operator-run; quality CI
-only formats and validates (`terraform init -backend=false`). Rotation, image push, hosted
-migrate/seed, and `GET /ready`: [deploy.md](../workflows/deploy.md).
+document buckets (SSE-KMS with the AWS-managed S3 key). Amplify Hosting is Git-connected
+([amplify.yml](../../amplify.yml)); it is not a Terraform resource. Apply is operator-run;
+quality CI only formats and validates (`terraform init -backend=false`). Rotation, image
+push, hosted migrate/seed, Amplify console connect, and `GET /ready`:
+[deploy.md](../workflows/deploy.md).
 
 ## Secrets retrieval
 
@@ -139,7 +151,7 @@ from the repository root (`npm ci`). PostgreSQL **18** (`postgres:18-alpine` ser
 credentials as Compose). Schema before API tests: `npm run migration:run`. Commands, in order:
 
 1. `npm run ci:secrets` (tracked `.env`, AWS access-key material, Compose URLs in hosted/Terraform paths)
-2. `npm run test:ci-secrets` / `npm run test:ensure-app-role`
+2. `npm run test:ci-secrets` / `npm run test:amplify-buildspec` / `npm run test:ensure-app-role`
 3. `terraform fmt -check` / `terraform init -backend=false` / `terraform validate` in `infra/terraform`
    (no AWS credentials)
 4. `npm run lint` / `npm run lint:api`
@@ -159,8 +171,9 @@ and later deploy workflows only.
 Not in the quality workflow (separate files):
 
 - Image **push** to ECR on `main` ([`.github/workflows/api-image.yml`](../../.github/workflows/api-image.yml))
+- Amplify Git publish of `apps/web` from `main` ([INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md); console-connected)
 - Preview deploy ([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md))
-- Production deploy and approval gate ([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
+- Production ECS deploy and approval gate ([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
 
 Keep deploy and push jobs in separate workflow files so this quality workflow never gains AWS
 credentials.

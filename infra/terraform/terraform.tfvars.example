@@ -5,7 +5,10 @@ aws_region        = "us-east-1"
 github_repository = "alexhcj/medconnect-pro"
 vpc_cidr          = "10.0.0.0/16"
 
-# CORS. Preview may use the Amplify hostname pattern; production must be exact origins only.
+# CORS. Preview may keep the Amplify hostname pattern until INFRA-010.
+# Production must be the exact Amplify (or custom) origin from the first green main
+# publish — see docs/workflows/deploy.md (Amplify Hosting). Never use
+# https://*.amplifyapp.com on production (that pattern also matches previews).
 # preview_web_origins     = "https://*.amplifyapp.com"
 # production_web_origins  = "https://<amplify-production-origin>"
 

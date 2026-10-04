@@ -170,8 +170,9 @@ the token `https://*.amplifyapp.com` so Amplify PR hosts can call the **preview*
 A preview frontend must not be configured with production API credentials. Production CORS must
 not allow preview hosts, so a preview browser cannot call the production API.
 
-Exact Amplify hostnames are operator-specific until INFRA-009. Document placeholders, not a
-hardcoded `*.amplifyapp.com` on the production API (that pattern would also match previews).
+Exact Amplify hostnames are operator-specific. After the first production Amplify publish, set
+`production_web_origins` to that exact origin ([deploy.md](../workflows/deploy.md)). Do not put
+a hardcoded `*.amplifyapp.com` on the production API (that pattern would also match previews).
 
 ## Examples
 

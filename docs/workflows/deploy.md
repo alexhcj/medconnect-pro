@@ -1,8 +1,10 @@
-# Deploy runbook (secrets, remote state, demo databases, and ECS)
+# Deploy runbook (secrets, remote state, demo databases, ECS, and Amplify)
 
-Operator steps for the Terraform root in [infra/terraform/](../../infra/terraform/).
-Catalog: [environment-configuration.md](../contracts/environment-configuration.md).
+Operator steps for the Terraform root in [infra/terraform/](../../infra/terraform/) and Amplify
+Hosting for `apps/web`. Catalog:
+[environment-configuration.md](../contracts/environment-configuration.md).
 ECS/Fargate: [INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md).
+Amplify: [INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md).
 Production rollback is [INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md).
 
 Quality CI never assumes AWS roles. `terraform apply` is local (or a later deploy workflow).
@@ -14,7 +16,7 @@ data only**. Never load real PHI.
 ## Apply and remote state
 
 Requires an AWS account and permission to create IAM, Secrets Manager, VPC, RDS, EC2, S3,
-DynamoDB, ECS, ECR, ELB, CloudFront, and CloudWatch resources. Copy [infra/terraform/terraform.tfvars.example](../../infra/terraform/terraform.tfvars.example)
+DynamoDB, ECS, ECR, ELB, CloudFront, CloudWatch, and Amplify Hosting resources. Copy [infra/terraform/terraform.tfvars.example](../../infra/terraform/terraform.tfvars.example)
 to `infra/terraform/terraform.tfvars` (gitignored). Set `github_repository` to the GitHub
 `OWNER/REPO` that matches `git remote get-url origin` (no `.git` suffix).
 
@@ -172,8 +174,9 @@ curl -fsS "$PRODUCTION_API_URL/ready"
 ```
 
 Login with a seeded demo user uses the existing opaque bearer against that HTTPS origin. Browser
-CORS waits on Amplify origins (INFRA-009); `production_web_origins` / `preview_web_origins` are
-Terraform variables.
+CORS for production waits on the exact Amplify origin in `production_web_origins` (see Amplify
+below). Preview may keep `https://*.amplifyapp.com` until
+[INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md).
 
 ## Rotate `DATABASE_URL` / `DATABASE_ADMIN_URL`
 
@@ -191,3 +194,60 @@ require a Terraform apply.
 GitHub OIDC role ARNs, ECR repository URL, HTTPS API URLs, document bucket names, secret-read
 policy ARNs, and API security group IDs are Terraform outputs for operators and for INFRA-010 /
 INFRA-011 deploy workflows.
+
+## Amplify Hosting (`apps/web`)
+
+Amplify Git integration owns the production frontend publish from `main`. Do not add a GitHub
+Action that also publishes Amplify ([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)
+picks this owner). PR/branch previews stay
+[INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md). Build
+settings live in [amplify.yml](../../amplify.yml) (repository root; npm workspace install from
+`/`, Next app in `apps/web`, SSR artifacts `apps/web/.next`). Do not static-export.
+
+Requires the GitHub AWS Amplify GitHub App on this repository and permission to create an
+Amplify app. Custom domain is optional; default hostname is `*.amplifyapp.com`.
+
+### Create the production app
+
+1. Amplify console → Create new app → GitHub → this repository → branch `main`.
+2. Check **My app is a monorepo** and set the app path to `apps/web`. The console sets
+   `AMPLIFY_MONOREPO_APP_ROOT=apps/web`.
+3. Use Amplify Hosting **compute** (not Classic Next.js 11 SSR). Do not enable pull-request
+   previews on this step.
+4. Confirm the build image uses Node **24** (`nvm use 24` in `amplify.yml`; Live package
+   updates may also pin Node.js 24). This matches [`.nvmrc`](../../.nvmrc).
+5. Set **production / `main`** environment variables only. Allowlist:
+
+   | Variable | Value |
+   | --- | --- |
+   | `NEXT_PUBLIC_USE_MOCKS` | `false` |
+   | `NEXT_PUBLIC_API_BASE_URL` | Terraform output `production_api_url` |
+   | `API_BASE_URL` | the same `production_api_url` |
+
+   Never put `DATABASE_URL`, `DATABASE_ADMIN_URL`, Secrets Manager ARNs, AWS access keys, or
+   `PLANE_API_KEY` in Amplify. Do not point `main` at `preview_api_url`.
+6. Save and deploy. Wait for a green `main` build. Failed Amplify builds do not replace the
+   last successful production publish (atomic Hosting deploy). Retry from the console
+   (**Redeploy this version** / retry job). Do not force-push `main`.
+
+If compute fails on Next.js 16 or on Turbopack `.next/node_modules` symlinks, **stop**. Do not
+switch to `output: 'export'`. Do not silently downgrade Next.js. Escalate before changing the
+Amplify build command.
+
+### Production CORS after the first URL
+
+The production API allowlist is exact origins only. After the first successful publish:
+
+1. Copy the production Amplify origin (`https://<app>.amplifyapp.com`, or the custom domain if
+   you attached one). Do not use `https://*.amplifyapp.com` on production.
+2. Set `production_web_origins` in gitignored `infra/terraform/terraform.tfvars` (see
+   [terraform.tfvars.example](../../infra/terraform/terraform.tfvars.example)).
+3. `terraform apply` so the production ECS task `WEB_ORIGINS` matches that origin.
+4. Confirm a browser on the Amplify origin can call the production API; a preview host must
+   not.
+
+Verify marketing `/` and `/login` over HTTPS, live login with a seeded demo user, and one
+dashboard **list** page (patients). Network calls must go to the production API host. The
+client bundle must not contain `DATABASE_URL` or AWS keys. Mock identity stays same-origin
+`/login`; do not rewrite auth to cookies. Dashboard overview cards are still mock-only (no
+live Nest `GET /dashboard/overview`).

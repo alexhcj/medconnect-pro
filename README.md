@@ -25,7 +25,7 @@ A multi-tenant practice platform covering:
 
 Demo milestones M0–M8 are shipped (FE-017–FE-023). Current position:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). **M9 — Deployment /
-preview infrastructure** is in progress: INFRA-004–INFRA-008 shipped, INFRA-009–INFRA-013 pending.
+preview infrastructure** is in progress: INFRA-004–INFRA-009 shipped, INFRA-010–INFRA-013 pending.
 Dashboard analytics, notifications UI, live video, payments, and production OAuth remain deferred.
 
 All data is **synthetic**. Do not introduce real patient records, credentials, or other PHI.
@@ -42,7 +42,8 @@ medconnect-pro/
   packages/          Reserved for future shared packages
   postman/           Postman environments and collection conventions
   docs/              Canonical documentation
-  infra/terraform/   M9 Terraform root (secrets/OIDC bootstrap)
+  infra/terraform/   M9 Terraform root (secrets, RDS, ECS)
+  amplify.yml        Amplify Hosting buildspec for apps/web
   .github/workflows  GitHub Actions quality gates (`ci.yml`)
   .cursor/rules/     Project Cursor rules
   scripts/plane/     Plane task sync
@@ -77,12 +78,12 @@ Frontend role and nav checks are UX only. Server-side authorization and tenant i
 
 ### Planned infrastructure
 
-AWS, Docker, ECS/Fargate, Terraform ([infra/terraform/](./infra/terraform/) secrets/OIDC
-bootstrap), CloudWatch, with
+AWS, Docker, ECS/Fargate, Amplify Hosting ([amplify.yml](./amplify.yml)), Terraform
+([infra/terraform/](./infra/terraform/)), CloudWatch, with
 [local / preview / production](./docs/decisions/ADR-012-deployment-topology.md) separation.
 GitHub Actions **quality gates** already run on pull requests and `main`
-([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)). Preview and production deploys remain
-later M9 tasks.
+([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)). Amplify Git publishes `main`;
+preview PR delivery and production ECS deploy remain later M9 tasks.
 
 Significant architectural choices are recorded as ADRs under [`docs/decisions/`](./docs/decisions/).
 

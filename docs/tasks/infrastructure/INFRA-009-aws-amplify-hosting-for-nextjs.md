@@ -3,7 +3,7 @@ id: INFRA-009
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [INFRA-004, INFRA-002]
@@ -15,7 +15,7 @@ related_docs:
     ../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -84,12 +84,12 @@ The Amplify app can be scaffolded in parallel.
 
 ## Acceptance criteria
 
-- [ ] `main` publishes a production Amplify URL
-- [ ] The production site calls only the production API
-- [ ] Marketing routes and `/login` load over HTTPS
-- [ ] Amplify holds no database URLs or Secrets Manager values
-- [ ] Monorepo workspace install works from the repository root
-- [ ] A failed Amplify build does not replace the last successful production publish
+- [x] `main` publishes a production Amplify URL
+- [x] The production site calls only the production API
+- [x] Marketing routes and `/login` load over HTTPS
+- [x] Amplify holds no database URLs or Secrets Manager values
+- [x] Monorepo workspace install works from the repository root
+- [x] A failed Amplify build does not replace the last successful production publish
 
 ## Dependencies
 
@@ -129,7 +129,13 @@ Later shipping of this slice is a MINOR bump on 0.x. Writing the spec is not.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Root [amplify.yml](../../../amplify.yml) (npm workspace `buildPath: /`,
+  `appRoot: apps/web`, Node 24, `npm ci` + `npm run build:production`, SSR
+  `baseDirectory: apps/web/.next`). Amplify Git owns `main` production web publish. Operator
+  console connect, production API env (`production_api_url`), and exact
+  `production_web_origins` apply: [deploy.md](../../workflows/deploy.md). PR previews stay
+  INFRA-010. Live Amplify GitHub connection remains an operator step.
+- Tests: `scripts/ci/amplify-buildspec.spec.mjs` (`npm run test:amplify-buildspec`). Quality
+  CI runs it next to `test:ci-secrets`. `npm run ci:secrets` still rejects committed secrets.
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Version 0.56.0 → 0.57.0 (MINOR, hosted Next.js). ECS rolling deploy stays INFRA-011.

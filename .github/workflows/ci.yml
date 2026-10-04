@@ -42,6 +42,8 @@ jobs:
         run: npm run ci:secrets
       - name: Test secret guard
         run: npm run test:ci-secrets
+      - name: Test Amplify buildspec
+        run: npm run test:amplify-buildspec
       - name: Test hosted DB operator scripts
         run: npm run test:ensure-app-role
       - uses: hashicorp/setup-terraform@v3
