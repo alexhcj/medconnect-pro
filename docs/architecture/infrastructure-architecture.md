@@ -22,9 +22,9 @@ M8 marketing site is in the repository (FE-017–FE-023). GitHub Actions **quali
 classification, AWS secret retrieval, remote Terraform state, VPC, preview/production demo RDS,
 the NestJS API image, ECS/Fargate hosting, Amplify Hosting for Next.js, and Amplify PR
 previews exist
-([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)–[INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md)).
-Production deploy workflows remain **M9**
-([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
+([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)–[INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)).
+The `v1.0.0` production-release gate remains **M9**
+([INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
 not M8. Topology is [ADR-012](../decisions/ADR-012-deployment-topology.md): Amplify for Next.js,
 ECS/Fargate for NestJS, environments `local` / `preview` / `production`. Operator apply and the
 Amplify GitHub connection remain required.
@@ -55,7 +55,8 @@ Per-PR ECS or RDS is out of scope ([ADR-012](../decisions/ADR-012-deployment-top
 - public/private subnet separation with one NAT Gateway for private-subnet egress
 - security groups (RDS is not reachable as public `0.0.0.0/0` Postgres; ALB HTTP is CloudFront-only)
 - least-privilege IAM (ECS execution role reads that environment’s secret; task role is S3-only)
-- SSM bastion for operator migrate/seed port-forward until deploy-time migrate exists (INFRA-011)
+- SSM bastion for first-init migrate/seed port-forward. Routine hosted migrate is an in-VPC
+  ECS `RunTask` from [INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)
 
 ## Environments
 
@@ -130,8 +131,9 @@ no secret ARNs.
 
 GitHub Actions authenticates to AWS with those OIDC roles. Do not store long-lived AWS access
 keys as GitHub Secrets. Quality CI never assumes the roles. Image **push** on `main` uses
-`.github/workflows/api-image.yml` and `medconnect-github-production`. ECS service update remains
-[INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md).
+`.github/workflows/api-image.yml` and `medconnect-github-production`. ECS migrate and service
+update use [`.github/workflows/production-deploy.yml`](../../.github/workflows/production-deploy.yml)
+([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)).
 
 ### API image contract
 
@@ -155,7 +157,7 @@ from the repository root (`npm ci`). PostgreSQL **18** (`postgres:18-alpine` ser
 credentials as Compose). Schema before API tests: `npm run migration:run`. Commands, in order:
 
 1. `npm run ci:secrets` (tracked `.env`, AWS access-key material, Compose URLs in hosted/Terraform paths)
-2. `npm run test:ci-secrets` / `npm run test:amplify-buildspec` / `npm run test:preview-delivery` / `npm run test:ensure-app-role`
+2. `npm run test:ci-secrets` / `npm run test:amplify-buildspec` / `npm run test:preview-delivery` / `npm run test:production-delivery` / `npm run test:ensure-app-role`
 3. `terraform fmt -check` / `terraform init -backend=false` / `terraform validate` in `infra/terraform`
    (no AWS credentials)
 4. `npm run lint` / `npm run lint:api`
@@ -170,7 +172,7 @@ A failing lint, type-check, test, or build fails the workflow. Mark the `ci` che
 not in this workflow (`e2e:live` is [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)).
 The quality workflow file contains no production secrets and no AWS credentials; Compose demo
 database credentials are not GitHub Secrets. GitHub OIDC roles exist in Terraform for image push
-and later deploy workflows only. Preview URL comments
+and production deploy workflows only. Preview URL comments
 ([`.github/workflows/preview-status.yml`](../../.github/workflows/preview-status.yml)) do not assume
 those roles.
 
@@ -179,7 +181,7 @@ Not in the quality workflow (separate files):
 - Image **push** to ECR on `main` ([`.github/workflows/api-image.yml`](../../.github/workflows/api-image.yml))
 - Amplify Git publish of `apps/web` from `main` ([INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md); console-connected)
 - Preview URL comment after CI ([`.github/workflows/preview-status.yml`](../../.github/workflows/preview-status.yml); Amplify-native PR previews)
-- Production ECS deploy and approval gate ([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
+- Production ECS migrate/deploy and GitHub environment approval ([`.github/workflows/production-deploy.yml`](../../.github/workflows/production-deploy.yml); [INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
 
 Keep deploy and push jobs in separate workflow files so this quality workflow never gains AWS
 credentials.

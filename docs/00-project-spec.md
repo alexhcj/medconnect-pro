@@ -100,7 +100,7 @@ backend domain logic into the Next.js frontend.
 Demo vertical slices 1–12 below shipped in milestones M0–M7. M8 marketing site shipped
 (FE-017–FE-023). Current position:
 [post-mvp-baseline.md](roadmap/post-mvp-baseline.md). Next: **M9 — Deployment / preview
-infrastructure** (INFRA-004–INFRA-010 shipped; INFRA-011–INFRA-013 pending).
+infrastructure** (INFRA-004–INFRA-011 shipped; INFRA-012–INFRA-013 pending).
 
 ## Implementation strategy
 

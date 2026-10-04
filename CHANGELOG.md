@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.59.0] - 2026-10-04
+
+### Added
+
+- Production delivery and rollback (INFRA-011): after quality CI on `main`, GitHub Actions
+  migrates via an in-VPC ECS `RunTask` and rolls preview then production Fargate services
+  (`.github/workflows/production-deploy.yml`). Production ECS waits on the GitHub `production`
+  environment. Amplify Git remains the only web publisher. Rollback is the previous task
+  definition (migration revert only with explicit dispatch). Live Terraform apply and the
+  GitHub environment remain operator steps. Synthetic demo data only; never real PHI.
+
 ## [0.58.0] - 2026-10-04
 
 ### Added

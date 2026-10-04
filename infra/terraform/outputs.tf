@@ -24,7 +24,7 @@ output "github_preview_role_arn" {
 }
 
 output "github_production_role_arn" {
-  description = "OIDC role for GitHub Actions on refs/heads/main (production secret read)."
+  description = "OIDC role for GitHub Actions on refs/heads/main or the production environment (ECR push, ECS deploy, production secret read)."
   value       = aws_iam_role.github_production.arn
 }
 

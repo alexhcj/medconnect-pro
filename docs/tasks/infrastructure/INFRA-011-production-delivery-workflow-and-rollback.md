@@ -3,7 +3,7 @@ id: INFRA-011
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [INFRA-008, INFRA-009]
@@ -16,7 +16,7 @@ related_docs:
     ../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -83,11 +83,11 @@ it if preview wiring lands in the same change set.
 
 ## Acceptance criteria
 
-- [ ] `main` is the only branch that deploys production Amplify and production ECS
-- [ ] Feature branches cannot deploy production
-- [ ] Rollback steps are written and have been rehearsed once (preview or dry run)
-- [ ] [release.md](../../workflows/release.md) no longer says “deploy to development/staging”
-- [ ] CI failure, preview failure, and production failure behaviors are documented
+- [x] `main` is the only branch that deploys production Amplify and production ECS
+- [x] Feature branches cannot deploy production
+- [x] Rollback steps are written and have been rehearsed once (preview or dry run)
+- [x] [release.md](../../workflows/release.md) no longer says “deploy to development/staging”
+- [x] CI failure, preview failure, and production failure behaviors are documented
 
 ## Dependencies
 
@@ -123,7 +123,14 @@ Later shipping of this slice is a MINOR bump on 0.x. Writing the spec is not.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `.github/workflows/production-deploy.yml` after CI on `main`; preview ECS then
+  GitHub environment `production` for production ECS; `scripts/ci/ecs-deploy.mjs`; hosted
+  `run-migrations.ts`; Terraform OIDC `environment:production`, ECS IAM, circuit breaker, and
+  `ignore_changes` on service `task_definition`. Amplify Git remains the only web publisher.
+- Tests: `npm run test:production-delivery` (workflow contract + dry-run rewrite); API
+  `run-migrations.spec.ts`; `terraform validate`.
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Version 0.58.0 → 0.59.0 (MINOR, production delivery). Rollback drill rehearsed as the
+  in-repo `dry-run` path (no RegisterTaskDefinition/UpdateService). Live AWS apply, GitHub
+  environment `production`, and `PRODUCTION_API_URL` remain operator steps. Do not claim HIPAA
+  compliance.

@@ -6,7 +6,7 @@ Hosting for `apps/web`. Catalog:
 ECS/Fargate: [INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md).
 Amplify: [INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md).
 PR previews: [INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md).
-Production rollback is [INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md).
+Production ECS delivery and rollback: [INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md).
 
 Quality CI never assumes AWS roles. `terraform apply` is local (or a later deploy workflow).
 Do not commit `*.tfstate`, `*.tfvars`, or `backend.hcl`.
@@ -87,8 +87,9 @@ Session Manager port forwarding through the SSM bastion, then the local Node too
 Leave `APP_ENV` unset (local). Hosted fail-closed rejects `127.0.0.1` when `APP_ENV` is
 `preview` or `production`.
 
-Do **not** add AWS credentials to quality CI. GitHub deploy-time `migration:run` waits for
-INFRA-011. Operator migrate through the bastion remains valid.
+Do **not** add AWS credentials to quality CI. After first-init, hosted migrate is an in-VPC
+ECS `RunTask` from [`.github/workflows/production-deploy.yml`](../../.github/workflows/production-deploy.yml).
+Operator migrate through the bastion remains valid for first-init, `ensure:app-role`, and seed.
 
 1. Read outputs: `bastion_instance_id`, `preview_rds_address` or `production_rds_address`.
 2. Read that environment’s secret (`medconnect/preview/api` or `medconnect/production/api`)
@@ -158,8 +159,10 @@ docker build -f apps/api/Dockerfile -t <ECR_REPOSITORY_URL>:latest .
 docker push <ECR_REPOSITORY_URL>:latest
 ```
 
-Set `api_desired_count = 1` and apply again. Rolling ECS updates from `main` remain INFRA-011.
-Until then, retag/push and bounce the service (or re-apply) after a new digest.
+Set `api_desired_count = 1` and apply again. After that, `main` rolls both API services through
+[`.github/workflows/production-deploy.yml`](../../.github/workflows/production-deploy.yml) (preview
+ECS first, then production ECS behind the GitHub `production` environment). Do not bounce the
+service by hand for routine image updates.
 
 Inspect the task definition: `secrets` must use `valueFrom` JSON keys
 (`…:DATABASE_URL::`, `…:DATABASE_ADMIN_URL::`), not plaintext passwords. Preview and production
@@ -192,15 +195,93 @@ Terraform ignores `secret_string` changes (`lifecycle.ignore_changes`) so rotati
 require a Terraform apply.
 
 GitHub OIDC role ARNs, ECR repository URL, HTTPS API URLs, document bucket names, secret-read
-policy ARNs, and API security group IDs are Terraform outputs for operators and for INFRA-011
-deploy workflows. Preview frontend publish is Amplify-native; it does not assume the GitHub
-preview OIDC role.
+policy ARNs, and API security group IDs are Terraform outputs for operators and for the
+production deploy workflow. Preview frontend publish is Amplify-native; it does not assume the
+GitHub preview OIDC role.
+
+## Production ECS delivery (`main`)
+
+[`.github/workflows/production-deploy.yml`](../../.github/workflows/production-deploy.yml) is the
+only GitHub Action that updates ECS. It does **not** publish Amplify. Feature branches cannot
+trigger it (`workflow_run` of quality CI on a `push` to `main`, plus `workflow_dispatch`).
+
+Set GitHub Actions **repository variables** (not secrets):
+
+| Variable | Value |
+| --- | --- |
+| `AWS_PRODUCTION_ROLE_ARN` | Terraform output `github_production_role_arn` |
+| `PRODUCTION_API_URL` | Terraform output `production_api_url` |
+| `AWS_REGION` | optional; default `us-east-1` |
+
+Do not store `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY`. Re-apply Terraform so the production
+OIDC role can register/run/update ECS (`iam:PassRole` only for the API execution/task roles) and
+so both services use the deployment circuit breaker. ECS `task_definition` is ignored by later
+Terraform applies so CI revisions are not reverted. After a Terraform change to task env
+(`WEB_ORIGINS`, bucket name, and similar), either wait for the next `main` deploy (it copies the
+latest family revision and swaps the image) or update the service to that new family revision by
+hand.
+
+### GitHub environment `production`
+
+1. GitHub → Settings → Environments → New environment → name **`production`** (exact).
+2. Required reviewers: at least one human. Do not invent a change-advisory board.
+3. Deployment branches: selected branches, **`main` only**.
+4. Do not add a `production` environment protection to quality CI or `api-image.yml`.
+
+The preview ECS job does not use this environment so the shared preview API can roll without
+waiting for production approval. The production ECS job `needs` a successful preview job on the
+automatic path.
+
+### What runs
+
+1. Quality CI on `main` must succeed. A failing `ci` run does not start this workflow.
+2. [`.github/workflows/api-image.yml`](../../.github/workflows/api-image.yml) may still push the
+   SHA to ECR in parallel. The deploy script waits for `medconnect-api:$SHA` before migrating.
+3. Preview: in-VPC migrate (`node apps/api/dist/persistence/run-migrations.js` on a RunTask
+   **without** a container health check) then `update-service` for `preview-api`.
+4. Human approval on environment `production`.
+5. The same migrate + service update for `production-api`.
+6. `GET $PRODUCTION_API_URL/health` and `GET $PRODUCTION_API_URL/ready`.
+
+Success is those two API checks plus Amplify serving the production web build (Amplify Git, not
+this workflow). Full smoke is [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md).
+
+### Failure behavior
+
+| Event | Behavior |
+| --- | --- |
+| CI fails on a pull request | No advertised preview URL ([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md)) |
+| CI fails on `main` | Production deploy workflow does not run. ECR may still receive the SHA; ECS is not updated |
+| Preview ECS migrate or deploy fails | Production job does not start; previous preview task definition remains |
+| Production ECS deploy fails | Circuit breaker + `deployment_minimum_healthy_percent = 100` keep the previous revision; the job is red |
+| Amplify `main` build fails | Last successful Hosting publish remains. Do not treat a green Amplify job as proof the API migrated |
+| Database | Prefer a forward-fix migration on `main`. `undoLastMigration` only with `workflow_dispatch` and `confirm_migration_revert` |
+
+### Rollback drill
+
+Default rollback is the **previous ECS task definition**. Amplify rollback is console **Redeploy
+this version** of the last good job, or revert the commit on `main`. Database rollback is a
+forward-fix unless an operator explicitly confirms revert.
+
+Rehearse without touching production:
+
+1. Actions → **Production deploy** → Run workflow.
+2. `action` = `dry-run`, `service` = `preview-api`, leave `confirm_migration_revert` unchecked.
+3. Confirm the job log prints the current and previous task definition ARNs and **Dry run only**.
+
+To roll preview ECS to the previous revision (still not production):
+
+1. Same workflow dispatch: `action` = `rollback`, `service` = `preview-api`.
+2. Optionally set `task_definition` to `medconnect-preview-api:<revision>`.
+3. Check `confirm_migration_revert` only if you intend to undo the last TypeORM migration.
+
+Production rollback uses `service` = `production-api` and waits for the `production` environment
+approval.
 
 ## Amplify Hosting (`apps/web`)
 
-Amplify Git integration owns frontend publish. Do not add a GitHub Action that also publishes
-Amplify ([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)
-picks the production owner). Build settings live in [amplify.yml](../../amplify.yml)
+Amplify Git integration is the **only** production web publisher. Do not add a GitHub Action that
+also publishes Amplify. Build settings live in [amplify.yml](../../amplify.yml)
 (repository root; npm workspace install from `/`, Next app in `apps/web`, SSR artifacts
 `apps/web/.next`). The buildspec writes `NEXT_PUBLIC_USE_MOCKS`, `NEXT_PUBLIC_API_BASE_URL`, and
 `API_BASE_URL` into `apps/web/.env.production` and fails if any is empty. Do not static-export.

@@ -39,7 +39,10 @@ Do not implement a UI task while `design.required: true` and `design.status` is 
     (before opening the PR).
 12. Open PR. Quality CI must pass. The project-advertised Amplify preview URL is posted on the
     PR after `ci` succeeds ([deploy.md](deploy.md)). Review against that URL; the preview API
-    and preview/demo database are shared across PRs.
+    and preview/demo database are shared across PRs. Merge to `main` is the only production
+    delivery path ([release.md](release.md)): Amplify Git publishes the web; ECS migrate/deploy
+    waits on CI and a GitHub `production` environment approval. Feature branches cannot deploy
+    production.
 13. Update Plane operational status.
 14. Mark task complete only after acceptance criteria are verified (stage 6): set top-level
     `status` to `implemented` or `completed`, fill the Markdown Completion section, and set

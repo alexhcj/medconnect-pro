@@ -1,4 +1,4 @@
-# Push the API image to ECR on main. Does not update ECS (INFRA-011).
+# Push the API image to ECR on main. ECS update is .github/workflows/production-deploy.yml (INFRA-011).
 # Requires GitHub Actions variable AWS_PRODUCTION_ROLE_ARN (terraform output github_production_role_arn)
 # and optional AWS_REGION (default us-east-1). Quality CI never assumes this role.
 name: API image

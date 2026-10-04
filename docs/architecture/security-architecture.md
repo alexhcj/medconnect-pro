@@ -131,5 +131,6 @@ secrets and the preview/demo database must not be the production pair; productio
 local Compose or preview credentials
 ([ADR-012](../decisions/ADR-012-deployment-topology.md)). Hosted RDS is private-subnet only;
 runtime `DATABASE_URL` must be `medconnect_app` and must not equal `DATABASE_ADMIN_URL`.
-Operator migrate/seed uses an SSM tunnel ([deploy.md](../workflows/deploy.md)). Rotation:
+First-init migrate/seed uses an SSM tunnel ([deploy.md](../workflows/deploy.md)). Routine hosted
+migrate is an ECS `RunTask` from the production deploy workflow on `main`. Rotation:
 [deploy.md](../workflows/deploy.md).

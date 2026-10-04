@@ -1,0 +1,148 @@
+# Production (and preview API) ECS delivery after quality CI on main (INFRA-011).
+# Amplify Git owns production web publish — this workflow must not start Amplify jobs.
+# Requires GitHub Actions variables AWS_PRODUCTION_ROLE_ARN and PRODUCTION_API_URL
+# (terraform outputs github_production_role_arn and production_api_url) and optional AWS_REGION.
+# Operator: create GitHub environment "production" with a required reviewer and main-only
+# deployment branches. See docs/workflows/deploy.md.
+name: Production deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: deploy, rollback, or dry-run
+        type: choice
+        options: [deploy, rollback, dry-run]
+        default: dry-run
+      service:
+        description: Which ECS service to target
+        type: choice
+        options: [both, preview-api, production-api]
+        default: both
+      task_definition:
+        description: family:revision to roll back to (rollback only; default is previous revision)
+        required: false
+        type: string
+      confirm_migration_revert:
+        description: Undo the last TypeORM migration (explicit human approval only; prefer a forward-fix)
+        type: boolean
+        default: false
+
+concurrency:
+  group: production-deploy-${{ github.event.workflow_run.head_sha || github.sha }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  preview:
+    name: preview-ecs
+    if: |
+      (github.event_name == 'workflow_run' &&
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main') ||
+      (github.event_name == 'workflow_dispatch' &&
+        (inputs.service == 'both' || inputs.service == 'preview-api'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_PRODUCTION_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Deliver preview-api
+        env:
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ACTION: ${{ github.event_name == 'workflow_dispatch' && inputs.action || 'deploy' }}
+          TASK_DEFINITION: ${{ github.event_name == 'workflow_dispatch' && inputs.task_definition || '' }}
+          REVERT: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_migration_revert || false }}
+        run: |
+          set -euo pipefail
+          extra=()
+          if [ "$ACTION" = "deploy" ]; then
+            extra+=(--image-tag "$IMAGE_TAG")
+          elif [ -n "${IMAGE_TAG}" ]; then
+            extra+=(--image-tag "$IMAGE_TAG")
+          fi
+          if [ -n "$TASK_DEFINITION" ]; then
+            extra+=(--task-definition "$TASK_DEFINITION")
+          fi
+          if [ "$REVERT" = "true" ]; then
+            extra+=(--revert-migrations)
+          fi
+          node scripts/ci/ecs-deploy.mjs --cluster medconnect --service preview-api --action "$ACTION" "${extra[@]}"
+
+  production:
+    name: production-ecs
+    needs: [preview]
+    if: |
+      always() &&
+      needs.preview.result != 'failure' &&
+      needs.preview.result != 'cancelled' &&
+      ((github.event_name == 'workflow_run' &&
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main') ||
+       (github.event_name == 'workflow_dispatch' &&
+        (inputs.service == 'both' || inputs.service == 'production-api')))
+    environment: production
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_PRODUCTION_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Deliver production-api
+        env:
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ACTION: ${{ github.event_name == 'workflow_dispatch' && inputs.action || 'deploy' }}
+          TASK_DEFINITION: ${{ github.event_name == 'workflow_dispatch' && inputs.task_definition || '' }}
+          REVERT: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_migration_revert || false }}
+        run: |
+          set -euo pipefail
+          extra=()
+          if [ "$ACTION" = "deploy" ]; then
+            extra+=(--image-tag "$IMAGE_TAG")
+          elif [ -n "${IMAGE_TAG}" ]; then
+            extra+=(--image-tag "$IMAGE_TAG")
+          fi
+          if [ -n "$TASK_DEFINITION" ]; then
+            extra+=(--task-definition "$TASK_DEFINITION")
+          fi
+          if [ "$REVERT" = "true" ]; then
+            extra+=(--revert-migrations)
+          fi
+          node scripts/ci/ecs-deploy.mjs --cluster medconnect --service production-api --action "$ACTION" "${extra[@]}"
+      - name: Check production /health and /ready
+        if: github.event_name == 'workflow_run' || inputs.action == 'deploy'
+        env:
+          PRODUCTION_API_URL: ${{ vars.PRODUCTION_API_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PRODUCTION_API_URL:-}" ]; then
+            echo "GitHub Actions variable PRODUCTION_API_URL is unset. Set it to terraform output production_api_url." >&2
+            exit 1
+          fi
+          curl -fsS "$PRODUCTION_API_URL/health"
+          curl -fsS "$PRODUCTION_API_URL/ready"

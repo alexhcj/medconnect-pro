@@ -116,8 +116,7 @@ GitHub Actions authenticates to AWS with OIDC (IAM roles in the Terraform bootst
 store `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY` as GitHub Secrets for this purpose. Quality
 CI ([`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)) stays free of AWS credentials;
 image push on `main` ([`.github/workflows/api-image.yml`](../../.github/workflows/api-image.yml))
-and later deploy workflows
-([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
+and [`.github/workflows/production-deploy.yml`](../../.github/workflows/production-deploy.yml)
 assume the OIDC roles. Preview URL comments
 ([`.github/workflows/preview-status.yml`](../../.github/workflows/preview-status.yml)) do not
 assume those roles; Amplify Git owns frontend publish.
