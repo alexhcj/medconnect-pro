@@ -75,4 +75,5 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - INFRA-010 — Preview environment and PR delivery workflow
 - INFRA-011 — Production delivery workflow and rollback
 - INFRA-012 — GitHub v1.0.0 release-notes template
+- INFRA-014 — AWS account setup and hosted first-apply
 - INFRA-013 — v1.0.0 production release readiness

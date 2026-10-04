@@ -2,7 +2,7 @@
 
 Current ship state is [post-mvp-baseline.md](post-mvp-baseline.md), not the historical labels below.
 Demo milestones M0–M8 are shipped (FE-017–FE-023). Deployment/preview is **M9**
-(INFRA-004–INFRA-012 shipped; INFRA-013 pending).
+(INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused).
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
 expansion is still unshipped.

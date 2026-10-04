@@ -12,8 +12,9 @@ task files plus M8 (FE-017–FE-023) are `implemented` or `completed`. M8 market
 FE-017–FE-023 (0.45.0–0.51.1). Public copy must follow
 [capability-matrix.md](../marketing/capability-matrix.md). Deployment and preview environments are
 **M9**. [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)
-are shipped; [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
-remains pending. Not part of M8.
+are shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
+is pending and blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
+which remains paused. Not part of M8.
 
 ## Actually complete
 
@@ -42,7 +43,8 @@ remains pending. Not part of M8.
 - Live video / Daily / Socket.IO
 - Payments, claims submission, role assignment HTTP, security-events HTTP
 - Notifications UI; dashboard analytics API (`GET /dashboard/overview`)
-- `v1.0.0` production-release gate (INFRA-013)
+- Hosted AWS first-apply (INFRA-014; blocks INFRA-013)
+- `v1.0.0` production-release gate (INFRA-013; paused until INFRA-014)
 - Redis, custom KMS hierarchy
 - HIPAA certification
 

@@ -25,7 +25,8 @@ A multi-tenant practice platform covering:
 
 Demo milestones M0–M8 are shipped (FE-017–FE-023). Current position:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). **M9 — Deployment /
-preview infrastructure** is in progress: INFRA-004–INFRA-012 shipped, INFRA-013 pending.
+preview infrastructure** is in progress: INFRA-004–INFRA-012 shipped, INFRA-014 pending
+(blocks INFRA-013), INFRA-013 paused.
 Dashboard analytics, notifications UI, live video, payments, and production OAuth remain deferred.
 
 All data is **synthetic**. Do not introduce real patient records, credentials, or other PHI.
@@ -84,7 +85,7 @@ AWS, Docker, ECS/Fargate, Amplify Hosting ([amplify.yml](./amplify.yml)), Terraf
 GitHub Actions **quality gates** already run on pull requests and `main`
 ([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)). Amplify Git publishes `main`;
 production ECS migrate/deploy is [`.github/workflows/production-deploy.yml`](./.github/workflows/production-deploy.yml).
-The `v1.0.0` gate remains INFRA-013.
+The `v1.0.0` gate remains INFRA-013 (paused until INFRA-014 first-apply).
 
 Significant architectural choices are recorded as ADRs under [`docs/decisions/`](./docs/decisions/).
 

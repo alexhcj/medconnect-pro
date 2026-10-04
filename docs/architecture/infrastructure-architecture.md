@@ -25,11 +25,12 @@ previews exist
 ([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)–[INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)).
 The `v1.0.0` production-release gate remains **M9**
 ([INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)
-shipped; [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
-pending),
+shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
+pending, blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md);
+INFRA-013 paused),
 not M8. Topology is [ADR-012](../decisions/ADR-012-deployment-topology.md): Amplify for Next.js,
 ECS/Fargate for NestJS, environments `local` / `preview` / `production`. Operator apply and the
-Amplify GitHub connection remain required.
+Amplify GitHub connection remain required ([INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)).
 
 ## Target
 

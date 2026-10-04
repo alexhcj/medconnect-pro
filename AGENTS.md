@@ -4,7 +4,7 @@ Canonical documentation: `/docs`. Current demo position: M0–M7 shipped; M8 mar
 (FE-017–FE-023)
 ([docs/roadmap/post-mvp-baseline.md](docs/roadmap/post-mvp-baseline.md)). Next after M8 is
 **M9 — Deployment / preview infrastructure** (INFRA-004–INFRA-012 shipped;
-INFRA-013 pending).
+INFRA-014 pending, blocks INFRA-013; INFRA-013 paused).
 
 Frontend application: `apps/web`.
 Backend application: `apps/api` (NestJS 12 platform; OpenAPI via `npm run openapi:generate`).

@@ -6,7 +6,7 @@ feature: deployment
 status: pending
 priority: high
 estimate: 3
-dependencies: [INFRA-004, INFRA-005, INFRA-006, INFRA-007, INFRA-008, INFRA-009, INFRA-010, INFRA-011, INFRA-012]
+dependencies: [INFRA-004, INFRA-005, INFRA-006, INFRA-007, INFRA-008, INFRA-009, INFRA-010, INFRA-011, INFRA-012, INFRA-014]
 related_adrs: [ADR-005, ADR-007, ADR-012]
 related_docs:
   [
@@ -41,6 +41,9 @@ Why this task exists: M9 ends at `main` → AWS production → `v1.0.0`.
 [ADR-007](../../decisions/ADR-007-semantic-versioning.md) forbids a silent major bump. This
 task is the explicit request.
 
+Paused until [INFRA-014](INFRA-014-aws-account-setup-and-hosted-first-apply.md) records a
+successful hosted first-apply. Product-feature development continues.
+
 This is a portfolio/demo application containing synthetic data only. Do not claim HIPAA
 compliance or suitability for real patient data.
 
@@ -67,7 +70,7 @@ compliance or suitability for real patient data.
 - HIPAA assessment or certification
 - Claiming production PHI readiness
 - Live Daily / WebRTC, payments, Redis, SNS/SQS
-- Re-implementing INFRA-004–INFRA-012
+- Re-implementing INFRA-004–INFRA-012 or repeating INFRA-014 first-apply
 
 ## Requirements
 
@@ -97,7 +100,7 @@ compliance or suitability for real patient data.
 
 ## Dependencies
 
-- Blocked by: INFRA-004 through INFRA-012
+- Blocked by: INFRA-004 through INFRA-012 and INFRA-014
 - Related: ADR-007, ADR-005, release.md, capability-matrix
 
 ## Validation
@@ -113,7 +116,7 @@ Execute this checklist against the real production URLs (not localhost):
 7. Preview still cannot read production secrets.
 8. Release notes filled from the template; version `1.0.0` recorded.
 9. Update [release-roadmap.md](../../roadmap/release-roadmap.md) to
-   `INFRA-004–INFRA-013 (shipped)` and move current position off “M9 remaining.”
+   `INFRA-004–INFRA-014 (shipped)` and move current position off “M9 remaining.”
 
 ## Documentation impact
 
@@ -133,7 +136,7 @@ Execute this checklist against the real production URLs (not localhost):
 
 ## Implementation notes
 
-Suggested implementation order: last M9 task.
+Suggested implementation order: last M9 task, after INFRA-014.
 
 This task is the only M9 task allowed to bump to `1.0.0`. Writing the spec is not a version
 bump.
@@ -143,4 +146,4 @@ bump.
 - Implementation:
 - Tests:
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Pending M9 implementation. Paused until INFRA-014 records a successful hosted first-apply.
