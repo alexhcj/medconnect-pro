@@ -64,4 +64,5 @@ mode still renders overview cards.
 - `/platform/*` feature pages ([FE-021](../tasks/frontend/FE-021-platform-feature-pages.md), shipped).
 - Security, About, and Demo ([FE-022](../tasks/frontend/FE-022-security-about-and-demo-pages.md), shipped).
 - Polish and product visuals ([FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md), shipped).
-- Deploy/preview is **M9** (INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused).
+- Deploy/preview is **M9** (close audit found no missing IDs; not closed; INFRA-004–INFRA-012
+  shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). Product-feature work continues.

@@ -25,8 +25,9 @@ A multi-tenant practice platform covering:
 
 Demo milestones M0–M8 are shipped (FE-017–FE-023). Current position:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md). **M9 — Deployment /
-preview infrastructure** is in progress: INFRA-004–INFRA-012 shipped, INFRA-014 pending
-(blocks INFRA-013), INFRA-013 paused.
+preview infrastructure** is in progress and not closed (close audit found no missing IDs):
+INFRA-004–INFRA-012 shipped, INFRA-014 pending (blocks INFRA-013), INFRA-013 paused.
+Product-feature work continues.
 Dashboard analytics, notifications UI, live video, payments, and production OAuth remain deferred.
 
 All data is **synthetic**. Do not introduce real patient records, credentials, or other PHI.

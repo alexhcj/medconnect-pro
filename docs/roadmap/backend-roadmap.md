@@ -22,4 +22,5 @@ login HTTP. That does not make Identity optional for later domain APIs.
 
 M0–M7 domain HTTP listed above is in the repository. M8 is frontend marketing (FE-017–FE-023),
 not a new backend domain. Remaining demo work is **M9 — Deployment / preview infrastructure**
-(INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused).
+(close audit found no missing IDs; not closed; INFRA-004–INFRA-012 shipped; INFRA-014 pending,
+blocks INFRA-013; INFRA-013 paused). Product-feature work continues.
