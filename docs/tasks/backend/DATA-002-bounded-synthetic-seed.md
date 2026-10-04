@@ -3,7 +3,7 @@ id: DATA-002
 type: task
 area: backend
 feature: demo-data
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [DATA-001, BE-003, BE-004, BE-007, BE-008]
@@ -17,7 +17,7 @@ related_docs:
     BE-011-dashboard-overview-api.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -83,13 +83,13 @@ Idempotent: re-running seed must not duplicate patients by email or explode row 
 
 ## Acceptance Criteria
 
-- [ ] After `npm run seed:mock-identity`, Harbor Synthetic Practice has ≥20 patients, ≥8
+- [x] After `npm run seed:mock-identity`, Harbor Synthetic Practice has ≥20 patients, ≥8
   appointments (including ≥2 on the seed calendar day), ≥4 current-month invoices, and inbox
   rows for both the practice admin and the provider at the counts above
-- [ ] Re-running the seed does not duplicate the expanded patients (email uniqueness) or
+- [x] Re-running the seed does not duplicate the expanded patients (email uniqueness) or
   unbounded extra appointments/invoices/notifications
-- [ ] Existing live e2e accounts and Avery/Blake rows still exist
-- [ ] No real PHI; every new clinical/billing/notification row is `synthetic: true`
+- [x] Existing live e2e accounts and Avery/Blake rows still exist
+- [x] No real PHI; every new clinical/billing/notification row is `synthetic: true`
 
 ## Dependencies
 
@@ -118,7 +118,13 @@ Writing this spec is not a version bump.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `npm run seed:mock-identity` (`seedMockIdentity`) upserts 20 Harbor patients,
+  8 appointments (live telehealth plus a same-UTC-day office visit, both refreshed on re-seed),
+  4 current-month invoices, and 3 admin + 2 provider in-app inbox rows. Catalog lives in
+  `seed-mock-identity-corpus.ts`. Existing Avery/Blake accounts, Oct 15 visit, and Aug/Sep
+  invoices are unchanged. No API, schema, RLS, or capability-status change.
+- Tests: `apps/api/src/identity/seed-mock-identity-corpus.spec.ts`;
+  `apps/api/test/seed-mock-identity.spec.ts` (seed twice, minima, no growth). `npm run test:api`.
 - PR:
-- Notes: Pending M10 implementation.
+- Notes: Version 0.59.0 → 0.60.0 (MINOR, bounded demo corpus). Analytics/inbox capabilities stay
+  planned until BE-011 / FE-025.

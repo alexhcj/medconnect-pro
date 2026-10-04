@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.60.0] - 2026-10-04
+
+### Added
+
+- Bounded Harbor synthetic seed (DATA-002): `npm run seed:mock-identity` upserts ≥20 patients,
+  ≥8 appointments (including two on the seed UTC day), ≥4 current-month invoices, and in-app
+  inbox rows for the practice admin (3) and provider (2). Re-seed is idempotent by email, notes,
+  line-item description, and inbox title. Avery/Blake loginable accounts stay. Live dashboard
+  and notification-center capabilities remain planned until BE-011 / FE-025. Synthetic demo
+  data only; never real PHI.
+
 ## [0.59.0] - 2026-10-04
 
 ### Added

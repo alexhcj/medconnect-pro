@@ -17,8 +17,8 @@ IDs; M9 is **not closed** and **not cancelled**.
 [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)
 are shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
 is pending and blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
-which remains paused. Next product module is **M10** (DATA-002, BE-011, FE-024, BE-012, FE-025,
-BE-013, FE-026; pending). Local product work does not wait on AWS. Not part of M8.
+which remains paused. Next product module is **M10** (DATA-002 shipped; BE-011, FE-024, BE-012,
+FE-025, BE-013, FE-026 pending). Local product work does not wait on AWS. Not part of M8.
 
 ## Actually complete
 
@@ -47,7 +47,7 @@ BE-013, FE-026; pending). Local product work does not wait on AWS. Not part of M
 - Live video / Daily / Socket.IO
 - Payments, claims submission, security-events HTTP
 - Role assignment HTTP, notifications UI, and dashboard analytics API — **M10** pending tasks
-  (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026)
+  (BE-011, FE-024, BE-012, FE-025, BE-013, FE-026; DATA-002 seed shipped)
 - Hosted AWS first-apply (INFRA-014; blocks INFRA-013; M9 paused)
 - `v1.0.0` production-release gate (INFRA-013; paused until INFRA-014)
 - Redis, custom KMS hierarchy

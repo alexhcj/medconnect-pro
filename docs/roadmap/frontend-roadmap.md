@@ -18,7 +18,7 @@ Not closed with M0–M7. Owned by **M10**. Mock mode still renders overview card
 
 - analytics API and live cards ([BE-011](../tasks/backend/BE-011-dashboard-overview-api.md),
   [FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md));
-- bounded seed ([DATA-002](../tasks/backend/DATA-002-bounded-synthetic-seed.md));
+- bounded seed ([DATA-002](../tasks/backend/DATA-002-bounded-synthetic-seed.md), shipped);
 - notifications UI ([FE-025](../tasks/frontend/FE-025-notifications-ui.md); BE-008 HTTP exists;
   [BE-012](../tasks/backend/BE-012-notification-producers.md) producers);
 - role assignment UI is Slice 8 follow-on ([FE-026](../tasks/frontend/FE-026-role-assignment-ui.md)),
