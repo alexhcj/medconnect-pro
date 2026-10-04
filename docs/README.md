@@ -49,6 +49,8 @@ implementation tasks, roadmaps and development workflows.
 - `marketing/` — public-site [requirements](marketing/requirements.md),
   [sitemap](marketing/sitemap.md), and
   [capability matrix](marketing/capability-matrix.md). Implementation contracts are FE-018–FE-023.
+- `releases/` — GitHub [v1.0.0 release-notes template](releases/github-release-notes-template.md)
+  (INFRA-012). INFRA-013 fills placeholders; do not auto-publish.
 - `mocks/` — synthetic demo data and mock-data conventions.
 
 ## Documentation rules

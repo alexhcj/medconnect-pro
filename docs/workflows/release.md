@@ -27,6 +27,13 @@
 Do not deploy production from a feature branch. Do not add a second Amplify publisher in GitHub
 Actions.
 
+## GitHub `1.0.0` notes
+
+Paste [github-release-notes-template.md](../releases/github-release-notes-template.md) into the
+GitHub Releases UI. [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
+fills every `[INFRA-013: …]` token after production smoke. Do not auto-publish a GitHub release
+from CI. Do not bump to `1.0.0` in this workflow until INFRA-013 records explicit human approval.
+
 ## Failure and rollback
 
 | Event | Behavior |

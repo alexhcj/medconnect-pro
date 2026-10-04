@@ -11,9 +11,9 @@ M0–M8 in [release-roadmap.md](release-roadmap.md) are shipped in the repositor
 task files plus M8 (FE-017–FE-023) are `implemented` or `completed`. M8 marketing site shipped as
 FE-017–FE-023 (0.45.0–0.51.1). Public copy must follow
 [capability-matrix.md](../marketing/capability-matrix.md). Deployment and preview environments are
-**M9**. [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)
-are shipped; [INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
-remain pending. Not part of M8.
+**M9**. [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)
+are shipped; [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
+remains pending. Not part of M8.
 
 ## Actually complete
 
@@ -34,6 +34,7 @@ remain pending. Not part of M8.
   enablement is operator-run)
 - Production ECS delivery and rollback (`production-deploy.yml`; INFRA-011; GitHub environment
   `production` and live `terraform apply` remain operator-run)
+- GitHub `1.0.0` release-notes template (INFRA-012; INFRA-013 fills production evidence)
 
 ## Intentionally incomplete
 
@@ -41,7 +42,7 @@ remain pending. Not part of M8.
 - Live video / Daily / Socket.IO
 - Payments, claims submission, role assignment HTTP, security-events HTTP
 - Notifications UI; dashboard analytics API (`GET /dashboard/overview`)
-- `v1.0.0` production-release gate (INFRA-012–INFRA-013)
+- `v1.0.0` production-release gate (INFRA-013)
 - Redis, custom KMS hierarchy
 - HIPAA certification
 

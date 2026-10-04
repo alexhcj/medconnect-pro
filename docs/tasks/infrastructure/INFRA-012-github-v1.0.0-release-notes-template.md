@@ -3,7 +3,7 @@ id: INFRA-012
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: medium
 estimate: 1
 dependencies: []
@@ -16,7 +16,7 @@ related_docs:
     ../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -93,10 +93,10 @@ and a short pointer in [release.md](../../workflows/release.md). Required sectio
 
 ## Acceptance criteria
 
-- [ ] `docs/releases/github-release-notes-template.md` exists
-- [ ] [release.md](../../workflows/release.md) points at the template
-- [ ] The template includes every section listed in Scope
-- [ ] Copy does not claim HIPAA certification or production identity infrastructure
+- [x] `docs/releases/github-release-notes-template.md` exists
+- [x] [release.md](../../workflows/release.md) points at the template
+- [x] The template includes every section listed in Scope
+- [x] Copy does not claim HIPAA certification or production identity infrastructure
 
 ## Dependencies
 
@@ -129,7 +129,13 @@ Writing this documentation-only slice is not a version bump.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Added
+  [docs/releases/github-release-notes-template.md](../../releases/github-release-notes-template.md)
+  with every scoped section and `[INFRA-013: …]` placeholders. Pointed
+  [release.md](../../workflows/release.md) and [docs/README.md](../../README.md) at the template.
+  M9 index is INFRA-004–INFRA-012 shipped, INFRA-013 pending.
+- Tests: None required (`tests_required: false`). Editorial pass against the capability matrix
+  and post-MVP baseline; no HIPAA or production-OAuth claims.
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Documentation-only; no version bump (still 0.59.0). Do not fill production URLs or
+  tag `1.0.0` here — that is INFRA-013.
