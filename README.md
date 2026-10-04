@@ -29,26 +29,35 @@ cards are mock; telehealth is a session shell (not live video); identity is a la
 
 <table>
   <tr>
-    <td width="16%">
-      <img src="./apps/web/public/marketing/login.png" alt="Mock identity sign-in form with synthetic demo credentials" width="100%">
-    </td>
-    <td width="16%">
+    <td width="33%">
       <img src="./apps/web/public/marketing/appointments.png" alt="Appointments calendar with synthetic demo visits" width="100%">
     </td>
-    <td width="16%">
+    <td width="33%">
       <img src="./apps/web/public/marketing/telehealth.png" alt="Telehealth lobby with a synthetic demo visit" width="100%">
     </td>
-    <td width="16%">
+    <td width="33%">
       <img src="./apps/web/public/marketing/billing.png" alt="Billing invoice list with synthetic demo invoices" width="100%">
     </td>
-    <td width="16%">
+  </tr>
+</table>
+
+<details>
+<summary>More screenshots</summary>
+
+<table>
+  <tr>
+    <td width="33%">
+      <img src="./apps/web/public/marketing/login.png" alt="Mock identity sign-in form with synthetic demo credentials" width="100%">
+    </td>
+    <td width="33%">
       <img src="./apps/web/public/marketing/dashboard.png" alt="Dashboard overview with synthetic demo metrics" width="100%">
     </td>
-    <td width="16%">
+    <td width="33%">
       <img src="./apps/web/public/marketing/admin.png" alt="Administration user list with synthetic demo accounts" width="100%">
     </td>
   </tr>
 </table>
+</details>
 
 ## Key capabilities
 
