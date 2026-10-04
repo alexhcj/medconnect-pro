@@ -1,5 +1,9 @@
 # Product Requirements
 
+Complete-product **target**. Implementation status for user-facing capabilities lives in
+[docs/product/](product/README.md). Public copy must not exceed
+[capability-matrix.md](marketing/capability-matrix.md).
+
 ## UX
 
 - Simple and clear healthcare UI.

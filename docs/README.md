@@ -8,18 +8,21 @@ implementation tasks, roadmaps and development workflows.
 ## Source-of-truth hierarchy
 
 1. `decisions/` — architectural decisions and their rationale.
-2. `01-product-requirements.md` — product behavior and priorities.
-3. `architecture/` — technical structure and boundaries.
-4. `contracts/` — API and data boundaries.
-5. `tasks/` — implementation contracts.
-6. `roadmap/` — sequencing.
-7. `workflows/` — engineering process.
-8. Source code — current implementation.
+2. `01-product-requirements.md` — complete-product target (unstatused vision).
+3. `product/` — statused capability catalog (what the demo is today vs planned).
+4. `architecture/` — technical structure and boundaries.
+5. `contracts/` — API and data boundaries.
+6. `tasks/` — implementation contracts.
+7. `roadmap/` — sequencing.
+8. `workflows/` — engineering process.
+9. Source code — current implementation.
 
 ## Directory guide
 
 - `00-project-spec.md` — project identity, goals, stack and global constraints.
-- `01-product-requirements.md` — functional/non-functional product requirements.
+- `01-product-requirements.md` — functional/non-functional product requirements (vision).
+- `product/` — [capability registry](product/README.md): statused user-facing catalog.
+  Public-claim ceiling remains [capability-matrix.md](marketing/capability-matrix.md).
 - `architecture/` — system structure.
 - `contracts/` — API/data contracts, including
   [identity and access](contracts/identity-and-access.md) and
@@ -47,8 +50,8 @@ implementation tasks, roadmaps and development workflows.
   [design-to-development](processes/flows/design-to-development-flow.md), and
   [design-checklist](processes/flows/design-checklist-flow.md).
 - `marketing/` — public-site [requirements](marketing/requirements.md),
-  [sitemap](marketing/sitemap.md), and
-  [capability matrix](marketing/capability-matrix.md). Implementation contracts are FE-018–FE-023.
+  [sitemap](sitemap.md), and [capability matrix](marketing/capability-matrix.md) (claim view of
+  `product/`). Implementation contracts are FE-018–FE-023.
 - `releases/` — GitHub [v1.0.0 release-notes template](releases/github-release-notes-template.md)
   (INFRA-012). INFRA-013 fills placeholders; do not auto-publish.
 - `mocks/` — synthetic demo data and mock-data conventions.
@@ -64,11 +67,13 @@ or explicitly record the required follow-up.
 
 Plane is the operational project-management layer.
 
-Git remains canonical for requirements, architecture, ADRs and task definitions. Plane mirrors task
+Git remains canonical for requirements, architecture, ADRs, the
+[capability registry](product/README.md), and task definitions. Plane mirrors task
 metadata and manages operational state such as cycles, assignees and work-item status.
 
 Every task has a stable repository ID such as `FE-001`. Plane's work-item ID is stored in task
-metadata after synchronization.
+metadata after synchronization. Product capability IDs (`telehealth.start-session`) are not
+Plane-synced.
 
 ## Demo data
 

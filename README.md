@@ -219,12 +219,13 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | --- | --- |
 | [`docs/README.md`](./docs/README.md) | Documentation map and source-of-truth hierarchy |
 | [`docs/00-project-spec.md`](./docs/00-project-spec.md) | Project identity, goals, and constraints |
-| [`docs/01-product-requirements.md`](./docs/01-product-requirements.md) | Product behavior |
+| [`docs/01-product-requirements.md`](./docs/01-product-requirements.md) | Product behavior (vision) |
+| [`docs/product/`](./docs/product/README.md) | Statused capability catalog |
 | [`docs/architecture/`](./docs/architecture/) | System structure |
 | [`docs/contracts/`](./docs/contracts/) | API and data contracts |
 | [`docs/workflows/api-contract-workflow.md`](./docs/workflows/api-contract-workflow.md) | OpenAPI, Postman, optional Swagger UI |
 | [`docs/workflows/design-requirements.md`](./docs/workflows/design-requirements.md) | Design workflow before Figma/Pencil |
-| [`docs/marketing/`](./docs/marketing/requirements.md) | Public-site requirements, sitemap, capability matrix |
+| [`docs/marketing/`](./docs/marketing/requirements.md) | Public-site requirements, sitemap, claim matrix |
 | [`docs/processes/`](./docs/processes/) | Cursor prompts and process flows |
 | [`postman/`](./postman/README.md) | Postman environment templates |
 | [`docs/tasks/`](./docs/tasks/) | Implementation task contracts |

@@ -5,7 +5,8 @@ not a task spec and not a second source of truth. FE-017 is implemented. Later M
 [FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md) through
 [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md) are also implemented.
 Canonical marketing
-docs are [requirements.md](marketing/requirements.md), [sitemap.md](marketing/sitemap.md), and
+docs are [requirements.md](marketing/requirements.md), [sitemap.md](marketing/sitemap.md),
+[docs/product/](product/README.md), and
 [capability-matrix.md](marketing/capability-matrix.md). Current product claims must follow
 [post-mvp-baseline.md](roadmap/post-mvp-baseline.md).
 Deployment/preview is a later milestone, not M8.

@@ -14,6 +14,7 @@ Rules:
 1. Start from the approved Figma tokens and primitives when they exist. Do not invent a second
    palette or type scale.
 2. Do not invent product requirements. Follow the task spec and
+   [docs/product/](../../product/README.md) and
    [capability-matrix.md](../../marketing/capability-matrix.md).
 3. Do not modify application code from this prompt.
 4. Do not treat the Pencil file as canonical. Promote anything that ships into the shared Figma

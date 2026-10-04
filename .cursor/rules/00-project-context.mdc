@@ -105,12 +105,18 @@ Authentication → identity → tenant/practice → role → permission → reso
 ## Source-of-truth hierarchy
 
 1. ADRs — why major architectural decisions exist.
-2. Product requirements — what/why the product does.
-3. Architecture documents — system structure and technical boundaries.
-4. Contracts — API/data boundaries.
-5. Task specifications — current implementation contracts.
-6. Roadmaps — sequencing and milestones.
-7. Source code — current implementation state.
+2. Product requirements — complete-product target (what/why, unstatused).
+3. Product capability registry (`docs/product/`) — statused user-facing catalog.
+4. Architecture documents — system structure and technical boundaries.
+5. Contracts — API/data boundaries.
+6. Task specifications — current implementation contracts.
+7. Roadmaps — sequencing and milestones.
+8. Source code — current implementation state.
+
+Public marketing claims must not exceed
+[capability-matrix.md](../../docs/marketing/capability-matrix.md), which is a claim view of
+the registry. Do not invent `TELE-001`-style IDs; capability IDs are `{module}.{slug}`.
+Do not Plane-sync the registry.
 
 If sources conflict, do not silently invent a compromise. Identify the conflict and propose the
 appropriate documentation/ADR change.

@@ -10,7 +10,9 @@
            ↓
 5. Cursor authors only the missing this-milestone task specs (after approval)
            ↓
-6. Update roadmap crosswalk, relevant roadmap slice, and master task list
+6. Update roadmap crosswalk, relevant roadmap slice, master task list, and matching
+   `docs/product/` capability rows (plus the marketing capability matrix) when user-facing
+   status or public claims changed
 
 This is not a substitute for [plan-mode-prompt.md](plan-mode-prompt.md). That file plans one task.
 This file audits a finished milestone. Its output is a gap list and, at most, new task specs. It
@@ -19,7 +21,7 @@ does not produce an implementation plan. When authoring gap task specs, follow
 
 ---
 
-Audit milestone close for M8.
+Audit milestone close for [MILESTONE-ID].
 
 Before proposing work:
 
@@ -28,7 +30,8 @@ Before proposing work:
 2. Read those task files (status, scope, acceptance criteria, completion notes),
    `docs/tasks/00-master-task-list.md`, and the matching slices in `docs/roadmap/frontend-roadmap.md`
    and `docs/roadmap/backend-roadmap.md`.
-3. Read the product requirements, contracts, architecture, and ADRs for that domain.
+3. Read the product requirements, [docs/product/](../../product/README.md) catalog for that
+   domain, contracts, architecture, and ADRs.
 4. Use `docs/archive/technical-implementation-tasks-v0.md` only as historical split notes. Treat it
    as oldest and not current. Use it to spot work dropped while dividing phases into small tasks.
    If a later milestone already owns that work, say so; do not pull it backward.
@@ -57,7 +60,8 @@ Propose new task files only for **Still this milestone**. For each proposed task
 * Dependencies
 * Acceptance criteria
 * Index updates (`release-roadmap.md` crosswalk, the relevant roadmap slice,
-  `docs/tasks/00-master-task-list.md`)
+  `docs/tasks/00-master-task-list.md`, matching `docs/product/` rows, and
+  `docs/marketing/capability-matrix.md` when claims change)
 
 Preserve later-milestone boundaries. Do not invent DELETE routes, clinical subresources, document
 upload, audit persistence, or a full authorization matrix when those already have later tasks.
@@ -75,4 +79,5 @@ End with:
 4. Already owned later
 5. Explicitly out of this milestone
 6. Blockers/open questions
-7. Index updates if new tasks are approved
+7. Index updates if new tasks are approved (include `docs/product/` when claims or
+   user-facing status would change)

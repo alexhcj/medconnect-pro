@@ -35,4 +35,5 @@ This brief is stage 2 input on the same implementation task. Do not set
 The design will be created separately in the shared Figma file
 ([ADR-011](../../decisions/ADR-011-figma-canonical-visual-source.md)). Pencil may explore
 ([pencil-design-prompt.md](pencil-design-prompt.md)) but is not canonical.
-Do not invent new product requirements.
+Do not invent new product requirements. Follow [docs/product/](../../product/README.md) and
+[capability-matrix.md](../../marketing/capability-matrix.md) for what may be shown as shipped.

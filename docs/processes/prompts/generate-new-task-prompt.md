@@ -13,12 +13,13 @@ Read, as applicable:
 1. The canonical project context/specification
 2. The current roadmap/master task list
 3. `docs/tasks/00-master-task-list.md`. Use `docs/archive/technical-implementation-tasks-v0.md` only as historical split notes, not current requirements.
-4. Relevant architecture documentation
-5. Relevant ADRs
-6. Applicable `.cursor/rules`
-7. Existing task specifications
-8. Existing design documentation and design-system rules
-9. Current repository structure and implementation
+4. `docs/product/` for the affected module when the work is user-facing
+5. Relevant architecture documentation
+6. Relevant ADRs
+7. Applicable `.cursor/rules`
+8. Existing task specifications
+9. Existing design documentation and design-system rules
+10. Current repository structure and implementation
 
 Treat the current repository and designated Source of Truth documents as authoritative.
 
@@ -47,7 +48,8 @@ Do not invent product requirements that are not supported by the description or 
 
 ## 3. Check for Existing or Duplicate Work
 
-Search the existing task list, roadmap, documentation, and repository for related work.
+Search the existing task list, roadmap, [capability registry](../../product/README.md),
+documentation, and repository for related work.
 
 Determine whether the description:
 
@@ -114,6 +116,8 @@ For the Task ID:
 * Identify the appropriate next/available ID according to the project's convention.
 * Do not reuse an existing ID.
 * Do not invent a new ID format.
+* Do not use product capability IDs (`telehealth.start-session`) as task IDs. Capability IDs
+  live in `docs/product/` and are not Plane-synced.
 
 For tags:
 
@@ -219,6 +223,8 @@ Identify relevant relationships such as:
 * Extends
 * Replaces
 * Duplicate of
+* Implements / extends capability `{module}.{slug}` in `docs/product/` (do not create a
+  capability file as a task, and do not invent product language the registry does not support)
 
 Only create relationships supported by repository/documentation evidence or by the task description.
 
@@ -241,6 +247,7 @@ Do not create contradictory requirements between:
 * Metadata
 * Roadmap placement
 * Dependencies
+* Capability registry rows the task would change
 
 If the available information is insufficient to create a reliable task, identify the missing information instead of inventing it.
 
@@ -298,7 +305,8 @@ Explain where the task belongs and its relationship to surrounding tasks.
 
 ### 6. Task Relationships
 
-List dependencies and related tasks.
+List dependencies and related tasks. Name matching `docs/product/` capability IDs when the
+work is user-facing.
 
 ### 7. Plane Metadata YAML
 

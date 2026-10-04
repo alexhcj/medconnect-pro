@@ -84,7 +84,8 @@ mobile nav, page container, section composition, and `FeaturePageLayout` for `/p
 `components/ui` primitives and shared tokens, not the dashboard shell. `/demo` links to
 `LOGIN_PATH` (`/login`); it does not add a second identity stack.
 
-Copy must follow [capability-matrix.md](../marketing/capability-matrix.md). Do not claim HIPAA
+Copy must follow [docs/product/](../product/README.md) and
+[capability-matrix.md](../marketing/capability-matrix.md). Do not claim HIPAA
 certification, production OAuth, live video, or hosted payments. Sitemap:
 [sitemap.md](../marketing/sitemap.md).
 

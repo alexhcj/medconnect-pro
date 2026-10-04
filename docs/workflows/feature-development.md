@@ -10,7 +10,7 @@ Canonical task lifecycle. Design (stage 2) applies to UI tasks only; skip it whe
 | 3. Technical planning | Implementation plan                            | Cursor Plan Mode ([plan-mode-prompt.md](../processes/prompts/plan-mode-prompt.md)) |
 | 4. Implementation     | Working code                                   | Cursor Agent      |
 | 5. Validation         | Tests, responsive checks, accessibility review | Cursor + browser  |
-| 6. Completion         | Updated task status, evidence, docs            | You + Cursor      |
+| 6. Completion         | Updated task status, evidence, docs, capability registry | You + Cursor      |
 
 Do not implement a UI task while `design.required: true` and `design.status` is not `approved`.
 
@@ -32,7 +32,9 @@ Do not implement a UI task while `design.required: true` and `design.status` is 
 7. Validate accessibility and responsive behavior when `validation.accessibility` /
    `validation.responsive` apply (or when the task is user-facing and those flags are absent).
 8. Validate authorization and tenant boundaries.
-9. Update documentation when architecture/contracts change.
+9. Update documentation when architecture/contracts change. If the slice changes a user-facing
+   capability, update [docs/product/](../product/README.md) and keep
+   [capability-matrix.md](../marketing/capability-matrix.md) in lockstep.
 10. Run lint/type-check/tests/build (`npm run lint`, `type-check`, `test`, and `e2e` when the
     slice is user-facing).
 11. Classify SemVer impact and bump version plus changelog per [versioning.md](versioning.md)
@@ -46,4 +48,5 @@ Do not implement a UI task while `design.required: true` and `design.status` is 
 13. Update Plane operational status.
 14. Mark task complete only after acceptance criteria are verified (stage 6): set top-level
     `status` to `implemented` or `completed`, fill the Markdown Completion section, and set
-    `implementation.status: complete` when that block is present.
+    `implementation.status: complete` when that block is present. Update matching capability
+    rows when the shipped UX or public claim changed.

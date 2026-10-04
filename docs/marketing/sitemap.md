@@ -2,6 +2,7 @@
 
 Public pages, why they exist, and how they map to Next.js. Requirements:
 [requirements.md](requirements.md). Status of each capability:
+[docs/product/](../product/README.md). Public-claim ceiling:
 [capability-matrix.md](capability-matrix.md).
 
 Foundation and finished pages exist from FE-017–FE-023. Do not mix marketing chrome into `(auth)`

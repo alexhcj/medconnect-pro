@@ -142,6 +142,9 @@ Repository status expresses implementation/documentation intent (`pending`, `imp
 
 Plane owns operational project-management status.
 
+Product capabilities in [docs/product/](../product/README.md) use `{module}.{slug}` IDs
+(`telehealth.start-session`). They are not tasks and are not Plane-synced.
+
 ## Task naming
 
 Examples:

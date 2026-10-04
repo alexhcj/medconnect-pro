@@ -19,7 +19,8 @@ Canonical lifecycle: [feature-development.md](../../workflows/feature-developmen
 8. You review changes and release the task (stage 6)
            ↓
 9. Update task status/docs/Plane, including the
-   `docs/roadmap/release-roadmap.md` crosswalk shipped/pending split
+   `docs/roadmap/release-roadmap.md` crosswalk shipped/pending split and, when the slice
+   changes a user-facing capability, `docs/product/` plus the marketing capability matrix
 
 ---
 
@@ -35,7 +36,8 @@ At minimum, check:
 
 1. The canonical task specification for **[TASK-ID]**
 2. `docs/tasks/00-master-task-list.md` and/or the current master task/roadmap source. Use `docs/archive/technical-implementation-tasks-v0.md` only as historical split notes, not current requirements.
-3. Relevant roadmap/product planning documents
+3. Relevant roadmap/product planning documents, including `docs/product/` when the task
+   changes a user-facing capability
 4. Applicable `.cursor/rules`
 5. Relevant architecture and technical documentation
 6. Relevant ADRs
@@ -356,7 +358,8 @@ List only the work that remains for **[TASK-ID]**.
 
 Provide the stages in execution order, including dependencies between stages. Include a step that
 updates `docs/roadmap/release-roadmap.md` shipped/pending status for this task when it is on a
-milestone crosswalk.
+milestone crosswalk. If the task changes a user-facing capability, include a step that updates
+the matching `docs/product/` module and keeps `docs/marketing/capability-matrix.md` in lockstep.
 
 ### 4. Blockers / Open Questions
 

@@ -4,6 +4,7 @@ this file as an application implementation prompt.
 Workflow: [design-requirements.md](../../workflows/design-requirements.md).
 Canonical decision: [ADR-011](../../decisions/ADR-011-figma-canonical-visual-source.md).
 Marketing constraints: [requirements.md](../../marketing/requirements.md),
+[docs/product/](../../product/README.md),
 [capability-matrix.md](../../marketing/capability-matrix.md).
 Related: [design-brief-prompt.md](design-brief-prompt.md) (per-task briefs),
 [pencil-design-prompt.md](pencil-design-prompt.md) (exploration only).
@@ -18,7 +19,8 @@ Before generating:
 1. Read FE-018 and the marketing docs above.
 2. Inspect existing `apps/web` UI primitives (`Button`, `Card`, `Input`), marketing chrome
    (`MarketingShell`), and Tailwind usage (blue/gray utilities, small `primary` scale).
-3. Do not invent product capabilities. Public frames must match the capability matrix.
+3. Do not invent product capabilities. Public frames must match the capability registry and
+   matrix.
 4. Do not restyle the dashboard layout. Capture existing app screens as **reference** frames.
 5. Do not produce application code from this prompt.
 

@@ -19,7 +19,9 @@ Canonical visual source: [ADR-011](../decisions/ADR-011-figma-canonical-visual-s
   ([FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md)).
 - Pencil may explore near code ([pencil-design-prompt.md](../processes/prompts/pencil-design-prompt.md)).
   It is not a second implementation architecture.
-- Marketing copy and frames must follow [capability-matrix.md](../marketing/capability-matrix.md).
+- Marketing copy and frames must follow [docs/product/](../product/README.md) and
+  [capability-matrix.md](../marketing/capability-matrix.md). Do not invent unshipped
+  capabilities.
 
 ## Required brief contents
 

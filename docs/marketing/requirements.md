@@ -3,7 +3,9 @@
 What the public marketing site communicates. Implementation contracts are
 [FE-018](../tasks/frontend/FE-018-design-system-and-visual-language.md) through
 [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md). Route map:
-[sitemap.md](sitemap.md). Honest feature status: [capability-matrix.md](capability-matrix.md).
+[sitemap.md](sitemap.md). Honest feature status:
+[docs/product/](../product/README.md) (catalog) and
+[capability-matrix.md](capability-matrix.md) (public-claim ceiling).
 Product claims must follow [post-mvp-baseline.md](../roadmap/post-mvp-baseline.md) and
 [00-project-spec.md](../00-project-spec.md).
 

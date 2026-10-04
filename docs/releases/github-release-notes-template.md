@@ -179,6 +179,7 @@ Production smoke is INFRA-013, not this template:
 Canonical documentation is `/docs`. Start with:
 
 - `docs/00-project-spec.md` — project identity and constraints
+- `docs/product/` — statused capability catalog
 - `docs/marketing/capability-matrix.md` — what public copy may claim
 - `docs/roadmap/post-mvp-baseline.md` — shipped vs intentionally incomplete
 - `docs/decisions/` — ADRs (synthetic data, versioning, auth target, deployment topology)

@@ -27,7 +27,8 @@ Update or propose documentation changes when:
 - a data contract changes;
 - a security boundary changes;
 - a new architectural decision is introduced;
-- task acceptance criteria change.
+- task acceptance criteria change;
+- a user-facing capability ships or its public claim changes ([docs/product/](../../docs/product/README.md)).
 
 When architecture, API/data contracts, or security boundaries ship in the same change, also bump
 the application version and add a `CHANGELOG.md` entry per `.cursor/rules/05-versioning.mdc` and
@@ -44,6 +45,10 @@ Task files use YAML front matter for machine-readable metadata and Markdown for 
 execution contract. New tasks may include optional nested `design`, `implementation`, and
 `validation` blocks; see [docs/tasks/README.md](../../docs/tasks/README.md). Do not backfill
 shipped tasks.
+
+Product capability files live in [docs/product/](../../docs/product/README.md). They are a
+statused catalog (`shipped` / `partial` / `planned` / `out_of_scope`), not tasks. Do not
+Plane-sync them. Do not invent a second ID family that looks like `FE-007`.
 
 Plane is a project-management projection of tasks. It is not the canonical source for product
 requirements, architecture, ADRs or technical constraints.

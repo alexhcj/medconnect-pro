@@ -39,6 +39,6 @@ shipping from two visual systems is not.
   implementation (except FE-018, whose scope includes producing the library).
 - Token changes belong in the Figma file first, then in code mapping described in
   [frontend-architecture.md](../architecture/frontend-architecture.md).
-- Public marketing copy still follows
+- Public marketing copy still follows [docs/product/](../product/README.md) and
   [capability-matrix.md](../marketing/capability-matrix.md); Figma must not invent unshipped
   product capabilities.

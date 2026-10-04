@@ -10,6 +10,7 @@ Canonical application version at this baseline: **0.44.0** (FE-016, 2026-09-27).
 M0–M8 in [release-roadmap.md](release-roadmap.md) are shipped in the repository. All 38 original
 task files plus M8 (FE-017–FE-023) are `implemented` or `completed`. M8 marketing site shipped as
 FE-017–FE-023 (0.45.0–0.51.1). Public copy must follow
+[docs/product/](../product/README.md) and
 [capability-matrix.md](../marketing/capability-matrix.md). Deployment and preview environments are
 **M9**. Close audit found no missing task IDs; M9 is **not closed**.
 [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)
@@ -61,5 +62,6 @@ which remains paused. Product-feature work continues. Not part of M8.
 
 Do not describe mock identity as production OAuth, telehealth session shell as live video, invoice
 list as payments, or local engineering patterns as HIPAA compliance. Public copy must follow
-[00-project-spec.md](../00-project-spec.md), this baseline, and
+[00-project-spec.md](../00-project-spec.md), this baseline,
+[docs/product/](../product/README.md), and
 [capability-matrix.md](../marketing/capability-matrix.md).

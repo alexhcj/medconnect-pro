@@ -1,7 +1,8 @@
 <!-- Project agent notes. Next.js app-specific agent files live in apps/web. -->
 
-Canonical documentation: `/docs`. Current demo position: M0–M7 shipped; M8 marketing site shipped
-(FE-017–FE-023)
+Canonical documentation: `/docs`. Product capability catalog:
+[docs/product/](docs/product/README.md) (statused; not tasks). Current demo position: M0–M7
+shipped; M8 marketing site shipped (FE-017–FE-023)
 ([docs/roadmap/post-mvp-baseline.md](docs/roadmap/post-mvp-baseline.md)). Next after M8 is
 **M9 — Deployment / preview infrastructure** (close audit found no missing IDs; not closed;
 INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused).

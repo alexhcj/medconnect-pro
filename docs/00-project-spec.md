@@ -23,6 +23,9 @@ A multi-tenant practice platform covering:
 - analytics;
 - administration and audit/compliance.
 
+Status of those surfaces: [docs/product/](product/README.md). Public claims:
+[capability-matrix.md](marketing/capability-matrix.md).
+
 ## Primary demo goal
 
 Demonstrate how a senior engineering team could design and implement a secure, accessible,
