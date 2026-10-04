@@ -23,8 +23,8 @@ validation:
   accessibility: false
   tests_required: false
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 01ded357-ff1f-444d-ae6b-38c10cdc4633
+  identifier: MEDCONNECT-70
 ---
 
 # INFRA-014 — AWS account setup and hosted first-apply
