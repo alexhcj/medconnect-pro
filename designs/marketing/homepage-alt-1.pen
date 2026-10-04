@@ -543,7 +543,7 @@
                   "fill": {
                     "type": "image",
                     "enabled": true,
-                    "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/dashboard.png",
+                    "url": "../../apps/web/public/marketing/dashboard.png",
                     "mode": "cover"
                   },
                   "cornerRadius": 12,
@@ -1323,7 +1323,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/dashboard.png",
+                "url": "../../apps/web/public/marketing/dashboard.png",
                 "mode": "cover"
               },
               "cornerRadius": 12,
@@ -1365,7 +1365,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/dashboard.png",
+                        "url": "../../apps/web/public/marketing/dashboard.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 8,
@@ -1402,7 +1402,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/patients.png",
+                        "url": "../../apps/web/public/marketing/patients.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 8,
@@ -1439,7 +1439,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/appointments.png",
+                        "url": "../../apps/web/public/marketing/appointments.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 8,
@@ -1476,7 +1476,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/telehealth.png",
+                        "url": "../../apps/web/public/marketing/telehealth.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 8,
@@ -1513,7 +1513,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/billing.png",
+                        "url": "../../apps/web/public/marketing/billing.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 8,
@@ -1550,7 +1550,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/admin.png",
+                        "url": "../../apps/web/public/marketing/admin.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 8,
@@ -2675,7 +2675,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/dashboard.png",
+                "url": "../../apps/web/public/marketing/dashboard.png",
                 "mode": "cover"
               },
               "cornerRadius": 12,
@@ -3364,7 +3364,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/dashboard.png",
+                "url": "../../apps/web/public/marketing/dashboard.png",
                 "mode": "cover"
               },
               "cornerRadius": 12,
@@ -3408,7 +3408,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/dashboard.png",
+                        "url": "../../apps/web/public/marketing/dashboard.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 6,
@@ -3445,7 +3445,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/patients.png",
+                        "url": "../../apps/web/public/marketing/patients.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 6,
@@ -3482,7 +3482,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/appointments.png",
+                        "url": "../../apps/web/public/marketing/appointments.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 6,
@@ -3519,7 +3519,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/telehealth.png",
+                        "url": "../../apps/web/public/marketing/telehealth.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 6,
@@ -3556,7 +3556,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/billing.png",
+                        "url": "../../apps/web/public/marketing/billing.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 6,
@@ -3593,7 +3593,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/admin.png",
+                        "url": "../../apps/web/public/marketing/admin.png",
                         "mode": "cover"
                       },
                       "cornerRadius": 6,
@@ -4689,7 +4689,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/dashboard.png",
+                "url": "../../apps/web/public/marketing/dashboard.png",
                 "mode": "cover"
               },
               "cornerRadius": 12,
@@ -5350,7 +5350,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "../.pencil/documents/f77854c5-8d8f-4f46-a3f2-eb9fc436e266/dashboard.png",
+                "url": "../../apps/web/public/marketing/dashboard.png",
                 "mode": "cover"
               },
               "cornerRadius": 12,
