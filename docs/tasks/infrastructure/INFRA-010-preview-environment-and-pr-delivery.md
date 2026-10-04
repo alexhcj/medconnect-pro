@@ -3,7 +3,7 @@ id: INFRA-010
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [INFRA-005, INFRA-008, INFRA-009]
@@ -15,7 +15,7 @@ related_docs:
     ../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -79,11 +79,11 @@ app. This task wires the workflow and isolation checks.
 
 ## Acceptance criteria
 
-- [ ] Opening a pull request produces or updates an Amplify preview URL after CI
-- [ ] Preview login uses preview/demo seed data only
-- [ ] Preview cannot use production Secrets Manager entries or production RDS
-- [ ] Documentation states that the preview API and database are shared
-- [ ] Feature branches cannot publish the production Amplify app
+- [x] Opening a pull request produces or updates an Amplify preview URL after CI
+- [x] Preview login uses preview/demo seed data only
+- [x] Preview cannot use production Secrets Manager entries or production RDS
+- [x] Documentation states that the preview API and database are shared
+- [x] Feature branches cannot publish the production Amplify app
 
 ## Dependencies
 
@@ -120,7 +120,18 @@ Later shipping of this slice is a MINOR bump on 0.x. Writing the spec is not.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Amplify-native PR previews against the shared preview ECS/RDS. Root
+  [amplify.yml](../../../amplify.yml) writes `NEXT_PUBLIC_USE_MOCKS`,
+  `NEXT_PUBLIC_API_BASE_URL`, and `API_BASE_URL` into `apps/web/.env.production` and fails
+  closed if any is missing. [`.github/workflows/preview-status.yml`](../../../.github/workflows/preview-status.yml)
+  posts the advertised preview URL only after quality CI succeeds (no AWS OIDC). Operator
+  runbook: all-branch Amplify env = `preview_api_url`, `main` override = `production_api_url`,
+  private GitHub repo, required `ci` check, keep `https://*.amplifyapp.com` on the preview
+  API. Live Amplify Previews toggle and `AMPLIFY_APP_ID` remain operator steps
+  ([deploy.md](../../workflows/deploy.md)).
+- Tests: `scripts/ci/amplify-buildspec.spec.mjs` and `scripts/ci/preview-delivery.spec.mjs`
+  (`npm run test:amplify-buildspec`, `npm run test:preview-delivery`). Quality CI runs both
+  next to `test:ci-secrets`.
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Version 0.57.0 → 0.58.0 (MINOR, hosted PR previews). ECS rolling deploy stays
+  INFRA-011. Synthetic demo data only; never real PHI.

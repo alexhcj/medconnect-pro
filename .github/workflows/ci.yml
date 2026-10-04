@@ -1,6 +1,7 @@
 # Quality gates only. Image *push* and ECS deploy stay out of this file
-# (INFRA-008 api-image.yml / INFRA-010 / INFRA-011). Docker *build* on PRs does
-# not assume AWS roles.
+# (INFRA-008 api-image.yml / INFRA-010 preview-status.yml / INFRA-011). Docker
+# *build* on PRs does not assume AWS roles. Preview URL comments are
+# .github/workflows/preview-status.yml after this workflow completes.
 # Compose demo credentials below match docker-compose.yml; they are not production secrets.
 name: CI
 
@@ -44,6 +45,8 @@ jobs:
         run: npm run test:ci-secrets
       - name: Test Amplify buildspec
         run: npm run test:amplify-buildspec
+      - name: Test preview delivery workflows
+        run: npm run test:preview-delivery
       - name: Test hosted DB operator scripts
         run: npm run test:ensure-app-role
       - uses: hashicorp/setup-terraform@v3

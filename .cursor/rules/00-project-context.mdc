@@ -57,8 +57,9 @@ npm workspaces:
 
 GitHub Actions quality gates exist. Terraform in `infra/terraform/` covers secrets/OIDC
 (INFRA-006), VPC and preview/production demo RDS (INFRA-007), and ECS/Fargate plus document S3
-(INFRA-008). Amplify Hosting for Next.js is Git-connected (`amplify.yml`; INFRA-009). Operator
-apply and Amplify console connect remain required. PR previews are INFRA-010.
+(INFRA-008). Amplify Hosting for Next.js is Git-connected (`amplify.yml`; INFRA-009) with
+PR previews against the shared preview API (INFRA-010). Operator apply and Amplify console
+connect remain required.
 
 ## Domain boundaries
 

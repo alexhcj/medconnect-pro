@@ -12,6 +12,8 @@
 9. Review migration and rollback implications.
 10. Verify environment configuration.
 11. Verify synthetic demo data.
-12. Deploy to development/staging.
+12. Review the advertised Amplify preview URL (after quality CI). Preview uses the shared
+    preview API and preview/demo database, not production.
 13. Smoke test.
-14. Production approval only when the project is actually being deployed to production.
+14. Production approval only when the project is actually being deployed to production
+    ([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)).

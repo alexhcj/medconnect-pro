@@ -33,7 +33,7 @@ variable "github_oidc_audience" {
 
 variable "preview_web_origins" {
   type        = string
-  description = "Comma-separated CORS origins for the preview API. May include https://*.amplifyapp.com until Amplify hostnames are known."
+  description = "Comma-separated CORS origins for the preview API. Include https://*.amplifyapp.com so Amplify PR hosts can call this API only."
   default     = "https://*.amplifyapp.com"
 }
 

@@ -1,5 +1,6 @@
-# Amplify Hosting for apps/web (INFRA-009). npm workspaces: install/build from the
-# repository root. SSR artifacts are apps/web/.next — do not static-export.
+# Amplify Hosting for apps/web (INFRA-009 / INFRA-010). npm workspaces: install/build
+# from the repository root. SSR artifacts are apps/web/.next — do not static-export.
+# Console env is written to apps/web/.env.production before the Next build (SSR).
 # Operator steps: docs/workflows/deploy.md. Do not put DATABASE_* or AWS keys here.
 version: 1
 applications:
@@ -13,6 +14,18 @@ applications:
             - npm ci
         build:
           commands:
+            - |
+              set -eu
+              env_file=apps/web/.env.production
+              : > "$env_file"
+              for key in NEXT_PUBLIC_USE_MOCKS NEXT_PUBLIC_API_BASE_URL API_BASE_URL; do
+                val=$(printenv "$key" || true)
+                if [ -z "$val" ]; then
+                  echo "Missing required Amplify env: $key" >&2
+                  exit 1
+                fi
+                printf '%s=%s\n' "$key" "$val" >> "$env_file"
+              done
             - npm run build:production
       artifacts:
         baseDirectory: apps/web/.next

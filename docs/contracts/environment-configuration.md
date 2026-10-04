@@ -106,7 +106,9 @@ per-environment secret. Do not create that key now.
 is unused: a second store is not simpler than task env.
 
 Amplify receives only public frontend configuration (`NEXT_PUBLIC_*` and server `API_BASE_URL`
-for that environment’s API origin). No database URLs. No Secrets Manager ARNs.
+for that environment’s API origin). No database URLs. No Secrets Manager ARNs. PR previews
+inherit **all-branch** Amplify variables (set those to `preview_api_url`). Override `main` with
+`production_api_url`. See [deploy.md](../workflows/deploy.md).
 
 ### AWS access and document storage
 
@@ -115,9 +117,10 @@ store `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY` as GitHub Secrets for this 
 CI ([`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)) stays free of AWS credentials;
 image push on `main` ([`.github/workflows/api-image.yml`](../../.github/workflows/api-image.yml))
 and later deploy workflows
-([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md),
-[INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
-assume the OIDC roles.
+([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
+assume the OIDC roles. Preview URL comments
+([`.github/workflows/preview-status.yml`](../../.github/workflows/preview-status.yml)) do not
+assume those roles; Amplify Git owns frontend publish.
 
 Hosted document-bucket access is the ECS task role (preview task cannot write the production
 bucket and the reverse), not static access keys.

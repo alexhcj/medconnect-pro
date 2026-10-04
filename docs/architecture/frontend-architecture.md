@@ -104,7 +104,8 @@ under `components/marketing/` consumes the same tokens and primitives. Marketing
 the dashboard stays information-dense — do not restyle dashboard layout from this mapping. Do
 not add a second design-system package. Production frontend hosting is AWS Amplify
 ([INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md)); PR previews
-remain [INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md).
+use Amplify-native hosts against the shared preview API
+([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md)).
 
 Dashboard overview cards in mock mode use fixtures. Live `GET /dashboard/overview` is not a Nest
 controller; the Next BFF path is not a supported live integration. That gap belongs to frontend
@@ -116,7 +117,8 @@ Slice 2, not to a failed M0–M7 join.
 static-export). Operator steps: [deploy.md](../workflows/deploy.md). Hosted preview and
 production set `NEXT_PUBLIC_USE_MOCKS=false`. `NEXT_PUBLIC_API_BASE_URL` and server
 `API_BASE_URL` must equal **that environment’s** HTTPS API origin (`production_api_url` on
-`main`; `preview_api_url` when INFRA-010 enables previews). Amplify holds no database URLs and
+`main`; `preview_api_url` on Amplify PR previews). All-branch Amplify env is the preview API;
+`main` overrides to production. Amplify holds no database URLs and
 no Secrets Manager ARNs.
 
 Mock IdP login stays same-origin `/login`. Auth remains an opaque bearer in `localStorage`; do

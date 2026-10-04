@@ -5,6 +5,7 @@ Hosting for `apps/web`. Catalog:
 [environment-configuration.md](../contracts/environment-configuration.md).
 ECS/Fargate: [INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md).
 Amplify: [INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md).
+PR previews: [INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md).
 Production rollback is [INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md).
 
 Quality CI never assumes AWS roles. `terraform apply` is local (or a later deploy workflow).
@@ -87,7 +88,7 @@ Leave `APP_ENV` unset (local). Hosted fail-closed rejects `127.0.0.1` when `APP_
 `preview` or `production`.
 
 Do **not** add AWS credentials to quality CI. GitHub deploy-time `migration:run` waits for
-INFRA-010 / INFRA-011. Operator migrate through the bastion remains valid.
+INFRA-011. Operator migrate through the bastion remains valid.
 
 1. Read outputs: `bastion_instance_id`, `preview_rds_address` or `production_rds_address`.
 2. Read that environment’s secret (`medconnect/preview/api` or `medconnect/production/api`)
@@ -175,8 +176,7 @@ curl -fsS "$PRODUCTION_API_URL/ready"
 
 Login with a seeded demo user uses the existing opaque bearer against that HTTPS origin. Browser
 CORS for production waits on the exact Amplify origin in `production_web_origins` (see Amplify
-below). Preview may keep `https://*.amplifyapp.com` until
-[INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md).
+below). Preview keeps `https://*.amplifyapp.com` so PR hosts can call the preview API only.
 
 ## Rotate `DATABASE_URL` / `DATABASE_ADMIN_URL`
 
@@ -192,20 +192,28 @@ Terraform ignores `secret_string` changes (`lifecycle.ignore_changes`) so rotati
 require a Terraform apply.
 
 GitHub OIDC role ARNs, ECR repository URL, HTTPS API URLs, document bucket names, secret-read
-policy ARNs, and API security group IDs are Terraform outputs for operators and for INFRA-010 /
-INFRA-011 deploy workflows.
+policy ARNs, and API security group IDs are Terraform outputs for operators and for INFRA-011
+deploy workflows. Preview frontend publish is Amplify-native; it does not assume the GitHub
+preview OIDC role.
 
 ## Amplify Hosting (`apps/web`)
 
-Amplify Git integration owns the production frontend publish from `main`. Do not add a GitHub
-Action that also publishes Amplify ([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)
-picks this owner). PR/branch previews stay
-[INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md). Build
-settings live in [amplify.yml](../../amplify.yml) (repository root; npm workspace install from
-`/`, Next app in `apps/web`, SSR artifacts `apps/web/.next`). Do not static-export.
+Amplify Git integration owns frontend publish. Do not add a GitHub Action that also publishes
+Amplify ([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md)
+picks the production owner). Build settings live in [amplify.yml](../../amplify.yml)
+(repository root; npm workspace install from `/`, Next app in `apps/web`, SSR artifacts
+`apps/web/.next`). The buildspec writes `NEXT_PUBLIC_USE_MOCKS`, `NEXT_PUBLIC_API_BASE_URL`, and
+`API_BASE_URL` into `apps/web/.env.production` and fails if any is empty. Do not static-export.
 
 Requires the GitHub AWS Amplify GitHub App on this repository and permission to create an
 Amplify app. Custom domain is optional; default hostname is `*.amplifyapp.com`.
+
+**Repository visibility:** Amplify Hosting compute (WEB_COMPUTE / SSR) cannot enable pull-request
+previews on a **public** GitHub repository that has an IAM service role. Keep this repository
+**private** (or another AWS-supported equivalent). Do not add a second frontend host.
+
+Connect **only** `main` as an Amplify branch. Do not add feature branches as extra production
+branches. PR previews are ephemeral and are deleted when the pull request closes.
 
 ### Create the production app
 
@@ -216,16 +224,9 @@ Amplify app. Custom domain is optional; default hostname is `*.amplifyapp.com`.
    previews on this step.
 4. Confirm the build image uses Node **24** (`nvm use 24` in `amplify.yml`; Live package
    updates may also pin Node.js 24). This matches [`.nvmrc`](../../.nvmrc).
-5. Set **production / `main`** environment variables only. Allowlist:
-
-   | Variable | Value |
-   | --- | --- |
-   | `NEXT_PUBLIC_USE_MOCKS` | `false` |
-   | `NEXT_PUBLIC_API_BASE_URL` | Terraform output `production_api_url` |
-   | `API_BASE_URL` | the same `production_api_url` |
-
-   Never put `DATABASE_URL`, `DATABASE_ADMIN_URL`, Secrets Manager ARNs, AWS access keys, or
-   `PLANE_API_KEY` in Amplify. Do not point `main` at `preview_api_url`.
+5. Set environment variables using the two-layer strategy below. If this app already has
+   production URLs as **all-branch** defaults from INFRA-009, move those values onto the `main`
+   branch override **before** enabling PR previews.
 6. Save and deploy. Wait for a green `main` build. Failed Amplify builds do not replace the
    last successful production publish (atomic Hosting deploy). Retry from the console
    (**Redeploy this version** / retry job). Do not force-push `main`.
@@ -233,6 +234,49 @@ Amplify app. Custom domain is optional; default hostname is `*.amplifyapp.com`.
 If compute fails on Next.js 16 or on Turbopack `.next/node_modules` symlinks, **stop**. Do not
 switch to `output: 'export'`. Do not silently downgrade Next.js. Escalate before changing the
 Amplify build command.
+
+### Environment variables (preview vs production)
+
+Amplify PR previews inherit **all-branch** (app-level) environment variables, not the
+destination branch’s overrides. Set:
+
+| Scope | Variable | Value |
+| --- | --- | --- |
+| All branches (default) | `NEXT_PUBLIC_USE_MOCKS` | `false` |
+| All branches (default) | `NEXT_PUBLIC_API_BASE_URL` | Terraform output `preview_api_url` |
+| All branches (default) | `API_BASE_URL` | the same `preview_api_url` |
+| `main` branch override | `NEXT_PUBLIC_USE_MOCKS` | `false` |
+| `main` branch override | `NEXT_PUBLIC_API_BASE_URL` | Terraform output `production_api_url` |
+| `main` branch override | `API_BASE_URL` | the same `production_api_url` |
+
+Never put `DATABASE_URL`, `DATABASE_ADMIN_URL`, Secrets Manager ARNs, AWS access keys, or
+`PLANE_API_KEY` in Amplify. Do not point `main` at `preview_api_url`. Do not point previews at
+`production_api_url`.
+
+### Enable pull-request previews
+
+1. Confirm the GitHub repository is private (see visibility note above).
+2. Amplify console → Hosting → Previews → select `main` → enable **Pull request previews**.
+3. This app has no Amplify backend. If the console asks about a backend environment, point PRs
+   at none / an existing environment. **Do not** create a per-PR Amplify backend, ECS service, or
+   RDS instance. Frontend previews are PR-specific; the API and preview/demo database are
+   **shared**. Concurrent PRs can overwrite that synthetic data. Never seed production identities
+   into the preview database.
+4. Set GitHub Actions repository variable `AMPLIFY_APP_ID` to the Amplify app id (the hostname
+   segment in `https://pr-<number>.<appId>.amplifyapp.com`). It is not a secret.
+5. GitHub → Settings → Branches → protect `main`: require the `ci` status check. Optionally
+   also require Amplify’s web-preview check (the exact check name is account-specific; confirm
+   it on the first PR). Do not allow feature branches to skip these checks and publish
+   production.
+6. Open a pull request. Quality CI runs in GitHub Actions. Amplify may start a native preview
+   build in parallel. [`.github/workflows/preview-status.yml`](../../.github/workflows/preview-status.yml)
+   posts or updates the **project-advertised** review URL only after `ci` succeeds. A failed
+   `ci` run must not get that green review comment. Treat Amplify’s own check as an extra
+   signal, not as permission to skip CI.
+
+Preview URL pattern: `https://pr-<number>.<appId>.amplifyapp.com`. Sign in with preview demo
+credentials. Confirm the browser API host is `preview_api_url`. Confirm `main` Amplify env
+still uses `production_api_url`.
 
 ### Production CORS after the first URL
 
@@ -244,7 +288,7 @@ The production API allowlist is exact origins only. After the first successful p
    [terraform.tfvars.example](../../infra/terraform/terraform.tfvars.example)).
 3. `terraform apply` so the production ECS task `WEB_ORIGINS` matches that origin.
 4. Confirm a browser on the Amplify origin can call the production API; a preview host must
-   not.
+   not. Preview CORS keeps `preview_web_origins = "https://*.amplifyapp.com"`.
 
 Verify marketing `/` and `/login` over HTTPS, live login with a seeded demo user, and one
 dashboard **list** page (patients). Network calls must go to the production API host. The

@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.58.0] - 2026-10-04
+
+### Added
+
+- Amplify PR preview delivery (INFRA-010): `amplify.yml` writes public frontend env into
+  `apps/web/.env.production` and fails closed if required URLs are missing; quality CI posts
+  the advertised preview URL only after `ci` succeeds (`.github/workflows/preview-status.yml`).
+  Operator runbook enables Amplify-native PR previews against the shared preview API/RDS
+  (all-branch env = `preview_api_url`, `main` override = `production_api_url`). Feature branches
+  cannot publish production Amplify. Live console enablement remains an operator step. ECS
+  rolling deploy remains INFRA-011. Synthetic demo data only; never real PHI.
+
 ## [0.57.0] - 2026-10-04
 
 ### Added

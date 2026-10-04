@@ -1,0 +1,108 @@
+# Advertise the Amplify PR preview URL only after quality CI succeeds (INFRA-010).
+# Amplify Git App still builds native PR previews; this workflow does not publish Amplify,
+# assume AWS roles, or push ECR. Set GitHub Actions variable AMPLIFY_APP_ID.
+name: Preview status
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+concurrency:
+  group: preview-status-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  advertise:
+    name: advertise
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Upsert preview review comment
+        uses: actions/github-script@v7
+        env:
+          AMPLIFY_APP_ID: ${{ vars.AMPLIFY_APP_ID }}
+        with:
+          script: |
+            const marker = '<!-- medconnect-preview-status -->';
+            const run = context.payload.workflow_run;
+            const ciPassed = run.conclusion === 'success';
+            const appId = (process.env.AMPLIFY_APP_ID || '').trim();
+
+            let prNumber = run.pull_requests?.[0]?.number;
+            if (!prNumber) {
+              const head = run.head_branch;
+              if (!head) {
+                core.info('No pull request or head branch on the CI run; skipping.');
+                return;
+              }
+              const { data: pulls } = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head: `${context.repo.owner}:${head}`,
+                state: 'open',
+              });
+              prNumber = pulls[0]?.number;
+            }
+            if (!prNumber) {
+              core.info('Could not resolve a pull request for the CI run; skipping.');
+              return;
+            }
+
+            const previewUrl = appId
+              ? `https://pr-${prNumber}.${appId}.amplifyapp.com`
+              : null;
+
+            const body = ciPassed
+              ? [
+                  marker,
+                  '## Preview environment',
+                  '',
+                  previewUrl
+                    ? `Review URL (after quality CI): ${previewUrl}`
+                    : 'Quality CI passed, but GitHub Actions variable `AMPLIFY_APP_ID` is unset. Set it to the Amplify app id so this comment can include the preview URL.',
+                  '',
+                  'This frontend preview talks to the **shared** preview API and preview/demo database. Concurrent PRs can overwrite that data. Synthetic demo data only — never real PHI.',
+                  '',
+                  'Browser `NEXT_PUBLIC_API_BASE_URL` / `API_BASE_URL` must be Terraform `preview_api_url`, not `production_api_url`.',
+                  '',
+                  'Amplify may still post its own check while CI runs. Treat **this** comment as the project-advertised review URL. Do not merge until the required `ci` check is green.',
+                ].join('\n')
+              : [
+                  marker,
+                  '## Preview environment',
+                  '',
+                  'Quality CI failed. This pull request is **not** review-ready. Do not treat an Amplify preview URL or Amplify GitHub check as a green review signal.',
+                  '',
+                  'Re-run or fix CI. The advertised preview URL is posted only after `ci` succeeds.',
+                ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body,
+            });

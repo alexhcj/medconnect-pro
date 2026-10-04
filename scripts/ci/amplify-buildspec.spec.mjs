@@ -24,6 +24,15 @@ describe('amplify.yml', () => {
 		assert.doesNotMatch(spec, /baseDirectory:\s*out\b/);
 	});
 
+	it('writes required frontend env into apps/web/.env.production and fails closed', () => {
+		assert.match(spec, /env_file=apps\/web\/\.env\.production/);
+		assert.match(spec, /NEXT_PUBLIC_USE_MOCKS/);
+		assert.match(spec, /NEXT_PUBLIC_API_BASE_URL/);
+		assert.match(spec, /API_BASE_URL/);
+		assert.match(spec, /Missing required Amplify env/);
+		assert.match(spec, /printenv/);
+	});
+
 	it('does not embed database URLs or AWS secrets', () => {
 		assert.doesNotMatch(spec, /DATABASE_URL/);
 		assert.doesNotMatch(spec, /DATABASE_ADMIN_URL/);
