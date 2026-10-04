@@ -5,6 +5,7 @@ import {
 	isKnownLocalComposeDatabaseUrl,
 	postgresUrlUsername,
 } from '../persistence/default-database-url.js';
+import {productionCorsRejection, splitOriginEntries} from './cors-origins.js';
 
 const booleanFromEnv = z.preprocess((value) => {
 	if (value === undefined || value === '') {
@@ -69,6 +70,24 @@ export const envSchema = z
 			}
 			return value;
 		}, z.string().min(1).default('.document-storage')),
+		WEB_ORIGIN: z.preprocess((value) => {
+			if (value === undefined || value === '') {
+				return undefined;
+			}
+			return value;
+		}, z.string().min(1).optional()),
+		WEB_ORIGINS: z.preprocess((value) => {
+			if (value === undefined || value === '') {
+				return undefined;
+			}
+			return value;
+		}, z.string().min(1).optional()),
+		DOCUMENT_S3_BUCKET: z.preprocess((value) => {
+			if (value === undefined || value === '') {
+				return undefined;
+			}
+			return value;
+		}, z.string().min(1).optional()),
 	})
 	.superRefine((env, ctx) => {
 		if (env.APP_ENV !== 'preview' && env.APP_ENV !== 'production') {
@@ -83,32 +102,50 @@ export const envSchema = z
 		}
 		addHostedDatabaseIssue(ctx, 'DATABASE_URL', env.DATABASE_URL);
 		addHostedDatabaseIssue(ctx, 'DATABASE_ADMIN_URL', env.DATABASE_ADMIN_URL);
-		if (!env.DATABASE_URL || !env.DATABASE_ADMIN_URL) {
-			return;
+		if (env.DATABASE_URL && env.DATABASE_ADMIN_URL) {
+			if (env.DATABASE_URL === env.DATABASE_ADMIN_URL) {
+				ctx.addIssue({
+					code: 'custom',
+					path: ['DATABASE_URL'],
+					message:
+						'DATABASE_URL must not equal DATABASE_ADMIN_URL when APP_ENV is preview or production',
+				});
+			}
+			if (postgresUrlUsername(env.DATABASE_URL) !== 'medconnect_app') {
+				ctx.addIssue({
+					code: 'custom',
+					path: ['DATABASE_URL'],
+					message:
+						'DATABASE_URL username must be medconnect_app when APP_ENV is preview or production',
+				});
+			}
+			if (postgresUrlUsername(env.DATABASE_ADMIN_URL) === 'medconnect_app') {
+				ctx.addIssue({
+					code: 'custom',
+					path: ['DATABASE_ADMIN_URL'],
+					message:
+						'DATABASE_ADMIN_URL must not use the medconnect_app runtime role when APP_ENV is preview or production',
+				});
+			}
 		}
-		if (env.DATABASE_URL === env.DATABASE_ADMIN_URL) {
+		if (!env.DOCUMENT_S3_BUCKET) {
 			ctx.addIssue({
 				code: 'custom',
-				path: ['DATABASE_URL'],
-				message:
-					'DATABASE_URL must not equal DATABASE_ADMIN_URL when APP_ENV is preview or production',
+				path: ['DOCUMENT_S3_BUCKET'],
+				message: 'DOCUMENT_S3_BUCKET is required when APP_ENV is preview or production',
 			});
 		}
-		if (postgresUrlUsername(env.DATABASE_URL) !== 'medconnect_app') {
-			ctx.addIssue({
-				code: 'custom',
-				path: ['DATABASE_URL'],
-				message:
-					'DATABASE_URL username must be medconnect_app when APP_ENV is preview or production',
-			});
-		}
-		if (postgresUrlUsername(env.DATABASE_ADMIN_URL) === 'medconnect_app') {
-			ctx.addIssue({
-				code: 'custom',
-				path: ['DATABASE_ADMIN_URL'],
-				message:
-					'DATABASE_ADMIN_URL must not use the medconnect_app runtime role when APP_ENV is preview or production',
-			});
+		if (env.APP_ENV === 'production') {
+			const corsRejection = productionCorsRejection(
+				splitOriginEntries(env.WEB_ORIGIN, env.WEB_ORIGINS),
+			);
+			if (corsRejection) {
+				ctx.addIssue({
+					code: 'custom',
+					path: ['WEB_ORIGINS'],
+					message: corsRejection,
+				});
+			}
 		}
 	})
 	.transform((env) => ({

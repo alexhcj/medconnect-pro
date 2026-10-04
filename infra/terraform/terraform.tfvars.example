@@ -4,3 +4,11 @@
 aws_region        = "us-east-1"
 github_repository = "alexhcj/medconnect-pro"
 vpc_cidr          = "10.0.0.0/16"
+
+# CORS. Preview may use the Amplify hostname pattern; production must be exact origins only.
+# preview_web_origins     = "https://*.amplifyapp.com"
+# production_web_origins  = "https://<amplify-production-origin>"
+
+# First apply before an image exists: api_desired_count = 0, push to ECR, then set 1 and re-apply.
+# api_image_tag     = "latest"
+# api_desired_count = 1

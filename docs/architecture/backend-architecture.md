@@ -68,8 +68,20 @@ fan out; use SQS when work must wait safely for a consumer.
 Current path ([BE-008](../tasks/backend/BE-008-notification-domain.md)): the same `DeliveryBus`
 port is an in-process dispatcher. Email and SMS use demo adapters (no SMTP or carrier). In-app
 rows persist synchronously. Retry is three attempts with 1s then 4s between them;
-exhausted jobs persist `failed` as the local dead-letter equivalent. Kafka and AWS SDKs are
-out of scope until infrastructure exists.
+exhausted jobs persist `failed` as the local dead-letter equivalent. Kafka and notification AWS
+SDKs remain out of scope until that infrastructure exists.
+
+## Hosted runtime
+
+Preview and production run this same modular NestJS application as one container per environment
+on ECS Fargate
+([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)). Do not
+split domains into microservices. Secrets Manager injects `DATABASE_URL` /
+`DATABASE_ADMIN_URL`; Nest does not call the Secrets Manager SDK. Hosted documents use
+`S3DocumentObjectStore` (`DOCUMENT_S3_BUCKET`, `@aws-sdk/client-s3` with the ECS task role).
+Local `APP_ENV` keeps `LocalDocumentObjectStore`. CORS uses `WEB_ORIGIN` / `WEB_ORIGINS`
+(production: exact origins only; preview may include `https://*.amplifyapp.com`). `GET /health`
+is process liveness; `GET /ready` checks PostgreSQL.
 
 ## Future extraction candidates
 

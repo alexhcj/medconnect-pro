@@ -19,12 +19,11 @@ See the root [README](../../README.md) for setup and validation commands.
 
 M8 marketing site is in the repository (FE-017–FE-023). GitHub Actions **quality gates** exist
 ([INFRA-005](../tasks/infrastructure/INFRA-005-github-actions-ci-quality-gates.md)). Secrets
-classification, AWS secret retrieval, remote Terraform state, VPC, and preview/production demo
-RDS exist
-([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md),
-[INFRA-007](../tasks/infrastructure/INFRA-007-preview-and-production-demo-databases.md)).
-Docker images, Amplify, preview environments, and ECS hosting remain **M9**
-([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
+classification, AWS secret retrieval, remote Terraform state, VPC, preview/production demo RDS,
+the NestJS API image, and ECS/Fargate hosting exist
+([INFRA-006](../tasks/infrastructure/INFRA-006-secrets-classification-and-aws-secret-retrieval.md)–[INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)).
+Amplify, preview PR delivery, and production deploy workflows remain **M9**
+([INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md)–[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)),
 not M8. Topology is [ADR-012](../decisions/ADR-012-deployment-topology.md): Amplify for Next.js,
 ECS/Fargate for NestJS, environments `local` / `preview` / `production`.
 
@@ -51,10 +50,10 @@ Per-PR ECS or RDS is out of scope ([ADR-012](../decisions/ADR-012-deployment-top
 ## Networking
 
 - VPC (one demo VPC; preview and production RDS isolated by security groups and secrets)
-- public/private subnet separation (no NAT in this slice; NAT waits on INFRA-008)
-- security groups (RDS is not reachable as public `0.0.0.0/0` Postgres)
-- least-privilege IAM
-- SSM bastion for operator migrate/seed port-forward until ECS exists
+- public/private subnet separation with one NAT Gateway for private-subnet egress
+- security groups (RDS is not reachable as public `0.0.0.0/0` Postgres; ALB HTTP is CloudFront-only)
+- least-privilege IAM (ECS execution role reads that environment’s secret; task role is S3-only)
+- SSM bastion for operator migrate/seed port-forward until deploy-time migrate exists (INFRA-010/011)
 
 ## Environments
 
@@ -72,6 +71,15 @@ The three databases are synthetic/demo only and must never contain real PHI
 ([ADR-005](../decisions/ADR-005-synthetic-demo-data.md)). Runtime configuration classification is
 [environment-configuration.md](../contracts/environment-configuration.md).
 
+## Hosted API
+
+Preview and production each run one Fargate service in cluster `medconnect` (same image digest;
+isolation is task env, secrets, security groups, RDS, and S3). Public HTTPS is CloudFront’s
+default `*.cloudfront.net` hostname in front of an internet-facing ALB. The ALB listens on HTTP
+and admits CloudFront’s origin-facing prefix list only — not a plaintext public API. Container
+liveness is `GET /health`; ALB target-group health is `GET /ready`. Terraform outputs
+`preview_api_url` and `production_api_url`.
+
 ## Databases
 
 | Name | Role | Current provision |
@@ -86,44 +94,49 @@ Terraform root: [infra/terraform/](../../infra/terraform/). INFRA-006 bootstraps
 distinct preview/production Secrets Manager containers (`medconnect/preview/api`,
 `medconnect/production/api`), and non-overlapping read policies. INFRA-007 adds encrypted
 remote state (S3 AES-256 + DynamoDB lock), one VPC, two RDS PostgreSQL 18 demo instances
-(AWS-managed encryption at rest, 7-day backups, `db.t4g.micro`), placeholder API security
-groups, and an SSM bastion. Apply is operator-run; quality CI only formats and validates
-(`terraform init -backend=false`). Rotation, state migrate, and hosted migrate/seed:
-[deploy.md](../workflows/deploy.md).
+(AWS-managed encryption at rest, 7-day backups, `db.t4g.micro`), API security groups, and an
+SSM bastion. INFRA-008 adds NAT, ECR `medconnect-api`, one ECS cluster with preview and
+production Fargate services, ALB + CloudFront HTTPS, CloudWatch logs, and per-environment
+document buckets (SSE-KMS with the AWS-managed S3 key). Apply is operator-run; quality CI
+only formats and validates (`terraform init -backend=false`). Rotation, image push, hosted
+migrate/seed, and `GET /ready`: [deploy.md](../workflows/deploy.md).
 
 ## Secrets retrieval
 
 Classification: [environment-configuration.md](../contracts/environment-configuration.md).
 
 Preview and production `DATABASE_URL` / `DATABASE_ADMIN_URL` come from Secrets Manager JSON keys.
-ECS (INFRA-008) injects them as task `secrets` (`valueFrom` `arn:…:DATABASE_URL::`). Nest reads
-process env; do not add an AWS SDK to `apps/api` for this. Non-secret hosted config (`APP_ENV`,
-`WEB_ORIGIN`, `PORT`, …) is ECS task environment. Amplify holds public `NEXT_PUBLIC_*` (and
-`API_BASE_URL`) only — no database URLs, no secret ARNs.
+ECS injects them as task `secrets` (`valueFrom` `arn:…:DATABASE_URL::`) on the **execution**
+role. Nest reads process env; do not add a Secrets Manager SDK to `apps/api`. Non-secret hosted
+config (`APP_ENV`, `WEB_ORIGIN` / `WEB_ORIGINS`, `PORT`, `DOCUMENT_S3_BUCKET`, …) is ECS task
+environment. Amplify holds public `NEXT_PUBLIC_*` (and `API_BASE_URL`) only — no database URLs,
+no secret ARNs.
 
 GitHub Actions authenticates to AWS with those OIDC roles. Do not store long-lived AWS access
-keys as GitHub Secrets. Quality CI never assumes the roles.
+keys as GitHub Secrets. Quality CI never assumes the roles. Image **push** on `main` uses
+`.github/workflows/api-image.yml` and `medconnect-github-production`. ECS service update remains
+[INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md).
 
 ### API image contract
 
-The API image does not exist yet
-([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)). When it
-does:
+The API image is [apps/api/Dockerfile](../../apps/api/Dockerfile) (build context: repository
+root). Preview and production use the same digest; only injected env and secrets differ.
 
 - `apps/api/Dockerfile` must not declare `ENV` or `ARG` for `DATABASE_URL`, `DATABASE_ADMIN_URL`,
   AWS keys, or any secret.
 - `.dockerignore` must exclude `.env*`, keys, and document blobs.
 - Runtime configuration comes from the ECS task definition: plaintext for environment-specific
   variables; Secrets Manager injection for `DATABASE_*`.
-- Preview and production use the same image digest; only injected env and secrets differ.
+- Hosted documents use `DOCUMENT_S3_BUCKET` and `@aws-sdk/client-s3` with the task role. Do not
+  put AWS SDK clients in the web bundle.
 
 ## CI/CD
 
 Quality gates: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) (INFRA-005). Triggers:
-`pull_request`, `push` to `main`, and `workflow_dispatch`. One job `ci` on `ubuntu-latest`. Node
-**24** from `.nvmrc`. Install from the repository root (`npm ci`). PostgreSQL **18**
-(`postgres:18-alpine` service, same demo credentials as Compose). Schema before API tests:
-`npm run migration:run`. Commands, in order:
+`pull_request`, `push` to `main`, and `workflow_dispatch`. Job `ci` on `ubuntu-latest` plus a
+credential-free `api-image` Docker **build** (no ECR login). Node **24** from `.nvmrc`. Install
+from the repository root (`npm ci`). PostgreSQL **18** (`postgres:18-alpine` service, same demo
+credentials as Compose). Schema before API tests: `npm run migration:run`. Commands, in order:
 
 1. `npm run ci:secrets` (tracked `.env`, AWS access-key material, Compose URLs in hosted/Terraform paths)
 2. `npm run test:ci-secrets` / `npm run test:ensure-app-role`
@@ -139,17 +152,18 @@ Quality gates: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) (INF
 A failing lint, type-check, test, or build fails the workflow. Mark the `ci` check required on
 `main` in GitHub branch protection so merge is fail-closed. Playwright mock e2e and `e2e:live` are
 not in this workflow (`e2e:live` is [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)).
-The workflow file contains no production secrets and no AWS credentials; Compose demo database
-credentials are not GitHub Secrets. GitHub OIDC roles exist in Terraform for later deploy
-workflows only.
+The quality workflow file contains no production secrets and no AWS credentials; Compose demo
+database credentials are not GitHub Secrets. GitHub OIDC roles exist in Terraform for image push
+and later deploy workflows only.
 
-Not in this workflow (later M9):
+Not in the quality workflow (separate files):
 
-- Docker image build ([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md))
+- Image **push** to ECR on `main` ([`.github/workflows/api-image.yml`](../../.github/workflows/api-image.yml))
 - Preview deploy ([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md))
 - Production deploy and approval gate ([INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
 
-Keep deploy jobs in separate workflow files so this quality workflow never gains AWS credentials.
+Keep deploy and push jobs in separate workflow files so this quality workflow never gains AWS
+credentials.
 
 ## Reliability
 

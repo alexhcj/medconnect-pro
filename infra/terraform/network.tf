@@ -89,6 +89,37 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
+resource "aws_eip" "nat" {
+  domain = "vpc"
+
+  tags = {
+    Name = "medconnect-nat"
+  }
+
+  depends_on = [aws_internet_gateway.main]
+}
+
+resource "aws_nat_gateway" "main" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[0].id
+
+  tags = {
+    Name = "medconnect-nat"
+  }
+
+  depends_on = [aws_internet_gateway.main]
+}
+
+resource "aws_route" "private_internet" {
+  route_table_id         = aws_route_table.private.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.main.id
+}
+
+data "aws_ec2_managed_prefix_list" "cloudfront" {
+  name = "com.amazonaws.global.cloudfront.origin-facing"
+}
+
 resource "aws_security_group" "bastion" {
   name        = "medconnect-bastion"
   description = "SSM-only operator hop for hosted migrate/seed. No inbound SSH."
@@ -101,7 +132,7 @@ resource "aws_security_group" "bastion" {
 
 resource "aws_security_group" "preview_api" {
   name        = "medconnect-preview-api"
-  description = "Placeholder for INFRA-008 preview ECS task ENIs."
+  description = "Preview ECS task ENIs. Ingress from the preview ALB; egress to preview RDS and HTTPS."
   vpc_id      = aws_vpc.main.id
 
   tags = {
@@ -111,11 +142,31 @@ resource "aws_security_group" "preview_api" {
 
 resource "aws_security_group" "production_api" {
   name        = "medconnect-production-api"
-  description = "Placeholder for INFRA-008 production ECS task ENIs."
+  description = "Production ECS task ENIs. Ingress from the production ALB; egress to production RDS and HTTPS."
   vpc_id      = aws_vpc.main.id
 
   tags = {
     Name = "medconnect-production-api"
+  }
+}
+
+resource "aws_security_group" "preview_alb" {
+  name        = "medconnect-preview-alb"
+  description = "Preview API ALB. HTTP from CloudFront only."
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "medconnect-preview-alb"
+  }
+}
+
+resource "aws_security_group" "production_alb" {
+  name        = "medconnect-production-alb"
+  description = "Production API ALB. HTTP from CloudFront only."
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "medconnect-production-alb"
   }
 }
 
@@ -236,4 +287,76 @@ resource "aws_vpc_security_group_ingress_rule" "production_rds_from_bastion" {
   ip_protocol                  = "tcp"
   from_port                    = 5432
   to_port                      = 5432
+}
+
+resource "aws_vpc_security_group_ingress_rule" "preview_alb_http_cloudfront" {
+  security_group_id = aws_security_group.preview_alb.id
+  description       = "CloudFront to preview ALB HTTP origin."
+  prefix_list_id    = data.aws_ec2_managed_prefix_list.cloudfront.id
+  ip_protocol       = "tcp"
+  from_port         = 80
+  to_port           = 80
+}
+
+resource "aws_vpc_security_group_egress_rule" "preview_alb_to_api" {
+  security_group_id            = aws_security_group.preview_alb.id
+  description                  = "Preview ALB to preview API tasks."
+  referenced_security_group_id = aws_security_group.preview_api.id
+  ip_protocol                  = "tcp"
+  from_port                    = 3001
+  to_port                      = 3001
+}
+
+resource "aws_vpc_security_group_ingress_rule" "production_alb_http_cloudfront" {
+  security_group_id = aws_security_group.production_alb.id
+  description       = "CloudFront to production ALB HTTP origin."
+  prefix_list_id    = data.aws_ec2_managed_prefix_list.cloudfront.id
+  ip_protocol       = "tcp"
+  from_port         = 80
+  to_port           = 80
+}
+
+resource "aws_vpc_security_group_egress_rule" "production_alb_to_api" {
+  security_group_id            = aws_security_group.production_alb.id
+  description                  = "Production ALB to production API tasks."
+  referenced_security_group_id = aws_security_group.production_api.id
+  ip_protocol                  = "tcp"
+  from_port                    = 3001
+  to_port                      = 3001
+}
+
+resource "aws_vpc_security_group_ingress_rule" "preview_api_from_alb" {
+  security_group_id            = aws_security_group.preview_api.id
+  description                  = "Preview ALB to preview API."
+  referenced_security_group_id = aws_security_group.preview_alb.id
+  ip_protocol                  = "tcp"
+  from_port                    = 3001
+  to_port                      = 3001
+}
+
+resource "aws_vpc_security_group_ingress_rule" "production_api_from_alb" {
+  security_group_id            = aws_security_group.production_api.id
+  description                  = "Production ALB to production API."
+  referenced_security_group_id = aws_security_group.production_alb.id
+  ip_protocol                  = "tcp"
+  from_port                    = 3001
+  to_port                      = 3001
+}
+
+resource "aws_vpc_security_group_egress_rule" "preview_api_https" {
+  security_group_id = aws_security_group.preview_api.id
+  description       = "ECR, Secrets Manager, CloudWatch, and S3 via NAT."
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "tcp"
+  from_port         = 443
+  to_port           = 443
+}
+
+resource "aws_vpc_security_group_egress_rule" "production_api_https" {
+  security_group_id = aws_security_group.production_api.id
+  description       = "ECR, Secrets Manager, CloudWatch, and S3 via NAT."
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "tcp"
+  from_port         = 443
+  to_port           = 443
 }

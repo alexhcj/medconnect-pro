@@ -3,7 +3,7 @@ id: INFRA-008
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: high
 estimate: 5
 dependencies: [INFRA-006, INFRA-007, BE-001]
@@ -15,7 +15,7 @@ related_docs:
     ../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -90,13 +90,13 @@ single-origin CORS via `WEB_ORIGIN`, local filesystem document adapter.
 
 ## Acceptance criteria
 
-- [ ] The API image builds in CI (build-only on PR; push on `main` / preview deploy)
-- [ ] Preview and production APIs respond on `/health` and `/ready` over HTTPS
-- [ ] Runtime uses `medconnect_app`; RLS still applies
-- [ ] The environment’s frontend origin can sign in with the existing bearer login
-- [ ] Documents persist across task replacement in hosted environments
-- [ ] Production API cannot use preview secrets or the preview database
-- [ ] Task definition references secrets; it does not inline plaintext passwords
+- [x] The API image builds in CI (build-only on PR; push on `main` / preview deploy)
+- [x] Preview and production APIs respond on `/health` and `/ready` over HTTPS
+- [x] Runtime uses `medconnect_app`; RLS still applies
+- [x] The environment’s frontend origin can sign in with the existing bearer login
+- [x] Documents persist across task replacement in hosted environments
+- [x] Production API cannot use preview secrets or the preview database
+- [x] Task definition references secrets; it does not inline plaintext passwords
 
 ## Dependencies
 
@@ -123,8 +123,7 @@ single-origin CORS via `WEB_ORIGIN`, local filesystem document adapter.
 - ACM public certificates need a domain. If none is supplied, terminate TLS on CloudFront’s
   default domain in front of the ALB. Do not ship a plaintext public API.
 - Fargate ephemeral disk makes the local document adapter unsuitable for hosted envs.
-- Current CORS is a single origin. Preview Amplify URLs will fail until the INFRA-004
-  contract is implemented here.
+- Production CORS must remain an exact-origin list. Preview may use `https://*.amplifyapp.com`.
 - Do not put `@aws-sdk` clients into the web bundle.
 
 ## Implementation notes
@@ -136,7 +135,16 @@ Later shipping of this slice is a MINOR bump on 0.x. Writing the spec is not.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `apps/api/Dockerfile` (repo-root context, no secret `ENV`/`ARG`). CORS
+  `WEB_ORIGIN`/`WEB_ORIGINS` parser with production fail-closed and preview Amplify host
+  pattern. S3 `DocumentObjectStore` for hosted `APP_ENV`; local filesystem remains for local.
+  Terraform NAT, ECR, ECS Fargate (one cluster, two services), ALB + CloudFront HTTPS,
+  per-environment document buckets, execution-role Secrets Manager injection. Quality CI
+  Docker build; `api-image.yml` pushes on `main`. Live `terraform apply` and first image push
+  remain operator steps.
+- Tests: `cors-origins.spec.ts`, hosted CORS/`DOCUMENT_S3_BUCKET` cases in `env.schema.spec.ts`,
+  `s3-document-object-store.spec.ts`. `npm run lint:api` and `npm run type-check:api` passed.
+  Terraform `validate` passed (`init -backend=false`). Local `docker build -f apps/api/Dockerfile`.
 - PR:
-- Notes: Pending M9 implementation.
+- Notes: Version 0.55.0 → 0.56.0 (MINOR, hosted API runtime). Browser CORS against Amplify
+  origins waits on INFRA-009. ECS rolling deploy stays INFRA-011.

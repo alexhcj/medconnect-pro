@@ -1,4 +1,6 @@
-# Quality gates only. Deploy jobs stay out of this file (INFRA-010 / INFRA-011).
+# Quality gates only. Image *push* and ECS deploy stay out of this file
+# (INFRA-008 api-image.yml / INFRA-010 / INFRA-011). Docker *build* on PRs does
+# not assume AWS roles.
 # Compose demo credentials below match docker-compose.yml; they are not production secrets.
 name: CI
 
@@ -84,3 +86,12 @@ jobs:
         run: npm run build:api
       - name: Audit production dependencies
         run: npm audit --omit=dev
+
+  api-image:
+    name: api-image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: docker build -f apps/api/Dockerfile -t medconnect-api:${{ github.sha }} .

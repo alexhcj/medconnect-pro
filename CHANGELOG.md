@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.56.0] - 2026-10-03
+
+### Added
+
+- NestJS API container and ECS/Fargate hosting (INFRA-008): `apps/api/Dockerfile`, preview and
+  production Fargate services behind CloudFront HTTPS, Secrets Manager task injection,
+  `WEB_ORIGIN`/`WEB_ORIGINS` CORS parser, and S3 document storage for hosted environments.
+  Quality CI builds the image; `main` pushes to ECR. Live `terraform apply` remains an operator
+  step. Amplify and ECS rolling deploy remain INFRA-009–INFRA-011. Synthetic demo data only;
+  never real PHI.
+
 ## [0.55.0] - 2026-10-03
 
 ### Added

@@ -54,12 +54,11 @@ blobs.
 plus one provider membership and a few synthetic patients so the live patient list can be demonstrated.
 The password stays in the mock fixture, not in `users`.
 
-The API allows browser calls from `WEB_ORIGIN` (default `http://localhost:3000`) with an
-`Authorization` bearer header. That is the local Next.js app in `npm run dev:real`. It is not a
-wildcard and it does not use credentialed cookies. Hosted CORS origin lists and Amplify preview
-host patterns are defined in
-[environment-configuration.md](../../docs/contracts/environment-configuration.md); the parser
-is INFRA-008.
+The API allows browser calls from `WEB_ORIGIN` / `WEB_ORIGINS` (local default
+`http://localhost:3000`) with an `Authorization` bearer header. That is the local Next.js app in
+`npm run dev:real`. Production CORS is an exact-origin allowlist (no localhost, no Amplify
+preview host pattern). Preview may include `https://*.amplifyapp.com`. See
+[environment-configuration.md](../../docs/contracts/environment-configuration.md).
 
 Errors use the envelope in [data-contracts.md](../../docs/contracts/data-contracts.md). Requests
 accept and return `X-Correlation-ID`.

@@ -67,8 +67,9 @@ PostgreSQL row-level security is enabled on tenant-owned business tables
 before that GUC is set. The Nest runtime connects as non-owner role `medconnect_app`;
 migrations, seed, and test fixtures use table-owner `DATABASE_ADMIN_URL`. Cache keys remain
 future work until Redis exists. Document objects use tenant-prefixed paths
-(`practices/{practiceId}/patients/{patientId}/{documentId}`) on a local filesystem adapter
-until S3 SSE-KMS is available.
+(`practices/{practiceId}/patients/{patientId}/{documentId}`) on a local filesystem adapter when
+`APP_ENV=local`, and on per-environment S3 buckets (SSE-KMS, AWS-managed `aws/s3` key) when
+`APP_ENV` is preview or production.
 
 ## Clinical data
 

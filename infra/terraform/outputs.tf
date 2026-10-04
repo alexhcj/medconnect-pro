@@ -29,12 +29,12 @@ output "github_production_role_arn" {
 }
 
 output "preview_secrets_read_policy_arn" {
-  description = "Attach to the preview ECS task role in INFRA-008. Do not attach to production."
+  description = "Attach to the preview ECS execution role (Secrets Manager injection). Do not attach to production."
   value       = aws_iam_policy.preview_secrets_read.arn
 }
 
 output "production_secrets_read_policy_arn" {
-  description = "Attach to the production ECS task role in INFRA-008. Do not attach to preview."
+  description = "Attach to the production ECS execution role (Secrets Manager injection). Do not attach to preview."
   value       = aws_iam_policy.production_secrets_read.arn
 }
 
@@ -49,22 +49,22 @@ output "vpc_id" {
 }
 
 output "private_subnet_ids" {
-  description = "Private subnet IDs (RDS subnet group). INFRA-008 may reuse these for Fargate."
+  description = "Private subnet IDs (RDS subnet group and Fargate tasks)."
   value       = aws_subnet.private[*].id
 }
 
 output "public_subnet_ids" {
-  description = "Public subnet IDs (bastion today; ALB later in INFRA-008)."
+  description = "Public subnet IDs (bastion, NAT, and API ALBs)."
   value       = aws_subnet.public[*].id
 }
 
 output "preview_api_security_group_id" {
-  description = "Attach to preview ECS task ENIs in INFRA-008."
+  description = "Preview ECS task ENI security group."
   value       = aws_security_group.preview_api.id
 }
 
 output "production_api_security_group_id" {
-  description = "Attach to production ECS task ENIs in INFRA-008."
+  description = "Production ECS task ENI security group."
   value       = aws_security_group.production_api.id
 }
 
@@ -81,4 +81,34 @@ output "production_rds_address" {
 output "bastion_instance_id" {
   description = "SSM Session Manager target for port-forward migrate/seed."
   value       = aws_instance.bastion.id
+}
+
+output "ecr_repository_url" {
+  description = "ECR repository for the NestJS API image (preview and production share the digest)."
+  value       = aws_ecr_repository.api.repository_url
+}
+
+output "ecs_cluster_name" {
+  description = "Shared ECS cluster. Isolation is per-service task env, secrets, SGs, RDS, and S3."
+  value       = aws_ecs_cluster.main.name
+}
+
+output "preview_api_url" {
+  description = "HTTPS origin for the preview API (CloudFront default domain)."
+  value       = "https://${aws_cloudfront_distribution.preview_api.domain_name}"
+}
+
+output "production_api_url" {
+  description = "HTTPS origin for the production API (CloudFront default domain)."
+  value       = "https://${aws_cloudfront_distribution.production_api.domain_name}"
+}
+
+output "preview_document_bucket" {
+  description = "Preview document object bucket. Injected as DOCUMENT_S3_BUCKET."
+  value       = aws_s3_bucket.preview_documents.bucket
+}
+
+output "production_document_bucket" {
+  description = "Production document object bucket. Injected as DOCUMENT_S3_BUCKET."
+  value       = aws_s3_bucket.production_documents.bucket
 }

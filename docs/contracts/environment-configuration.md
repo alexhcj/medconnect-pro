@@ -49,10 +49,11 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `NODE_ENV` | api, web | Preview and production keep `production`. |
 | `PORT` | api | Default `3001`. |
 | `SWAGGER_UI_ENABLED` | api | Optional. Defaults off when `NODE_ENV=production`. Production should set `false`. |
-| `DOCUMENT_STORAGE_DIR` | api | Local filesystem adapter. Hosted object storage is INFRA-008. |
+| `DOCUMENT_STORAGE_DIR` | api | Local filesystem adapter (`APP_ENV=local`). |
+| `DOCUMENT_S3_BUCKET` | api | Hosted object-store bucket. Required when `APP_ENV` is preview or production. Not a secret; access is the ECS task role. |
 | `API_BASE_URL` | web | Server-only BFF proxy origin. Same classification as `NEXT_PUBLIC_API_BASE_URL`. |
 | `WEB_ORIGIN` | api | Single CORS origin. Local default `http://localhost:3000`. |
-| `WEB_ORIGINS` | api | Planned comma-separated allowlist for hosted CORS. Parser is INFRA-008. |
+| `WEB_ORIGINS` | api | Comma-separated CORS allowlist. Unioned with `WEB_ORIGIN`. Preview may include `https://*.amplifyapp.com`. Production must be exact origins only. |
 
 ### Secret
 
@@ -100,9 +101,9 @@ per-environment secret. Do not create that key now.
 
 ### Non-secret hosted configuration
 
-`APP_ENV`, `NODE_ENV`, `PORT`, `WEB_ORIGIN` / `WEB_ORIGINS`, and `SWAGGER_UI_ENABLED` are ECS
-task environment (plaintext), not Secrets Manager. Parameter Store is unused: a second store
-is not simpler than task env.
+`APP_ENV`, `NODE_ENV`, `PORT`, `WEB_ORIGIN` / `WEB_ORIGINS`, `SWAGGER_UI_ENABLED`, and
+`DOCUMENT_S3_BUCKET` are ECS task environment (plaintext), not Secrets Manager. Parameter Store
+is unused: a second store is not simpler than task env.
 
 Amplify receives only public frontend configuration (`NEXT_PUBLIC_*` and server `API_BASE_URL`
 for that environment’s API origin). No database URLs. No Secrets Manager ARNs.
@@ -112,23 +113,24 @@ for that environment’s API origin). No database URLs. No Secrets Manager ARNs.
 GitHub Actions authenticates to AWS with OIDC (IAM roles in the Terraform bootstrap). Do not
 store `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY` as GitHub Secrets for this purpose. Quality
 CI ([`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)) stays free of AWS credentials;
-deploy workflows ([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md),
+image push on `main` ([`.github/workflows/api-image.yml`](../../.github/workflows/api-image.yml))
+and later deploy workflows
+([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md),
 [INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md))
 assume the OIDC roles.
 
-Hosted document-bucket access is the future ECS task role
-([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)), not
-static access keys.
+Hosted document-bucket access is the ECS task role (preview task cannot write the production
+bucket and the reverse), not static access keys.
 
 `PLANE_API_KEY` stays in gitignored `scripts/plane/.env` only.
 
 ### API image contract
 
-The API image ([INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md)
-Dockerfile) must not declare `ENV` or `ARG` for `DATABASE_URL`, `DATABASE_ADMIN_URL`, AWS keys,
-or any secret. Runtime configuration comes from the ECS task definition: plaintext for
-environment-specific variables; Secrets Manager injection for `DATABASE_*`. Preview and
-production images are identical except for injected env and secrets. See
+The API image ([apps/api/Dockerfile](../../apps/api/Dockerfile)) must not declare `ENV` or
+`ARG` for `DATABASE_URL`, `DATABASE_ADMIN_URL`, AWS keys, or any secret. Runtime configuration
+comes from the ECS task definition: plaintext for environment-specific variables; Secrets
+Manager injection for `DATABASE_*`. Preview and production images are identical except for
+injected env and secrets. See
 [infrastructure-architecture.md](../architecture/infrastructure-architecture.md).
 
 Rotation: [deploy.md](../workflows/deploy.md).
@@ -155,9 +157,9 @@ verify TLS while the TCP target is `127.0.0.1`.
 
 ## CORS contract
 
-Implemented today: a single `WEB_ORIGIN` string (default `http://localhost:3000`) in
-`apps/api`. Origin-list and preview-host **parser** implementation is
-[INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md).
+`apps/api` unions `WEB_ORIGIN` and comma-separated `WEB_ORIGINS`. Production refuses to boot if
+any entry is localhost or a wildcard / Amplify preview hostname pattern. Preview may include
+the token `https://*.amplifyapp.com` so Amplify PR hosts can call the **preview** API only.
 
 | `APP_ENV` | Allowed browser origins |
 | --- | --- |

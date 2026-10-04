@@ -52,13 +52,13 @@ npm workspaces:
 
 ## Planned infrastructure (not initialized)
 
-- Redis, S3 + KMS
+- Redis
 - WebSockets / Socket.IO where justified
-- Docker / ECS Fargate, Amplify (INFRA-008+)
+- Amplify (INFRA-009+)
 
 GitHub Actions quality gates exist. Terraform in `infra/terraform/` covers secrets/OIDC
-(INFRA-006) plus VPC and preview/production demo RDS (INFRA-007). Operator apply remains
-required. ECS is later M9.
+(INFRA-006), VPC and preview/production demo RDS (INFRA-007), and ECS/Fargate plus document S3
+(INFRA-008). Operator apply remains required.
 
 ## Domain boundaries
 

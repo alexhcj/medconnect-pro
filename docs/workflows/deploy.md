@@ -1,8 +1,8 @@
-# Deploy runbook (secrets, remote state, and demo databases)
+# Deploy runbook (secrets, remote state, demo databases, and ECS)
 
 Operator steps for the Terraform root in [infra/terraform/](../../infra/terraform/).
 Catalog: [environment-configuration.md](../contracts/environment-configuration.md).
-ECS/Fargate is [INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md).
+ECS/Fargate: [INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md).
 Production rollback is [INFRA-011](../tasks/infrastructure/INFRA-011-production-delivery-workflow-and-rollback.md).
 
 Quality CI never assumes AWS roles. `terraform apply` is local (or a later deploy workflow).
@@ -13,8 +13,8 @@ data only**. Never load real PHI.
 
 ## Apply and remote state
 
-Requires an AWS account and permission to create IAM, Secrets Manager, VPC, RDS, EC2, S3, and
-DynamoDB resources. Copy [infra/terraform/terraform.tfvars.example](../../infra/terraform/terraform.tfvars.example)
+Requires an AWS account and permission to create IAM, Secrets Manager, VPC, RDS, EC2, S3,
+DynamoDB, ECS, ECR, ELB, CloudFront, and CloudWatch resources. Copy [infra/terraform/terraform.tfvars.example](../../infra/terraform/terraform.tfvars.example)
 to `infra/terraform/terraform.tfvars` (gitignored). Set `github_repository` to the GitHub
 `OWNER/REPO` that matches `git remote get-url origin` (no `.git` suffix).
 
@@ -27,7 +27,8 @@ terraform import aws_iam_openid_connect_provider.github \
 
 ### First apply (local state)
 
-Creates the state bucket, lock table, VPC, RDS instances, bastion, and secret containers.
+Creates the state bucket, lock table, VPC, NAT, RDS instances, bastion, secret containers, ECR,
+document buckets, ALBs, CloudFront distributions, and ECS services.
 
 ```bash
 cd infra/terraform
@@ -68,8 +69,8 @@ the secrets; secrets must use the RDS hostname (`sslmode=require`).
 | Name | Role | How it is reached |
 | --- | --- | --- |
 | local Compose `medconnect` | Developer and API tests | `docker compose up -d`; defaults in `DATABASE_*` |
-| preview/demo RDS | Shared hosted preview | Private subnet; SSM tunnel for migrate/seed; ECS later |
-| production/demo RDS | Hosted production | Same VPC, distinct instance, SG, and secret |
+| preview/demo RDS | Shared hosted preview | Private subnet; SSM tunnel for migrate/seed; preview ECS tasks |
+| production/demo RDS | Hosted production | Same VPC, distinct instance, SG, secret, and ECS service |
 
 Preview application configuration must not use the production secret or production RDS.
 Production must not use preview or local URLs. Nest fail-closed rules reject Compose
@@ -84,7 +85,7 @@ Leave `APP_ENV` unset (local). Hosted fail-closed rejects `127.0.0.1` when `APP_
 `preview` or `production`.
 
 Do **not** add AWS credentials to quality CI. GitHub deploy-time `migration:run` waits for
-INFRA-010 / INFRA-011 after ECS exists.
+INFRA-010 / INFRA-011. Operator migrate through the bastion remains valid.
 
 1. Read outputs: `bastion_instance_id`, `preview_rds_address` or `production_rds_address`.
 2. Read that environment’s secret (`medconnect/preview/api` or `medconnect/production/api`)
@@ -128,15 +129,51 @@ npm run migration:run
    must not invent a second identity model; it does refresh the live telehealth appointment
    window. Treat hosted seed as run-once unless you intend that refresh. Seeded PDF bytes
    write to `DOCUMENT_STORAGE_DIR` on the operator machine and are not the hosted object
-   store (S3 is INFRA-008).
+   store. Hosted demo documents persist after you upload through the HTTPS API; seed metadata
+   may 404 until re-uploaded.
 8. Confirm Secrets Manager still has the RDS-hostname URLs, not the tunnel URL.
 9. Repeat for production with that environment’s secret, RDS address, and admin URL.
 
-After INFRA-008, `GET /ready` against that environment’s API is the hosted health check.
-Until then, a successful `migration:run` against the tunneled admin URL is the check.
+`GET /ready` against that environment’s API (`preview_api_url` / `production_api_url`) is the
+hosted health check after migrate, image push, and ECS tasks are running.
 
 Runtime Nest must keep using `medconnect_app` (`DATABASE_URL`). Owner
 `DATABASE_ADMIN_URL` is migrate/seed only. Pointing runtime at the owner bypasses RLS.
+
+## API image and ECS
+
+Quality CI builds `apps/api/Dockerfile` without AWS credentials. Push on `main` is
+[`.github/workflows/api-image.yml`](../../.github/workflows/api-image.yml). Set GitHub Actions
+repository variable `AWS_PRODUCTION_ROLE_ARN` to the `github_production_role_arn` Terraform
+output (optional `AWS_REGION`, default `us-east-1`). Do not store long-lived AWS access keys.
+
+If ECR has no image yet, first apply with `api_desired_count = 0` in `terraform.tfvars`, then:
+
+```bash
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ACCOUNT>.dkr.ecr.us-east-1.amazonaws.com
+docker build -f apps/api/Dockerfile -t <ECR_REPOSITORY_URL>:latest .
+docker push <ECR_REPOSITORY_URL>:latest
+```
+
+Set `api_desired_count = 1` and apply again. Rolling ECS updates from `main` remain INFRA-011.
+Until then, retag/push and bounce the service (or re-apply) after a new digest.
+
+Inspect the task definition: `secrets` must use `valueFrom` JSON keys
+(`…:DATABASE_URL::`, `…:DATABASE_ADMIN_URL::`), not plaintext passwords. Preview and production
+must not share secrets, RDS security groups, or document buckets.
+
+Verify:
+
+```bash
+curl -fsS "$PREVIEW_API_URL/health"
+curl -fsS "$PREVIEW_API_URL/ready"
+curl -fsS "$PRODUCTION_API_URL/health"
+curl -fsS "$PRODUCTION_API_URL/ready"
+```
+
+Login with a seeded demo user uses the existing opaque bearer against that HTTPS origin. Browser
+CORS waits on Amplify origins (INFRA-009); `production_web_origins` / `preview_web_origins` are
+Terraform variables.
 
 ## Rotate `DATABASE_URL` / `DATABASE_ADMIN_URL`
 
@@ -145,11 +182,12 @@ Runtime Nest must keep using `medconnect_app` (`DATABASE_URL`). Owner
    Docker images, Amplify, or GitHub Secrets.
 2. `ALTER ROLE` (or RDS master password) to match. Re-run `ensure:app-role` through the tunnel
    if only the app role password changed.
-3. After ECS exists (INFRA-008), replace or bounce the tasks so they fetch the new version.
+3. Replace or bounce the ECS tasks so they fetch the new secret version.
 4. Retire the old password on the database.
 
 Terraform ignores `secret_string` changes (`lifecycle.ignore_changes`) so rotation does not
 require a Terraform apply.
 
-GitHub OIDC role ARNs, secret-read policy ARNs, and API security group IDs are Terraform
-outputs for INFRA-008 (ECS task role / ENIs) and INFRA-010/INFRA-011 (deploy workflows).
+GitHub OIDC role ARNs, ECR repository URL, HTTPS API URLs, document bucket names, secret-read
+policy ARNs, and API security group IDs are Terraform outputs for operators and for INFRA-010 /
+INFRA-011 deploy workflows.
