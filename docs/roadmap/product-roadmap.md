@@ -1,17 +1,18 @@
 # Product Roadmap
 
 Current ship state is [post-mvp-baseline.md](post-mvp-baseline.md), not the historical labels below.
-Demo milestones M0–M8 are shipped (FE-017–FE-023). Deployment/preview is **M9**
-(close audit found no missing IDs; not closed; INFRA-004–INFRA-012 shipped; INFRA-014
-pending, blocks INFRA-013; INFRA-013 paused). Product-feature work continues.
+Demo milestones M0–M8 are shipped (FE-017–FE-023). Deployment/preview is **M9**,
+**PAUSED / BLOCKED** — AWS account unavailable (close audit found no missing IDs; not closed;
+not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013
+paused). Next product module is **M10**. Local product work does not wait on AWS.
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
 expansion is still unshipped.
 
 ## Portfolio MVP
 
-Shipped as M0–M3 plus basic audit. Basic analytics remain mock overview cards only (frontend
-Slice 2; no Nest `GET /dashboard/overview`).
+Shipped as M0–M3 plus basic audit. Basic analytics remain mock overview cards only until
+**M10** (BE-011, FE-024).
 
 - authentication;
 - dashboard shell;
@@ -28,7 +29,7 @@ cloud).
 - EHR foundation;
 - telehealth foundation (session shell, not live media);
 - billing foundation (invoices; payments/claims labeled boundaries);
-- administration (users + audit viewer; no role PATCH);
+- administration (users + audit viewer; role PATCH is M10 / BE-013);
 - security hardening (partial: RBAC, RLS, document ACL, audit);
 - observability (deferred with M9 deploy/preview).
 

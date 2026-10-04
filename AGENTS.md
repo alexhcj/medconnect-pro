@@ -3,10 +3,11 @@
 Canonical documentation: `/docs`. Product capability catalog:
 [docs/product/](docs/product/README.md) (statused; not tasks). Current demo position: M0–M7
 shipped; M8 marketing site shipped (FE-017–FE-023)
-([docs/roadmap/post-mvp-baseline.md](docs/roadmap/post-mvp-baseline.md)). Next after M8 is
-**M9 — Deployment / preview infrastructure** (close audit found no missing IDs; not closed;
-INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused).
-Product-feature work continues.
+([docs/roadmap/post-mvp-baseline.md](docs/roadmap/post-mvp-baseline.md)). **M9 — Deployment /
+preview infrastructure** is **PAUSED / BLOCKED** — AWS account setup unavailable (close audit
+found no missing IDs; not closed; not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending,
+blocks INFRA-013; INFRA-013 paused). Next product module is **M10** (DATA-002, BE-011, FE-024,
+BE-012, FE-025, BE-013, FE-026). Local product work does not wait on AWS.
 
 Frontend application: `apps/web`.
 Backend application: `apps/api` (NestJS 12 platform; OpenAPI via `npm run openapi:generate`).

@@ -40,6 +40,9 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-021 — Platform feature pages
 - FE-022 — Security, About, and Demo pages
 - FE-023 — Marketing polish and product visuals
+- FE-024 — Live dashboard overview
+- FE-025 — Notifications UI
+- FE-026 — Role assignment UI
 
 ## Backend
 
@@ -51,6 +54,10 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-007 — Billing API
 - BE-008 — Notification domain
 - BE-010 — Practice user directory HTTP
+- DATA-002 — Bounded synthetic seed for live analytics and inbox
+- BE-011 — Dashboard overview API
+- BE-012 — Notification producers (in-process)
+- BE-013 — Role assignment HTTP
 
 ## Security
 
@@ -77,3 +84,13 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - INFRA-012 — GitHub v1.0.0 release-notes template
 - INFRA-014 — AWS account setup and hosted first-apply
 - INFRA-013 — v1.0.0 production release readiness
+
+## Product (M10)
+
+- DATA-002 — Bounded synthetic seed for live analytics and inbox
+- BE-011 — Dashboard overview API
+- FE-024 — Live dashboard overview
+- BE-012 — Notification producers (in-process)
+- FE-025 — Notifications UI
+- BE-013 — Role assignment HTTP
+- FE-026 — Role assignment UI

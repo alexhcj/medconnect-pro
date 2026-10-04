@@ -144,13 +144,14 @@ Application version **0.59.0**. Snapshot:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md).
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).
-- **M9 — Deployment / preview infrastructure** is not closed: INFRA-004–INFRA-012 shipped,
-  INFRA-014 pending (blocks INFRA-013), INFRA-013 paused.
-- Product-feature work continues.
+- **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** — AWS account setup
+  unavailable. Not closed and not cancelled: INFRA-004–INFRA-012 shipped, INFRA-014 pending
+  (blocks INFRA-013), INFRA-013 paused.
+- Next product module is **M10**. Local product work does not wait on AWS.
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live
-video, hosted payments and claims, notifications UI, live dashboard analytics API, Redis, and
-HIPAA certification (out of scope for this demo).
+video, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
+M10 (pending) owns notifications UI, live dashboard analytics API, and role assignment HTTP.
 
 ## Deployment / demo
 
@@ -324,7 +325,7 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | [`docs/architecture/`](./docs/architecture/) | System structure |
 | [`docs/decisions/`](./docs/decisions/) | Architectural decision records |
 | [`docs/contracts/`](./docs/contracts/) | API, identity, and environment contracts |
-| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot; M9 position |
+| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot; M9 paused; M10 next |
 
 Process prompts, tasks, and remaining workflows are linked from
 [`docs/README.md`](./docs/README.md). Plane can mirror task metadata; Git remains canonical for

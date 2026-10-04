@@ -12,14 +12,18 @@ Slices below are sequencing, not a calendar independent of
 - loading/error patterns;
 - dashboard shell (FE-001; shipped with M0).
 
-## Slice 2 — Dashboard product surfaces (deferred)
+## Slice 2 — Dashboard product surfaces (M10)
 
-Not closed with M0–M7. No task IDs yet. Live Nest `GET /dashboard/overview` does not exist; mock
-mode still renders overview cards.
+Not closed with M0–M7. Owned by **M10**. Mock mode still renders overview cards until FE-024.
 
-- analytics;
-- notifications UI (BE-008 HTTP exists; frontend unwired);
-- alert banners.
+- analytics API and live cards ([BE-011](../tasks/backend/BE-011-dashboard-overview-api.md),
+  [FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md));
+- bounded seed ([DATA-002](../tasks/backend/DATA-002-bounded-synthetic-seed.md));
+- notifications UI ([FE-025](../tasks/frontend/FE-025-notifications-ui.md); BE-008 HTTP exists;
+  [BE-012](../tasks/backend/BE-012-notification-producers.md) producers);
+- role assignment UI is Slice 8 follow-on ([FE-026](../tasks/frontend/FE-026-role-assignment-ui.md)),
+  not this slice;
+- alert banners remain unscheduled.
 
 ## Slice 3 — Patient management (M2)
 
@@ -48,7 +52,9 @@ mode still renders overview cards.
 ## Slice 8 — Settings and security administration (M7)
 
 - FE-009;
-- administration UI against the Nest admin APIs (FE-016).
+- administration UI against the Nest admin APIs (FE-016);
+- role assignment UI ([FE-026](../tasks/frontend/FE-026-role-assignment-ui.md); M10, depends on
+  [BE-013](../tasks/backend/BE-013-role-assignment-http.md)).
 
 ## Slice 9 — Responsive polish
 
@@ -64,5 +70,7 @@ mode still renders overview cards.
 - `/platform/*` feature pages ([FE-021](../tasks/frontend/FE-021-platform-feature-pages.md), shipped).
 - Security, About, and Demo ([FE-022](../tasks/frontend/FE-022-security-about-and-demo-pages.md), shipped).
 - Polish and product visuals ([FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md), shipped).
-- Deploy/preview is **M9** (close audit found no missing IDs; not closed; INFRA-004–INFRA-012
-  shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). Product-feature work continues.
+- Deploy/preview is **M9**, **PAUSED / BLOCKED** — AWS account unavailable (close audit found no
+  missing IDs; not closed; not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks
+  INFRA-013; INFRA-013 paused). Next product module is **M10**. Local product work does not wait
+  on AWS.

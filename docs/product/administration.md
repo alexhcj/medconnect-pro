@@ -6,11 +6,12 @@ area: administration
 marketing_path: /platform/administration
 status: partial
 claim: "User directory and audit viewer. Role PATCH is not shipped."
-related_tasks: [FE-009, FE-016, BE-010]
+related_tasks: [FE-009, FE-016, BE-010, BE-013, FE-026]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md
   - ../roadmap/post-mvp-baseline.md
+  - ../roadmap/release-roadmap.md
 capabilities:
   - id: administration.user-directory
     name: Browse practice users
@@ -29,19 +30,23 @@ capabilities:
     status: planned
     demo: role PATCH is not shipped
     public: no
-    related_tasks: []
+    planned_next: M10 BE-013 / FE-026
+    related_tasks: [BE-013, FE-026]
   - id: administration.security-events-http
     name: Security-events HTTP
     status: planned
     demo: not shipped
     public: no
+    planned_next: M11
     related_tasks: []
 ---
 
 # Administration
 
-User directory and audit viewer as implemented. Do not claim role assignment HTTP or
-security-events HTTP.
+User directory and audit viewer as implemented. Do not claim role assignment HTTP until **M10**
+([BE-013](../tasks/backend/BE-013-role-assignment-http.md),
+[FE-026](../tasks/frontend/FE-026-role-assignment-ui.md)) ships. Security-events HTTP remains
+**M11**.
 
 | ID | Name | Status | Demo | Public |
 | --- | --- | --- | --- | --- |

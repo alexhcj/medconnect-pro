@@ -12,11 +12,13 @@ task files plus M8 (FE-017–FE-023) are `implemented` or `completed`. M8 market
 FE-017–FE-023 (0.45.0–0.51.1). Public copy must follow
 [docs/product/](../product/README.md) and
 [capability-matrix.md](../marketing/capability-matrix.md). Deployment and preview environments are
-**M9**. Close audit found no missing task IDs; M9 is **not closed**.
+**M9**, **PAUSED / BLOCKED** — AWS account setup unavailable. Close audit found no missing task
+IDs; M9 is **not closed** and **not cancelled**.
 [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)
 are shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
 is pending and blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
-which remains paused. Product-feature work continues. Not part of M8.
+which remains paused. Next product module is **M10** (DATA-002, BE-011, FE-024, BE-012, FE-025,
+BE-013, FE-026; pending). Local product work does not wait on AWS. Not part of M8.
 
 ## Actually complete
 
@@ -43,9 +45,10 @@ which remains paused. Product-feature work continues. Not part of M8.
 
 - Production OAuth 2.0 / OIDC + PKCE ([ADR-003](../decisions/ADR-003-authentication.md))
 - Live video / Daily / Socket.IO
-- Payments, claims submission, role assignment HTTP, security-events HTTP
-- Notifications UI; dashboard analytics API (`GET /dashboard/overview`)
-- Hosted AWS first-apply (INFRA-014; blocks INFRA-013)
+- Payments, claims submission, security-events HTTP
+- Role assignment HTTP, notifications UI, and dashboard analytics API — **M10** pending tasks
+  (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026)
+- Hosted AWS first-apply (INFRA-014; blocks INFRA-013; M9 paused)
 - `v1.0.0` production-release gate (INFRA-013; paused until INFRA-014)
 - Redis, custom KMS hierarchy
 - HIPAA certification
@@ -55,7 +58,7 @@ which remains paused. Product-feature work continues. Not part of M8.
 - Dual mock/live frontend is intentional.
 - Frontend role/nav checks are UX only; Nest authorization is authoritative.
 - Live dashboard overview is **not** integrated (cookie BFF + missing Nest route). Treat that as
-  frontend Slice 2 / deferred analytics, not as a silent M0–M7 failure.
+  **M10** (BE-011 / FE-024), not as a silent M0–M7 failure.
 - Workspace package versions (`apps/web`, `apps/api`) may differ from the root version (ADR-007).
 
 ## Marketing claim rules

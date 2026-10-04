@@ -6,12 +6,14 @@ implementation contracts.
 
 **Current position:** M0–M8 are shipped ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)
 through [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md)). Baseline:
-[post-mvp-baseline.md](post-mvp-baseline.md). **M9 — Deployment / preview infrastructure** is in
-progress and **not closed**. Close audit found no missing task IDs.
+[post-mvp-baseline.md](post-mvp-baseline.md). **M9 — Deployment / preview infrastructure** is
+**PAUSED / BLOCKED** — AWS account setup unavailable. It is **not closed** and **not cancelled**.
 [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)
 (shipped), [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
 (pending; blocks INFRA-013), [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
-(pending, paused). Product-feature work continues. Preview/production hosting remains M9, not M8.
+(pending, paused). Next product module is **M10 — Product Analytics, Notifications & Role
+Administration**. Local product work does not wait on AWS. Resume M9 when the AWS account can be
+configured. Preview/production hosting remains M9, not M8 or M10.
 
 ## Demo milestones
 
@@ -58,9 +60,30 @@ visuals. Not hosted deployment. **Closed** at 0.51.1.
 
 GitHub Actions, Amplify Hosting for Next.js, ECS/Fargate for the NestJS API, isolated
 local / preview / production demo databases, and the `v1.0.0` production-release gate.
-Separate from M8. Close audit found no missing task IDs; M9 is **not closed**. Tasks:
-INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending,
-paused). Product-feature work continues.
+Separate from M8. **PAUSED / BLOCKED** — AWS account setup unavailable. Close audit found no
+missing task IDs; M9 is **not closed** and **not cancelled**. Tasks: INFRA-004–INFRA-012
+(shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused). Do not treat
+Terraform/workflows as a hosted demo. Do not pull AWS work into M10.
+
+### M10 — Product Analytics, Notifications & Role Administration
+
+Live Nest dashboard overview, notification inbox/preferences UI on BE-008, and practice role
+assignment. Local product work while M9 is paused. Tasks: DATA-002, BE-011, FE-024, BE-012,
+FE-025, BE-013, FE-026 (all pending). FE-025 and FE-026 require approved design on those tasks
+before implementation.
+
+### M11 — Application Security & Session Hardening (planned)
+
+Local session/cookie, mock MFA UI, security-events HTTP, and production-gap documentation.
+No task IDs yet. Not an AWS/infrastructure milestone.
+
+### M12 — Telehealth Media Maturity (planned)
+
+Daily/WebRTC on the shipped session shell. No task IDs yet.
+
+### M13 — Billing / Payments UX (planned)
+
+Enable the existing Nest payment adapter and claims envelope in the UI. No task IDs yet.
 
 ## Milestone crosswalk
 
@@ -79,7 +102,8 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M6 Billing | FE-008, BE-007, FE-015 | Frontend billing mocks may start after FE-010. Billing API waits on BE-009. FE-015 connects the shipped dashboard to that API. |
 | M7 Administration | FE-009, FE-016, BE-010, SEC-002, SEC-004, QA-004, BE-008 as needed | User directory HTTP plus admin UI on Nest. Isolation hardening and authorization matrix remain. BE-008 is the notifications domain, not admin UI. **Closed** at 0.44.0. |
 | M8 Marketing website and visual language | FE-017–FE-023 (shipped) | Public marketing site and shared visual language. Deploy/preview is M9. **Closed** at 0.51.1. |
-| M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed. Product-feature work continues. Do not pull into M8. |
+| M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. |
+| M10 Product Analytics, Notifications & Role Administration | DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026 (pending) | Live overview API, notification producers + UI, role PATCH + UI. Bounded seed. No Redis, OAuth, Daily, Stripe, or AWS. FE-025/FE-026 wait on design approval. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

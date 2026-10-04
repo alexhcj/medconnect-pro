@@ -69,9 +69,10 @@ Documents are a separate access-control boundary ([SEC-004](../tasks/security/SE
 
 ## Dashboard
 
-Planned analytics surface (frontend Slice 2). **Not implemented** in Nest. Live Next.js
-`/api/dashboard/overview` is a leftover BFF that expects a cookie token and a Nest route that does
-not exist. Mock mode renders overview cards from fixtures.
+Planned analytics surface (**M10** [BE-011](../tasks/backend/BE-011-dashboard-overview-api.md),
+[FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md)). **Not implemented** in Nest. Live
+Next.js `/api/dashboard/overview` is a leftover BFF that expects a cookie token and a Nest route
+that does not exist. Mock mode renders overview cards from fixtures. FE-024 deletes that BFF.
 
 - `GET /dashboard/overview` — planned; not a current controller
 
@@ -100,8 +101,9 @@ Do not send card or bank account numbers. `GET /billing/claims` is not claim sub
 ## Notifications
 
 In-app inbox and channel preferences for the authenticated user. There is no client `POST` to
-create notifications; other domains enqueue internally when they exist. Email/SMS are adapter
-boundaries, not live carriers ([BE-008](../tasks/backend/BE-008-notification-domain.md)).
+create notifications; other domains enqueue internally when they exist
+([BE-012](../tasks/backend/BE-012-notification-producers.md) is the M10 appointment producer).
+Email/SMS are adapter boundaries, not live carriers ([BE-008](../tasks/backend/BE-008-notification-domain.md)).
 
 - `GET /notifications`
 - `PATCH /notifications/:id/read`
@@ -112,8 +114,8 @@ boundaries, not live carriers ([BE-008](../tasks/backend/BE-008-notification-dom
 
 - `GET /admin/users`
 - `GET /admin/audit-events`
-- `PATCH /admin/users/:id/roles` — planned; not implemented
-- `GET /admin/security-events` — planned; not implemented
+- `PATCH /admin/users/:id/roles` — planned (**M10** [BE-013](../tasks/backend/BE-013-role-assignment-http.md)); not implemented
+- `GET /admin/security-events` — planned (M11); not implemented
 
 ## API conventions
 
