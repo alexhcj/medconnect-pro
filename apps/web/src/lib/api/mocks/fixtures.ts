@@ -11,6 +11,7 @@ import appointmentsFixture from '@docs/mocks/appointments.json';
 import invoicesFixture from '@docs/mocks/invoices.json';
 import adminUsersFixture from '@docs/mocks/admin-users.json';
 import auditEventsFixture from '@docs/mocks/audit-events.json';
+import notificationsFixture from '@docs/mocks/notifications.json';
 import {Invoice} from '@/types/billing/invoice';
 import type {PracticeUser} from '@/types/admin/practice-user';
 import type {AuditEvent} from '@/types/admin/audit-event';
@@ -24,6 +25,7 @@ import {HistoryEntry} from '@/types/medical/history';
 import {PatientDocument} from '@/types/medical/document';
 import {DashboardMetric} from '@/types/dashboard/overview';
 import type {Role} from '@/types/auth/roles';
+import type {InboxNotification, InboxNotificationType} from '@/types/notifications/inbox';
 
 export interface DemoUserFixture {
 	email: string;
@@ -47,3 +49,17 @@ export const fixtureDashboardMetrics = dashboardFixture.metrics as DashboardMetr
 export const fixtureInvoices = invoicesFixture.invoices as Array<Omit<Invoice, 'patientName'>>;
 export const fixtureAdminUsers = adminUsersFixture.users as PracticeUser[];
 export const fixtureAuditEvents = auditEventsFixture.events as AuditEvent[];
+
+export interface InboxNotificationFixture extends InboxNotification {
+	recipientUserId: string;
+}
+
+export const fixtureInboxNotifications = notificationsFixture.notifications.map((item) => ({
+	id: item.id,
+	recipientUserId: item.recipientUserId,
+	type: item.type as InboxNotificationType,
+	title: item.title,
+	body: item.body,
+	readAt: item.readAt,
+	createdAt: item.createdAt,
+})) as InboxNotificationFixture[];

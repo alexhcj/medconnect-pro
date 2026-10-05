@@ -113,9 +113,7 @@ describe('capability-matrix copy', () => {
 
 		rerender(<MarketingFeaturePage slug="analytics" />);
 		expect(screen.getByText('Synthetic demo aggregates. Not a warehouse or HIPAA analytics.')).toBeInTheDocument();
-		expect(
-			screen.getByText(/Do not present a notification center as shipped/),
-		).toBeInTheDocument();
+		expect(screen.getByText('Extra chart widgets remain unscheduled.')).toBeInTheDocument();
 
 		rerender(<MarketingFeaturePage slug="administration" />);
 		expect(screen.getByText('Role PATCH is not shipped.')).toBeInTheDocument();

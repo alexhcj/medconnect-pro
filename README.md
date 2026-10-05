@@ -76,8 +76,8 @@ What you can demonstrate **today**. Statused catalog:
 | Administration | User directory and audit viewer | No role assignment HTTP or security-events HTTP |
 | Security | Server-side RBAC, tenant isolation (including RLS), audit logging, document ACL | Not HIPAA certification |
 
-Notification **domain HTTP** exists on Nest. There is no in-app notification center; do not
-present one as shipped.
+Notification **in-app inbox** exists on the dashboard Bell (session user only). It is not push,
+SMS, or email delivery.
 
 ## Tech stack
 
@@ -151,8 +151,8 @@ Application version **0.59.0**. Snapshot:
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live
 video, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
-M10 owns notifications UI and role assignment HTTP (DATA-002, BE-011, and FE-024 live dashboard
-overview are shipped).
+M10 owns role assignment HTTP and UI (DATA-002, BE-011, FE-024, BE-012, and FE-025
+notification center are shipped).
 
 ## Deployment / demo
 

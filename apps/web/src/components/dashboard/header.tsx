@@ -1,7 +1,8 @@
 'use client';
 
-import {Bell, LogOut, Menu, User} from 'lucide-react';
+import {LogOut, Menu, User} from 'lucide-react';
 import {Button} from '@/components/ui/button';
+import {NotificationCenter} from '@/components/notifications/notification-center';
 import {useLogout} from '@/lib/hooks/use-session';
 
 interface HeaderProps {
@@ -29,9 +30,7 @@ export function Header({onOpenMobileNav, mobileNavOpen}: HeaderProps) {
 				</Button>
 				<div className="hidden lg:block" />
 				<div className="ml-auto flex items-center gap-2">
-					<Button type="button" variant="ghost" size="icon" aria-label="Notifications">
-						<Bell className="h-5 w-5" aria-hidden />
-					</Button>
+					<NotificationCenter />
 					<Button type="button" variant="ghost" size="icon" aria-label="Account">
 						<User className="h-5 w-5" aria-hidden />
 					</Button>

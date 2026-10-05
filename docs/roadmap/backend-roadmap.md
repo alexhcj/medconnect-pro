@@ -13,7 +13,7 @@ Domain order (not historical ship order). Join to demo milestones in the
 8. Telehealth (BE-006).
 9. Billing (BE-007).
 10. Notifications (BE-008 shipped; [BE-012](../tasks/backend/BE-012-notification-producers.md)
-    producers shipped; FE-025 UI is M10).
+    producers shipped; [FE-025](../tasks/frontend/FE-025-notifications-ui.md) UI shipped).
 11. Analytics ([BE-011](../tasks/backend/BE-011-dashboard-overview-api.md) `GET /dashboard/overview`;
     M10, shipped. Seed: [DATA-002](../tasks/backend/DATA-002-bounded-synthetic-seed.md)).
 12. Administration/compliance (SEC-002–004, QA-004, BE-010 user directory HTTP; shipped in M7).
@@ -27,5 +27,5 @@ M0–M7 domain HTTP listed above is in the repository. M8 is frontend marketing 
 not a new backend domain. **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** —
 AWS account unavailable (close audit found no missing IDs; not closed; not cancelled;
 INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). Next
-product module is **M10** (DATA-002, BE-011, FE-024, BE-012 shipped; BE-013, FE-025, FE-026 pending). Local product
+product module is **M10** (DATA-002, BE-011, FE-024, BE-012, FE-025 shipped; BE-013, FE-026 pending). Local product
 work does not wait on AWS.

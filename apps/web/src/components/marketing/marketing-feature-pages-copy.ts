@@ -56,7 +56,7 @@ export const FEATURE_PAGE_METADATA: Record<
 	analytics: {
 		title: 'Analytics',
 		description:
-			'Live dashboard overview cards from Nest GET /dashboard/overview. Synthetic demo aggregates, not a warehouse. Not a notification center.',
+			'Live dashboard overview cards from Nest GET /dashboard/overview. Synthetic demo aggregates, not a warehouse.',
 	},
 	administration: {
 		title: 'Administration',
@@ -359,7 +359,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			headingId: 'analytics-hero-heading',
 			eyebrow: 'Analytics · demo cards',
 			heading: 'Dashboard overview as it exists',
-			body: 'Live dashboard overview cards from Nest GET /dashboard/overview. Synthetic demo aggregates only. Not a warehouse. Do not present a notification center as shipped.',
+			body: 'Live dashboard overview cards from Nest GET /dashboard/overview. Synthetic demo aggregates only. Not a warehouse.',
 			...FEATURE_PAGE_HERO_CTAS,
 		},
 		capabilities: {
@@ -376,7 +376,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 				},
 				{
 					title: 'Limits',
-					description: 'Extra chart widgets remain unscheduled. Not a notification center.',
+					description: 'Extra chart widgets remain unscheduled.',
 				},
 			],
 		},

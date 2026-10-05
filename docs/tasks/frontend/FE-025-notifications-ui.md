@@ -3,7 +3,7 @@ id: FE-025
 type: task
 area: frontend
 feature: notifications
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-001, BE-008, BE-012, DATA-002]
@@ -20,11 +20,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd"
+  frame: "App / Notifications — 07 Inbox popover — populated (111:9)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -92,13 +92,13 @@ Implements / extends `notifications.notification-center`.
 
 ## Acceptance Criteria
 
-- [ ] `design.status` is `approved` with `file_url` and `frame` before implementation
-- [ ] With mocks off, Bell opens an inbox that lists Nest notifications for the session user
-- [ ] Mark-read persists (item reflects read on refresh)
-- [ ] Preferences GET/PATCH round-trip against Nest
-- [ ] Other-user notifications never appear
-- [ ] One non-mock browser check: practice admin sees a non-empty inbox after DATA-002 seed
-- [ ] Product catalog + capability matrix no longer say “do not present a notification center”
+- [x] `design.status` is `approved` with `file_url` and `frame` before implementation
+- [x] With mocks off, Bell opens an inbox that lists Nest notifications for the session user
+- [x] Mark-read persists (item reflects read on refresh)
+- [x] Preferences GET/PATCH round-trip against Nest
+- [x] Other-user notifications never appear
+- [x] One non-mock browser check: practice admin sees a non-empty inbox after DATA-002 seed
+- [x] Product catalog + capability matrix no longer say “do not present a notification center”
   without the shipped limits (still not push/SMS carriers)
 
 ## Dependencies
@@ -108,8 +108,9 @@ Implements / extends `notifications.notification-center`.
 - Design brief via [design-brief-prompt.md](../../processes/prompts/design-brief-prompt.md) on
   **this** task. Do not create a separate design task.
 
-Figma (shared library; fill `file_url` / `frame` when approved):
-https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+Figma (shared library; approved page **App / Notifications**, primary frame
+`07 Inbox popover — populated` / `111:9`):
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=111-9
 
 ## Validation
 
@@ -124,13 +125,22 @@ https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 
 ## Implementation notes
 
-Suggested order: after DATA-002 and BE-008; BE-012 preferred. Blocked on design approval.
+Suggested order: after DATA-002 and BE-008; BE-012 preferred. Design is approved on this
+task; implementation may proceed via the plan-mode prompt.
 
-Writing this spec is not a version bump.
+Writing this spec is not a version bump. Design-metadata approval is not a version bump.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Dashboard Bell opens a self-scoped inbox (`GET /notifications`) with mark-read
+  (`PATCH /notifications/:id/read`) and in-panel channel preferences
+  (`GET/PATCH /notifications/preferences`). Desktop (`lg+`) uses Headless UI Popover; below `lg`
+  uses a full-screen Dialog. Live Nest client via `apiFetch` + Bearer; mock fixtures for
+  `NEXT_PUBLIC_USE_MOCKS=true`. No new route. No `practiceId` on the client. No ui-store.
+- Tests: Vitest for RDO mapping, live client URLs/Bearer, mock mark-read/self-scope, format
+  helpers, and NotificationCenter RTL. `apps/web/e2e/notifications-live.spec.ts` for practice
+  admin non-empty inbox, absent provider titles, mark-read, and preferences round-trip. Mock
+  Playwright stays on mocks.
 - PR:
-- Notes: Pending M10 implementation. Design not started.
+- Notes: Version 0.63.0 → 0.64.0 (MINOR, new in-app inbox). Not push/SMS/email carriers.
+  `npm run e2e:live -- notifications-live` passed against seeded Nest on this machine.

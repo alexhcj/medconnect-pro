@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.64.0] - 2026-10-05
+
+### Added
+
+- In-app notification center (FE-025): dashboard Bell opens a self-scoped inbox from Nest
+  `GET /notifications`, mark-read, and channel preferences. Desktop uses a header popover;
+  below `lg` uses a full-screen dialog. Not push, SMS, or email carriers. Synthetic demo data
+  only; never real PHI.
+
 ## [0.63.0] - 2026-10-05
 
 ### Added

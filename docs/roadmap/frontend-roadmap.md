@@ -19,8 +19,8 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - analytics API ([BE-011](../tasks/backend/BE-011-dashboard-overview-api.md), shipped) and live
   cards ([FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md), shipped);
 - bounded seed ([DATA-002](../tasks/backend/DATA-002-bounded-synthetic-seed.md), shipped);
-- notifications UI ([FE-025](../tasks/frontend/FE-025-notifications-ui.md); BE-008 HTTP exists;
-  [BE-012](../tasks/backend/BE-012-notification-producers.md) producers shipped);
+- notifications UI ([FE-025](../tasks/frontend/FE-025-notifications-ui.md), shipped; BE-008 HTTP
+  exists; [BE-012](../tasks/backend/BE-012-notification-producers.md) producers shipped);
 - role assignment UI is Slice 8 follow-on ([FE-026](../tasks/frontend/FE-026-role-assignment-ui.md)),
   not this slice;
 - alert banners remain unscheduled.

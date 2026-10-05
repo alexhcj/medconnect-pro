@@ -83,7 +83,7 @@ what a visitor or interviewer can see **today**.
 | Telehealth | partial | `/platform/telehealth` | [telehealth.md](telehealth.md) |
 | Billing | partial | `/platform/billing` | [billing.md](billing.md) |
 | Analytics | partial | `/platform/analytics` | [analytics.md](analytics.md) |
-| Notifications | partial | none (do not present a notification center) | [notifications.md](notifications.md) |
+| Notifications | partial | none | [notifications.md](notifications.md) |
 | Administration | partial | `/platform/administration` | [administration.md](administration.md) |
 | Security | shipped | `/security` | [security.md](security.md) |
 

@@ -22,6 +22,32 @@ vi.mock('@/lib/api/mocks/runtime', () => ({
 	isMockMode: () => true,
 }));
 
+vi.mock('@/lib/hooks/use-notifications', () => ({
+	useNotificationInbox: () => ({
+		data: [],
+		isPending: false,
+		isError: false,
+		isSuccess: true,
+		refetch: vi.fn(),
+	}),
+	useMarkNotificationRead: () => ({
+		mutate: vi.fn(),
+		isPending: false,
+	}),
+	useNotificationPreferences: () => ({
+		data: {inAppEnabled: true, emailEnabled: true, smsEnabled: true},
+		isPending: false,
+		isError: false,
+		refetch: vi.fn(),
+	}),
+	useUpdateNotificationPreferences: () => ({
+		mutate: vi.fn(),
+		isPending: false,
+		isError: false,
+		isSuccess: false,
+	}),
+}));
+
 describe('DashboardShell', () => {
 	it('renders skip navigation, header, labelled primary nav, and main content', () => {
 		render(

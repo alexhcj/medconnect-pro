@@ -1,0 +1,76 @@
+{
+	"notifications": [
+		{
+			"id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+			"recipientUserId": "user_mock_practice_admin",
+			"type": "generic",
+			"title": "Seeded inbox: census reminder",
+			"body": "Harbor Synthetic Practice has new demo patients ready for the overview cards.",
+			"readAt": null,
+			"createdAt": "2026-10-05T16:00:00.000Z"
+		},
+		{
+			"id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+			"recipientUserId": "user_mock_practice_admin",
+			"type": "generic",
+			"title": "Seeded inbox: schedule digest",
+			"body": "Today’s seeded office visit is on the calendar for the live dashboard.",
+			"readAt": null,
+			"createdAt": "2026-10-05T13:00:00.000Z"
+		},
+		{
+			"id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3",
+			"recipientUserId": "user_mock_practice_admin",
+			"type": "generic",
+			"title": "Seeded inbox: billing summary",
+			"body": "Current-month demo invoices are posted so monthly revenue is non-zero.",
+			"readAt": null,
+			"createdAt": "2026-10-04T18:00:00.000Z"
+		},
+		{
+			"id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa4",
+			"recipientUserId": "user_mock_practice_admin",
+			"type": "appointment_changed",
+			"title": "Appointment scheduled",
+			"body": "A visit was added to your schedule.",
+			"readAt": "2026-10-04T12:00:00.000Z",
+			"createdAt": "2026-10-04T12:00:00.000Z"
+		},
+		{
+			"id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1",
+			"recipientUserId": "user_mock_provider",
+			"type": "generic",
+			"title": "Seeded inbox: today's visits",
+			"body": "A live telehealth window and a same-day office visit are on your schedule.",
+			"readAt": null,
+			"createdAt": "2026-10-05T15:00:00.000Z"
+		},
+		{
+			"id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2",
+			"recipientUserId": "user_mock_provider",
+			"type": "generic",
+			"title": "Seeded inbox: follow-up queue",
+			"body": "Upcoming seeded follow-ups are assigned to Jordan Ellis.",
+			"readAt": null,
+			"createdAt": "2026-10-05T14:00:00.000Z"
+		},
+		{
+			"id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb3",
+			"recipientUserId": "11111111-1111-4111-8111-111111111111",
+			"type": "generic",
+			"title": "Seeded inbox: today's visits",
+			"body": "A live telehealth window and a same-day office visit are on your schedule.",
+			"readAt": null,
+			"createdAt": "2026-10-05T15:00:00.000Z"
+		},
+		{
+			"id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb4",
+			"recipientUserId": "11111111-1111-4111-8111-111111111111",
+			"type": "generic",
+			"title": "Seeded inbox: follow-up queue",
+			"body": "Upcoming seeded follow-ups are assigned to Jordan Ellis.",
+			"readAt": null,
+			"createdAt": "2026-10-05T14:00:00.000Z"
+		}
+	]
+}
