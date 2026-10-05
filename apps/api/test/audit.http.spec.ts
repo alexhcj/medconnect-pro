@@ -10,6 +10,8 @@ import {configureApp} from '../src/platform/configure-app.js';
 import {Appointment} from '../src/persistence/entities/appointment.entity.js';
 import {AuditEvent} from '../src/persistence/entities/audit-event.entity.js';
 import {AuthSession} from '../src/persistence/entities/auth-session.entity.js';
+import {NotificationPreference} from '../src/persistence/entities/notification-preference.entity.js';
+import {Notification} from '../src/persistence/entities/notification.entity.js';
 import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
@@ -156,6 +158,8 @@ describe('audit HTTP', () => {
 		const userIds = users.map((user) => user.id);
 		if (practiceIds.length > 0) {
 			await dataSource.getRepository(AuditEvent).delete({practiceId: In(practiceIds)});
+			await dataSource.getRepository(Notification).delete({practiceId: In(practiceIds)});
+			await dataSource.getRepository(NotificationPreference).delete({practiceId: In(practiceIds)});
 			await dataSource.getRepository(Appointment).delete({practiceId: In(practiceIds)});
 		}
 		if (userIds.length > 0) {

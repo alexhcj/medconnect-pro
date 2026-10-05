@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.63.0] - 2026-10-05
+
+### Added
+
+- Appointment notification producers (BE-012): creating, cancelling, or deleting an appointment
+  enqueues `appointment_changed` in-app (and preference-enabled email/SMS) rows for the assigned
+  provider and, when linked, the patient’s portal user. `NotificationService.enqueue` audits
+  `notification.enqueued` without title or body. No client `POST /notifications`, Redis, SNS, or
+  SQS. Notification-center UI remains FE-025. Synthetic demo data only; never real PHI.
+
 ## [0.62.0] - 2026-10-05
 
 ### Added

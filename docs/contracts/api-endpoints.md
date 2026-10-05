@@ -103,8 +103,8 @@ Do not send card or bank account numbers. `GET /billing/claims` is not claim sub
 ## Notifications
 
 In-app inbox and channel preferences for the authenticated user. There is no client `POST` to
-create notifications; other domains enqueue internally when they exist
-([BE-012](../tasks/backend/BE-012-notification-producers.md) is the M10 appointment producer).
+create notifications; appointment create, cancel, and delete enqueue internally
+([BE-012](../tasks/backend/BE-012-notification-producers.md)).
 Email/SMS are adapter boundaries, not live carriers ([BE-008](../tasks/backend/BE-008-notification-domain.md)).
 
 - `GET /notifications`

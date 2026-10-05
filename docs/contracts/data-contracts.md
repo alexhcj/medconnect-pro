@@ -253,7 +253,9 @@ The current Nest adapter is an in-process `DeliveryBus` (no AWS SDK).
   injected clock.
 - **Dead letter:** after max attempts, persist `status = failed`. There is no AWS DLQ.
 
-Appointment reminder jobs stay out of scope ([BE-004](../tasks/backend/BE-004-appointment-api.md)).
+Appointment create, cancel, and delete enqueue in-app (and preference-enabled email/SMS)
+notifications through [BE-012](../tasks/backend/BE-012-notification-producers.md). Reminder cron
+jobs stay out of scope.
 
 ## Dashboard overview
 

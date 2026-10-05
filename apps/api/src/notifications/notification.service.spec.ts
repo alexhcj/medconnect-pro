@@ -101,7 +101,7 @@ describe('NotificationService', () => {
 	});
 
 	it('skips disabled channels and enqueues email and SMS when enabled', async () => {
-		const {service, notifications, preferences, bus} = harness();
+		const {service, notifications, preferences, bus, audit} = harness();
 		preferences.getForUser.mockResolvedValue({
 			inAppEnabled: false,
 			emailEnabled: true,
@@ -118,6 +118,45 @@ describe('NotificationService', () => {
 			expect.objectContaining({channel: 'email', status: 'pending'}),
 		);
 		expect(bus.enqueue).toHaveBeenCalledTimes(1);
+		expect(audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: 'notification.enqueued',
+				resourceType: 'notification',
+				resourceId: 'email-id',
+				correlationId: 'cid-notify',
+			}),
+		);
+		expect(JSON.stringify(audit.record.mock.calls[0])).not.toMatch(
+			/Appointment updated|visit time|title|body/i,
+		);
+	});
+
+	it('audits enqueue with a null resource when every channel is skipped', async () => {
+		const {service, notifications, preferences, bus, audit} = harness();
+		preferences.getForUser.mockResolvedValue({
+			inAppEnabled: false,
+			emailEnabled: false,
+			smsEnabled: false,
+		});
+		await service.enqueue({
+			recipientUserId: actorId,
+			type: 'generic',
+			title: 'Appointment updated',
+			body: 'Your visit time changed.',
+		});
+		expect(notifications.create).not.toHaveBeenCalled();
+		expect(bus.enqueue).not.toHaveBeenCalled();
+		expect(audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: 'notification.enqueued',
+				resourceType: 'notification',
+				resourceId: null,
+				correlationId: 'cid-notify',
+			}),
+		);
+		expect(JSON.stringify(audit.record.mock.calls[0])).not.toMatch(
+			/Appointment updated|visit time|title|body/i,
+		);
 	});
 
 	it('rejects a client practice id on preference update and enqueue', async () => {

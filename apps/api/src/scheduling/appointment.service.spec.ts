@@ -10,8 +10,9 @@ import type {PracticeRole} from '../tenancy/practice-role.js';
 import {AppointmentConflictError, AppointmentNotFoundError} from './appointment.errors.js';
 import type {AppointmentRepository} from './appointment.repository.js';
 import type {AuditEventRepository} from '../audit/audit-event.repository.js';
+import type {NotificationService} from '../notifications/notification.service.js';
 import {AppointmentService} from './appointment.service.js';
-import type {AppointmentCreateBody} from './appointment.schema.js';
+import type {AppointmentCreateBody, AppointmentUpdateBody} from './appointment.schema.js';
 
 const actorId = '00000000-0000-4000-8000-000000000010';
 const otherId = '00000000-0000-4000-8000-000000000011';
@@ -76,16 +77,20 @@ function harness(role: PracticeRole, userId = actorId) {
 	const audit = {
 		record: vi.fn().mockResolvedValue({}),
 	};
+	const notificationService = {
+		enqueue: vi.fn().mockResolvedValue(undefined),
+	};
 	const request = {correlationId: 'cid-test'} as never;
 	const service = new AppointmentService(
 		appointments as unknown as AppointmentRepository,
 		patients as unknown as PatientRepository,
 		memberships as unknown as MembershipRepository,
 		audit as unknown as AuditEventRepository,
+		notificationService as unknown as NotificationService,
 		tenant,
 		request,
 	);
-	return {service, appointments, patients, memberships, audit};
+	return {service, appointments, patients, memberships, audit, notificationService};
 }
 
 describe('AppointmentService', () => {
@@ -126,12 +131,14 @@ describe('AppointmentService', () => {
 		const nurse = harness('NURSE');
 		await expect(nurse.service.create(createBody)).rejects.toBeInstanceOf(PermissionDeniedError);
 		expect(nurse.appointments.create).not.toHaveBeenCalled();
+		expect(nurse.notificationService.enqueue).not.toHaveBeenCalled();
 
 		const patient = harness('PATIENT');
 		await expect(patient.service.create(createBody)).rejects.toBeInstanceOf(PermissionDeniedError);
+		expect(patient.notificationService.enqueue).not.toHaveBeenCalled();
 	});
 
-	it('creates an appointment, emits audit, and omits notes from the audit payload', async () => {
+	it('creates an appointment, emits audit, and enqueues recipients without notes', async () => {
 		const receptionist = harness('RECEPTIONIST');
 		const created = await receptionist.service.create(createBody);
 		expect(created.patientName).toBe('Avery Quinn');
@@ -145,6 +152,64 @@ describe('AppointmentService', () => {
 			}),
 		);
 		expect(JSON.stringify(receptionist.audit.record.mock.calls[0])).not.toMatch(/Follow-up|Quinn/);
+		expect(receptionist.notificationService.enqueue).toHaveBeenCalledTimes(2);
+		expect(receptionist.notificationService.enqueue).toHaveBeenCalledWith({
+			recipientUserId: providerId,
+			type: 'appointment_changed',
+			title: 'Appointment scheduled',
+			body: 'A visit was added to your schedule.',
+		});
+		expect(receptionist.notificationService.enqueue).toHaveBeenCalledWith({
+			recipientUserId: actorId,
+			type: 'appointment_changed',
+			title: 'Appointment scheduled',
+			body: 'A visit was added to your schedule.',
+		});
+		expect(JSON.stringify(receptionist.notificationService.enqueue.mock.calls)).not.toMatch(
+			/Follow-up|Quinn|Annual/,
+		);
+	});
+
+	it('enqueues only the provider when the patient has no portal login', async () => {
+		const receptionist = harness('RECEPTIONIST');
+		receptionist.appointments.create.mockResolvedValue(
+			appointmentRow({notes: 'Follow-up', patient: {id: patientId, portalUserId: null} as Patient}),
+		);
+		await receptionist.service.create(createBody);
+		expect(receptionist.notificationService.enqueue).toHaveBeenCalledTimes(1);
+		expect(receptionist.notificationService.enqueue).toHaveBeenCalledWith(
+			expect.objectContaining({recipientUserId: providerId}),
+		);
+	});
+
+	it('enqueues on cancel and delete, but not on a non-cancel update', async () => {
+		const receptionist = harness('RECEPTIONIST');
+		await receptionist.service.update(appointmentId, {state: 'cancelled'} as AppointmentUpdateBody);
+		expect(receptionist.notificationService.enqueue).toHaveBeenCalledTimes(2);
+		expect(receptionist.notificationService.enqueue).toHaveBeenCalledWith(
+			expect.objectContaining({
+				title: 'Appointment cancelled',
+				body: 'A visit was cancelled.',
+			}),
+		);
+
+		const confirmed = harness('RECEPTIONIST');
+		confirmed.appointments.update.mockResolvedValue(appointmentRow({state: 'confirmed'}));
+		await confirmed.service.update(appointmentId, {state: 'confirmed'} as AppointmentUpdateBody);
+		expect(confirmed.notificationService.enqueue).not.toHaveBeenCalled();
+
+		const deleted = harness('RECEPTIONIST');
+		await deleted.service.remove(appointmentId);
+		expect(deleted.notificationService.enqueue).toHaveBeenCalledTimes(2);
+		expect(deleted.notificationService.enqueue).toHaveBeenCalledWith(
+			expect.objectContaining({
+				title: 'Appointment removed',
+				body: 'A visit was removed from the schedule.',
+			}),
+		);
+		expect(JSON.stringify(deleted.notificationService.enqueue.mock.calls)).not.toMatch(
+			/Follow-up|Quinn|Annual/,
+		);
 	});
 
 	it('rejects overlapping provider times', async () => {
@@ -158,5 +223,6 @@ describe('AppointmentService', () => {
 		]);
 		await expect(receptionist.service.create(createBody)).rejects.toBeInstanceOf(AppointmentConflictError);
 		expect(receptionist.appointments.create).not.toHaveBeenCalled();
+		expect(receptionist.notificationService.enqueue).not.toHaveBeenCalled();
 	});
 });

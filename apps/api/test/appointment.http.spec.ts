@@ -10,6 +10,8 @@ import {configureApp} from '../src/platform/configure-app.js';
 import {Appointment} from '../src/persistence/entities/appointment.entity.js';
 import {AuditEvent} from '../src/persistence/entities/audit-event.entity.js';
 import {AuthSession} from '../src/persistence/entities/auth-session.entity.js';
+import {NotificationPreference} from '../src/persistence/entities/notification-preference.entity.js';
+import {Notification} from '../src/persistence/entities/notification.entity.js';
 import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
@@ -132,6 +134,8 @@ describe('appointment HTTP', () => {
 		const userIds = users.map((user) => user.id);
 		if (practiceIds.length > 0) {
 			await dataSource.getRepository(AuditEvent).delete({practiceId: In(practiceIds)});
+			await dataSource.getRepository(Notification).delete({practiceId: In(practiceIds)});
+			await dataSource.getRepository(NotificationPreference).delete({practiceId: In(practiceIds)});
 			await dataSource.getRepository(Appointment).delete({practiceId: In(practiceIds)});
 		}
 		if (userIds.length > 0) {
@@ -535,5 +539,98 @@ describe('appointment HTTP', () => {
 			.set('Authorization', `Bearer ${token}`)
 			.expect(404);
 		expect(missing.body.error.code).toBe('NOT_FOUND');
+	});
+
+	it('enqueues in-app appointment notifications for the provider and portal user without notes', async () => {
+		const token = await login(receptionist.email);
+		await request(app.getHttpServer())
+			.post('/appointments')
+			.set('Authorization', `Bearer ${token}`)
+			.set('X-Correlation-ID', `cid-notify-create-${suffix}`)
+			.send(
+				appointmentBody(patient.id, provider.id, {
+					start: '2026-11-01T14:00:00.000Z',
+					end: '2026-11-01T15:00:00.000Z',
+					notes: 'Producer follow-up',
+				}),
+			)
+			.expect(201);
+
+		const providerToken = await login(provider.email);
+		const providerInbox = await request(app.getHttpServer())
+			.get('/notifications')
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(200);
+		const providerRow = providerInbox.body.notifications.find(
+			(row: {type: string; title: string}) =>
+				row.type === 'appointment_changed' && row.title === 'Appointment scheduled',
+		);
+		expect(providerRow).toMatchObject({
+			synthetic: true,
+			status: 'delivered',
+			body: 'A visit was added to your schedule.',
+		});
+		expect(JSON.stringify(providerInbox.body)).not.toContain('Producer follow-up');
+
+		const portalToken = await login(portalUser.email);
+		const portalInbox = await request(app.getHttpServer())
+			.get('/notifications')
+			.set('Authorization', `Bearer ${portalToken}`)
+			.expect(200);
+		const portalRow = portalInbox.body.notifications.find(
+			(row: {type: string; title: string}) =>
+				row.type === 'appointment_changed' && row.title === 'Appointment scheduled',
+		);
+		expect(portalRow).toMatchObject({synthetic: true, status: 'delivered'});
+
+		const audits = await dataSource.getRepository(AuditEvent).find({
+			where: {practiceId: practiceA.id, action: 'notification.enqueued'},
+		});
+		expect(audits.length).toBeGreaterThan(0);
+		expect(audits.some((event) => event.correlationId === `cid-notify-create-${suffix}`)).toBe(true);
+		expect(JSON.stringify(audits)).not.toMatch(
+			/Appointment scheduled|visit was added|Producer follow-up|title|body/i,
+		);
+	});
+
+	it('skips in-app delivery when the provider disabled that channel', async () => {
+		const providerToken = await login(provider.email);
+		const before = await request(app.getHttpServer())
+			.get('/notifications')
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(200);
+		const beforeIds = before.body.notifications.map((row: {id: string}) => row.id);
+
+		await request(app.getHttpServer())
+			.patch('/notifications/preferences')
+			.set('Authorization', `Bearer ${providerToken}`)
+			.send({inAppEnabled: false})
+			.expect(200);
+
+		const token = await login(receptionist.email);
+		await request(app.getHttpServer())
+			.post('/appointments')
+			.set('Authorization', `Bearer ${token}`)
+			.send(
+				appointmentBody(patient.id, provider.id, {
+					start: '2026-11-02T14:00:00.000Z',
+					end: '2026-11-02T15:00:00.000Z',
+					notes: 'Skipped in-app visit',
+				}),
+			)
+			.expect(201);
+
+		const after = await request(app.getHttpServer())
+			.get('/notifications')
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(200);
+		expect(after.body.notifications.map((row: {id: string}) => row.id)).toEqual(beforeIds);
+		expect(JSON.stringify(after.body)).not.toContain('Skipped in-app visit');
+
+		await request(app.getHttpServer())
+			.patch('/notifications/preferences')
+			.set('Authorization', `Bearer ${providerToken}`)
+			.send({inAppEnabled: true})
+			.expect(200);
 	});
 });

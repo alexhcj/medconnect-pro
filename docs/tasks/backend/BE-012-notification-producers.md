@@ -3,7 +3,7 @@ id: BE-012
 type: task
 area: backend
 feature: notifications
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [BE-008, BE-004]
@@ -17,7 +17,7 @@ related_docs:
     BE-008-notification-domain.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -71,12 +71,12 @@ Implements / extends `notifications.domain-http` (producers). UI remains FE-025.
 
 ## Acceptance Criteria
 
-- [ ] Creating an appointment enqueues at least one in-app notification for a real recipient
+- [x] Creating an appointment enqueues at least one in-app notification for a real recipient
   user in that tenant
-- [ ] Disabled preference channels are not delivered (existing NotificationService behavior)
-- [ ] Audit rows for the producer path omit notification title/body
-- [ ] No Redis, SNS, SQS, or new HTTP POST for clients
-- [ ] HTTP or service tests cover the producer; do not reopen QA-004’s task file
+- [x] Disabled preference channels are not delivered (existing NotificationService behavior)
+- [x] Audit rows for the producer path omit notification title/body
+- [x] No Redis, SNS, SQS, or new HTTP POST for clients
+- [x] HTTP or service tests cover the producer; do not reopen QA-004’s task file
 
 ## Dependencies
 
@@ -104,7 +104,17 @@ Writing this spec is not a version bump.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `SchedulingModule` imports `NotificationsModule`. After a successful appointment
+  persist, `AppointmentService` enqueues `appointment_changed` to the assigned provider and, when
+  set, the patient’s `portalUserId`. Create, cancel (`PATCH` to `cancelled`), and delete are
+  covered; reschedule/`confirmed` are not. Copy is synthetic and omits notes/names/emails.
+  `NotificationService.enqueue` records `notification.enqueued` without title/body. Preference
+  skip, demo email/SMS adapters, and in-process `DeliveryBus` are unchanged. No client
+  `POST /notifications`, Redis, SNS, SQS, or notification AWS SDK. Tenant from the session.
+- Tests: `notification.service.spec.ts` enqueue audit (including all-channels-skipped);
+  `appointment.service.spec.ts` producer recipients/cancel/delete/skip-on-denied;
+  `appointment.http.spec.ts` provider and portal inbox plus preference skip. Telehealth and audit
+  HTTP cleanup delete notification rows. `npm run test:api` (391 passed).
 - PR:
-- Notes: Pending M10 implementation.
+- Notes: Version 0.62.0 → 0.63.0 (MINOR, live appointment producers). Notification-center UI
+  remains FE-025.

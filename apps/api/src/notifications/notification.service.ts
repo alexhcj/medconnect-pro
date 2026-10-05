@@ -80,8 +80,9 @@ export class NotificationService {
 		const {practiceId} = this.tenant.require();
 		rejectMismatchedPracticeId(input.practiceId, practiceId);
 		const prefs = await this.resolvedPreferences(input.recipientUserId);
+		let firstCreatedId: string | null = null;
 		if (prefs.inAppEnabled) {
-			await this.notifications.create({
+			const inApp = await this.notifications.create({
 				recipientUserId: input.recipientUserId,
 				channel: 'in_app',
 				type: input.type,
@@ -91,6 +92,7 @@ export class NotificationService {
 				deliveredAt: this.clock.now(),
 				practiceId: input.practiceId,
 			});
+			firstCreatedId ??= inApp.id;
 		}
 		if (prefs.emailEnabled) {
 			const email = await this.notifications.create({
@@ -102,6 +104,7 @@ export class NotificationService {
 				status: 'pending',
 				practiceId: input.practiceId,
 			});
+			firstCreatedId ??= email.id;
 			await this.bus.enqueue({notificationId: email.id});
 		}
 		if (prefs.smsEnabled) {
@@ -114,8 +117,15 @@ export class NotificationService {
 				status: 'pending',
 				practiceId: input.practiceId,
 			});
+			firstCreatedId ??= sms.id;
 			await this.bus.enqueue({notificationId: sms.id});
 		}
+		await this.audit.record({
+			action: 'notification.enqueued',
+			resourceType: 'notification',
+			resourceId: firstCreatedId,
+			correlationId: getCorrelationId(this.request),
+		});
 	}
 
 	private async resolvedPreferences(userId: string) {

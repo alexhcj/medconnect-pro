@@ -34,6 +34,7 @@ import {
 	type BusyInterval,
 } from './appointment.repository.js';
 import {AuditEventRepository} from '../audit/audit-event.repository.js';
+import {NotificationService} from '../notifications/notification.service.js';
 import {
 	DEMO_AVAILABILITY_TIME_ZONE,
 	DEMO_WORKING_HOURS,
@@ -43,6 +44,21 @@ import {
 
 const AUDIT_RESOURCE = 'appointment';
 
+const APPOINTMENT_SCHEDULED_COPY = {
+	title: 'Appointment scheduled',
+	body: 'A visit was added to your schedule.',
+} as const;
+
+const APPOINTMENT_CANCELLED_COPY = {
+	title: 'Appointment cancelled',
+	body: 'A visit was cancelled.',
+} as const;
+
+const APPOINTMENT_REMOVED_COPY = {
+	title: 'Appointment removed',
+	body: 'A visit was removed from the schedule.',
+} as const;
+
 @Injectable()
 export class AppointmentService {
 	constructor(
@@ -50,6 +66,7 @@ export class AppointmentService {
 		private readonly patients: PatientRepository,
 		private readonly memberships: MembershipRepository,
 		private readonly audit: AuditEventRepository,
+		private readonly notificationService: NotificationService,
 		private readonly tenant: TenantContext,
 		@Inject(REQUEST) private readonly request: Request,
 	) {}
@@ -79,6 +96,7 @@ export class AppointmentService {
 			notes: input.notes ?? null,
 		});
 		await this.recordAudit('appointment.created', row.id);
+		await this.notifyAppointmentChanged(row, APPOINTMENT_SCHEDULED_COPY);
 		return toAppointmentRdo(row);
 	}
 
@@ -90,6 +108,7 @@ export class AppointmentService {
 		const nextStart = input.start ? new Date(input.start) : existing.startAt;
 		const nextEnd = input.end ? new Date(input.end) : existing.endAt;
 		const nextState = input.state ?? existing.state;
+		const cancelling = nextState === 'cancelled' && existing.state !== 'cancelled';
 		if (nextEnd <= nextStart) {
 			throw new InvalidAppointmentTimeError();
 		}
@@ -107,17 +126,21 @@ export class AppointmentService {
 			throw new AppointmentNotFoundError();
 		}
 		await this.recordAudit('appointment.updated', row.id);
+		if (cancelling) {
+			await this.notifyAppointmentChanged(row, APPOINTMENT_CANCELLED_COPY);
+		}
 		return toAppointmentRdo(row);
 	}
 
 	async remove(id: string): Promise<void> {
 		this.assertCanWrite();
-		await this.loadVisible(id);
+		const row = await this.loadVisible(id);
 		const deleted = await this.appointments.remove(id);
 		if (!deleted) {
 			throw new AppointmentNotFoundError();
 		}
 		await this.recordAudit('appointment.deleted', id);
+		await this.notifyAppointmentChanged(row, APPOINTMENT_REMOVED_COPY);
 	}
 
 	async availability(providerId: string, query: AvailabilityQuery): Promise<ProviderAvailabilityRdo> {
@@ -249,6 +272,28 @@ export class AppointmentService {
 			resourceId,
 			correlationId: getCorrelationId(this.request),
 		});
+	}
+
+	private async notifyAppointmentChanged(
+		row: Appointment,
+		copy: {title: string; body: string},
+	): Promise<void> {
+		const recipients = new Set<string>([row.providerUserId]);
+		const portalUserId =
+			row.patient !== undefined
+				? row.patient.portalUserId
+				: (await this.patients.getById(row.patientId))?.portalUserId;
+		if (portalUserId) {
+			recipients.add(portalUserId);
+		}
+		for (const recipientUserId of recipients) {
+			await this.notificationService.enqueue({
+				recipientUserId,
+				type: 'appointment_changed',
+				title: copy.title,
+				body: copy.body,
+			});
+		}
 	}
 }
 
