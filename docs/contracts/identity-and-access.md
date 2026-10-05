@@ -200,6 +200,13 @@ maps onto `admin:users` without a new catalog permission string:
 - `id` is the user id, not the membership id. `role` is the membership role for the resolved
   practice. `synthetic` is always true (`users` has no `synthetic` column). Passwords, MFA secrets,
   and session hashes are not returned.
+- **Assign (`PATCH /admin/users/:id/roles`):** same `admin:users` permission and session-tenant
+  scope, including `SUPER_ADMIN`. Body is a single catalog `role`. `PRACTICE_ADMIN` cannot grant
+  `SUPER_ADMIN`. The last `PRACTICE_ADMIN` of the practice cannot be removed. Unknown and
+  cross-tenant user ids return the same not-found response as other tenant-owned resources. A
+  successful change emits `membership.role_changed` (no password/MFA/session hashes). Denied
+  attempts follow existing `access.denied` patterns. Frontend assignment UI stays
+  [FE-026](../tasks/frontend/FE-026-role-assignment-ui.md).
 
 Response DTOs expose only authorized fields ([data-contracts.md](data-contracts.md) `PatientRdo`).
 Clinical fields must not leak to `read:demographics`-only actors.

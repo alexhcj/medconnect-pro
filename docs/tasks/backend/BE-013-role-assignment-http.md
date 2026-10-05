@@ -3,7 +3,7 @@ id: BE-013
 type: task
 area: backend
 feature: administration
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [BE-010, BE-009, SEC-001, SEC-003]
@@ -19,7 +19,7 @@ related_docs:
     ../security/SEC-003-audit-event-model.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -79,15 +79,15 @@ Implements / extends `administration.role-assignment`.
 
 ## Acceptance Criteria
 
-- [ ] `PATCH /admin/users/:id/roles` updates the session-practice membership and returns the
+- [x] `PATCH /admin/users/:id/roles` updates the session-practice membership and returns the
   updated practice-user RDO
-- [ ] Anonymous 401; roles without `admin:users` are 403
-- [ ] PRACTICE_ADMIN granting SUPER_ADMIN is 403
-- [ ] Removing the last PRACTICE_ADMIN is rejected
-- [ ] Cross-tenant and unknown ids do not oracle
-- [ ] An audit event is written for a successful change (and for denied attempts if that matches
+- [x] Anonymous 401; roles without `admin:users` are 403
+- [x] PRACTICE_ADMIN granting SUPER_ADMIN is 403
+- [x] Removing the last PRACTICE_ADMIN is rejected
+- [x] Cross-tenant and unknown ids do not oracle
+- [x] An audit event is written for a successful change (and for denied attempts if that matches
   existing denial-audit patterns)
-- [ ] OpenAPI includes the path; HTTP tests plus a matrix row (do not reopen QA-004’s task)
+- [x] OpenAPI includes the path; HTTP tests plus a matrix row (do not reopen QA-004’s task)
 
 ## Dependencies
 
@@ -114,7 +114,15 @@ Writing this spec is not a version bump.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: NestJS `PATCH /admin/users/:id/roles` on PracticeModule updates the
+  session-practice membership (`admin:users`). `PRACTICE_ADMIN` cannot grant `SUPER_ADMIN`. The
+  last `PRACTICE_ADMIN` cannot be removed. Unknown and cross-tenant user ids return `NOT_FOUND`.
+  Successful changes audit `membership.role_changed` without passwords, MFA secrets, or session
+  hashes. Identity tables remain without RLS. Frontend assignment UI stays FE-026.
+- Tests: HTTP tests for anonymous 401, non-admin 403, practice-admin and session-scoped
+  SUPER_ADMIN assignment, last-admin protection, SUPER_ADMIN grant denial, client `practiceId`
+  mismatch, and no foreign-row oracle (`apps/api/test/practice-users.http.spec.ts`); matrix row
+  for `PATCH /admin/users/:id/roles`; OpenAPI path (`npm run test:api` with Compose Postgres).
 - PR:
-- Notes: Pending M10 implementation.
+- Notes: No permission-grant editor, user invite/delete, or security-events HTTP. Version
+  0.64.0 → 0.65.0 (MINOR).

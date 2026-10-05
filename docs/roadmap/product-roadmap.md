@@ -30,7 +30,7 @@ cloud).
 - EHR foundation;
 - telehealth foundation (session shell, not live media);
 - billing foundation (invoices; payments/claims labeled boundaries);
-- administration (users + audit viewer; role PATCH is M10 / BE-013);
+- administration (users + audit viewer; role PATCH HTTP is BE-013, shipped; UI is FE-026);
 - security hardening (partial: RBAC, RLS, document ACL, audit);
 - observability (deferred with M9 deploy/preview).
 

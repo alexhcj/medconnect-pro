@@ -61,7 +61,7 @@ export const FEATURE_PAGE_METADATA: Record<
 	administration: {
 		title: 'Administration',
 		description:
-			'User directory and audit viewer in the MedConnect Pro demo. Role PATCH is not shipped.',
+			'User directory and audit viewer in the MedConnect Pro demo. Role assignment UI is not shipped.',
 	},
 };
 
@@ -430,7 +430,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			headingId: 'administration-hero-heading',
 			eyebrow: 'Administration · demo limits',
 			heading: 'Users and audit viewer',
-			body: 'User directory and audit viewer. Role assignment HTTP (role PATCH) is not shipped.',
+			body: 'User directory and audit viewer. Role assignment UI is not shipped.',
 			...FEATURE_PAGE_HERO_CTAS,
 		},
 		capabilities: {
@@ -447,7 +447,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 				},
 				{
 					title: 'Honest status',
-					description: 'Role PATCH is not shipped.',
+					description: 'Role assignment UI is not shipped.',
 				},
 			],
 		},
@@ -477,8 +477,8 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 					description: 'Audit events use synthetic data only.',
 				},
 				{
-					title: 'Role PATCH is not part of this demo',
-					description: 'Role assignment HTTP is not shipped.',
+					title: 'Role assignment UI is not part of this demo',
+					description: 'Role assignment is not a current demo surface.',
 				},
 			],
 		},

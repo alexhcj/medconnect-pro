@@ -54,7 +54,7 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - FE-009;
 - administration UI against the Nest admin APIs (FE-016);
 - role assignment UI ([FE-026](../tasks/frontend/FE-026-role-assignment-ui.md); M10, depends on
-  [BE-013](../tasks/backend/BE-013-role-assignment-http.md)).
+  shipped [BE-013](../tasks/backend/BE-013-role-assignment-http.md)).
 
 ## Slice 9 — Responsive polish
 

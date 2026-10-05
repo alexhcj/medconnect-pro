@@ -299,9 +299,13 @@ and clinical text must not appear. Reads require `admin:practice`. Tenant comes 
 - `practiceId` (session tenant; display only)
 - `synthetic` (always true)
 
+`PATCH /admin/users/:id/roles` accepts `{ role }` from the closed catalog and returns the same
+practice-user RDO. Optional client `practiceId` on the body is ignored for authorization and
+rejected on mismatch.
+
 Identity tables have no RLS. Filter memberships by server-resolved tenant. Optional client
 `practiceId` is ignored for authorization and rejected on mismatch. Passwords, MFA secrets, and
-session hashes must not appear. Reads require `admin:users`.
+session hashes must not appear. Reads and role assignment require `admin:users`.
 
 ## Validation
 

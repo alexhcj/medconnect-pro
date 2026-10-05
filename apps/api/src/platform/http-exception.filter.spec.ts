@@ -4,6 +4,7 @@ import {InvalidCredentialsError, PermissionDeniedError} from '../identity/auth.e
 import {InvoiceAlreadyPaidError} from '../billing/billing.errors.js';
 import {AppointmentConflictError} from '../scheduling/appointment.errors.js';
 import {SessionAlreadyEndedError, SessionNotJoinableError} from '../telehealth/telehealth-session.errors.js';
+import {PracticeUserNotFoundError} from '../practice/practice-user.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {EnvelopeExceptionFilter} from './http-exception.filter.js';
 import type {ErrorEnvelope} from './error-envelope.js';
@@ -128,6 +129,17 @@ describe('EnvelopeExceptionFilter', () => {
 		expect(result.statusCode).toBe(HttpStatus.CONFLICT);
 		expect(result.body.error.code).toBe('INVOICE_ALREADY_PAID');
 		expect(JSON.stringify(result.body)).not.toMatch(/cardNumber|cvv|4111/i);
+	});
+
+	it('maps unknown practice users to the same not-found envelope', () => {
+		const {host, getResult} = createHost('cid-practice-user');
+		filter.catch(new PracticeUserNotFoundError(), host);
+		const result = getResult();
+		expect(result.statusCode).toBe(HttpStatus.NOT_FOUND);
+		expect(result.body.error).toEqual({
+			code: 'NOT_FOUND',
+			message: 'Resource not found',
+		});
 	});
 
 	it('maps appointment conflicts to a 409 envelope without PHI', () => {

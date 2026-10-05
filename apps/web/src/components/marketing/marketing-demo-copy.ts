@@ -57,7 +57,7 @@ export const MARKETING_DEMO_WALKTHROUGH = {
 		{
 			title: 'Administration',
 			description:
-				'User directory and audit viewer. Role assignment HTTP is not shipped.',
+				'User directory and audit viewer. Role assignment UI is not shipped.',
 			detail: 'Implemented with those limits.',
 			status: {label: '/platform/administration', href: '/platform/administration'},
 		},

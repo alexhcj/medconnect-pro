@@ -116,7 +116,7 @@ describe('capability-matrix copy', () => {
 		expect(screen.getByText('Extra chart widgets remain unscheduled.')).toBeInTheDocument();
 
 		rerender(<MarketingFeaturePage slug="administration" />);
-		expect(screen.getByText('Role PATCH is not shipped.')).toBeInTheDocument();
+		expect(screen.getByText('Role assignment UI is not shipped.')).toBeInTheDocument();
 		expect(screen.getByText(/no HIPAA certification claim/)).toBeInTheDocument();
 
 		expect(screen.queryByText(/HIPAA compliant/i)).not.toBeInTheDocument();

@@ -33,7 +33,7 @@ export const MARKETING_HOME_MODULES = {
 		},
 		{
 			title: 'Administration',
-			description: 'User directory and audit viewer. Role PATCH is not shipped.',
+			description: 'User directory and audit viewer. Role assignment UI is not shipped.',
 		},
 	],
 } as const;

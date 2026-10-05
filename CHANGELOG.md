@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.65.0] - 2026-10-05
+
+### Added
+
+- Role assignment HTTP (BE-013): `PATCH /admin/users/:id/roles` updates the session-practice
+  membership and returns the practice-user RDO. Requires `admin:users`. PRACTICE_ADMIN cannot
+  grant SUPER_ADMIN. The last PRACTICE_ADMIN of the practice cannot be removed. Unknown and
+  cross-tenant ids return the same not-found response. Successful changes audit
+  `membership.role_changed` without passwords, MFA secrets, or session hashes. Assignment UI
+  remains FE-026. Synthetic demo data only; never real PHI.
+
 ## [0.64.0] - 2026-10-05
 
 ### Added

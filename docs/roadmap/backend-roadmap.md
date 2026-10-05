@@ -17,7 +17,7 @@ Domain order (not historical ship order). Join to demo milestones in the
 11. Analytics ([BE-011](../tasks/backend/BE-011-dashboard-overview-api.md) `GET /dashboard/overview`;
     M10, shipped. Seed: [DATA-002](../tasks/backend/DATA-002-bounded-synthetic-seed.md)).
 12. Administration/compliance (SEC-002–004, QA-004, BE-010 user directory HTTP; shipped in M7).
-    Role PATCH is [BE-013](../tasks/backend/BE-013-role-assignment-http.md) (M10).
+    Role PATCH is [BE-013](../tasks/backend/BE-013-role-assignment-http.md) (M10, shipped).
 13. Scale/reliability (deferred with M9 deploy/preview; M9 paused on AWS).
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
@@ -27,5 +27,5 @@ M0–M7 domain HTTP listed above is in the repository. M8 is frontend marketing 
 not a new backend domain. **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** —
 AWS account unavailable (close audit found no missing IDs; not closed; not cancelled;
 INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). Next
-product module is **M10** (DATA-002, BE-011, FE-024, BE-012, FE-025 shipped; BE-013, FE-026 pending). Local product
+product module is **M10** (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013 shipped; FE-026 pending). Local product
 work does not wait on AWS.

@@ -1,5 +1,6 @@
 import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
+import {AuditModule} from '../audit/audit.module.js';
 import {PatientAssignment} from '../persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
@@ -15,6 +16,7 @@ import {PracticeUserService} from './practice-user.service.js';
 @Module({
 	imports: [
 		TenancyModule,
+		AuditModule,
 		TypeOrmModule.forFeature([Practice, User, PracticeMembership, Patient, PatientAssignment]),
 	],
 	controllers: [PracticeUserController],

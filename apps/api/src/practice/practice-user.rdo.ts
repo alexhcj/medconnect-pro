@@ -30,3 +30,9 @@ export class PracticeUserListRdo {
 	@ApiProperty({type: [PracticeUserRdo]})
 	users!: PracticeUserRdo[];
 }
+
+@ApiSchema({name: 'PracticeUserRoleUpdateRequest'})
+export class PracticeUserRoleUpdateRequestRdo {
+	@ApiProperty({enum: PRACTICE_ROLES, example: 'PROVIDER'})
+	role!: PracticeRole;
+}

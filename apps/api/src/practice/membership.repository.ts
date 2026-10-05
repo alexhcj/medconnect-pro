@@ -43,6 +43,28 @@ export class MembershipRepository {
 		return row ?? undefined;
 	}
 
+	async findWithUserByUserId(userId: string): Promise<PracticeMembership | undefined> {
+		const {practiceId} = this.tenant.require();
+		const row = await this.rows.findOne({
+			where: {userId, practiceId},
+			relations: {user: true},
+		});
+		return row ?? undefined;
+	}
+
+	async countByRole(role: PracticeRole): Promise<number> {
+		const {practiceId} = this.tenant.require();
+		return this.rows.count({where: {practiceId, role}});
+	}
+
+	async updateRole(row: PracticeMembership, role: PracticeRole): Promise<PracticeMembership> {
+		const user = row.user;
+		row.role = role;
+		const saved = await this.rows.save(row);
+		saved.user = saved.user ?? user;
+		return saved;
+	}
+
 	async create(input: MembershipWriteInput): Promise<PracticeMembership> {
 		const {practiceId} = this.tenant.require();
 		if (input.practiceId !== undefined && input.practiceId !== practiceId) {

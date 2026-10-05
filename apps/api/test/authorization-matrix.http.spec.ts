@@ -40,7 +40,7 @@ type PatientTarget = 'assigned' | 'unassigned' | 'foreign';
 type MatrixCase = {
 	name: string;
 	actor: MatrixActor;
-	method: 'get' | 'post';
+	method: 'get' | 'post' | 'patch';
 	path: (harness: AuthorizationMatrixHarness) => string;
 	body?: (harness: AuthorizationMatrixHarness) => Record<string, unknown>;
 	attachPdf?: boolean;
@@ -383,6 +383,15 @@ function buildCases(): MatrixCase[] {
 				actor,
 				method: 'get',
 				path: () => '/admin/users',
+				expectedStatus: (harness) =>
+					roleHasPermissions(roleFor(harness), ['admin:users']) ? 200 : 403,
+			},
+			{
+				name: `${actor} PATCH /admin/users/:id/roles`,
+				actor,
+				method: 'patch',
+				path: (harness) => `/admin/users/${harness.actors.provider.id}/roles`,
+				body: () => ({role: 'PROVIDER'}),
 				expectedStatus: (harness) =>
 					roleHasPermissions(roleFor(harness), ['admin:users']) ? 200 : 403,
 			},

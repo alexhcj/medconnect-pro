@@ -1,7 +1,9 @@
-import {Controller, Get} from '@nestjs/common';
+import {Body, Controller, Get, Param, Patch} from '@nestjs/common';
 import {
 	ApiBearerAuth,
+	ApiBody,
 	ApiForbiddenResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
@@ -9,7 +11,17 @@ import {
 } from '@nestjs/swagger';
 import {RequirePermissions} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
-import {PracticeUserListRdo} from './practice-user.rdo.js';
+import {
+	PracticeUserListRdo,
+	PracticeUserRdo,
+	PracticeUserRoleUpdateRequestRdo,
+} from './practice-user.rdo.js';
+import {
+	practiceUserIdParamsSchema,
+	practiceUserRoleUpdateSchema,
+	type PracticeUserIdParams,
+	type PracticeUserRoleUpdateBody,
+} from './practice-user.schema.js';
 import {PracticeUserService} from './practice-user.service.js';
 
 @ApiTags('admin')
@@ -30,5 +42,22 @@ export class PracticeUserController {
 	@ApiOkResponse({type: PracticeUserListRdo})
 	list(): Promise<PracticeUserListRdo> {
 		return this.practiceUsers.list();
+	}
+
+	@Patch(':id/roles')
+	@RequirePermissions('admin:users')
+	@ApiOperation({
+		summary: 'Assign a membership role in the resolved practice',
+		description:
+			'Requires admin:users. Updates the session-practice membership for the user id. PRACTICE_ADMIN cannot grant SUPER_ADMIN. The last PRACTICE_ADMIN of the practice cannot be removed. SUPER_ADMIN is session-tenant scoped. Unknown and cross-tenant ids return the same not-found response. Tenant comes from the session, not from the client. Passwords, MFA secrets, and session hashes are not returned.',
+	})
+	@ApiBody({type: PracticeUserRoleUpdateRequestRdo})
+	@ApiOkResponse({type: PracticeUserRdo})
+	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})
+	assignRole(
+		@Param({schema: practiceUserIdParamsSchema}) params: PracticeUserIdParams,
+		@Body({schema: practiceUserRoleUpdateSchema}) body: PracticeUserRoleUpdateBody,
+	): Promise<PracticeUserRdo> {
+		return this.practiceUsers.assignRole(params.id, body.role);
 	}
 }

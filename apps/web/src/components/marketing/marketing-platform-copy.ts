@@ -47,7 +47,7 @@ export const MARKETING_PLATFORM_MODULES = {
 		{
 			title: 'Administration',
 			description: 'User directory and audit viewer.',
-			status: 'Role PATCH is not shipped.',
+			status: 'Role assignment UI is not shipped.',
 			href: '/platform/administration',
 		},
 	],

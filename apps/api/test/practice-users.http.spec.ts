@@ -206,4 +206,188 @@ describe('practice user directory HTTP', () => {
 		expect(superUsers.every((user) => user.practiceId === practiceA.id)).toBe(true);
 		expect(superUsers.some((user) => user.id === foreignAdmin.id)).toBe(false);
 	});
+
+	async function membershipRole(userId: string): Promise<string | undefined> {
+		const row = await dataSource.getRepository(PracticeMembership).findOne({
+			where: {userId, practiceId: practiceA.id},
+		});
+		return row?.role;
+	}
+
+	it('rejects anonymous and non-admin role assignment', async () => {
+		const anonymous = await request(app.getHttpServer())
+			.patch(`/admin/users/${provider.id}/roles`)
+			.send({role: 'NURSE'})
+			.expect(401);
+		expect(anonymous.body.error.code).toBe('UNAUTHENTICATED');
+
+		for (const email of [provider.email, nurse.email, receptionist.email, portalUser.email]) {
+			const token = await login(email);
+			const denied = await request(app.getHttpServer())
+				.patch(`/admin/users/${provider.id}/roles`)
+				.send({role: 'NURSE'})
+				.set('Authorization', `Bearer ${token}`)
+				.expect(403);
+			expect(denied.body.error.code).toBe('FORBIDDEN');
+		}
+		expect(await membershipRole(provider.id)).toBe('PROVIDER');
+	});
+
+	it('assigns a session-practice role and lists the updated membership', async () => {
+		const adminToken = await login(admin.email);
+		try {
+			const updated = await request(app.getHttpServer())
+				.patch(`/admin/users/${provider.id}/roles`)
+				.send({role: 'NURSE'})
+				.set('Authorization', `Bearer ${adminToken}`)
+				.expect(200);
+			expect(updated.body).toMatchObject({
+				id: provider.id,
+				email: provider.email,
+				role: 'NURSE',
+				practiceId: practiceA.id,
+				synthetic: true,
+			});
+			expect(JSON.stringify(updated.body)).not.toContain(password);
+			expect(JSON.stringify(updated.body)).not.toMatch(/mfaToken|refreshToken|accessTokenHash|mfaCode/);
+
+			const listed = await request(app.getHttpServer())
+				.get('/admin/users')
+				.set('Authorization', `Bearer ${adminToken}`)
+				.expect(200);
+			expect((listed.body.users as PracticeUserBody[]).find((user) => user.id === provider.id)?.role).toBe(
+				'NURSE',
+			);
+
+			const events = await dataSource.getRepository(AuditEvent).find({
+				where: {
+					practiceId: practiceA.id,
+					resourceId: provider.id,
+					action: 'membership.role_changed',
+				},
+			});
+			expect(events.length).toBeGreaterThanOrEqual(1);
+			expect(events.every((event) => event.resourceType === 'user')).toBe(true);
+			expect(JSON.stringify(events)).not.toMatch(/mfaToken|refreshToken|accessTokenHash|mfaCode/);
+		} finally {
+			await dataSource
+				.getRepository(PracticeMembership)
+				.update({userId: provider.id, practiceId: practiceA.id}, {role: 'PROVIDER'});
+		}
+	});
+
+	it('lets a session-scoped SUPER_ADMIN grant SUPER_ADMIN', async () => {
+		const superToken = await login(superAdmin.email);
+		try {
+			const updated = await request(app.getHttpServer())
+				.patch(`/admin/users/${provider.id}/roles`)
+				.send({role: 'SUPER_ADMIN'})
+				.set('Authorization', `Bearer ${superToken}`)
+				.expect(200);
+			expect(updated.body.role).toBe('SUPER_ADMIN');
+			expect(updated.body.practiceId).toBe(practiceA.id);
+		} finally {
+			await dataSource
+				.getRepository(PracticeMembership)
+				.update({userId: provider.id, practiceId: practiceA.id}, {role: 'PROVIDER'});
+		}
+	});
+
+	it('forbids PRACTICE_ADMIN from granting SUPER_ADMIN', async () => {
+		const adminToken = await login(admin.email);
+		const denied = await request(app.getHttpServer())
+			.patch(`/admin/users/${provider.id}/roles`)
+			.send({role: 'SUPER_ADMIN'})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(403);
+		expect(denied.body.error.code).toBe('FORBIDDEN');
+		expect(await membershipRole(provider.id)).toBe('PROVIDER');
+	});
+
+	it('rejects removing the last PRACTICE_ADMIN and allows demotion when another remains', async () => {
+		const adminToken = await login(admin.email);
+		const last = await request(app.getHttpServer())
+			.patch(`/admin/users/${admin.id}/roles`)
+			.send({role: 'PROVIDER'})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(403);
+		expect(last.body.error.code).toBe('FORBIDDEN');
+		expect(await membershipRole(admin.id)).toBe('PRACTICE_ADMIN');
+
+		const second = await dataSource.getRepository(User).save({
+			email: `dir.second.${suffix}@synthetic.example`,
+		});
+		await dataSource.getRepository(PracticeMembership).save({
+			practiceId: practiceA.id,
+			userId: second.id,
+			role: 'PRACTICE_ADMIN',
+		});
+		try {
+			const demoted = await request(app.getHttpServer())
+				.patch(`/admin/users/${second.id}/roles`)
+				.send({role: 'NURSE'})
+				.set('Authorization', `Bearer ${adminToken}`)
+				.expect(200);
+			expect(demoted.body).toMatchObject({
+				id: second.id,
+				role: 'NURSE',
+				practiceId: practiceA.id,
+				synthetic: true,
+			});
+		} finally {
+			await dataSource.getRepository(AuditEvent).delete({actorUserId: In([second.id])});
+			await dataSource.getRepository(AuditEvent).delete({resourceId: second.id});
+			await dataSource.getRepository(PracticeMembership).delete({userId: second.id});
+			await dataSource.getRepository(User).delete({id: second.id});
+		}
+	});
+
+	it('does not oracle unknown or cross-tenant user ids', async () => {
+		const adminToken = await login(admin.email);
+		const unknown = await request(app.getHttpServer())
+			.patch(`/admin/users/${randomUUID()}/roles`)
+			.send({role: 'NURSE'})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(404);
+		expect(unknown.body.error.code).toBe('NOT_FOUND');
+		expect(JSON.stringify(unknown.body)).not.toContain(foreignAdmin.email);
+
+		const foreign = await request(app.getHttpServer())
+			.patch(`/admin/users/${foreignAdmin.id}/roles`)
+			.send({role: 'NURSE'})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(404);
+		expect(foreign.body.error.code).toBe('NOT_FOUND');
+		expect(JSON.stringify(foreign.body)).not.toContain(foreignAdmin.email);
+		const foreignRow = await dataSource.getRepository(PracticeMembership).findOne({
+			where: {userId: foreignAdmin.id, practiceId: practiceB.id},
+		});
+		expect(foreignRow?.role).toBe('PRACTICE_ADMIN');
+	});
+
+	it('rejects client practiceId mismatch and invalid role payloads', async () => {
+		const adminToken = await login(admin.email);
+		const mismatch = await request(app.getHttpServer())
+			.patch(`/admin/users/${provider.id}/roles`)
+			.send({role: 'NURSE', practiceId: practiceB.id})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(403);
+		expect(mismatch.body.error.code).toBe('FORBIDDEN');
+		expect(JSON.stringify(mismatch.body)).not.toContain(foreignAdmin.email);
+		expect(await membershipRole(provider.id)).toBe('PROVIDER');
+
+		const invalidRole = await request(app.getHttpServer())
+			.patch(`/admin/users/${provider.id}/roles`)
+			.send({role: 'WIZARD'})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(400);
+		expect(invalidRole.body.error.code).toBe('VALIDATION_ERROR');
+
+		const invalidId = await request(app.getHttpServer())
+			.patch('/admin/users/not-a-uuid/roles')
+			.send({role: 'NURSE'})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(400);
+		expect(invalidId.body.error.code).toBe('VALIDATION_ERROR');
+	});
 });
