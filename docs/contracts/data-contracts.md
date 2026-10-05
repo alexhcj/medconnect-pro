@@ -255,6 +255,30 @@ The current Nest adapter is an in-process `DeliveryBus` (no AWS SDK).
 
 Appointment reminder jobs stay out of scope ([BE-004](../tasks/backend/BE-004-appointment-api.md)).
 
+## Dashboard overview
+
+`GET /dashboard/overview` returns role-filtered aggregate cards for the session tenant
+([BE-011](../tasks/backend/BE-011-dashboard-overview-api.md)). There is no request body. Optional
+client `practiceId` is ignored for authorization and rejected on mismatch. No catalog permission
+string; any authenticated member of the resolved tenant may read it.
+
+Response concepts:
+
+- `synthetic` (always true)
+- `metrics` — only the cards the session role may see (mirrors `docs/mocks/dashboard.json` `roles`,
+  without `patient_satisfaction`)
+
+Live metric ids:
+
+- `total_patients`, `todays_appointments` — staff roles; UTC calendar day of `now` for today
+- `monthly_revenue` — `SUPER_ADMIN`, `PRACTICE_ADMIN`, `RECEPTIONIST`; sum of invoice `amountCents`
+  with `issuedAt` in the current UTC month
+- `upcoming_visits`, `open_balance` — `PATIENT` only; scoped through `patients.portalUserId`
+
+`value` is a formatted string (counts and currency). Metric titles and descriptions are generic
+labels. They must not include patient names, emails, or other PHI. Do not copy generated OpenAPI
+schemas here.
+
 ## Audit events
 
 `GET /admin/audit-events` returns tenant-scoped rows from `audit_events`. Response fields are

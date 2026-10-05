@@ -167,12 +167,13 @@ async function parkAppointmentByNotes(
 	practiceId: string,
 	notes: string,
 	now: Date,
+	dayOffset = 40,
 ): Promise<void> {
 	const existing = await appointments.findOne({where: {practiceId, notes}});
 	if (!existing) {
 		return;
 	}
-	const parkedDay = utcDateKey(new Date(now.getTime() + 40 * 24 * 60 * 60 * 1000));
+	const parkedDay = utcDateKey(new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000));
 	existing.startAt = new Date(`${parkedDay}T18:00:00.000Z`);
 	existing.endAt = new Date(`${parkedDay}T19:00:00.000Z`);
 	await appointments.save(existing);
@@ -449,6 +450,10 @@ export async function seedMockIdentity(): Promise<void> {
 				endAt: todayWindow.endAt,
 				refresh: true,
 			});
+		}
+
+		for (const [index, slot] of EXTRA_FUTURE_APPOINTMENTS.entries()) {
+			await parkAppointmentByNotes(appointments, practice.id, slot.notes, now, 50 + index);
 		}
 
 		for (const slot of EXTRA_FUTURE_APPOINTMENTS) {

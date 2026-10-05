@@ -93,6 +93,7 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/billing/claims']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/admin/audit-events']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths?.['/admin/users']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/dashboard/overview']?.get?.security).toEqual([{bearer: []}]);
 		expect(document.paths).not.toHaveProperty('/providers');
 		expect(document.paths).not.toHaveProperty('/__test/validate');
 		expect(document.paths).not.toHaveProperty('/__test/authz');

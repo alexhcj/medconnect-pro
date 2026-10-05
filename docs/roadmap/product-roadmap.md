@@ -12,7 +12,7 @@ expansion is still unshipped.
 ## Portfolio MVP
 
 Shipped as M0–M3 plus basic audit. Basic analytics remain mock overview cards only until
-**M10** (BE-011, FE-024).
+**M10** FE-024 (Nest `GET /dashboard/overview` is BE-011, shipped).
 
 - authentication;
 - dashboard shell;

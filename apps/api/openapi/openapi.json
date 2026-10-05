@@ -3228,6 +3228,54 @@
         ]
       }
     },
+    "/dashboard/overview": {
+      "get": {
+        "description": "Any authenticated member of the resolved tenant may read this overview. Which cards appear follows session role. Counts and currency strings come from the current practice. Tenant comes from the session, not from the client. synthetic is always true. patient_satisfaction is omitted. Metric labels do not include patient names.",
+        "operationId": "DashboardController_getOverview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardOverview"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Read role-filtered dashboard overview metrics for the session tenant",
+        "tags": [
+          "dashboard"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "description": "Password-shaped stand-in for a mock identity provider. Not the production OAuth 2.0 authorization-code + PKCE flow. Practice selection is limited to server-side memberships.",
@@ -5041,6 +5089,80 @@
           "emailEnabled",
           "smsEnabled",
           "synthetic"
+        ]
+      },
+      "DashboardMetric": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "total_patients"
+          },
+          "title": {
+            "type": "string",
+            "example": "Total Patients"
+          },
+          "value": {
+            "type": "string",
+            "example": "20"
+          },
+          "icon": {
+            "type": "string",
+            "enum": [
+              "users",
+              "calendar",
+              "revenue"
+            ],
+            "example": "users"
+          },
+          "description": {
+            "type": "string",
+            "example": "Active patients in system"
+          },
+          "roles": {
+            "type": "array",
+            "example": [
+              "PRACTICE_ADMIN"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "SUPER_ADMIN",
+                "PRACTICE_ADMIN",
+                "PROVIDER",
+                "NURSE",
+                "RECEPTIONIST",
+                "PATIENT"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "value",
+          "icon",
+          "roles"
+        ]
+      },
+      "DashboardOverview": {
+        "type": "object",
+        "properties": {
+          "synthetic": {
+            "type": "boolean",
+            "example": true,
+            "description": "Always true. This API stores synthetic demo data only."
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardMetric"
+            }
+          }
+        },
+        "required": [
+          "synthetic",
+          "metrics"
         ]
       },
       "TokenPair": {

@@ -69,12 +69,13 @@ Documents are a separate access-control boundary ([SEC-004](../tasks/security/SE
 
 ## Dashboard
 
-Planned analytics surface (**M10** [BE-011](../tasks/backend/BE-011-dashboard-overview-api.md),
-[FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md)). **Not implemented** in Nest. Live
-Next.js `/api/dashboard/overview` is a leftover BFF that expects a cookie token and a Nest route
-that does not exist. Mock mode renders overview cards from fixtures. FE-024 deletes that BFF.
+Implemented Nest analytics surface (**M10** [BE-011](../tasks/backend/BE-011-dashboard-overview-api.md)).
+Any authenticated member of the session tenant may read it; which cards appear follows role.
+Live Next.js `/api/dashboard/overview` is a leftover BFF that FE-024 deletes. Mock mode still
+renders overview cards from fixtures until FE-024.
 
-- `GET /dashboard/overview` — planned; not a current controller
+- `GET /dashboard/overview` — session-tenant aggregates (`synthetic` always true); omits
+  `patient_satisfaction`
 
 ## Telehealth
 

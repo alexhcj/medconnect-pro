@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.61.0] - 2026-10-05
+
+### Added
+
+- Dashboard overview API (BE-011): authenticated `GET /dashboard/overview` returns role-filtered
+  synthetic aggregates from the session tenant (patient count, UTC-today appointments, current
+  UTC-month invoice totals; PATIENT upcoming visits and open balance). Omits
+  `patient_satisfaction` and marketing census figures. Live dashboard UI wiring remains FE-024.
+  Synthetic demo data only; never real PHI.
+
 ## [0.60.0] - 2026-10-04
 
 ### Added

@@ -119,6 +119,30 @@ export class AppointmentRepository {
 		};
 	}
 
+	async countStartingOnUtcDay(now: Date): Promise<number> {
+		const {practiceId} = this.tenant.require();
+		const {from, to} = utcDayBounds(now);
+		return this.rows
+			.createQueryBuilder('appointment')
+			.where('appointment.practiceId = :practiceId', {practiceId})
+			.andWhere("appointment.state <> 'cancelled'")
+			.andWhere('appointment.startAt >= :from', {from})
+			.andWhere('appointment.startAt < :to', {to})
+			.getCount();
+	}
+
+	async countUpcomingForPortalUser(portalUserId: string, now: Date): Promise<number> {
+		const {practiceId} = this.tenant.require();
+		return this.rows
+			.createQueryBuilder('appointment')
+			.innerJoin('appointment.patient', 'patient')
+			.where('appointment.practiceId = :practiceId', {practiceId})
+			.andWhere('patient.portalUserId = :portalUserId', {portalUserId})
+			.andWhere("appointment.state <> 'cancelled'")
+			.andWhere('appointment.startAt >= :now', {now})
+			.getCount();
+	}
+
 	async getById(id: string): Promise<Appointment | undefined> {
 		const {practiceId} = this.tenant.require();
 		const row = await this.rows.findOne({
@@ -206,6 +230,13 @@ export class AppointmentRepository {
 			throw new TenantMismatchError();
 		}
 	}
+}
+
+function utcDayBounds(now: Date): {from: Date; to: Date} {
+	const key = now.toISOString().slice(0, 10);
+	const from = new Date(`${key}T00:00:00.000Z`);
+	const to = new Date(from.getTime() + 24 * 60 * 60 * 1000);
+	return {from, to};
 }
 
 function clampPageSize(pageSize: number | undefined): number {

@@ -3,7 +3,7 @@ id: BE-011
 type: task
 area: backend
 feature: dashboard
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [BE-009, DATA-002]
@@ -18,7 +18,7 @@ related_docs:
     BE-009-identity-and-access-http.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -83,15 +83,15 @@ Implements / extends `analytics.overview-api`.
 
 ## Acceptance Criteria
 
-- [ ] `GET /dashboard/overview` exists in Nest and generated OpenAPI
-- [ ] Anonymous is 401; client `practiceId` mismatch is rejected; cross-tenant data does not
+- [x] `GET /dashboard/overview` exists in Nest and generated OpenAPI
+- [x] Anonymous is 401; client `practiceId` mismatch is rejected; cross-tenant data does not
   appear
-- [ ] Practice-admin response includes patient count and today’s appointment count that match
+- [x] Practice-admin response includes patient count and today’s appointment count that match
   seeded rows after DATA-002
-- [ ] PATIENT response omits practice revenue/patient-census cards and includes self-scope
+- [x] PATIENT response omits practice revenue/patient-census cards and includes self-scope
   upcoming visits / open balance derived from that patient’s rows
-- [ ] Live payload does not include `patient_satisfaction` or fake “2,834” census
-- [ ] HTTP tests plus a matrix row cover this GET (extend the matrix file; do not reopen QA-004)
+- [x] Live payload does not include `patient_satisfaction` or fake “2,834” census
+- [x] HTTP tests plus a matrix row cover this GET (extend the matrix file; do not reopen QA-004)
 
 ## Dependencies
 
@@ -119,7 +119,15 @@ Writing this spec is not a version bump.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Nest `GET /dashboard/overview` (`DashboardModule`) aggregates session-tenant
+  patient count, UTC-today appointments (excluding cancelled), and current-UTC-month invoice
+  totals. Role filter matches `docs/mocks/dashboard.json` without `patient_satisfaction`. PATIENT
+  cards use `patients.portalUserId`. No new permission string. Leftover Next BFF is unchanged
+  (FE-024). Harbor extra-appointment re-seed parks slots before refresh so day rollover does not
+  violate the provider exclusion constraint.
+- Tests: `apps/api/src/dashboard/dashboard.access.spec.ts`;
+  `apps/api/test/dashboard.http.spec.ts` (401/403/roles/tenant/Harbor);
+  authorization-matrix `GET /dashboard/overview` → 200. `npm run test:api`.
 - PR:
-- Notes: Pending M10 implementation.
+- Notes: Version 0.60.0 → 0.61.0 (MINOR, new public API). `analytics.overview-api` shipped;
+  dashboard cards stay mock until FE-024.

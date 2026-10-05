@@ -35,6 +35,42 @@ export class InvoiceRepository {
 		private readonly tenant: TenantContext,
 	) {}
 
+	async sumAmountCentsIssuedInUtcMonth(now: Date): Promise<{amountCents: number; currency: string}> {
+		const {practiceId} = this.tenant.require();
+		const {from, to} = utcMonthBounds(now);
+		const row = await this.rows
+			.createQueryBuilder('invoice')
+			.select('COALESCE(SUM(invoice.amountCents), 0)', 'amountCents')
+			.addSelect("COALESCE(MIN(invoice.currency), 'USD')", 'currency')
+			.where('invoice.practiceId = :practiceId', {practiceId})
+			.andWhere('invoice.issuedAt >= :from', {from})
+			.andWhere('invoice.issuedAt < :to', {to})
+			.getRawOne<{amountCents: string | number; currency: string}>();
+		return {
+			amountCents: Number(row?.amountCents ?? 0),
+			currency: row?.currency || 'USD',
+		};
+	}
+
+	async sumOpenBalanceForPortalUser(
+		portalUserId: string,
+	): Promise<{amountCents: number; currency: string}> {
+		const {practiceId} = this.tenant.require();
+		const row = await this.rows
+			.createQueryBuilder('invoice')
+			.innerJoin('invoice.patient', 'patient')
+			.select('COALESCE(SUM(invoice.amountCents), 0)', 'amountCents')
+			.addSelect("COALESCE(MIN(invoice.currency), 'USD')", 'currency')
+			.where('invoice.practiceId = :practiceId', {practiceId})
+			.andWhere('patient.portalUserId = :portalUserId', {portalUserId})
+			.andWhere("invoice.status = 'issued'")
+			.getRawOne<{amountCents: string | number; currency: string}>();
+		return {
+			amountCents: Number(row?.amountCents ?? 0),
+			currency: row?.currency || 'USD',
+		};
+	}
+
 	async list(filter?: {portalUserId?: string}): Promise<Invoice[]> {
 		const {practiceId} = this.tenant.require();
 		const qb = this.rows
@@ -90,6 +126,14 @@ export class InvoiceRepository {
 		await this.rows.save(invoice);
 		return (await this.getById(invoice.id)) ?? invoice;
 	}
+}
+
+function utcMonthBounds(now: Date): {from: Date; to: Date} {
+	const year = now.getUTCFullYear();
+	const month = now.getUTCMonth();
+	const from = new Date(Date.UTC(year, month, 1));
+	const to = new Date(Date.UTC(year, month + 1, 1));
+	return {from, to};
 }
 
 function rejectMismatchedPracticeId(

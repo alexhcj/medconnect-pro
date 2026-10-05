@@ -75,6 +75,11 @@ export class PatientRepository {
 		});
 	}
 
+	async countForPractice(): Promise<number> {
+		const {practiceId} = this.tenant.require();
+		return this.rows.count({where: {practiceId}});
+	}
+
 	async search(query: PatientSearchQuery): Promise<PatientPage> {
 		const {practiceId} = this.tenant.require();
 		const page = query.page ?? 1;

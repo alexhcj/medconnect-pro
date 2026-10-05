@@ -4,6 +4,7 @@ import {APP_INTERCEPTOR} from '@nestjs/core';
 import {AuditAccessDeniedInterceptor} from './audit/audit-access-denied.interceptor.js';
 import {AuditModule} from './audit/audit.module.js';
 import {BillingModule} from './billing/billing.module.js';
+import {DashboardModule} from './dashboard/dashboard.module.js';
 import {DocumentsModule} from './documents/documents.module.js';
 import {EhrModule} from './ehr/ehr.module.js';
 import {HealthModule} from './health/health.module.js';
@@ -37,6 +38,7 @@ import {TenantRlsInterceptor} from './tenancy/tenant-rls.interceptor.js';
 		BillingModule,
 		DocumentsModule,
 		NotificationsModule,
+		DashboardModule,
 		IdentityModule,
 		HealthModule,
 	],

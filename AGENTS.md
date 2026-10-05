@@ -6,7 +6,7 @@ shipped; M8 marketing site shipped (FE-017–FE-023)
 ([docs/roadmap/post-mvp-baseline.md](docs/roadmap/post-mvp-baseline.md)). **M9 — Deployment /
 preview infrastructure** is **PAUSED / BLOCKED** — AWS account setup unavailable (close audit
 found no missing IDs; not closed; not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending,
-blocks INFRA-013; INFRA-013 paused). Next product module is **M10** (DATA-002 shipped; BE-011,
+blocks INFRA-013; INFRA-013 paused). Next product module is **M10** (DATA-002, BE-011 shipped;
 FE-024, BE-012, FE-025, BE-013, FE-026). Local product work does not wait on AWS.
 
 Frontend application: `apps/web`.

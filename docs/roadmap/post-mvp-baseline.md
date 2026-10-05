@@ -17,7 +17,7 @@ IDs; M9 is **not closed** and **not cancelled**.
 [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)
 are shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
 is pending and blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
-which remains paused. Next product module is **M10** (DATA-002 shipped; BE-011, FE-024, BE-012,
+which remains paused. Next product module is **M10** (DATA-002, BE-011 shipped; FE-024, BE-012,
 FE-025, BE-013, FE-026 pending). Local product work does not wait on AWS. Not part of M8.
 
 ## Actually complete
@@ -46,8 +46,8 @@ FE-025, BE-013, FE-026 pending). Local product work does not wait on AWS. Not pa
 - Production OAuth 2.0 / OIDC + PKCE ([ADR-003](../decisions/ADR-003-authentication.md))
 - Live video / Daily / Socket.IO
 - Payments, claims submission, security-events HTTP
-- Role assignment HTTP, notifications UI, and dashboard analytics API — **M10** pending tasks
-  (BE-011, FE-024, BE-012, FE-025, BE-013, FE-026; DATA-002 seed shipped)
+- Role assignment HTTP, notifications UI, and live dashboard cards — **M10** pending tasks
+  (FE-024, BE-012, FE-025, BE-013, FE-026; DATA-002 seed and BE-011 overview API shipped)
 - Hosted AWS first-apply (INFRA-014; blocks INFRA-013; M9 paused)
 - `v1.0.0` production-release gate (INFRA-013; paused until INFRA-014)
 - Redis, custom KMS hierarchy
@@ -57,8 +57,9 @@ FE-025, BE-013, FE-026 pending). Local product work does not wait on AWS. Not pa
 
 - Dual mock/live frontend is intentional.
 - Frontend role/nav checks are UX only; Nest authorization is authoritative.
-- Live dashboard overview is **not** integrated (cookie BFF + missing Nest route). Treat that as
-  **M10** (BE-011 / FE-024), not as a silent M0–M7 failure.
+- Live dashboard overview UI is **not** integrated (cookie BFF remains). Nest
+  `GET /dashboard/overview` exists (BE-011). Treat remaining UI wiring as **M10** FE-024, not as a
+  silent M0–M7 failure.
 - Workspace package versions (`apps/web`, `apps/api`) may differ from the root version (ADR-007).
 
 ## Marketing claim rules

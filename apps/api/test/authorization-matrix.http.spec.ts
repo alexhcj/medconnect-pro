@@ -324,6 +324,13 @@ function buildCases(): MatrixCase[] {
 				expectedStatus: () => 200,
 			},
 			{
+				name: `${actor} GET /dashboard/overview`,
+				actor,
+				method: 'get',
+				path: () => '/dashboard/overview',
+				expectedStatus: () => 200,
+			},
+			{
 				name: `${actor} GET assigned invoice`,
 				actor,
 				method: 'get',

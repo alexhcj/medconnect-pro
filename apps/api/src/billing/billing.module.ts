@@ -29,5 +29,6 @@ import {PaymentRepository} from './payment.repository.js';
 		PaymentRepository,
 		{provide: PAYMENT_GATEWAY, useClass: DemoPaymentGateway},
 	],
+	exports: [InvoiceRepository],
 })
 export class BillingModule {}
