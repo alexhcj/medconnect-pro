@@ -83,7 +83,7 @@ describe('MarketingHome', () => {
 
 		expect(screen.getAllByText(/Not live video/).length).toBeGreaterThan(0);
 		expect(screen.getAllByText(/labeled boundaries/).length).toBeGreaterThan(0);
-		expect(screen.getByText(/No live Nest overview API/)).toBeInTheDocument();
+		expect(screen.getByText(/Synthetic demo aggregates, not a warehouse/)).toBeInTheDocument();
 		expect(screen.getByText(/Role PATCH is not shipped/)).toBeInTheDocument();
 		expect(screen.getAllByText(/Not production OAuth/).length).toBeGreaterThan(0);
 		expect(screen.getByText(/no HIPAA certification claim/)).toBeInTheDocument();

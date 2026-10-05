@@ -108,9 +108,8 @@ not add a second design-system package. Production frontend hosting is AWS Ampli
 use Amplify-native hosts against the shared preview API
 ([INFRA-010](../tasks/infrastructure/INFRA-010-preview-environment-and-pr-delivery.md)).
 
-Dashboard overview cards in mock mode use fixtures. Live `GET /dashboard/overview` is not a Nest
-controller; the Next BFF path is not a supported live integration. That gap belongs to frontend
-Slice 2, not to a failed M0–M7 join.
+Dashboard overview cards in live mode call Nest `GET /dashboard/overview` with the BE-009 bearer.
+Mock mode still renders fixtures. The leftover Next BFF was removed in FE-024.
 
 ## Hosting
 
@@ -123,8 +122,8 @@ production set `NEXT_PUBLIC_USE_MOCKS=false`. `NEXT_PUBLIC_API_BASE_URL` and ser
 no Secrets Manager ARNs.
 
 Mock IdP login stays same-origin `/login`. Auth remains an opaque bearer in `localStorage`; do
-not rewrite identity to cookies. The leftover dashboard-overview BFF may still 401 without an
-`accessToken` cookie — hosted validation uses a dashboard list page, not overview cards.
+not rewrite identity to cookies. Live dashboard overview cards use that bearer against Nest
+`GET /dashboard/overview`.
 
 ## Accessibility
 

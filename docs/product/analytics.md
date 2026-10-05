@@ -5,7 +5,7 @@ name: Analytics
 area: dashboard
 marketing_path: /platform/analytics
 status: partial
-claim: "Mock dashboard overview cards in the app. Nest GET /dashboard/overview exists; UI wiring is FE-024."
+claim: "Live dashboard overview cards from Nest GET /dashboard/overview. Mock fixtures when mocks are on. Synthetic demo aggregates only; not a warehouse or HIPAA analytics product."
 related_tasks: [FE-001, DATA-002, BE-011, FE-024]
 related_docs:
   - ../01-product-requirements.md
@@ -16,27 +16,28 @@ related_docs:
 capabilities:
   - id: analytics.mock-overview-cards
     name: Dashboard overview cards
-    status: partial
-    demo: mock overview cards on the authenticated dashboard
+    status: shipped
+    demo: live Nest overview cards on the authenticated dashboard; fixture cards when NEXT_PUBLIC_USE_MOCKS=true
     public: qualified
-    planned_next: live Nest GET /dashboard/overview (M10 FE-024)
+    planned_next: extra chart widgets remain unscheduled
     related_tasks: [FE-001, FE-024]
   - id: analytics.overview-api
     name: Live dashboard analytics API
     status: shipped
-    demo: Nest GET /dashboard/overview aggregates the session tenant
+    demo: Nest GET /dashboard/overview aggregates the session tenant; UI consumes it in live mode
     public: no
-    planned_next: M10 FE-024 live dashboard cards
     related_tasks: [DATA-002, BE-011, FE-024]
 ---
 
 # Analytics
 
-Mock dashboard overview cards in the authenticated app. Nest `GET /dashboard/overview` exists
-([BE-011](../tasks/backend/BE-011-dashboard-overview-api.md)). Do not present live dashboard cards
-as shipped until [FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md).
+Live dashboard overview cards in the authenticated app from Nest `GET /dashboard/overview`
+([BE-011](../tasks/backend/BE-011-dashboard-overview-api.md),
+[FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md)). Mock mode still renders fixture
+cards. Synthetic demo aggregates only. Do not claim a warehouse, HIPAA analytics, live video, or
+payments.
 
 | ID | Name | Status | Demo | Public |
 | --- | --- | --- | --- | --- |
-| `analytics.mock-overview-cards` | Dashboard overview cards | partial | mock cards | qualified |
-| `analytics.overview-api` | Live dashboard analytics API | shipped | Nest GET exists; UI still mock | no |
+| `analytics.mock-overview-cards` | Dashboard overview cards | shipped | live Nest cards; fixtures when mocks on | qualified |
+| `analytics.overview-api` | Live dashboard analytics API | shipped | Nest GET + live UI | no |

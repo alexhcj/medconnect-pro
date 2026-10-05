@@ -3,7 +3,7 @@ id: FE-024
 type: task
 area: frontend
 feature: dashboard
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-001, BE-011, BE-009]
@@ -23,7 +23,7 @@ design:
   frame: ""
   status: not_required
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -76,13 +76,13 @@ Implements / extends `analytics.mock-overview-cards` (live path) and `analytics.
 
 ## Acceptance Criteria
 
-- [ ] With mocks off, `/dashboard` loads metrics from Nest using the BE-009 session; no call to
+- [x] With mocks off, `/dashboard` loads metrics from Nest using the BE-009 session; no call to
   `/api/dashboard/overview`
-- [ ] The leftover Next BFF route file is gone
-- [ ] Mock mode still renders fixture cards
-- [ ] One non-mock browser check shows at least patient-count and today’s-appointment cards for
+- [x] The leftover Next BFF route file is gone
+- [x] Mock mode still renders fixture cards
+- [x] One non-mock browser check shows at least patient-count and today’s-appointment cards for
   `practice.admin@example.test` after DATA-002 seed
-- [ ] `docs/product/analytics.md` and the capability-matrix analytics row match the shipped live
+- [x] `docs/product/analytics.md` and the capability-matrix analytics row match the shipped live
   API (still no HIPAA / live-video / payments claims)
 
 ## Dependencies
@@ -113,7 +113,14 @@ Writing this spec is not a version bump.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Live `dashboardRealAPI.getOverview` calls Nest `GET /dashboard/overview` with
+  the BE-009 bearer (`apiFetch` + `nestApiBaseUrl`), unwraps `DashboardOverviewRdo` onto existing
+  `DashboardOverview` types (drops `synthetic`; no `trend`). Deleted leftover Next BFF
+  `apps/web/src/app/api/dashboard/overview/route.ts`. Mock fixtures and `filterMetricsForRole`
+  unchanged.
+- Tests: `apps/web/src/lib/api/dashboard-api.test.ts` (Bearer, Nest path, no client `practiceId`,
+  no satisfaction). `apps/web/e2e/dashboard-live.spec.ts` for practice admin patient-count and
+  today’s-appointment cards. Mock Playwright stays on mocks.
 - PR:
-- Notes: Pending M10 implementation.
+- Notes: Version 0.61.0 → 0.62.0 (MINOR, live dashboard cards). `analytics.mock-overview-cards`
+  shipped; extra chart widgets remain unscheduled.

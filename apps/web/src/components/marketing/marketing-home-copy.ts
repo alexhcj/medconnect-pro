@@ -29,7 +29,7 @@ export const MARKETING_HOME_MODULES = {
 		},
 		{
 			title: 'Analytics',
-			description: 'Mock dashboard overview cards. No live Nest overview API.',
+			description: 'Live dashboard overview cards. Synthetic demo aggregates, not a warehouse.',
 		},
 		{
 			title: 'Administration',

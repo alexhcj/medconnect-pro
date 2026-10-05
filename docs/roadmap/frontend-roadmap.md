@@ -14,10 +14,10 @@ Slices below are sequencing, not a calendar independent of
 
 ## Slice 2 — Dashboard product surfaces (M10)
 
-Not closed with M0–M7. Owned by **M10**. Mock mode still renders overview cards until FE-024.
+Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards ([FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md), shipped). Mock mode still renders fixtures.
 
 - analytics API ([BE-011](../tasks/backend/BE-011-dashboard-overview-api.md), shipped) and live
-  cards ([FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md));
+  cards ([FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md), shipped);
 - bounded seed ([DATA-002](../tasks/backend/DATA-002-bounded-synthetic-seed.md), shipped);
 - notifications UI ([FE-025](../tasks/frontend/FE-025-notifications-ui.md); BE-008 HTTP exists;
   [BE-012](../tasks/backend/BE-012-notification-producers.md) producers);

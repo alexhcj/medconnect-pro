@@ -27,5 +27,5 @@ M0–M7 domain HTTP listed above is in the repository. M8 is frontend marketing 
 not a new backend domain. **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** —
 AWS account unavailable (close audit found no missing IDs; not closed; not cancelled;
 INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). Next
-product module is **M10** (DATA-002, BE-011 shipped; BE-012, BE-013, plus FE-024–FE-026). Local product
+product module is **M10** (DATA-002, BE-011, FE-024 shipped; BE-012, BE-013, FE-025, FE-026 pending). Local product
 work does not wait on AWS.

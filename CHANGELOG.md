@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.62.0] - 2026-10-05
+
+### Added
+
+- Live dashboard overview cards (FE-024): with mocks off, `/dashboard` loads Nest
+  `GET /dashboard/overview` using the BE-009 bearer session. Leftover Next.js cookie BFF
+  `/api/dashboard/overview` is removed. Mock fixtures and role filter stay for
+  `NEXT_PUBLIC_USE_MOCKS=true`. Live payload omits `patient_satisfaction`. Synthetic demo data
+  only; never real PHI.
+
 ## [0.61.0] - 2026-10-05
 
 ### Added

@@ -40,8 +40,8 @@ export const MARKETING_PLATFORM_MODULES = {
 		},
 		{
 			title: 'Analytics',
-			description: 'Mock dashboard overview cards.',
-			status: 'No live Nest overview API.',
+			description: 'Live dashboard overview cards (synthetic demo aggregates).',
+			status: 'Not a warehouse or HIPAA analytics.',
 			href: '/platform/analytics',
 		},
 		{

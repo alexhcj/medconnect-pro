@@ -53,11 +53,10 @@ Shipped demo milestones **M0–M8**, plus **M9** hosting contracts and workflows
 
 Live Nest integration covers login/logout/refresh, patients, clinical lists, document
 list/download, appointments, telehealth session create/join/end, billing invoices, admin users,
-and admin audit. Dual mock/live frontend is intentional.
+admin audit, and dashboard overview cards. Dual mock/live frontend is intentional.
 
 Not in this release: production OAuth, live telehealth media, hosted payments, claims
-submission, notifications UI, live dashboard analytics API (`GET /dashboard/overview`), Redis,
-or HIPAA certification. See **Known limitations**.
+submission, notifications UI, Redis, or HIPAA certification. See **Known limitations**.
 
 ## Frontend
 
@@ -197,7 +196,6 @@ Canonical documentation is `/docs`. Start with:
   database, not an isolated backend per pull request.
 - **Mock identity, not production OAuth.**
 - **No notifications UI** (Nest notification domain HTTP exists; UI unwired).
-- **No live dashboard analytics API** (`GET /dashboard/overview` is not integrated).
 - **No Redis, SNS/SQS, or custom KMS hierarchy** as live platform services.
 - **Operator apply/connect** (Terraform, Amplify console, GitHub `production` environment)
   remains required until INFRA-013 records production as live.

@@ -23,7 +23,7 @@ Columns:
 | Clinical / EHR foundation | [patient-management](../product/patient-management.md) | Yes (lists on patient profile) | Yes, as foundation | External EHR integrations |
 | Telehealth | [telehealth](../product/telehealth.md) | Session shell (create/join/end, waiting room placeholders) | Concept/demo — not live video | Daily / WebRTC, chat, recording, signaling |
 | Billing | [billing](../product/billing.md) | Invoice list/detail | Concept/demo for payments and claims; invoices are real demo data | Hosted payments, claims submission, EDI |
-| Analytics | [analytics](../product/analytics.md) | Mock dashboard overview cards; Nest `GET /dashboard/overview` exists | Concept/demo; do not claim live dashboard cards until FE-024 | M10: FE-024 (DATA-002, BE-011 shipped) |
+| Analytics | [analytics](../product/analytics.md) | Live Nest dashboard overview cards; mock fixtures when mocks on | Qualified — demo cards, not a warehouse or HIPAA analytics | Extra chart widgets remain unscheduled |
 | Notifications | [notifications](../product/notifications.md) | Nest domain HTTP exists; UI unwired | Do not present a notification center as shipped | M10: FE-025, BE-012 (DATA-002 seed) |
 | Administration | [administration](../product/administration.md) | User directory + audit viewer | Yes, with those limits | M10 role assignment (BE-013, FE-026); security-events HTTP remains M11 |
 | RBAC, tenant isolation, audit, document ACL | [security](../product/security.md) | Yes (demo patterns) | Yes, as implemented engineering patterns | — |
@@ -34,8 +34,8 @@ Columns:
 ## Copy examples
 
 Allowed: “appointment-linked telehealth session shell”; “invoice list with labeled payment and
-claims boundaries”; “mock dashboard overview cards”; “security-focused architecture”; “synthetic
-demo data”.
+claims boundaries”; “live dashboard overview cards (synthetic demo aggregates)”; “security-focused
+architecture”; “synthetic demo data”.
 
 Not allowed: “live video visits”; “accept payments”; “HIPAA compliant”; “production OAuth”;
 “hosted on AWS” (until a later deploy milestone ships).

@@ -28,7 +28,7 @@ Top-level marketing nav stays Home, Platform, Security, About, Demo unless this 
 | `/platform/appointments` | Calendar, appointments, availability | FE-021 |
 | `/platform/telehealth` | Virtual-visit workflow (session shell, not live video) | FE-021 |
 | `/platform/billing` | Invoices and labeled payment/claims boundaries | FE-021 |
-| `/platform/analytics` | Dashboard metrics as they exist (mock overview cards) | FE-021 |
+| `/platform/analytics` | Dashboard metrics as they exist (live Nest overview cards) | FE-021 |
 | `/platform/administration` | Users and audit viewer (no role PATCH) | FE-021 |
 
 Use `/platform/appointments` (not `/platform/scheduling`) so the URL matches the existing FE-017

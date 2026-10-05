@@ -50,8 +50,8 @@ export const MARKETING_DEMO_WALKTHROUGH = {
 		{
 			title: 'Analytics',
 			description:
-				'Mock dashboard overview cards only. No live Nest dashboard overview API.',
-			detail: 'Concept/demo status on the public site.',
+				'Live dashboard overview cards from Nest. Synthetic demo aggregates, not a warehouse.',
+			detail: 'Qualified demo status on the public site.',
 			status: {label: '/platform/analytics', href: '/platform/analytics'},
 		},
 		{

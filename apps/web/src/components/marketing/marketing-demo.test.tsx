@@ -78,7 +78,7 @@ describe('MarketingDemo', () => {
 
 		expect(screen.getByText(/Not live video/)).toBeInTheDocument();
 		expect(screen.getByText(/not hosted payments/)).toBeInTheDocument();
-		expect(screen.getByText(/No live Nest dashboard overview API/)).toBeInTheDocument();
+		expect(screen.getByText(/Synthetic demo aggregates, not a warehouse/)).toBeInTheDocument();
 		expect(screen.getByText(/Role assignment HTTP is not shipped/)).toBeInTheDocument();
 		expect(screen.getByText(/This is not a second sign-in form/)).toBeInTheDocument();
 		expect(screen.queryByText(/HIPAA compliant/i)).not.toBeInTheDocument();

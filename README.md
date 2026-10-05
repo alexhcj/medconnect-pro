@@ -21,7 +21,7 @@ Healthcare-oriented and HIPAA-oriented describe demonstrated engineering pattern
 ## Screenshots
 
 Synthetic demo screens from the authenticated app. Not a production medical record. Dashboard
-cards are mock; telehealth is a session shell (not live video); identity is a labeled mock IdP.
+cards are live Nest aggregates in `dev:real` (fixture cards when mocks are on); telehealth is a session shell (not live video); identity is a labeled mock IdP.
 
 <p align="center">
   <img src="./apps/web/public/marketing/patients.png" alt="Patients directory with synthetic demo records" width="100%">
@@ -72,7 +72,7 @@ What you can demonstrate **today**. Statused catalog:
 | Scheduling | Calendar, appointments, provider availability | No waitlist or check-in / check-out |
 | Telehealth | Create, join, and end an appointment-linked session shell | Not live video, Daily media, chat, or recording |
 | Billing | Invoice list and detail | Not hosted payments or claims submission |
-| Analytics | Mock dashboard overview cards | No Nest `GET /dashboard/overview` |
+| Analytics | Live Nest dashboard overview cards | Synthetic demo aggregates; not a warehouse or HIPAA analytics |
 | Administration | User directory and audit viewer | No role assignment HTTP or security-events HTTP |
 | Security | Server-side RBAC, tenant isolation (including RLS), audit logging, document ACL | Not HIPAA certification |
 
@@ -151,7 +151,8 @@ Application version **0.59.0**. Snapshot:
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live
 video, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
-M10 (pending) owns notifications UI, live dashboard analytics API, and role assignment HTTP.
+M10 owns notifications UI and role assignment HTTP (DATA-002, BE-011, and FE-024 live dashboard
+overview are shipped).
 
 ## Deployment / demo
 
@@ -263,9 +264,8 @@ npm run dev:real
 `npm run dev` starts Next.js using `.env.development` (mock-first in the example).
 `npm run dev:real` sets `NEXT_PUBLIC_USE_MOCKS=false`. The browser then calls Nest at
 `NEXT_PUBLIC_API_BASE_URL` (default `http://localhost:3001`) with the bearer from `POST /auth/login`.
-When calling the Nest API from Next.js BFF routes, set `API_BASE_URL=http://localhost:3001` in
-`.env.development`. Live dashboard overview metrics still use that BFF path and are **not** a
-shipped Nest route; use mocks for overview cards. The same commands exist as `dev:web` aliases.
+Live dashboard overview cards use Nest `GET /dashboard/overview`. Mock mode still renders fixtures.
+The same commands exist as `dev:web` aliases.
 
 ### Local versus hosted
 

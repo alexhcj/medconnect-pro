@@ -112,7 +112,7 @@ describe('capability-matrix copy', () => {
 		expect(screen.getByText('Claims stay a labeled boundary. Not shipped.')).toBeInTheDocument();
 
 		rerender(<MarketingFeaturePage slug="analytics" />);
-		expect(screen.getByText('No live Nest GET /dashboard/overview.')).toBeInTheDocument();
+		expect(screen.getByText('Synthetic demo aggregates. Not a warehouse or HIPAA analytics.')).toBeInTheDocument();
 		expect(
 			screen.getByText(/Do not present a notification center as shipped/),
 		).toBeInTheDocument();

@@ -56,7 +56,7 @@ export const FEATURE_PAGE_METADATA: Record<
 	analytics: {
 		title: 'Analytics',
 		description:
-			'Mock dashboard overview cards only. No live Nest GET /dashboard/overview. Not a notification center.',
+			'Live dashboard overview cards from Nest GET /dashboard/overview. Synthetic demo aggregates, not a warehouse. Not a notification center.',
 	},
 	administration: {
 		title: 'Administration',
@@ -357,9 +357,9 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 	analytics: {
 		hero: {
 			headingId: 'analytics-hero-heading',
-			eyebrow: 'Analytics · mock cards',
+			eyebrow: 'Analytics · demo cards',
 			heading: 'Dashboard overview as it exists',
-			body: 'Mock dashboard overview cards only. No live Nest GET /dashboard/overview. Do not present a notification center as shipped.',
+			body: 'Live dashboard overview cards from Nest GET /dashboard/overview. Synthetic demo aggregates only. Not a warehouse. Do not present a notification center as shipped.',
 			...FEATURE_PAGE_HERO_CTAS,
 		},
 		capabilities: {
@@ -367,16 +367,16 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			headingId: 'analytics-capabilities',
 			items: [
 				{
-					title: 'Mock overview cards',
-					description: 'Dashboard metrics as mock cards in the demo.',
+					title: 'Overview cards',
+					description: 'Dashboard metrics from Nest in live mode; fixtures when mocks are on.',
 				},
 				{
 					title: 'Honest status',
-					description: 'No live Nest GET /dashboard/overview.',
+					description: 'Synthetic demo aggregates. Not a warehouse or HIPAA analytics.',
 				},
 				{
-					title: 'Planned',
-					description: 'Dashboard analytics API is frontend Slice 2, not shipped.',
+					title: 'Limits',
+					description: 'Extra chart widgets remain unscheduled. Not a notification center.',
 				},
 			],
 		},
@@ -402,12 +402,12 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 					description: 'The overview lives on the authenticated dashboard.',
 				},
 				{
-					title: 'Read mock metric cards',
-					description: 'Cards are mock fixtures. Synthetic data only.',
+					title: 'Read overview cards',
+					description: 'Cards show session-tenant aggregates. Synthetic data only.',
 				},
 				{
-					title: 'Treat live overview API as planned',
-					description: 'No live Nest GET /dashboard/overview in this demo.',
+					title: 'Treat extra charts as unscheduled',
+					description: 'No warehouse or HIPAA analytics in this demo.',
 				},
 			],
 		},

@@ -11,8 +11,9 @@ expansion is still unshipped.
 
 ## Portfolio MVP
 
-Shipped as M0–M3 plus basic audit. Basic analytics remain mock overview cards only until
-**M10** FE-024 (Nest `GET /dashboard/overview` is BE-011, shipped).
+Shipped as M0–M3 plus basic audit. Basic analytics are live Nest overview cards
+([FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md); Nest `GET /dashboard/overview` is
+[BE-011](../tasks/backend/BE-011-dashboard-overview-api.md), both shipped).
 
 - authentication;
 - dashboard shell;

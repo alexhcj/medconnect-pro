@@ -71,7 +71,7 @@ describe('apiFetch', () => {
 			}),
 		);
 
-		await expect(apiFetch('/api/dashboard/overview')).rejects.toMatchObject({status: 401});
+		await expect(apiFetch('/api/local-route')).rejects.toMatchObject({status: 401});
 		expect(window.location.pathname).not.toContain('login');
 	});
 });
