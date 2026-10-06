@@ -1,6 +1,5 @@
 import {Body, Controller, Get, HttpCode, Param, Post} from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiBody,
 	ApiConflictResponse,
 	ApiCreatedResponse,
@@ -11,6 +10,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {
 	TelehealthSessionCreateRequestRdo,
@@ -25,7 +25,7 @@ import {
 import {TelehealthSessionService} from './telehealth-session.service.js';
 
 @ApiTags('telehealth')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('telehealth/sessions')

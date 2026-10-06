@@ -4,6 +4,7 @@ import {
 	DEFAULT_LOCAL_WEB_ORIGIN,
 	isCorsOriginAllowed,
 	productionCorsRejection,
+	resolveAppEnv,
 	resolveCorsOriginPolicy,
 	splitOriginEntries,
 } from './cors-origins.js';
@@ -88,5 +89,14 @@ describe('resolveCorsOriginPolicy', () => {
 	it('allows non-browser requests with no Origin header', () => {
 		const policy = resolveCorsOriginPolicy({appEnv: 'production', webOrigin: 'https://app.example.com'});
 		expect(isCorsOriginAllowed(policy, undefined)).toBe(true);
+	});
+});
+
+describe('resolveAppEnv', () => {
+	it('treats missing and unknown APP_ENV as local', () => {
+		expect(resolveAppEnv({})).toBe('local');
+		expect(resolveAppEnv({APP_ENV: 'development'})).toBe('local');
+		expect(resolveAppEnv({APP_ENV: 'preview'})).toBe('preview');
+		expect(resolveAppEnv({APP_ENV: 'production'})).toBe('production');
 	});
 });

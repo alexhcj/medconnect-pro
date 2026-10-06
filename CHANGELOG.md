@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.67.0] - 2026-10-06
+
+### Added
+
+- HttpOnly cookie session HTTP (BE-014): Nest issues `mcp_access` / `mcp_refresh` (and `mcp_mfa`
+  on challenge) on mock IdP login, refresh, and MFA verify, and clears them on logout / logout-all.
+  `AuthGuard` accepts the session cookie or `Authorization: Bearer`. CORS allows credentialed
+  requests from the existing web origin allowlist. Hosted `SameSite=None` cookie-auth mutations
+  require `X-CSRF-Token`. JSON token pairs remain for machine clients. Not production OAuth or a
+  Next identity BFF. Live Next storage cutover remains FE-027.
+
 ## [0.66.2] - 2026-10-06
 
 ### Fixed

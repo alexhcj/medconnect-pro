@@ -1,18 +1,18 @@
 import {Controller, Get} from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {ClaimListRdo} from './billing.rdo.js';
 import {BillingService} from './billing.service.js';
 
 @ApiTags('billing')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('billing/claims')

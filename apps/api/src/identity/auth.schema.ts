@@ -8,14 +8,17 @@ export const loginSchema = z.object({
 
 export type LoginBody = z.infer<typeof loginSchema>;
 
-export const refreshSchema = z.object({
-	refreshToken: z.string().min(1),
-});
+export const refreshSchema = z.preprocess(
+	(value) => (value == null ? {} : value),
+	z.object({
+		refreshToken: z.string().min(1).optional(),
+	}),
+);
 
 export type RefreshBody = z.infer<typeof refreshSchema>;
 
 export const mfaVerifySchema = z.object({
-	mfaToken: z.string().min(1),
+	mfaToken: z.string().min(1).optional(),
 	code: z.string().min(1),
 });
 

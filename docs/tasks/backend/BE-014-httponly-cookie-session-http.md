@@ -3,7 +3,7 @@ id: BE-014
 type: task
 area: backend
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 5
 dependencies: [BE-009]
@@ -18,14 +18,14 @@ related_docs:
     BE-009-identity-and-access-http.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 7387e8ab-87a6-468d-8429-4924cc4e2261
+  identifier: MEDCONNECT-80
 ---
 
 # BE-014 — HttpOnly cookie session HTTP
@@ -86,14 +86,14 @@ Does not implement production OAuth ([ADR-003](../../decisions/ADR-003-authentic
 
 ## Acceptance Criteria
 
-- [ ] Login, refresh, and MFA verify set HttpOnly session cookies
-- [ ] Cookies are `Secure` when `APP_ENV` is not local; `SameSite` matches local vs hosted
-- [ ] Logout (and logout-all) clear the session cookies
-- [ ] Refresh rotation still revokes reuse
-- [ ] CORS allows credentialed requests from the existing web origin allowlist
-- [ ] `AuthGuard` authenticates from cookie or Bearer
-- [ ] OpenAPI documents cookie and bearer schemes
-- [ ] Existing auth HTTP tests pass via cookie and/or bearer (`npm run test:api`)
+- [x] Login, refresh, and MFA verify set HttpOnly session cookies
+- [x] Cookies are `Secure` when `APP_ENV` is not local; `SameSite` matches local vs hosted
+- [x] Logout (and logout-all) clear the session cookies
+- [x] Refresh rotation still revokes reuse
+- [x] CORS allows credentialed requests from the existing web origin allowlist
+- [x] `AuthGuard` authenticates from cookie or Bearer
+- [x] OpenAPI documents cookie and bearer schemes
+- [x] Existing auth HTTP tests pass via cookie and/or bearer (`npm run test:api`)
 
 ## Dependencies
 
@@ -127,7 +127,12 @@ change on 0.x).
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Nest `Set-Cookie` on login/refresh/MFA verify (`mcp_access`, `mcp_refresh`,
+  `mcp_mfa`); logout/logout-all clear cookies. CORS `credentials: true`. `AuthGuard` accepts
+  cookie or Bearer (Bearer wins). Hosted cookie-auth CSRF is `mcp_csrf` + `X-CSRF-Token`. JSON
+  token pairs remain for machine clients. Not OAuth, not a Next BFF.
+- Tests: session-cookie and CSRF unit tests; identity HTTP cookie-jar coverage; existing Bearer
+  auth tests; OpenAPI cookie-or-bearer contract (`npm run test:api`).
 - PR:
-- Notes:
+- Notes: Live Next storage cutover remains FE-027. Frontend-architecture.md and deploy.md cookie
+  forbid sentences are owned by FE-027.

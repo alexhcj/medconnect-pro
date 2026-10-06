@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import type {Request, Response} from 'express';
 import {
+	CsrfInvalidError,
 	InvalidCredentialsError,
 	MembershipUnresolvedError,
 	MfaInvalidError,
@@ -89,6 +90,9 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 		}
 		if (exception instanceof SessionInvalidError) {
 			return this.authError(HttpStatus.UNAUTHORIZED, 'UNAUTHENTICATED', 'Authentication is required');
+		}
+		if (exception instanceof CsrfInvalidError) {
+			return this.authError(HttpStatus.FORBIDDEN, 'FORBIDDEN', 'CSRF validation failed');
 		}
 		if (exception instanceof MfaInvalidError) {
 			return this.authError(HttpStatus.UNAUTHORIZED, 'UNAUTHENTICATED', 'MFA verification failed');

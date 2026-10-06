@@ -3,16 +3,9 @@ import {
 	StandardSchemaValidationPipe,
 	type INestApplication,
 } from '@nestjs/common';
-import {isCorsOriginAllowed, resolveCorsOriginPolicy} from './cors-origins.js';
+import {isCorsOriginAllowed, resolveAppEnv, resolveCorsOriginPolicy} from './cors-origins.js';
 import {EnvelopeExceptionFilter, standardSchemaIssuesToDetails} from './http-exception.filter.js';
 import {RequestLoggingInterceptor} from './request-logging.interceptor.js';
-
-function resolveAppEnv(): 'local' | 'preview' | 'production' {
-	if (process.env.APP_ENV === 'preview' || process.env.APP_ENV === 'production') {
-		return process.env.APP_ENV;
-	}
-	return 'local';
-}
 
 export function configureApp(app: INestApplication): void {
 	app.enableShutdownHooks();
@@ -29,7 +22,8 @@ export function configureApp(app: INestApplication): void {
 			callback(null, isCorsOriginAllowed(corsPolicy, origin));
 		},
 		methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-		allowedHeaders: ['Authorization', 'Content-Type', 'X-Correlation-ID'],
+		allowedHeaders: ['Authorization', 'Content-Type', 'X-Correlation-ID', 'X-CSRF-Token'],
+		credentials: true,
 	});
 	app.useGlobalPipes(
 		new StandardSchemaValidationPipe({

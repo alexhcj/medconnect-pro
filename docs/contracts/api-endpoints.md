@@ -24,14 +24,19 @@ Target identity is OAuth 2.0 / OIDC Authorization Code + PKCE with MFA and refre
 [identity-and-access.md](identity-and-access.md)). The production-oriented user login is the IdP
 authorize/callback flow, not a custom password IdP.
 
-The application still exposes a session/BFF surface for token refresh, logout, and (until an IdP
-exists) a mock stand-in:
+The application still exposes a mock IdP session surface (not a Next.js identity BFF) for token
+refresh, logout, and login until an IdP exists:
 
-- `POST /auth/login` — mock IdP / BFF stand-in only; not the target production identity protocol
-- `POST /auth/refresh`
-- `POST /auth/logout`
-- `POST /auth/logout-all`
-- `POST /auth/mfa/verify`
+- `POST /auth/login` — mock IdP stand-in only; not the target production identity protocol. Sets
+  HttpOnly session cookies and still returns a JSON token pair for machine clients.
+- `POST /auth/refresh` — body `refreshToken` or `mcp_refresh` cookie
+- `POST /auth/logout` — cookie or Bearer
+- `POST /auth/logout-all` — cookie or Bearer
+- `POST /auth/mfa/verify` — body `mfaToken` or `mcp_mfa` cookie
+
+Protected routes accept the `mcp_access` cookie **or** `Authorization: Bearer`. Browser clients
+should send `credentials: 'include'`. Hosted cookie-authenticated mutations also send
+`X-CSRF-Token`. Live Next storage cutover is [FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md).
 
 Authorization, tenant resolution, and resource checks on every protected resource follow the
 identity-and-access contract. Do not duplicate the permission catalog here.
@@ -72,7 +77,8 @@ Documents are a separate access-control boundary ([SEC-004](../tasks/security/SE
 Implemented Nest analytics surface (**M10** [BE-011](../tasks/backend/BE-011-dashboard-overview-api.md),
 live UI [FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md)). Any authenticated member of
 the session tenant may read it; which cards appear follows role. Live Next.js calls Nest
-`GET /dashboard/overview` with the BE-009 bearer. Mock mode still renders overview cards from
+`GET /dashboard/overview` with the BE-009 bearer until [FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md)
+switches live fetch to credentialed cookies. Mock mode still renders overview cards from
 fixtures.
 
 - `GET /dashboard/overview` — session-tenant aggregates (`synthetic` always true); omits

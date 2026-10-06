@@ -1,6 +1,5 @@
 import {Body, Controller, Get, Param, Patch} from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiBody,
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
@@ -9,6 +8,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {
 	NotificationListRdo,
@@ -25,7 +25,7 @@ import {
 import {NotificationService} from './notification.service.js';
 
 @ApiTags('notifications')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('notifications')

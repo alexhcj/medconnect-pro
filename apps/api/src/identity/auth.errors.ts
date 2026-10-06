@@ -12,6 +12,13 @@ export class SessionInvalidError extends Error {
 	}
 }
 
+export class CsrfInvalidError extends Error {
+	constructor() {
+		super('CSRF validation failed');
+		this.name = 'CsrfInvalidError';
+	}
+}
+
 export class MfaInvalidError extends Error {
 	constructor() {
 		super('MFA verification failed');

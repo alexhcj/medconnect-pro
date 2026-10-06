@@ -1,6 +1,5 @@
 import {Body, Controller, Get, Param, Patch} from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiBody,
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
@@ -9,7 +8,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import {RequirePermissions} from '../identity/auth.decorators.js';
+import {ApiSessionAuth, RequirePermissions} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {
 	PracticeUserListRdo,
@@ -25,7 +24,7 @@ import {
 import {PracticeUserService} from './practice-user.service.js';
 
 @ApiTags('admin')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('admin/users')

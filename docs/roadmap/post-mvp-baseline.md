@@ -18,7 +18,7 @@ IDs; M9 is **not closed** and **not cancelled**.
 are shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
 is pending and blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
 which remains paused. **M10** is shipped (DATA-002, BE-011, FE-024, BE-012, FE-025,
-BE-013, FE-026). Next product module is **M11** (planned; BE-014, FE-027, FE-028, BE-015,
+BE-013, FE-026). Next product module is **M11** (BE-014 shipped; FE-027, FE-028, BE-015,
 FE-029, SEC-005 pending). Local product
 work does not wait on AWS. Not part of M8.
 

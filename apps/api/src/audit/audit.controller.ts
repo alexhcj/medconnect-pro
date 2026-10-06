@@ -1,20 +1,19 @@
 import {Controller, Get, Query} from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import {RequirePermissions} from '../identity/auth.decorators.js';
+import {ApiSessionAuth, RequirePermissions} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {AuditEventSearchResultRdo} from './audit.rdo.js';
 import {auditEventListQuerySchema, type AuditEventListQuery} from './audit.schema.js';
 import {AuditService} from './audit.service.js';
 
 @ApiTags('admin')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('admin/audit-events')

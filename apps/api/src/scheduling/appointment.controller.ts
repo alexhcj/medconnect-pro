@@ -10,7 +10,6 @@ import {
 	Query,
 } from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiBody,
 	ApiConflictResponse,
 	ApiCreatedResponse,
@@ -22,6 +21,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {
 	AppointmentCreateRequestRdo,
@@ -42,7 +42,7 @@ import {
 import {AppointmentService} from './appointment.service.js';
 
 @ApiTags('appointments')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('appointments')

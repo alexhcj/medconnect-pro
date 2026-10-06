@@ -3,6 +3,13 @@ export const AMPLIFY_PREVIEW_HOST_PATTERN = 'https://*.amplifyapp.com';
 
 export type AppEnvName = 'local' | 'preview' | 'production';
 
+export function resolveAppEnv(env: NodeJS.ProcessEnv = process.env): AppEnvName {
+	if (env.APP_ENV === 'preview' || env.APP_ENV === 'production') {
+		return env.APP_ENV;
+	}
+	return 'local';
+}
+
 export type CorsOriginPolicy = {
 	exact: ReadonlySet<string>;
 	allowAmplifyPreviewHosts: boolean;

@@ -1,6 +1,5 @@
 import {Body, Controller, HttpCode, Post} from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiBody,
 	ApiConflictResponse,
 	ApiCreatedResponse,
@@ -10,13 +9,14 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {PaymentCreateRequestRdo, PaymentRdo} from './billing.rdo.js';
 import {paymentCreateSchema, type PaymentCreateBody} from './billing.schema.js';
 import {BillingService} from './billing.service.js';
 
 @ApiTags('billing')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('billing/payments')

@@ -95,15 +95,17 @@ Copy a template to a `*.local.json` file (gitignored) if you need a personal tok
 
 ### Authorization
 
-Protected routes use HTTP Bearer (`Authorization: Bearer <token>`), consistent with
-[ADR-003](../decisions/ADR-003-authentication.md). In Postman, set the collection or request auth
-to Bearer Token and the token value to `{{accessToken}}`.
+Protected routes accept HTTP Bearer (`Authorization: Bearer <token>`) **or** the HttpOnly
+`mcp_access` cookie ([BE-014](../tasks/backend/BE-014-httponly-cookie-session-http.md)), consistent
+with [ADR-003](../decisions/ADR-003-authentication.md) remaining the production IdP target. In
+Postman, keep collection auth as Bearer Token and the token value as `{{accessToken}}`. Cookie
+auth is documented in OpenAPI for browser clients; do not require Postman to send cookies.
 
 Do not weaken backend authentication to make Postman easier. Do not commit tokens.
 
 Obtain a bearer token from the mock IdP stand-in (`POST /auth/login` on the Nest API) or, later,
 from the OAuth authorization-code flow. Do not commit it. Platform health and readiness do not
-require a token. Protected routes, including logout, require `Authorization: Bearer`.
+require a token. Protected routes, including logout, accept Bearer or the session cookie.
 
 ### Import and update
 

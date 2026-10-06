@@ -24,16 +24,22 @@ export class LoginRequestRdo {
 @ApiSchema({name: 'RefreshRequest'})
 export class RefreshRequestRdo {
 	@ApiProperty({
-		description: 'Opaque refresh token from login or the previous refresh. Not a production OAuth refresh token.',
+		required: false,
+		description:
+			'Opaque refresh token from login or the previous refresh. Omit when the HttpOnly mcp_refresh cookie is present. Not a production OAuth refresh token.',
 		example: 'opaque-refresh-token',
 	})
-	refreshToken!: string;
+	refreshToken?: string;
 }
 
 @ApiSchema({name: 'MfaVerifyRequest'})
 export class MfaVerifyRequestRdo {
-	@ApiProperty({example: 'opaque-mfa-token'})
-	mfaToken!: string;
+	@ApiProperty({
+		required: false,
+		example: 'opaque-mfa-token',
+		description: 'Omit when the HttpOnly mcp_mfa cookie is present.',
+	})
+	mfaToken?: string;
 
 	@ApiProperty({
 		description: 'Mock MFA code. Not a production TOTP secret.',

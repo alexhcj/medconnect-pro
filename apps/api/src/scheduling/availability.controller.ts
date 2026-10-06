@@ -1,6 +1,5 @@
 import {Controller, Get, Param, Query} from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -8,6 +7,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {ProviderAvailabilityRdo} from './appointment.rdo.js';
 import {
@@ -19,7 +19,7 @@ import {
 import {AppointmentService} from './appointment.service.js';
 
 @ApiTags('providers')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('providers')

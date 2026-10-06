@@ -40,6 +40,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -140,6 +143,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -250,6 +256,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -342,6 +351,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -539,6 +551,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -607,6 +622,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -812,6 +830,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -880,6 +901,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -999,6 +1023,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -1067,6 +1094,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -1170,6 +1200,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -1238,6 +1271,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -1368,6 +1404,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -1436,6 +1475,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -1566,6 +1608,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -1689,6 +1734,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -1804,6 +1852,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -1872,6 +1923,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -2003,6 +2057,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -2062,6 +2119,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -2152,6 +2212,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -2200,6 +2263,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -2247,6 +2313,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -2321,6 +2390,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -2389,6 +2461,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -2478,6 +2553,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -2546,6 +2624,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -2626,6 +2707,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -2695,6 +2779,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -2742,6 +2829,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -2863,6 +2953,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -2931,6 +3024,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -3034,6 +3130,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -3081,6 +3180,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -3150,6 +3252,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -3227,6 +3332,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -3320,6 +3428,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -3368,6 +3479,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -3379,7 +3493,7 @@
     },
     "/auth/login": {
       "post": {
-        "description": "Password-shaped stand-in for a mock identity provider. Not the production OAuth 2.0 authorization-code + PKCE flow. Practice selection is limited to server-side memberships.",
+        "description": "Password-shaped stand-in for a mock identity provider. Not the production OAuth 2.0 authorization-code + PKCE flow. Practice selection is limited to server-side memberships. Browser clients receive HttpOnly session cookies; JSON token pairs remain for machine clients.",
         "operationId": "AuthController_login",
         "parameters": [],
         "requestBody": {
@@ -3459,7 +3573,7 @@
     },
     "/auth/refresh": {
       "post": {
-        "description": "Issues a new opaque access token and refresh token. Reuse of a rotated refresh token revokes that session.",
+        "description": "Issues a new opaque access token and refresh token. Reuse of a rotated refresh token revokes that session. The refresh token may be sent in the JSON body or the HttpOnly mcp_refresh cookie.",
         "operationId": "AuthController_refresh",
         "parameters": [],
         "requestBody": {
@@ -3473,10 +3587,7 @@
                     "type": "string",
                     "minLength": 1
                   }
-                },
-                "required": [
-                  "refreshToken"
-                ]
+                }
               }
             }
           }
@@ -3511,7 +3622,7 @@
     },
     "/auth/mfa/verify": {
       "post": {
-        "description": "Completes mock login when the fixture account requires MFA. Not production TOTP.",
+        "description": "Completes mock login when the fixture account requires MFA. Not production TOTP. The MFA token may be sent in the JSON body or the HttpOnly mcp_mfa cookie.",
         "operationId": "AuthController_verifyMfa",
         "parameters": [],
         "requestBody": {
@@ -3531,7 +3642,6 @@
                   }
                 },
                 "required": [
-                  "mfaToken",
                   "code"
                 ]
               }
@@ -3587,6 +3697,9 @@
         },
         "security": [
           {
+            "cookie": []
+          },
+          {
             "bearer": []
           }
         ],
@@ -3616,6 +3729,9 @@
           }
         },
         "security": [
+          {
+            "cookie": []
+          },
           {
             "bearer": []
           }
@@ -3722,6 +3838,12 @@
         "bearerFormat": "Opaque",
         "type": "http",
         "description": "Opaque mock access token (Authorization: Bearer). Stand-in for a future OAuth 2.0 access token, not a production IdP credential. Platform health and readiness do not require a token. Never commit tokens."
+      },
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "mcp_access",
+        "description": "HttpOnly mock session cookie. Alternative to Bearer for browser clients. Not a production IdP session. Never commit cookie values."
       }
     },
     "schemas": {

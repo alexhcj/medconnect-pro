@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {
-	ApiBearerAuth,
 	ApiBody,
 	ApiConsumes,
 	ApiCreatedResponse,
@@ -24,6 +23,7 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type {Request} from 'express';
+import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {MAX_DOCUMENT_BYTES} from './document-file.js';
 import {DocumentFileInvalidError} from './document.errors.js';
@@ -42,7 +42,7 @@ import {
 import {DocumentService} from './document.service.js';
 
 @ApiTags('documents')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('patients/:id/documents')

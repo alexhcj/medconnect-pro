@@ -6,7 +6,7 @@ area: identity-access
 marketing_path: /login
 status: partial
 claim: "Mock IdP sessions. Labeled mock identity, not production OAuth."
-related_tasks: [FE-010, BE-009, SEC-001, FE-028]
+related_tasks: [FE-010, BE-009, BE-014, SEC-001, FE-027, FE-028]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md
@@ -17,10 +17,10 @@ capabilities:
   - id: identity-access.mock-idp-sessions
     name: Sign in with mock identity
     status: shipped
-    demo: mock IdP login, logout, and opaque bearer sessions
+    demo: mock IdP login/logout; Nest issues HttpOnly cookies and still returns opaque bearer JSON; live Next storage cutover is FE-027
     public: qualified
     planned_next: OAuth 2.0 / OIDC + PKCE (ADR-003)
-    related_tasks: [FE-010, BE-009, SEC-001]
+    related_tasks: [FE-010, BE-009, BE-014, SEC-001, FE-027]
   - id: identity-access.mfa-challenge
     name: MFA challenge
     status: partial
@@ -38,14 +38,15 @@ capabilities:
 
 # Identity and access
 
-Mock IdP HTTP sessions for the demo. Public copy may describe mock identity. It must not
-describe production OAuth, OIDC, or completed MFA.
+Mock IdP HTTP sessions for the demo. Nest issues HttpOnly cookies and still returns opaque bearer
+JSON for machine clients. Live Next still stores bearer tokens until FE-027. Public copy may
+describe mock identity. It must not describe production OAuth, OIDC, or completed MFA.
 
 Demo entry is existing `/login` ([FE-010](../tasks/frontend/FE-010-mock-authentication-ui.md)),
 not a marketing `/sign-in` route.
 
 | ID | Name | Status | Demo | Public |
 | --- | --- | --- | --- | --- |
-| `identity-access.mock-idp-sessions` | Sign in with mock identity | shipped | mock IdP sessions | qualified |
+| `identity-access.mock-idp-sessions` | Sign in with mock identity | shipped | mock IdP sessions; Nest HttpOnly cookies | qualified |
 | `identity-access.mfa-challenge` | MFA challenge | partial | not completed in live UI | no |
 | `identity-access.oauth-oidc-pkce` | Production OAuth 2.0 / OIDC + PKCE | planned | not in the demo | no |

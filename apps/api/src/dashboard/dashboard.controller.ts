@@ -1,18 +1,18 @@
 import {Controller, Get} from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {DashboardOverviewRdo} from './dashboard.rdo.js';
 import {DashboardService} from './dashboard.service.js';
 
 @ApiTags('dashboard')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('dashboard')

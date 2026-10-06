@@ -10,8 +10,11 @@ rules, and session policy live in
 
 ## Identity
 
-**Implemented (demo):** mock IdP email/password, opaque bearer sessions, refresh-token rotation,
-idle/absolute expiry, mock MFA challenge. See [ADR-003](../decisions/ADR-003-authentication.md).
+**Implemented (demo):** mock IdP email/password, opaque bearer sessions **and** Nest HttpOnly
+session cookies (`mcp_access` / `mcp_refresh`, optional `mcp_mfa`), refresh-token rotation,
+idle/absolute expiry, mock MFA challenge. See [ADR-003](../decisions/ADR-003-authentication.md)
+and [BE-014](../tasks/backend/BE-014-httponly-cookie-session-http.md). Live Next still stores
+bearer tokens until [FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md).
 
 **Target, not implemented:**
 
@@ -19,7 +22,7 @@ idle/absolute expiry, mock MFA challenge. See [ADR-003](../decisions/ADR-003-aut
 - OpenID Connect
 - Authorization Code + PKCE
 - production MFA/TOTP or WebAuthn
-- cookie/BFF production session handling
+- production cookie/BFF identity (NextAuth or an IdP-backed BFF)
 
 Mock identity/session must not be described as production identity infrastructure.
 

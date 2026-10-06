@@ -227,18 +227,37 @@ Timeouts below are **demo policy** for implementers, not production SLAs.
 ### Target architecture
 
 - OAuth 2.0 + OpenID Connect, Authorization Code + PKCE ([ADR-003](../decisions/ADR-003-authentication.md)).
-- MFA / TOTP after primary authentication when policy requires it.
+- Production MFA / TOTP or WebAuthn after primary authentication when policy requires it.
 - Short-lived access token (demo default: 15 minutes).
 - Refresh-token rotation on use; refresh lifetime cannot exceed the absolute session cap.
 - Logout (current session) and logout-all (all sessions for the user).
-- Browser session in real mode: `HttpOnly`, `Secure`, `SameSite` cookies. Do not verify backend JWTs
-  or hash passwords in the browser ([package-baseline.md](../package-baseline.md)). Do not add
-  NextAuth as a second identity stack.
+- Do not verify backend JWTs or hash passwords in the browser
+  ([package-baseline.md](../package-baseline.md)). Do not add NextAuth as a second identity stack.
 
-Planned application session/BFF routes are listed in [api-endpoints.md](api-endpoints.md). Those
-routes are not a custom password IdP as the production identity design. The target user-facing
-login is the IdP authorize/callback flow; password-shaped `POST /auth/login` and MFA verify may
-stand in for a mock IdP or BFF until that flow exists.
+Auth routes are listed in [api-endpoints.md](api-endpoints.md). Those routes are not a custom
+password IdP as the production identity design. The target user-facing login is the IdP
+authorize/callback flow; password-shaped `POST /auth/login` and MFA verify stand in for a mock IdP
+until that flow exists.
+
+### Implemented demo session (BE-014)
+
+Nest is the session authority. Browser session cookies are **implemented-demo**, not production
+OAuth or a Next.js BFF:
+
+- `mcp_access` (Path `/`), `mcp_refresh` (Path `/auth`), and `mcp_mfa` (Path `/auth`) are HttpOnly.
+- `Secure` when `APP_ENV` is not `local`. `SameSite=Lax` locally; `SameSite=None` for hosted
+  preview/production (Amplify web origin is cross-site to the ECS API).
+- Login, refresh, and MFA verify set cookies; logout and logout-all clear them.
+- `AuthGuard` accepts the access cookie **or** `Authorization: Bearer`. Bearer wins when both are
+  present. JSON token pairs remain for machine clients, Postman, and smoke tests.
+- Refresh and MFA verify accept the token in the JSON body **or** the matching cookie.
+- CSRF: JSON or multipart `Content-Type` plus the CORS origin allowlist locally. Hosted
+  cookie-authenticated mutations also require `X-CSRF-Token` matching the non-HttpOnly `mcp_csrf`
+  cookie. Bearer clients skip CSRF.
+
+Live Next still persists opaque tokens until
+[FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md). Mock-mode `localStorage` is still
+not the cookie model.
 
 ### Idle, absolute, and concurrent policy
 
@@ -254,5 +273,5 @@ stand in for a mock IdP or BFF until that flow exists.
 ### Mock mode
 
 The frontend may simulate an identity provider and session. Label it as mock. Do not describe it as
-production identity infrastructure. Mock tokens and `localStorage` stand-ins are not the real-mode
-cookie model.
+production identity infrastructure. Mock tokens and `localStorage` stand-ins are not the Nest
+HttpOnly cookie session.

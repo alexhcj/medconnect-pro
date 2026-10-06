@@ -14,6 +14,8 @@ import type {DataSource} from 'typeorm';
 
 const committedSpecPath = join(dirname(fileURLToPath(import.meta.url)), '../openapi/openapi.json');
 
+const sessionSecurity = [{cookie: []}, {bearer: []}];
+
 function loadCommittedSpec(): OpenAPIObject {
 	return JSON.parse(readFileSync(committedSpecPath, 'utf8')) as OpenAPIObject;
 }
@@ -51,50 +53,55 @@ describe('OpenAPI contract', () => {
 		const document = response.body as OpenAPIObject;
 		validateOpenApiDocument(document);
 		expect(document.info.title).toBe('MedConnect Pro API');
+		expect(document.components?.securitySchemes?.cookie).toMatchObject({
+			type: 'apiKey',
+			in: 'cookie',
+			name: 'mcp_access',
+		});
 		expect(document.paths?.['/health']?.get?.security).toBeUndefined();
 		expect(document.paths?.['/ready']?.get?.security).toBeUndefined();
 		expect(document.paths?.['/auth/login']?.post?.security).toBeUndefined();
 		expect(document.paths?.['/auth/refresh']?.post?.security).toBeUndefined();
 		expect(document.paths?.['/auth/mfa/verify']?.post?.security).toBeUndefined();
-		expect(document.paths?.['/auth/logout']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/auth/logout-all']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}']?.patch?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/auth/logout']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/auth/logout-all']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}']?.patch?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/patients/{id}']?.delete).toBeUndefined();
-		expect(document.paths?.['/appointments']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/appointments']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/appointments/{id}']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/appointments/{id}']?.patch?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/appointments/{id}']?.delete?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/providers/{id}/availability']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/history']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/history']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/conditions']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/conditions']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/vitals']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/vitals']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/medications']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/medications']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/documents']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/documents']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/patients/{id}/documents/{documentId}/content']?.get?.security).toEqual([
-			{bearer: []},
-		]);
-		expect(document.paths?.['/telehealth/sessions']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/telehealth/sessions/{id}']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/telehealth/sessions/{id}/join']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/telehealth/sessions/{id}/end']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/billing/invoices']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/billing/invoices']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/billing/invoices/{id}']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/billing/payments']?.post?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/billing/claims']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/admin/audit-events']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/admin/users']?.get?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/admin/users/{id}/roles']?.patch?.security).toEqual([{bearer: []}]);
-		expect(document.paths?.['/dashboard/overview']?.get?.security).toEqual([{bearer: []}]);
+		expect(document.paths?.['/appointments']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/appointments']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/appointments/{id}']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/appointments/{id}']?.patch?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/appointments/{id}']?.delete?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/providers/{id}/availability']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/history']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/history']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/conditions']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/conditions']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/vitals']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/vitals']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/medications']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/medications']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/documents']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/documents']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/patients/{id}/documents/{documentId}/content']?.get?.security).toEqual(
+			sessionSecurity,
+		);
+		expect(document.paths?.['/telehealth/sessions']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/telehealth/sessions/{id}']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/telehealth/sessions/{id}/join']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/telehealth/sessions/{id}/end']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/billing/invoices']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/billing/invoices']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/billing/invoices/{id}']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/billing/payments']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/billing/claims']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/admin/audit-events']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/admin/users']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/admin/users/{id}/roles']?.patch?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/dashboard/overview']?.get?.security).toEqual(sessionSecurity);
 		expect(document.paths).not.toHaveProperty('/providers');
 		expect(document.paths).not.toHaveProperty('/__test/validate');
 		expect(document.paths).not.toHaveProperty('/__test/authz');

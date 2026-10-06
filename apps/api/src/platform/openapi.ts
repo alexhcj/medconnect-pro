@@ -54,6 +54,17 @@ export function createOpenApiDocument(app: INestApplication): OpenAPIObject {
 			},
 			'bearer',
 		)
+		.addCookieAuth(
+			'mcp_access',
+			{
+				type: 'apiKey',
+				in: 'cookie',
+				name: 'mcp_access',
+				description:
+					'HttpOnly mock session cookie. Alternative to Bearer for browser clients. Not a production IdP session. Never commit cookie values.',
+			},
+			'cookie',
+		)
 		.build();
 
 	return SwaggerModule.createDocument(app, config, {
@@ -94,39 +105,45 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 	if (!bearer || bearer.type !== 'http' || bearer.bearerFormat === 'JWT') {
 		throw new Error('OpenAPI must document opaque HTTP Bearer security');
 	}
+	const cookie = document.components?.securitySchemes?.cookie as
+		| {type?: string; in?: string; name?: string}
+		| undefined;
+	if (!cookie || cookie.type !== 'apiKey' || cookie.in !== 'cookie' || cookie.name !== 'mcp_access') {
+		throw new Error('OpenAPI must document mcp_access cookie security');
+	}
 	assertUnauthenticated(document, '/health', 'get');
 	assertUnauthenticated(document, '/ready', 'get');
 	assertUnauthenticated(document, '/auth/login', 'post');
 	assertUnauthenticated(document, '/auth/refresh', 'post');
 	assertUnauthenticated(document, '/auth/mfa/verify', 'post');
-	assertBearer(document, '/auth/logout', 'post');
-	assertBearer(document, '/auth/logout-all', 'post');
-	assertBearer(document, '/patients', 'get');
-	assertBearer(document, '/patients', 'post');
-	assertBearer(document, '/patients/{id}', 'get');
-	assertBearer(document, '/patients/{id}', 'patch');
-	assertBearer(document, '/appointments', 'get');
-	assertBearer(document, '/appointments', 'post');
-	assertBearer(document, '/appointments/{id}', 'get');
-	assertBearer(document, '/appointments/{id}', 'patch');
-	assertBearer(document, '/appointments/{id}', 'delete');
-	assertBearer(document, '/providers/{id}/availability', 'get');
-	assertBearer(document, '/patients/{id}/history', 'get');
-	assertBearer(document, '/patients/{id}/history', 'post');
-	assertBearer(document, '/patients/{id}/conditions', 'get');
-	assertBearer(document, '/patients/{id}/conditions', 'post');
-	assertBearer(document, '/patients/{id}/vitals', 'get');
-	assertBearer(document, '/patients/{id}/vitals', 'post');
-	assertBearer(document, '/patients/{id}/medications', 'get');
-	assertBearer(document, '/patients/{id}/medications', 'post');
-	assertBearer(document, '/patients/{id}/documents', 'get');
-	assertBearer(document, '/patients/{id}/documents', 'post');
-	assertBearer(document, '/patients/{id}/documents/{documentId}/content', 'get');
-	assertBearer(document, '/telehealth/sessions', 'post');
-	assertBearer(document, '/telehealth/sessions/{id}', 'get');
-	assertBearer(document, '/telehealth/sessions/{id}/join', 'post');
-	assertBearer(document, '/telehealth/sessions/{id}/end', 'post');
-	assertBearer(document, '/dashboard/overview', 'get');
+	assertCookieOrBearer(document, '/auth/logout', 'post');
+	assertCookieOrBearer(document, '/auth/logout-all', 'post');
+	assertCookieOrBearer(document, '/patients', 'get');
+	assertCookieOrBearer(document, '/patients', 'post');
+	assertCookieOrBearer(document, '/patients/{id}', 'get');
+	assertCookieOrBearer(document, '/patients/{id}', 'patch');
+	assertCookieOrBearer(document, '/appointments', 'get');
+	assertCookieOrBearer(document, '/appointments', 'post');
+	assertCookieOrBearer(document, '/appointments/{id}', 'get');
+	assertCookieOrBearer(document, '/appointments/{id}', 'patch');
+	assertCookieOrBearer(document, '/appointments/{id}', 'delete');
+	assertCookieOrBearer(document, '/providers/{id}/availability', 'get');
+	assertCookieOrBearer(document, '/patients/{id}/history', 'get');
+	assertCookieOrBearer(document, '/patients/{id}/history', 'post');
+	assertCookieOrBearer(document, '/patients/{id}/conditions', 'get');
+	assertCookieOrBearer(document, '/patients/{id}/conditions', 'post');
+	assertCookieOrBearer(document, '/patients/{id}/vitals', 'get');
+	assertCookieOrBearer(document, '/patients/{id}/vitals', 'post');
+	assertCookieOrBearer(document, '/patients/{id}/medications', 'get');
+	assertCookieOrBearer(document, '/patients/{id}/medications', 'post');
+	assertCookieOrBearer(document, '/patients/{id}/documents', 'get');
+	assertCookieOrBearer(document, '/patients/{id}/documents', 'post');
+	assertCookieOrBearer(document, '/patients/{id}/documents/{documentId}/content', 'get');
+	assertCookieOrBearer(document, '/telehealth/sessions', 'post');
+	assertCookieOrBearer(document, '/telehealth/sessions/{id}', 'get');
+	assertCookieOrBearer(document, '/telehealth/sessions/{id}/join', 'post');
+	assertCookieOrBearer(document, '/telehealth/sessions/{id}/end', 'post');
+	assertCookieOrBearer(document, '/dashboard/overview', 'get');
 	const patientById = document.paths?.['/patients/{id}'];
 	if (patientById && 'delete' in patientById) {
 		throw new Error('DELETE /patients/{id} is not part of the patient contract');
@@ -159,12 +176,20 @@ function assertUnauthenticated(document: OpenAPIObject, path: string, method: st
 	}
 }
 
-function assertBearer(document: OpenAPIObject, path: string, method: string): void {
+function assertCookieOrBearer(document: OpenAPIObject, path: string, method: string): void {
 	const operation = documentedOperation(document, path, method);
 	const hasBearer = operation?.security?.some((requirement) =>
 		Object.prototype.hasOwnProperty.call(requirement, 'bearer'),
 	);
-	if (!hasBearer) {
-		throw new Error(`${method.toUpperCase()} ${path} must require HTTP Bearer auth`);
+	const hasCookie = operation?.security?.some((requirement) =>
+		Object.prototype.hasOwnProperty.call(requirement, 'cookie'),
+	);
+	const combined = operation?.security?.some(
+		(requirement) =>
+			Object.prototype.hasOwnProperty.call(requirement, 'bearer') &&
+			Object.prototype.hasOwnProperty.call(requirement, 'cookie'),
+	);
+	if (!hasBearer || !hasCookie || combined) {
+		throw new Error(`${method.toUpperCase()} ${path} must accept cookie or HTTP Bearer auth`);
 	}
 }

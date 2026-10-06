@@ -1,6 +1,5 @@
 import {Body, Controller, Get, HttpCode, Param, Post} from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiBody,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -10,6 +9,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {
 	ClinicalConditionRdo,
@@ -25,7 +25,7 @@ import {
 import {ClinicalService} from './clinical.service.js';
 
 @ApiTags('ehr')
-@ApiBearerAuth('bearer')
+@ApiSessionAuth()
 @ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
 @ApiForbiddenResponse({type: ErrorEnvelopeRdo})
 @Controller('patients/:id/conditions')

@@ -6,7 +6,13 @@ import {DataSource, In} from 'typeorm';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {AppModule} from '../src/app.module.js';
 import {MOCK_IDP_USERS, type MockIdpAccount} from '../src/identity/mock-idp.js';
+import {
+	ACCESS_COOKIE_NAME,
+	MFA_COOKIE_NAME,
+	REFRESH_COOKIE_NAME,
+} from '../src/identity/session-cookies.js';
 import {configureApp} from '../src/platform/configure-app.js';
+import {DEFAULT_LOCAL_WEB_ORIGIN} from '../src/platform/cors-origins.js';
 import {PracticeModule} from '../src/practice/practice.module.js';
 import {TenancyModule} from '../src/tenancy/tenant.module.js';
 import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
@@ -275,4 +281,98 @@ describe('identity HTTP', () => {
 			.set('Authorization', `Bearer ${verified.body.accessToken}`)
 			.expect(200);
 	});
+
+	it('allows credentialed CORS from the local web origin', async () => {
+		const response = await request(app.getHttpServer())
+			.options('/auth/login')
+			.set('Origin', DEFAULT_LOCAL_WEB_ORIGIN)
+			.set('Access-Control-Request-Method', 'POST')
+			.set('Access-Control-Request-Headers', 'content-type')
+			.expect(204);
+		expect(response.headers['access-control-allow-credentials']).toBe('true');
+		expect(response.headers['access-control-allow-origin']).toBe(DEFAULT_LOCAL_WEB_ORIGIN);
+	});
+
+	it('authenticates from HttpOnly cookies and clears them on logout', async () => {
+		const agent = request.agent(app.getHttpServer());
+		const loggedIn = await agent.post('/auth/login').send({email: nurse.email, password}).expect(200);
+		expectLocalSessionCookies(loggedIn);
+		const scope = await agent.get('/__test/authz').expect(200);
+		expect(scope.body).toEqual({practiceId: practiceA.id, role: 'NURSE'});
+		const loggedOut = await agent.post('/auth/logout').send({}).expect(204);
+		expectClearedSessionCookies(loggedOut);
+		await agent.get('/__test/authz').expect(401);
+	});
+
+	it('rotates refresh from the session cookie and still revokes reuse', async () => {
+		const agent = request.agent(app.getHttpServer());
+		const first = await agent.post('/auth/login').send({email: admin.email, password}).expect(200);
+		const rotated = await agent.post('/auth/refresh').send({}).expect(200);
+		expectLocalSessionCookies(rotated);
+		await agent.get('/__test/authz').expect(200);
+		const reused = await request(app.getHttpServer())
+			.post('/auth/refresh')
+			.send({refreshToken: first.body.refreshToken})
+			.expect(401);
+		expect(reused.body.error.code).toBe('UNAUTHENTICATED');
+		await agent.get('/__test/authz').expect(401);
+	});
+
+	it('completes mock MFA from the challenge cookie', async () => {
+		const agent = request.agent(app.getHttpServer());
+		const challenge = await agent.post('/auth/login').send({email: mfaUser.email, password}).expect(200);
+		expect(challenge.body.mfaRequired).toBe(true);
+		expect(cookieNamed(setCookieHeaders(challenge), MFA_COOKIE_NAME)).toMatch(/HttpOnly/i);
+		const verified = await agent.post('/auth/mfa/verify').send({code: mfaCode}).expect(200);
+		expectLocalSessionCookies(verified);
+		await agent.get('/__test/authz').expect(200);
+	});
+
+	it('clears cookies on logout-all and revokes other sessions', async () => {
+		const agent = request.agent(app.getHttpServer());
+		await agent.post('/auth/login').send({email: admin.email, password}).expect(200);
+		const second = await login(admin.email);
+		const loggedOut = await agent.post('/auth/logout-all').send({}).expect(204);
+		expectClearedSessionCookies(loggedOut);
+		await agent.get('/__test/authz').expect(401);
+		await request(app.getHttpServer())
+			.get('/__test/authz')
+			.set('Authorization', `Bearer ${second.accessToken}`)
+			.expect(401);
+	});
 });
+
+function setCookieHeaders(response: {headers: Record<string, unknown>}): string[] {
+	const header = response.headers['set-cookie'];
+	if (!header) {
+		return [];
+	}
+	return Array.isArray(header) ? header.map(String) : [String(header)];
+}
+
+function cookieNamed(headers: string[], name: string): string | undefined {
+	return headers.find((value) => value.startsWith(`${name}=`));
+}
+
+function expectLocalSessionCookies(response: {headers: Record<string, unknown>}): void {
+	const cookies = setCookieHeaders(response);
+	const access = cookieNamed(cookies, ACCESS_COOKIE_NAME);
+	const refresh = cookieNamed(cookies, REFRESH_COOKIE_NAME);
+	expect(access).toBeDefined();
+	expect(refresh).toBeDefined();
+	expect(access).toMatch(/HttpOnly/i);
+	expect(refresh).toMatch(/HttpOnly/i);
+	expect(access).toMatch(/SameSite=Lax/i);
+	expect(access).not.toMatch(/;\s*Secure(?:;|$)/i);
+	expect(refresh).not.toMatch(/;\s*Secure(?:;|$)/i);
+}
+
+function expectClearedSessionCookies(response: {headers: Record<string, unknown>}): void {
+	const cookies = setCookieHeaders(response);
+	const access = cookieNamed(cookies, ACCESS_COOKIE_NAME);
+	const refresh = cookieNamed(cookies, REFRESH_COOKIE_NAME);
+	expect(access).toBeDefined();
+	expect(refresh).toBeDefined();
+	expect(access).toMatch(/Max-Age=0|Expires=/i);
+	expect(refresh).toMatch(/Max-Age=0|Expires=/i);
+}

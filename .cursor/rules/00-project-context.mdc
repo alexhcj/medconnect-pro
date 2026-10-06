@@ -48,7 +48,7 @@ npm workspaces:
 - Node.js current LTS, NestJS 12, TypeScript
 - REST + OpenAPI
 - PostgreSQL (local Compose + TypeORM)
-- Mock IdP HTTP sessions (opaque bearer), RBAC, tenant isolation, audit events
+- Mock IdP HTTP sessions (opaque bearer and HttpOnly cookies), RBAC, tenant isolation, audit events
 
 ## Planned infrastructure (not initialized)
 
