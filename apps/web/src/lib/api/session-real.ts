@@ -1,7 +1,7 @@
 import {DEFAULT_ROLE_PERMISSIONS} from '@/types/auth/permissions';
 import {parseRole} from '@/types/auth/roles';
 import type {ActivityEvent, ConcurrentSessionInfo, ExtendSessionResponse, SessionInfo} from '@/types/auth/session';
-import {ApiError, apiErrorFromBody, apiFetch} from '@/lib/api/http';
+import {ApiError, apiErrorFromBody, apiFetch, liveRequestInit} from '@/lib/api/http';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 import {clearLiveSession, readLiveSession, writeLiveSession} from '@/lib/api/live-session-store';
 import {nestApiBaseUrl} from '@/lib/api/nest-api';
@@ -55,11 +55,14 @@ async function readJson(response: Response): Promise<unknown> {
 
 export const sessionRealAPI = {
 	login: async (email: string, password: string): Promise<SessionInfo> => {
-		const response = await fetch(`${nestApiBaseUrl()}/auth/login`, {
-			method: 'POST',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify({email, password}),
-		});
+		const response = await fetch(
+			`${nestApiBaseUrl()}/auth/login`,
+			liveRequestInit({
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({email, password}),
+			}),
+		);
 		const body = await readJson(response);
 		if (!response.ok) {
 			throw apiErrorFromBody(body, response.status);
@@ -71,7 +74,7 @@ export const sessionRealAPI = {
 			throw new ApiError('Unable to sign in. Try again.', 502);
 		}
 		const session = sessionForKnownDemo(email, body.expiresIn);
-		writeLiveSession(session, body.accessToken, body.refreshToken);
+		writeLiveSession(session);
 		return session;
 	},
 
@@ -86,30 +89,29 @@ export const sessionRealAPI = {
 	},
 
 	getCurrentSession: async (): Promise<SessionInfo> => {
-		const record = readLiveSession();
-		if (!record) {
+		const session = readLiveSession();
+		if (!session) {
 			throw new ApiError('Unauthorized', 401);
 		}
-		return record.session;
+		return session;
 	},
 
 	extendSession: async (): Promise<ExtendSessionResponse> => {
-		const record = readLiveSession();
-		if (!record) {
+		const current = readLiveSession();
+		if (!current) {
 			throw new ApiError('Unauthorized', 401);
 		}
 		const body = await apiFetch<unknown>(`${nestApiBaseUrl()}/auth/refresh`, {
 			method: 'POST',
 			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify({refreshToken: record.refreshToken}),
+			body: JSON.stringify({}),
 		});
 		if (!isTokenPair(body)) {
 			throw new ApiError('Failed to extend session', 502);
 		}
 		const expiresAt = Date.now() + body.expiresIn * 1000;
-		const session = {...record.session, expiresAt, lastActivity: Date.now(), isActive: true};
-		writeLiveSession(session, body.accessToken, body.refreshToken);
-		return {success: true, newExpiresAt: expiresAt, token: body.accessToken};
+		writeLiveSession({...current, expiresAt, lastActivity: Date.now(), isActive: true});
+		return {success: true, newExpiresAt: expiresAt};
 	},
 
 	checkConcurrentSessions: async (): Promise<ConcurrentSessionInfo[]> => {
@@ -117,7 +119,14 @@ export const sessionRealAPI = {
 	},
 
 	terminateSessions: async (_sessionIds: string[]): Promise<void> => {
-		return;
+		try {
+			await apiFetch<void>(`${nestApiBaseUrl()}/auth/logout-all`, {method: 'POST'});
+		} catch (error) {
+			console.warn('Live logout-all error:', error);
+			throw error;
+		} finally {
+			clearLiveSession();
+		}
 	},
 
 	sendActivity: async (_activities: ActivityEvent[]): Promise<void> => {
@@ -125,18 +134,10 @@ export const sessionRealAPI = {
 	},
 
 	updateContext: async (context: string): Promise<void> => {
-		const record = readLiveSession();
-		if (!record) {
+		const current = readLiveSession();
+		if (!current) {
 			return;
 		}
-		const accessToken = window.localStorage.getItem('auth_token');
-		if (!accessToken) {
-			return;
-		}
-		writeLiveSession(
-			{...record.session, currentContext: context, lastActivity: Date.now()},
-			accessToken,
-			record.refreshToken,
-		);
+		writeLiveSession({...current, currentContext: context, lastActivity: Date.now()});
 	},
 };

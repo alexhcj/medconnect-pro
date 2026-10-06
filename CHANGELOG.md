@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.68.0] - 2026-10-06
+
+### Changed
+
+- Live cookie session client (FE-027): Next.js live API calls send `credentials: 'include'` and
+  stop storing Nest access/refresh tokens in web storage. Mock mode still uses `localStorage`.
+  Logout ends the Nest cookie session; concurrent-session terminate chrome calls `POST /auth/logout-all`.
+  Unused Next `/api/auth/*` 501 stubs removed. JSON bearer pairs remain for machine clients.
+
 ## [0.67.0] - 2026-10-06
 
 ### Added

@@ -1,4 +1,5 @@
-import {apiErrorFromBody, apiFetch, ApiError} from '@/lib/api/http';
+import {afterEach, describe, expect, it, vi} from 'vitest';
+import {apiErrorFromBody, apiFetch, ApiError, CSRF_HEADER_NAME} from '@/lib/api/http';
 
 describe('apiErrorFromBody', () => {
 	it('reads the documented error envelope', () => {
@@ -34,7 +35,45 @@ describe('apiErrorFromBody', () => {
 
 describe('apiFetch', () => {
 	afterEach(() => {
+		localStorage.removeItem('auth_token');
+		document.cookie = 'mcp_csrf=; max-age=0; path=/';
 		vi.unstubAllGlobals();
+	});
+
+	it('sends credentialed cookies and does not attach a stored bearer', async () => {
+		localStorage.setItem('auth_token', 'demo-access-token');
+		const fetchMock = vi.fn().mockResolvedValue({
+			ok: true,
+			status: 200,
+			json: async () => ({ok: true}),
+		});
+		vi.stubGlobal('fetch', fetchMock);
+
+		await apiFetch('http://localhost:3001/dashboard/overview');
+
+		const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+		expect(init.credentials).toBe('include');
+		const headers = new Headers(init.headers);
+		expect(headers.get('Authorization')).toBeNull();
+		expect(headers.get(CSRF_HEADER_NAME)).toBeNull();
+	});
+
+	it('sends X-CSRF-Token on mutations when mcp_csrf is present', async () => {
+		document.cookie = 'mcp_csrf=hosted-csrf';
+		const fetchMock = vi.fn().mockResolvedValue({
+			ok: true,
+			status: 204,
+		});
+		vi.stubGlobal('fetch', fetchMock);
+
+		await apiFetch('http://localhost:3001/auth/logout', {method: 'POST'});
+
+		const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+		expect(init.credentials).toBe('include');
+		const headers = new Headers(init.headers);
+		expect(headers.get(CSRF_HEADER_NAME)).toBe('hosted-csrf');
+		expect(headers.get('Content-Type')).toBe('application/json');
+		expect(headers.get('Authorization')).toBeNull();
 	});
 
 	it('throws the parsed envelope from a failed response', async () => {

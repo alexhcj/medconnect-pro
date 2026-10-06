@@ -17,7 +17,7 @@ capabilities:
   - id: identity-access.mock-idp-sessions
     name: Sign in with mock identity
     status: shipped
-    demo: mock IdP login/logout; Nest issues HttpOnly cookies and still returns opaque bearer JSON; live Next storage cutover is FE-027
+    demo: mock IdP login/logout; Nest issues HttpOnly cookies and still returns opaque bearer JSON for machine clients; live Next uses cookies and does not persist tokens
     public: qualified
     planned_next: OAuth 2.0 / OIDC + PKCE (ADR-003)
     related_tasks: [FE-010, BE-009, BE-014, SEC-001, FE-027]
@@ -39,8 +39,8 @@ capabilities:
 # Identity and access
 
 Mock IdP HTTP sessions for the demo. Nest issues HttpOnly cookies and still returns opaque bearer
-JSON for machine clients. Live Next still stores bearer tokens until FE-027. Public copy may
-describe mock identity. It must not describe production OAuth, OIDC, or completed MFA.
+JSON for machine clients. Live Next uses those cookies and does not persist access or refresh
+tokens. Public copy may describe mock identity. It must not describe production OAuth, OIDC, or completed MFA.
 
 Demo entry is existing `/login` ([FE-010](../tasks/frontend/FE-010-mock-authentication-ui.md)),
 not a marketing `/sign-in` route.

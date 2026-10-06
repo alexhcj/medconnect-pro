@@ -177,7 +177,7 @@ curl -fsS "$PRODUCTION_API_URL/health"
 curl -fsS "$PRODUCTION_API_URL/ready"
 ```
 
-Login with a seeded demo user uses the existing opaque bearer against that HTTPS origin. Browser
+Login with a seeded demo user uses Nest HttpOnly session cookies against that HTTPS origin. Browser
 CORS for production waits on the exact Amplify origin in `production_web_origins` (see Amplify
 below). Preview keeps `https://*.amplifyapp.com` so PR hosts can call the preview API only.
 
@@ -374,5 +374,5 @@ The production API allowlist is exact origins only. After the first successful p
 Verify marketing `/` and `/login` over HTTPS, live login with a seeded demo user, and one
 dashboard **list** page (patients). Network calls must go to the production API host. The
 client bundle must not contain `DATABASE_URL` or AWS keys. Mock identity stays same-origin
-`/login`; do not rewrite auth to cookies. Dashboard overview cards are still mock-only (no
-live Nest `GET /dashboard/overview`).
+`/login`. Live dashboard overview cards call Nest `GET /dashboard/overview` with credentialed
+cookies.

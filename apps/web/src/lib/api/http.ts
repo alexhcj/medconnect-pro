@@ -23,6 +23,10 @@ export class ApiError extends Error {
 	}
 }
 
+const CSRF_COOKIE_NAME = 'mcp_csrf';
+export const CSRF_HEADER_NAME = 'X-CSRF-Token';
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+
 function readDetails(value: unknown): ApiErrorDetail[] | undefined {
 	if (!Array.isArray(value)) {
 		return undefined;
@@ -65,19 +69,54 @@ export function apiErrorFromBody(body: unknown, status: number): ApiError {
 	return new ApiError('Request failed', status);
 }
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+function isMutatingMethod(method: string): boolean {
+	return !SAFE_METHODS.has(method.toUpperCase());
+}
+
+function readCsrfCookie(): string | null {
+	if (typeof document === 'undefined') {
+		return null;
+	}
+	const prefix = `${CSRF_COOKIE_NAME}=`;
+	for (const part of document.cookie.split(';')) {
+		const trimmed = part.trim();
+		if (!trimmed.startsWith(prefix)) {
+			continue;
+		}
+		const raw = trimmed.slice(prefix.length);
+		try {
+			return decodeURIComponent(raw);
+		} catch {
+			return raw;
+		}
+	}
+	return null;
+}
+
+export function liveRequestInit(init?: RequestInit): RequestInit {
 	const headers = new Headers(init?.headers);
-	if (!headers.has('Authorization')) {
-		const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-		if (token) {
-			headers.set('Authorization', `Bearer ${token}`);
+	const method = init?.method ?? 'GET';
+
+	if (isMutatingMethod(method) && !headers.has('Content-Type')) {
+		headers.set('Content-Type', 'application/json');
+	}
+
+	if (isMutatingMethod(method) && !headers.has(CSRF_HEADER_NAME)) {
+		const csrf = readCsrfCookie();
+		if (csrf) {
+			headers.set(CSRF_HEADER_NAME, csrf);
 		}
 	}
 
-	const response = await fetch(path, {
+	return {
 		...init,
+		credentials: 'include',
 		headers,
-	});
+	};
+}
+
+export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+	const response = await fetch(path, liveRequestInit(init));
 
 	if (response.status === 401) {
 		if (typeof window !== 'undefined' && path.startsWith(nestApiBaseUrl())) {

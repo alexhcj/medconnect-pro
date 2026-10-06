@@ -26,9 +26,10 @@ function jsonResponse(body: unknown, status = 200) {
 	};
 }
 
-function authorizationFromCall(call: unknown[] | undefined) {
+function expectCredentialedCookieFetch(call: unknown[] | undefined) {
 	const init = call?.[1] as RequestInit | undefined;
-	return new Headers(init?.headers).get('Authorization');
+	expect(init?.credentials).toBe('include');
+	expect(new Headers(init?.headers).get('Authorization')).toBeNull();
 }
 
 describe('billingRealAPI', () => {
@@ -55,7 +56,7 @@ describe('billingRealAPI', () => {
 		]);
 		expect(fetchMock).toHaveBeenCalledWith('http://localhost:3001/billing/invoices', expect.any(Object));
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
-		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 
 	it('gets an invoice from Nest by server UUID', async () => {
@@ -73,6 +74,6 @@ describe('billingRealAPI', () => {
 			expect.any(Object),
 		);
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('demo-invoice');
-		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 });

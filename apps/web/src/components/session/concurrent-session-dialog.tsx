@@ -80,14 +80,18 @@ export function ConcurrentSessionDialog() {
 		}
 	};
 
-	const handleLogoutEverywhere = () => {
+	const handleLogoutEverywhere = async () => {
 		addNotification({
 			type: 'info',
 			title: 'Logging Out',
 			message: 'Terminating all sessions and logging out...',
 		});
 
-		// Logout everywhere
+		try {
+			await terminateSessions.mutateAsync(sessions.map((session) => session.sessionId));
+		} catch {
+			// Nest still clears cookies on success; local metadata is cleared in finally.
+		}
 		window.location.href = loginUrl('concurrent');
 	};
 

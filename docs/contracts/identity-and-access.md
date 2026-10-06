@@ -255,8 +255,8 @@ OAuth or a Next.js BFF:
   cookie-authenticated mutations also require `X-CSRF-Token` matching the non-HttpOnly `mcp_csrf`
   cookie. Bearer clients skip CSRF.
 
-Live Next still persists opaque tokens until
-[FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md). Mock-mode `localStorage` is still
+Live Next uses HttpOnly session cookies and does not persist access or refresh tokens
+([FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md)). Mock-mode `localStorage` is still
 not the cookie model.
 
 ### Idle, absolute, and concurrent policy

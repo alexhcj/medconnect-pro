@@ -4,19 +4,12 @@ import {MOCK_TOKEN_STORAGE_KEY} from '@/lib/api/mocks/mock-session-store';
 const LIVE_SESSION_STORAGE_KEY = 'mcp_live_session';
 const LIVE_REFRESH_STORAGE_KEY = 'mcp_live_refresh';
 
-export interface LiveSessionRecord {
-	session: SessionInfo;
-	refreshToken: string;
-}
-
-export function readLiveSession(): LiveSessionRecord | null {
+export function readLiveSession(): SessionInfo | null {
 	if (typeof window === 'undefined') {
 		return null;
 	}
 	const raw = window.localStorage.getItem(LIVE_SESSION_STORAGE_KEY);
-	const refreshToken = window.localStorage.getItem(LIVE_REFRESH_STORAGE_KEY);
-	const accessToken = window.localStorage.getItem(MOCK_TOKEN_STORAGE_KEY);
-	if (!raw || !refreshToken || !accessToken) {
+	if (!raw) {
 		return null;
 	}
 	try {
@@ -29,20 +22,18 @@ export function readLiveSession(): LiveSessionRecord | null {
 			clearLiveSession();
 			return null;
 		}
-		return {session, refreshToken};
+		return session;
 	} catch {
 		clearLiveSession();
 		return null;
 	}
 }
 
-export function writeLiveSession(session: SessionInfo, accessToken: string, refreshToken: string): void {
+export function writeLiveSession(session: SessionInfo): void {
 	if (typeof window === 'undefined') {
 		return;
 	}
 	window.localStorage.setItem(LIVE_SESSION_STORAGE_KEY, JSON.stringify(session));
-	window.localStorage.setItem(LIVE_REFRESH_STORAGE_KEY, refreshToken);
-	window.localStorage.setItem(MOCK_TOKEN_STORAGE_KEY, accessToken);
 }
 
 export function clearLiveSession(): void {

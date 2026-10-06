@@ -41,9 +41,10 @@ function jsonResponse(body: unknown, status = 200) {
 	};
 }
 
-function authorizationFromCall(call: unknown[] | undefined) {
+function expectCredentialedCookieFetch(call: unknown[] | undefined) {
 	const init = call?.[1] as RequestInit | undefined;
-	return new Headers(init?.headers).get('Authorization');
+	expect(init?.credentials).toBe('include');
+	expect(new Headers(init?.headers).get('Authorization')).toBeNull();
 }
 
 describe('adminRealAPI', () => {
@@ -75,7 +76,7 @@ describe('adminRealAPI', () => {
 		]);
 		expect(fetchMock).toHaveBeenCalledWith('http://localhost:3001/admin/users', expect.any(Object));
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
-		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 
 	it('lists audit events from Nest and unwraps AuditEventSearchResultRdo', async () => {
@@ -101,7 +102,7 @@ describe('adminRealAPI', () => {
 			expect.any(Object),
 		);
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
-		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 
 	it('PATCHes a membership role without a client practiceId', async () => {
@@ -132,7 +133,7 @@ describe('adminRealAPI', () => {
 		expect(JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit).body))).toEqual({
 			role: 'NURSE',
 		});
-		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 
 	it('maps a 403 forbidden grant onto ApiError', async () => {

@@ -36,7 +36,8 @@ refresh, logout, and login until an IdP exists:
 
 Protected routes accept the `mcp_access` cookie **or** `Authorization: Bearer`. Browser clients
 should send `credentials: 'include'`. Hosted cookie-authenticated mutations also send
-`X-CSRF-Token`. Live Next storage cutover is [FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md).
+`X-CSRF-Token`. Live Next uses cookies and does not persist tokens
+([FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md)).
 
 Authorization, tenant resolution, and resource checks on every protected resource follow the
 identity-and-access contract. Do not duplicate the permission catalog here.
@@ -77,9 +78,9 @@ Documents are a separate access-control boundary ([SEC-004](../tasks/security/SE
 Implemented Nest analytics surface (**M10** [BE-011](../tasks/backend/BE-011-dashboard-overview-api.md),
 live UI [FE-024](../tasks/frontend/FE-024-live-dashboard-overview.md)). Any authenticated member of
 the session tenant may read it; which cards appear follows role. Live Next.js calls Nest
-`GET /dashboard/overview` with the BE-009 bearer until [FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md)
-switches live fetch to credentialed cookies. Mock mode still renders overview cards from
-fixtures.
+`GET /dashboard/overview` with credentialed cookies
+([FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md)). Mock mode still renders overview
+cards from fixtures.
 
 - `GET /dashboard/overview` — session-tenant aggregates (`synthetic` always true); omits
   `patient_satisfaction`

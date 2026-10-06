@@ -7,7 +7,7 @@ import {HistoryEntry} from '@/types/medical/history';
 import {PatientDocument} from '@/types/medical/document';
 import {Provider} from '@/types/medical/provider';
 import {toast} from 'react-hot-toast';
-import {ApiError, apiFetch} from '@/lib/api/http';
+import {ApiError, apiFetch, liveRequestInit} from '@/lib/api/http';
 import {liveDemoProvider} from '@/lib/api/live-demo-provider';
 import {medicalMockAPI} from '@/lib/api/mocks/medical-mock';
 import {isMockMode} from '@/lib/api/mocks/runtime';
@@ -59,12 +59,7 @@ function appointmentsUrl(path = ''): string {
 }
 
 async function fetchAuthorizedBlob(path: string): Promise<Blob> {
-	const headers = new Headers();
-	const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-	if (token) {
-		headers.set('Authorization', `Bearer ${token}`);
-	}
-	const response = await fetch(path, {headers});
+	const response = await fetch(path, liveRequestInit());
 	if (response.status === 401) {
 		if (typeof window !== 'undefined') {
 			window.location.href = loginUrl('unauthorized');

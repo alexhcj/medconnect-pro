@@ -32,9 +32,10 @@ function jsonResponse(body: unknown, status = 200) {
 	};
 }
 
-function authorizationFromCall(call: unknown[] | undefined) {
+function expectCredentialedCookieFetch(call: unknown[] | undefined) {
 	const init = call?.[1] as RequestInit | undefined;
-	return new Headers(init?.headers).get('Authorization');
+	expect(init?.credentials).toBe('include');
+	expect(new Headers(init?.headers).get('Authorization')).toBeNull();
 }
 
 describe('notificationRealAPI', () => {
@@ -43,7 +44,7 @@ describe('notificationRealAPI', () => {
 		vi.unstubAllGlobals();
 	});
 
-	it('lists the session inbox with Bearer and unwraps NotificationListRdo', async () => {
+	it('lists the session inbox with cookies and unwraps NotificationListRdo', async () => {
 		localStorage.setItem('auth_token', 'demo-access-token');
 		const fetchMock = vi.fn().mockResolvedValue(jsonResponse({notifications: [notificationRdo]}));
 		vi.stubGlobal('fetch', fetchMock);
@@ -65,7 +66,7 @@ describe('notificationRealAPI', () => {
 			expect.any(Object),
 		);
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
-		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 
 	it('marks a row read without sending practiceId', async () => {
@@ -85,7 +86,7 @@ describe('notificationRealAPI', () => {
 			expect.objectContaining({method: 'PATCH'}),
 		);
 		expect(JSON.stringify(fetchMock.mock.calls[0]?.[1])).not.toContain('practiceId');
-		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 
 	it('loads and patches preferences without sending practiceId', async () => {
@@ -114,6 +115,6 @@ describe('notificationRealAPI', () => {
 			}),
 		);
 		expect(String(fetchMock.mock.calls[1]?.[1]?.body)).not.toContain('practiceId');
-		expect(authorizationFromCall(fetchMock.mock.calls[1])).toBe('Bearer demo-access-token');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[1]);
 	});
 });

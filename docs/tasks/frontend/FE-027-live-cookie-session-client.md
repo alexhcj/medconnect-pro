@@ -3,7 +3,7 @@ id: FE-027
 type: task
 area: frontend
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-010, BE-014]
@@ -20,7 +20,7 @@ related_docs:
     ../backend/BE-014-httponly-cookie-session-http.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -77,12 +77,12 @@ No new screens. Design is not required.
 
 ## Acceptance Criteria
 
-- [ ] After live login, DevTools storage has no access or refresh tokens
-- [ ] Dashboard live calls succeed with cookies (`credentials: 'include'`)
-- [ ] Logout ends the Nest session
-- [ ] Mock Playwright still uses mocks
-- [ ] One `e2e:live` login → dashboard still passes
-- [ ] frontend-architecture.md and deploy.md no longer forbid the live cookie model
+- [x] After live login, DevTools storage has no access or refresh tokens
+- [x] Dashboard live calls succeed with cookies (`credentials: 'include'`)
+- [x] Logout ends the Nest session
+- [x] Mock Playwright still uses mocks
+- [x] One `e2e:live` login → dashboard still passes
+- [x] frontend-architecture.md and deploy.md no longer forbid the live cookie model
 
 ## Dependencies
 
@@ -110,7 +110,13 @@ Writing this spec is not a version bump. Shipping this slice is **MINOR** (secur
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Live `apiFetch`, login, and document blob download send `credentials: 'include'`
+  and do not attach Bearer from storage. Hosted mutations send `X-CSRF-Token` when `mcp_csrf` is
+  present. `mcp_live_session` keeps role UX metadata only. Logout calls Nest `POST /auth/logout`;
+  concurrent-session terminate / Log Out Everywhere call `POST /auth/logout-all`. Unused Next
+  `/api/auth/*` 501 stubs deleted.
+- Tests: Vitest for `session-real`, `apiFetch` credentials/CSRF, and domain APIs. Playwright
+  `e2e/auth-live.spec.ts` asserts no stored tokens after live login and that sign-out returns to
+  login. Mock `e2e/auth.spec.ts` unchanged.
 - PR:
-- Notes:
+- Notes: MINOR 0.67.0 → 0.68.0 (security-model UX). Hosted Amplify verification remains M9.

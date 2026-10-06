@@ -40,9 +40,10 @@ function jsonResponse(body: unknown, status = 200) {
 	};
 }
 
-function authorizationFromCall(call: unknown[] | undefined) {
+function expectCredentialedCookieFetch(call: unknown[] | undefined) {
 	const init = call?.[1] as RequestInit | undefined;
-	return new Headers(init?.headers).get('Authorization');
+	expect(init?.credentials).toBe('include');
+	expect(new Headers(init?.headers).get('Authorization')).toBeNull();
 }
 
 describe('dashboardRealAPI', () => {
@@ -51,7 +52,7 @@ describe('dashboardRealAPI', () => {
 		vi.unstubAllGlobals();
 	});
 
-	it('loads Nest overview with Bearer and unwraps DashboardOverviewRdo', async () => {
+	it('loads Nest overview with cookies and unwraps DashboardOverviewRdo', async () => {
 		localStorage.setItem('auth_token', 'demo-access-token');
 		const fetchMock = vi.fn().mockResolvedValue(jsonResponse(overviewRdo));
 		vi.stubGlobal('fetch', fetchMock);
@@ -72,7 +73,7 @@ describe('dashboardRealAPI', () => {
 		);
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('/api/dashboard/overview');
-		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 
 	it('maps a live payload that omits satisfaction without throwing', async () => {
