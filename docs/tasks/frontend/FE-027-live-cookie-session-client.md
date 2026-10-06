@@ -26,8 +26,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 68e00cab-89c1-46f5-a9b7-4c09ec7f939b
+  identifier: MEDCONNECT-81
 ---
 
 # FE-027 — Live cookie session client

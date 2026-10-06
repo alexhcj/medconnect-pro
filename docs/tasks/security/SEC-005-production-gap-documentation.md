@@ -25,8 +25,8 @@ validation:
   accessibility: false
   tests_required: false
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: d0de94a7-30f1-4204-992d-272209feba90
+  identifier: MEDCONNECT-85
 ---
 
 # SEC-005 — Production-gap documentation

@@ -32,8 +32,8 @@ validation:
   accessibility: true
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 086f74bf-5b03-4989-80d0-eb0985d221a4
+  identifier: MEDCONNECT-82
 ---
 
 # FE-028 — Mock MFA challenge UI

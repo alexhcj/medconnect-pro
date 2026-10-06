@@ -32,8 +32,8 @@ validation:
   accessibility: true
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 6f651eb2-2b70-475c-8464-a23a2e54f47b
+  identifier: MEDCONNECT-84
 ---
 
 # FE-029 — Security-events UI
