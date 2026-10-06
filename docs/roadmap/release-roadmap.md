@@ -11,8 +11,9 @@ through [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.m
 [INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)–[INFRA-012](../tasks/infrastructure/INFRA-012-github-v1.0.0-release-notes-template.md)
 (shipped), [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
 (pending; blocks INFRA-013), [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
-(pending, paused). Next product module is **M10 — Product Analytics, Notifications & Role
-Administration**. Local product work does not wait on AWS. Resume M9 when the AWS account can be
+(pending, paused). **M10 — Product Analytics, Notifications & Role Administration** is shipped.
+Next product module is **M11 — Application Security & Session Hardening** (planned; no task IDs).
+Local product work does not wait on AWS. Resume M9 when the AWS account can be
 configured. Preview/production hosting remains M9, not M8 or M10.
 
 ## Demo milestones
@@ -69,7 +70,7 @@ Terraform/workflows as a hosted demo. Do not pull AWS work into M10.
 
 Live Nest dashboard overview, notification inbox/preferences UI on BE-008, and practice role
 assignment. Local product work while M9 is paused. Tasks: DATA-002, BE-011, FE-024, BE-012,
-FE-025, BE-013 (shipped), FE-026 (pending). FE-026 requires approved design before implementation.
+FE-025, BE-013, FE-026 (shipped).
 
 ### M11 — Application Security & Session Hardening (planned)
 
@@ -102,7 +103,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M7 Administration | FE-009, FE-016, BE-010, SEC-002, SEC-004, QA-004, BE-008 as needed | User directory HTTP plus admin UI on Nest. Isolation hardening and authorization matrix remain. BE-008 is the notifications domain, not admin UI. **Closed** at 0.44.0. |
 | M8 Marketing website and visual language | FE-017–FE-023 (shipped) | Public marketing site and shared visual language. Deploy/preview is M9. **Closed** at 0.51.1. |
 | M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. |
-| M10 Product Analytics, Notifications & Role Administration | DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013 (shipped), FE-026 (pending) | Live overview API and UI, notification producers + UI, role PATCH + UI. Bounded seed, Nest overview API, live dashboard cards, appointment producers, in-app notification center, and role PATCH HTTP shipped. No Redis, OAuth, Daily, Stripe, or AWS. FE-026 waits on design approval. |
+| M10 Product Analytics, Notifications & Role Administration | DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026 (shipped) | Live overview API and UI, notification producers + UI, role PATCH + UI. Bounded seed, Nest overview API, live dashboard cards, appointment producers, in-app notification center, and role assignment HTTP/UI shipped. No Redis, OAuth, Daily, Stripe, or AWS. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

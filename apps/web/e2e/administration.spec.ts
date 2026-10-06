@@ -16,14 +16,18 @@ test.describe('Administration', () => {
 
 		await expect(page.getByRole('heading', {level: 1, name: 'Administration'})).toBeVisible();
 		await expect(
-			page.getByText('Synthetic demo. User roles are presentation only.'),
+			page.getByText(
+				'Synthetic demo. Role changes apply to this practice only. Nest enforces grant limits.',
+			),
 		).toBeVisible();
 
 		const users = page.getByRole('list', {name: 'Practice users'});
 		await expect(users).toContainText('practice.admin@example.test');
 		await expect(users).toContainText('PRACTICE_ADMIN');
 		await expect(users).toContainText('provider@example.test');
-		await expect(users).toContainText('NURSE');
+		await expect(
+			page.getByRole('combobox', {name: 'Role for provider@example.test'}),
+		).toHaveValue('PROVIDER');
 
 		const events = page.getByRole('list', {name: 'Audit events'});
 		await expect(events).toContainText('auth.login.succeeded');

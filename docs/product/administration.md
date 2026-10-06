@@ -5,7 +5,7 @@ name: Administration
 area: administration
 marketing_path: /platform/administration
 status: partial
-claim: "User directory and audit viewer. Role assignment UI is not shipped."
+claim: "User directory, audit viewer, and role assignment with tenant/grant limits. Security-events HTTP is not shipped."
 related_tasks: [FE-009, FE-016, BE-010, BE-013, FE-026]
 related_docs:
   - ../01-product-requirements.md
@@ -27,10 +27,9 @@ capabilities:
     related_tasks: [FE-009, FE-016]
   - id: administration.role-assignment
     name: Assign roles over HTTP
-    status: planned
-    demo: Nest PATCH shipped; assignment UI is FE-026
-    public: no
-    planned_next: FE-026
+    status: shipped
+    demo: practice-admin role change; Nest tenant/grant limits
+    public: qualified
     related_tasks: [BE-013, FE-026]
   - id: administration.security-events-http
     name: Security-events HTTP
@@ -43,14 +42,15 @@ capabilities:
 
 # Administration
 
-User directory and audit viewer as implemented. Nest `PATCH /admin/users/:id/roles` is
-[BE-013](../tasks/backend/BE-013-role-assignment-http.md). Do not claim role assignment as a demo
-UI until [FE-026](../tasks/frontend/FE-026-role-assignment-ui.md) ships. Security-events HTTP
-remains **M11**.
+User directory, audit viewer, and practice role assignment as implemented. Nest
+`PATCH /admin/users/:id/roles` is [BE-013](../tasks/backend/BE-013-role-assignment-http.md).
+The assignment UI is [FE-026](../tasks/frontend/FE-026-role-assignment-ui.md). Nest enforces
+tenant scope, last-admin protection, and PRACTICE_ADMIN cannot grant SUPER_ADMIN. Omitting
+SUPER_ADMIN from the select is UX only. Security-events HTTP remains **M11**.
 
 | ID | Name | Status | Demo | Public |
 | --- | --- | --- | --- | --- |
 | `administration.user-directory` | Browse practice users | shipped | user directory | yes |
 | `administration.audit-viewer` | Review audit events | shipped | audit viewer | yes |
-| `administration.role-assignment` | Assign roles over HTTP | planned | Nest PATCH; UI FE-026 | no |
+| `administration.role-assignment` | Assign roles over HTTP | shipped | practice-admin role change; tenant/grant limits | qualified |
 | `administration.security-events-http` | Security-events HTTP | planned | not shipped | no |

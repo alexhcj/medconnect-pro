@@ -3,7 +3,7 @@ id: FE-026
 type: task
 area: frontend
 feature: administration
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-016, BE-013]
@@ -21,11 +21,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd"
+  frame: "App / Administration — 01 Users list — default (desktop) (121:7)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -91,14 +91,14 @@ Implements / extends `administration.role-assignment`.
 
 ## Acceptance Criteria
 
-- [ ] `design.status` is `approved` with `file_url` and `frame` before implementation
-- [ ] With mocks off, a PRACTICE_ADMIN can PATCH a membership role and the list shows the new
+- [x] `design.status` is `approved` with `file_url` and `frame` before implementation
+- [x] With mocks off, a PRACTICE_ADMIN can PATCH a membership role and the list shows the new
   role after success
-- [ ] Forbidden grants surface an error instead of a silent UI success
-- [ ] Audit viewer still loads
-- [ ] One non-mock browser check covers a successful role change for
+- [x] Forbidden grants surface an error instead of a silent UI success
+- [x] Audit viewer still loads
+- [x] One non-mock browser check covers a successful role change for
   `practice.admin@example.test`
-- [ ] Catalog + capability matrix allow describing role assignment as shipped with tenant/grant
+- [x] Catalog + capability matrix allow describing role assignment as shipped with tenant/grant
   limits (security-events still unshipped)
 
 ## Dependencies
@@ -107,8 +107,9 @@ Implements / extends `administration.role-assignment`.
 - Design brief via [design-brief-prompt.md](../../processes/prompts/design-brief-prompt.md) on
   **this** task
 
-Figma (shared library; fill `file_url` / `frame` when approved):
-https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+Figma (shared library; approved page **App / Administration**, primary frame
+`01 Users list — default (desktop)` / `121:7`):
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=121-7
 
 ## Validation
 
@@ -124,13 +125,19 @@ https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 
 ## Implementation notes
 
-Suggested order: after BE-013. Blocked on design approval.
+Suggested order: after BE-013. Design is approved on this task; implementation may proceed via
+the plan-mode prompt.
 
-Writing this spec is not a version bump.
+Writing this spec is not a version bump. Design-metadata approval is not a version bump.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Inline native role select on `/dashboard/admin`; live and mock
+  `adminAPI.assignRole` against `PATCH /admin/users/:id/roles`; SUPER_ADMIN omitted from grant
+  options (UX only); 403 last-admin / forbidden grant mapped to a per-row `role="alert"`.
+- Tests: Vitest PATCH mapping, mock last-admin/SUPER_ADMIN 403s, labeled combobox, keyboard
+  `selectOptions`; mock Playwright copy; `e2e:live` changes `jordan.ellis@synthetic.example`
+  PROVIDER → NURSE and restores PROVIDER.
 - PR:
-- Notes: Pending M10 implementation. Design not started.
+- Notes: Version 0.65.0 → 0.66.0 (MINOR). Plane MEDCONNECT-79 is a human update. Live
+  `e2e:live` requires Postgres, seed, and API on :3001.

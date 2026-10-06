@@ -103,4 +103,81 @@ describe('adminRealAPI', () => {
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
 		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
 	});
+
+	it('PATCHes a membership role without a client practiceId', async () => {
+		localStorage.setItem('auth_token', 'demo-access-token');
+		const updated: PracticeUserRdo = {...providerRdo, role: 'NURSE'};
+		const fetchMock = vi.fn().mockResolvedValue(jsonResponse(updated));
+		vi.stubGlobal('fetch', fetchMock);
+
+		const user = await adminRealAPI.assignRole(providerRdo.id, 'NURSE');
+
+		expect(user).toEqual(
+			expect.objectContaining({
+				id: providerRdo.id,
+				email: 'jordan.ellis@synthetic.example',
+				role: 'NURSE',
+				practiceId,
+				synthetic: true,
+			}),
+		);
+		expect(fetchMock).toHaveBeenCalledWith(
+			`http://localhost:3001/admin/users/${providerRdo.id}/roles`,
+			expect.objectContaining({
+				method: 'PATCH',
+				body: JSON.stringify({role: 'NURSE'}),
+			}),
+		);
+		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
+		expect(JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit).body))).toEqual({
+			role: 'NURSE',
+		});
+		expect(authorizationFromCall(fetchMock.mock.calls[0])).toBe('Bearer demo-access-token');
+	});
+
+	it('maps a 403 forbidden grant onto ApiError', async () => {
+		localStorage.setItem('auth_token', 'demo-access-token');
+		const fetchMock = vi.fn().mockResolvedValue(
+			jsonResponse(
+				{
+					error: {
+						code: 'FORBIDDEN',
+						message: 'You do not have permission to perform this action',
+					},
+					correlationId: '66666666-6666-4666-8666-666666666666',
+				},
+				403,
+			),
+		);
+		vi.stubGlobal('fetch', fetchMock);
+
+		await expect(adminRealAPI.assignRole(providerRdo.id, 'SUPER_ADMIN')).rejects.toMatchObject({
+			status: 403,
+			code: 'FORBIDDEN',
+			message: 'You do not have permission to perform this action',
+		});
+	});
+
+	it('maps a 400 validation envelope onto ApiError', async () => {
+		localStorage.setItem('auth_token', 'demo-access-token');
+		const fetchMock = vi.fn().mockResolvedValue(
+			jsonResponse(
+				{
+					error: {
+						code: 'VALIDATION_ERROR',
+						message: 'Request validation failed',
+						details: [{path: 'role', message: 'Invalid option'}],
+					},
+				},
+				400,
+			),
+		);
+		vi.stubGlobal('fetch', fetchMock);
+
+		await expect(adminRealAPI.assignRole(providerRdo.id, 'NURSE')).rejects.toMatchObject({
+			status: 400,
+			code: 'VALIDATION_ERROR',
+			message: 'Request validation failed',
+		});
+	});
 });

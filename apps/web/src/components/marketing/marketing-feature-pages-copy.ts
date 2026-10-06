@@ -61,7 +61,7 @@ export const FEATURE_PAGE_METADATA: Record<
 	administration: {
 		title: 'Administration',
 		description:
-			'User directory and audit viewer in the MedConnect Pro demo. Role assignment UI is not shipped.',
+			'User directory, audit viewer, and role assignment with tenant and grant limits. Security-events HTTP is not shipped.',
 	},
 };
 
@@ -429,8 +429,8 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 		hero: {
 			headingId: 'administration-hero-heading',
 			eyebrow: 'Administration · demo limits',
-			heading: 'Users and audit viewer',
-			body: 'User directory and audit viewer. Role assignment UI is not shipped.',
+			heading: 'Users, roles, and audit viewer',
+			body: 'User directory, audit viewer, and role assignment with tenant and grant limits. Security-events HTTP is not shipped.',
 			...FEATURE_PAGE_HERO_CTAS,
 		},
 		capabilities: {
@@ -446,8 +446,13 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 					description: 'Review audit events with synthetic data.',
 				},
 				{
+					title: 'Role assignment',
+					description:
+						'Change a membership role. Nest enforces tenant and grant limits. Not a permission-matrix editor.',
+				},
+				{
 					title: 'Honest status',
-					description: 'Role assignment UI is not shipped.',
+					description: 'Security-events HTTP is not shipped.',
 				},
 			],
 		},
@@ -477,8 +482,9 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 					description: 'Audit events use synthetic data only.',
 				},
 				{
-					title: 'Role assignment UI is not part of this demo',
-					description: 'Role assignment is not a current demo surface.',
+					title: 'Change a membership role',
+					description:
+						'PRACTICE_ADMIN can assign catalog roles. Nest enforces tenant and grant limits.',
 				},
 			],
 		},

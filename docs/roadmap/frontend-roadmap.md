@@ -21,7 +21,7 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - bounded seed ([DATA-002](../tasks/backend/DATA-002-bounded-synthetic-seed.md), shipped);
 - notifications UI ([FE-025](../tasks/frontend/FE-025-notifications-ui.md), shipped; BE-008 HTTP
   exists; [BE-012](../tasks/backend/BE-012-notification-producers.md) producers shipped);
-- role assignment UI is Slice 8 follow-on ([FE-026](../tasks/frontend/FE-026-role-assignment-ui.md)),
+- role assignment UI is Slice 8 follow-on ([FE-026](../tasks/frontend/FE-026-role-assignment-ui.md), shipped),
   not this slice;
 - alert banners remain unscheduled.
 
@@ -53,8 +53,7 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 
 - FE-009;
 - administration UI against the Nest admin APIs (FE-016);
-- role assignment UI ([FE-026](../tasks/frontend/FE-026-role-assignment-ui.md); M10, depends on
-  shipped [BE-013](../tasks/backend/BE-013-role-assignment-http.md)).
+- role assignment UI ([FE-026](../tasks/frontend/FE-026-role-assignment-ui.md); M10, shipped).
 
 ## Slice 9 — Responsive polish
 
@@ -72,5 +71,5 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - Polish and product visuals ([FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md), shipped).
 - Deploy/preview is **M9**, **PAUSED / BLOCKED** — AWS account unavailable (close audit found no
   missing IDs; not closed; not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks
-  INFRA-013; INFRA-013 paused). Next product module is **M10**. Local product work does not wait
-  on AWS.
+  INFRA-013; INFRA-013 paused). **M10** is shipped. Next product module is **M11**. Local product
+  work does not wait on AWS.

@@ -84,7 +84,7 @@ describe('MarketingHome', () => {
 		expect(screen.getAllByText(/Not live video/).length).toBeGreaterThan(0);
 		expect(screen.getAllByText(/labeled boundaries/).length).toBeGreaterThan(0);
 		expect(screen.getByText(/Synthetic demo aggregates, not a warehouse/)).toBeInTheDocument();
-		expect(screen.getByText(/Role assignment UI is not shipped/)).toBeInTheDocument();
+		expect(screen.getByText(/tenant\/grant limits/)).toBeInTheDocument();
 		expect(screen.getAllByText(/Not production OAuth/).length).toBeGreaterThan(0);
 		expect(screen.getByText(/no HIPAA certification claim/)).toBeInTheDocument();
 		expect(screen.getByText(MARKETING_PRODUCT_VISUAL_CAPTION)).toBeInTheDocument();

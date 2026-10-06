@@ -73,7 +73,7 @@ What you can demonstrate **today**. Statused catalog:
 | Telehealth | Create, join, and end an appointment-linked session shell | Not live video, Daily media, chat, or recording |
 | Billing | Invoice list and detail | Not hosted payments or claims submission |
 | Analytics | Live Nest dashboard overview cards | Synthetic demo aggregates; not a warehouse or HIPAA analytics |
-| Administration | User directory and audit viewer | No role assignment HTTP or security-events HTTP |
+| Administration | User directory, audit viewer, and role assignment with tenant/grant limits | Not a permission-matrix editor; security-events HTTP remains M11 |
 | Security | Server-side RBAC, tenant isolation (including RLS), audit logging, document ACL | Not HIPAA certification |
 
 Notification **in-app inbox** exists on the dashboard Bell (session user only). It is not push,
@@ -147,12 +147,12 @@ Application version **0.59.0**. Snapshot:
 - **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** — AWS account setup
   unavailable. Not closed and not cancelled: INFRA-004–INFRA-012 shipped, INFRA-014 pending
   (blocks INFRA-013), INFRA-013 paused.
-- Next product module is **M10**. Local product work does not wait on AWS.
+- Next product module is **M11** (planned; no task IDs). Local product work does not wait on AWS.
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live
 video, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
-M10 owns role assignment HTTP and UI (DATA-002, BE-011, FE-024, BE-012, and FE-025
-notification center are shipped).
+M10 role assignment HTTP and UI are shipped (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013,
+FE-026).
 
 ## Deployment / demo
 

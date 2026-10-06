@@ -78,7 +78,7 @@ describe('MarketingPlatform', () => {
 		expect(screen.getByText('Not live video.')).toBeInTheDocument();
 		expect(screen.getByText('Not hosted payments.')).toBeInTheDocument();
 		expect(screen.getByText('Not a warehouse or HIPAA analytics.')).toBeInTheDocument();
-		expect(screen.getByText('Role assignment UI is not shipped.')).toBeInTheDocument();
+		expect(screen.getByText('Security-events HTTP is not shipped.')).toBeInTheDocument();
 		expect(screen.getByText(/no HIPAA certification claim/)).toBeInTheDocument();
 		expect(screen.getAllByText(/Synthetic data only/).length).toBeGreaterThan(0);
 

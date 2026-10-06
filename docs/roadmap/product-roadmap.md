@@ -4,7 +4,8 @@ Current ship state is [post-mvp-baseline.md](post-mvp-baseline.md), not the hist
 Demo milestones M0–M8 are shipped (FE-017–FE-023). Deployment/preview is **M9**,
 **PAUSED / BLOCKED** — AWS account unavailable (close audit found no missing IDs; not closed;
 not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013
-paused). Next product module is **M10**. Local product work does not wait on AWS.
+paused). **M10** is shipped. Next product module is **M11** (planned; no task IDs). Local
+product work does not wait on AWS.
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
 expansion is still unshipped.
@@ -30,7 +31,7 @@ cloud).
 - EHR foundation;
 - telehealth foundation (session shell, not live media);
 - billing foundation (invoices; payments/claims labeled boundaries);
-- administration (users + audit viewer; role PATCH HTTP is BE-013, shipped; UI is FE-026);
+- administration (users + audit viewer + role assignment UI with tenant/grant limits);
 - security hardening (partial: RBAC, RLS, document ACL, audit);
 - observability (deferred with M9 deploy/preview).
 

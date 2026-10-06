@@ -6,6 +6,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.66.1] - 2026-10-06
+
+### Fixed
+
+- Mock administration audit events now use a unique id per role change so changing the same
+  membership twice no longer collides React list keys in the audit viewer.
+
+## [0.66.0] - 2026-10-06
+
+### Added
+
+- Role assignment UI (FE-026): practice admins change a membership role from the existing
+  `/dashboard/admin` user list against Nest `PATCH /admin/users/:id/roles`. Mock mode mutates
+  the in-memory directory with the same last-admin and SUPER_ADMIN grant limits. Nest remains
+  authoritative; omitting SUPER_ADMIN from the select is UX only. Security-events HTTP remains
+  M11. Synthetic demo data only; never real PHI.
+
 ## [0.65.0] - 2026-10-05
 
 ### Added

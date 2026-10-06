@@ -33,7 +33,8 @@ export const MARKETING_HOME_MODULES = {
 		},
 		{
 			title: 'Administration',
-			description: 'User directory and audit viewer. Role assignment UI is not shipped.',
+			description:
+				'User directory, audit viewer, and role assignment with tenant/grant limits.',
 		},
 	],
 } as const;

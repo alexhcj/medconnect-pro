@@ -26,6 +26,6 @@ login HTTP. That does not make Identity optional for later domain APIs.
 M0–M7 domain HTTP listed above is in the repository. M8 is frontend marketing (FE-017–FE-023),
 not a new backend domain. **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** —
 AWS account unavailable (close audit found no missing IDs; not closed; not cancelled;
-INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). Next
-product module is **M10** (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013 shipped; FE-026 pending). Local product
-work does not wait on AWS.
+INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). **M10** is
+shipped (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026). Next product module is **M11**
+(planned; no task IDs). Local product work does not wait on AWS.

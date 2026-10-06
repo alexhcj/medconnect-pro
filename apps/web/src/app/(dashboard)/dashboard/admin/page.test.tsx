@@ -3,15 +3,17 @@ import AdministrationPage from '@/app/(dashboard)/dashboard/admin/page';
 import type {AuditEvent} from '@/types/admin/audit-event';
 import type {PracticeUser} from '@/types/admin/practice-user';
 
-const {useAdminUsers, useAuditEvents, useSessionStatus} = vi.hoisted(() => ({
+const {useAdminUsers, useAuditEvents, useAssignUserRole, useSessionStatus} = vi.hoisted(() => ({
 	useAdminUsers: vi.fn(),
 	useAuditEvents: vi.fn(),
+	useAssignUserRole: vi.fn(),
 	useSessionStatus: vi.fn(),
 }));
 
 vi.mock('@/lib/hooks/use-admin', () => ({
 	useAdminUsers,
 	useAuditEvents,
+	useAssignUserRole,
 }));
 
 vi.mock('@/lib/hooks/use-session', () => ({
@@ -41,6 +43,14 @@ describe('AdministrationPage', () => {
 	beforeEach(() => {
 		useAdminUsers.mockClear();
 		useAuditEvents.mockClear();
+		useAssignUserRole.mockReturnValue({
+			mutate: vi.fn(),
+			isPending: false,
+			isSuccess: false,
+			isError: false,
+			error: null,
+			variables: undefined,
+		});
 		useSessionStatus.mockReturnValue({
 			session: {userRole: 'PRACTICE_ADMIN'},
 			isLoading: false,
@@ -64,9 +74,16 @@ describe('AdministrationPage', () => {
 
 		expect(screen.getByRole('heading', {level: 1, name: 'Administration'})).toBeInTheDocument();
 		expect(
-			screen.getByText('Synthetic demo. User roles are presentation only.'),
+			screen.getByText(
+				'Synthetic demo. Role changes apply to this practice only. Nest enforces grant limits.',
+			),
 		).toBeInTheDocument();
-		expect(screen.getByRole('list', {name: 'Practice users'})).toHaveTextContent('practice.admin@example.test');
+		expect(screen.getByRole('list', {name: 'Practice users'})).toHaveTextContent(
+			'practice.admin@example.test',
+		);
+		expect(screen.getByRole('combobox', {name: 'Role for practice.admin@example.test'})).toHaveValue(
+			'PRACTICE_ADMIN',
+		);
 		expect(screen.getByRole('list', {name: 'Audit events'})).toHaveTextContent('auth.login.succeeded');
 	});
 

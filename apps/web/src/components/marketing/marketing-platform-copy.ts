@@ -46,8 +46,8 @@ export const MARKETING_PLATFORM_MODULES = {
 		},
 		{
 			title: 'Administration',
-			description: 'User directory and audit viewer.',
-			status: 'Role assignment UI is not shipped.',
+			description: 'User directory, audit viewer, and role assignment with tenant/grant limits.',
+			status: 'Security-events HTTP is not shipped.',
 			href: '/platform/administration',
 		},
 	],

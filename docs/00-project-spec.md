@@ -105,8 +105,8 @@ Demo vertical slices 1–12 below shipped in milestones M0–M7. M8 marketing si
 [post-mvp-baseline.md](roadmap/post-mvp-baseline.md). **M9 — Deployment / preview
 infrastructure** is **PAUSED / BLOCKED** — AWS account setup unavailable (close audit found no
 missing IDs; not closed; not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks
-INFRA-013; INFRA-013 paused). Next product module is **M10**. Local product work does not wait
-on AWS.
+INFRA-013; INFRA-013 paused). **M10** is shipped. Next product module is **M11** (planned; no
+task IDs). Local product work does not wait on AWS.
 
 ## Implementation strategy
 

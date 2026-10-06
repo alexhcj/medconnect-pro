@@ -205,7 +205,7 @@ maps onto `admin:users` without a new catalog permission string:
   `SUPER_ADMIN`. The last `PRACTICE_ADMIN` of the practice cannot be removed. Unknown and
   cross-tenant user ids return the same not-found response as other tenant-owned resources. A
   successful change emits `membership.role_changed` (no password/MFA/session hashes). Denied
-  attempts follow existing `access.denied` patterns. Frontend assignment UI stays
+  attempts follow existing `access.denied` patterns. Frontend assignment UI is
   [FE-026](../tasks/frontend/FE-026-role-assignment-ui.md).
 
 Response DTOs expose only authorized fields ([data-contracts.md](data-contracts.md) `PatientRdo`).
