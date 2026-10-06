@@ -140,19 +140,19 @@ They are not a live public deployment.
 
 ## Development status
 
-Application version **0.59.0**. Snapshot:
+Application version **0.66.2**. Snapshot:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md).
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).
 - **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** — AWS account setup
   unavailable. Not closed and not cancelled: INFRA-004–INFRA-012 shipped, INFRA-014 pending
   (blocks INFRA-013), INFRA-013 paused.
+- **M10 shipped** (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026): live Nest dashboard
+  overview, in-app notification inbox/preferences, and practice role assignment.
 - Next product module is **M11** (planned; no task IDs). Local product work does not wait on AWS.
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live
 video, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
-M10 role assignment HTTP and UI are shipped (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013,
-FE-026).
 
 ## Deployment / demo
 
@@ -325,7 +325,7 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | [`docs/architecture/`](./docs/architecture/) | System structure |
 | [`docs/decisions/`](./docs/decisions/) | Architectural decision records |
 | [`docs/contracts/`](./docs/contracts/) | API, identity, and environment contracts |
-| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot; M9 paused; M10 next |
+| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot; M9 paused; M10 shipped; M11 next |
 
 Process prompts, tasks, and remaining workflows are linked from
 [`docs/README.md`](./docs/README.md). Plane can mirror task metadata; Git remains canonical for

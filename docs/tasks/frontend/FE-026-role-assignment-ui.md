@@ -44,8 +44,8 @@ against Nest `PATCH /admin/users/:id/roles`.
 
 ## Context
 
-[`user-role-list.tsx`](../../../apps/web/src/components/admin/user-role-list.tsx) is read-only.
-FE-016 forbade role PATCH. Audit viewer stays as-is.
+FE-016 left [`user-role-list.tsx`](../../../apps/web/src/components/admin/user-role-list.tsx)
+read-only and forbade role PATCH. This task adds the assignment control. Audit viewer stays as-is.
 
 Implements / extends `administration.role-assignment`.
 

@@ -21,7 +21,7 @@ Suggested GitHub fields (fill at INFRA-013):
 
 ## Release overview
 
-MedConnect Pro **1.0.0** is the first **hosted production demo** of the M0–M8 product plus M9
+MedConnect Pro **1.0.0** is the first **hosted production demo** of the M0–M10 product plus M9
 hosting (AWS Amplify for Next.js, ECS/Fargate for NestJS). It is a portfolio and interview
 demonstration of healthcare-oriented SaaS engineering. It is **not** a deployed healthcare
 service and is **not** HIPAA certified or HIPAA compliant.
@@ -36,7 +36,7 @@ service and is **not** HIPAA certified or HIPAA compliant.
 
 ## Product / feature scope
 
-Shipped demo milestones **M0–M8**, plus **M9** hosting contracts and workflows:
+Shipped demo milestones **M0–M8** and **M10**, plus **M9** hosting contracts and workflows:
 
 - M0 — repository, docs, frontend shell, local Compose
 - M1 — mock identity UI, roles, protected dashboard
@@ -50,13 +50,16 @@ Shipped demo milestones **M0–M8**, plus **M9** hosting contracts and workflows
   (FE-017–FE-023)
 - M9 — `local` / `preview` / `production` topology, quality CI, secrets/OIDC, preview and
   production demo RDS, ECS/Fargate, Amplify Hosting, PR previews, production ECS delivery
+- M10 — live Nest dashboard overview, in-app notification inbox/preferences, and practice role
+  assignment (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026)
 
 Live Nest integration covers login/logout/refresh, patients, clinical lists, document
 list/download, appointments, telehealth session create/join/end, billing invoices, admin users,
-admin audit, and dashboard overview cards. Dual mock/live frontend is intentional.
+role assignment, admin audit, dashboard overview cards, and the in-app notification inbox.
+Dual mock/live frontend is intentional.
 
 Not in this release: production OAuth, live telehealth media, hosted payments, claims
-submission, notifications UI, Redis, or HIPAA certification. See **Known limitations**.
+submission, Redis, or HIPAA certification. See **Known limitations**.
 
 ## Frontend
 
@@ -195,11 +198,12 @@ Canonical documentation is `/docs`. Start with:
 - **Shared preview API.** Amplify PR previews talk to one preview ECS API and one preview/demo
   database, not an isolated backend per pull request.
 - **Mock identity, not production OAuth.**
-- **No notifications UI** (Nest notification domain HTTP exists; UI unwired).
 - **No Redis, SNS/SQS, or custom KMS hierarchy** as live platform services.
 - **Operator apply/connect** (Terraform, Amplify console, GitHub `production` environment)
   remains required until INFRA-013 records production as live.
-- Role-assignment HTTP and security-events HTTP are not shipped.
+- Notifications are an in-app inbox with mark-read and channel preferences (session user only);
+  not push, SMS, or email carriers.
+- Security-events HTTP is not shipped (M11).
 
 ## Demo-data / no-PHI statement
 

@@ -81,6 +81,8 @@ describe('MarketingPlatform', () => {
 		expect(screen.getByText('Security-events HTTP is not shipped.')).toBeInTheDocument();
 		expect(screen.getByText(/no HIPAA certification claim/)).toBeInTheDocument();
 		expect(screen.getAllByText(/Synthetic data only/).length).toBeGreaterThan(0);
+		expect(screen.getAllByText(/live dashboard overview cards/i).length).toBeGreaterThan(0);
+		expect(screen.queryByText(/mock analytics cards/i)).not.toBeInTheDocument();
 
 		expect(screen.queryByText(/HIPAA compliant/i)).not.toBeInTheDocument();
 		expect(screen.queryByText(/live video visits/i)).not.toBeInTheDocument();

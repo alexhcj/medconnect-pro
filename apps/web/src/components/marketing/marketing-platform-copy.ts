@@ -4,7 +4,7 @@ export const MARKETING_PLATFORM_HERO = {
 	eyebrow: 'Healthcare practice platform · synthetic demo',
 	heading: 'Practice modules in one platform',
 	headingId: 'platform-overview-heading',
-	body: 'Patient records, scheduling, a telehealth session shell, invoices, mock analytics cards, and administration — with honest status for each module. Synthetic data only.',
+	body: 'Patient records, scheduling, a telehealth session shell, invoices, live dashboard overview cards, and administration — with honest status for each module. Synthetic data only.',
 	primaryCta: {label: 'Go to demo', href: '/demo'},
 	secondaryCta: {label: 'Sign in', href: LOGIN_PATH},
 } as const;

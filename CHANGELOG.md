@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.66.2] - 2026-10-06
+
+### Fixed
+
+- Platform overview hero and metadata describe live dashboard overview cards instead of mock
+  analytics cards, matching the shipped Nest overview API.
+- README, the GitHub `1.0.0` release-notes template, and the project spec now match shipped M10
+  (in-app notification inbox, role assignment, GitHub Actions quality gates).
+
 ## [0.66.1] - 2026-10-06
 
 ### Fixed

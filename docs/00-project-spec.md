@@ -80,13 +80,14 @@ Backend (current):
 - NestJS 12
 - PostgreSQL (local Compose + TypeORM)
 - REST/OpenAPI
+- GitHub Actions quality gates (INFRA-005)
 
 Backend / infrastructure (planned):
 - Redis
 - S3/KMS
 - WebSockets/Socket.IO where appropriate
 - WebRTC/Daily for telehealth media
-- AWS, Docker, ECS/Fargate, Terraform, GitHub Actions, CloudWatch
+- AWS, Docker, ECS/Fargate, Terraform, CloudWatch
 - local / preview / production separation ([ADR-012](decisions/ADR-012-deployment-topology.md))
 
 ## Demo-data policy
