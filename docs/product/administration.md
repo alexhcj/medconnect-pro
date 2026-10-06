@@ -6,7 +6,7 @@ area: administration
 marketing_path: /platform/administration
 status: partial
 claim: "User directory, audit viewer, and role assignment with tenant/grant limits. Security-events HTTP is not shipped."
-related_tasks: [FE-009, FE-016, BE-010, BE-013, FE-026]
+related_tasks: [FE-009, FE-016, BE-010, BE-013, FE-026, BE-015, FE-029]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md
@@ -37,7 +37,7 @@ capabilities:
     demo: not shipped
     public: no
     planned_next: M11
-    related_tasks: []
+    related_tasks: [BE-015, FE-029]
 ---
 
 # Administration

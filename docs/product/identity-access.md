@@ -6,7 +6,7 @@ area: identity-access
 marketing_path: /login
 status: partial
 claim: "Mock IdP sessions. Labeled mock identity, not production OAuth."
-related_tasks: [FE-010, BE-009, SEC-001]
+related_tasks: [FE-010, BE-009, SEC-001, FE-028]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md
@@ -27,7 +27,7 @@ capabilities:
     demo: challenge exists; not completed in the live UI
     public: no
     planned_next: production MFA
-    related_tasks: [SEC-001]
+    related_tasks: [SEC-001, FE-028]
   - id: identity-access.oauth-oidc-pkce
     name: Production OAuth 2.0 / OIDC + PKCE
     status: planned

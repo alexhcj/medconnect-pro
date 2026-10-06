@@ -43,6 +43,9 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-024 — Live dashboard overview
 - FE-025 — Notifications UI
 - FE-026 — Role assignment UI
+- FE-027 — Live cookie session client
+- FE-028 — Mock MFA challenge UI
+- FE-029 — Security-events UI
 
 ## Backend
 
@@ -58,12 +61,15 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-011 — Dashboard overview API
 - BE-012 — Notification producers (in-process)
 - BE-013 — Role assignment HTTP
+- BE-014 — HttpOnly cookie session HTTP
+- BE-015 — Security-events HTTP
 
 ## Security
 
 - SEC-002 — Tenant isolation
 - SEC-003 — Audit events
 - SEC-004 — Document access control
+- SEC-005 — Production-gap documentation
 
 ## QA
 
@@ -94,3 +100,12 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-025 — Notifications UI
 - BE-013 — Role assignment HTTP
 - FE-026 — Role assignment UI
+
+## Product (M11)
+
+- BE-014 — HttpOnly cookie session HTTP
+- FE-027 — Live cookie session client
+- FE-028 — Mock MFA challenge UI
+- BE-015 — Security-events HTTP
+- FE-029 — Security-events UI
+- SEC-005 — Production-gap documentation
