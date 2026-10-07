@@ -107,7 +107,9 @@ Demo vertical slices 1–12 below shipped in milestones M0–M7. M8 marketing si
 infrastructure** is **PAUSED / BLOCKED** — AWS account setup unavailable (close audit found no
 missing IDs; not closed; not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks
 INFRA-013; INFRA-013 paused). **M10** is shipped. **M11** is shipped (BE-014, FE-027, FE-028, BE-015,
-FE-029, SEC-005). Next product module is **M12 — Telehealth Media Maturity** (no task IDs yet).
+FE-029, SEC-005). Next product module is **M12 — Telehealth Media Maturity**
+([BE-016](tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+[FE-030](tasks/frontend/FE-030-daily-media-session-shell.md), pending).
 Local product work does not wait on AWS.
 
 ## Implementation strategy

@@ -19,7 +19,9 @@ through [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.m
 [BE-015](../tasks/backend/BE-015-security-events-http.md),
 [FE-029](../tasks/frontend/FE-029-security-events-ui.md),
 [SEC-005](../tasks/security/SEC-005-production-gap-documentation.md)).
-Next product module is **M12 — Telehealth Media Maturity** (no task IDs yet).
+Next product module is **M12 — Telehealth Media Maturity**
+([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md), pending).
 Local product work does not wait on AWS. Resume M9 when the AWS account can be
 configured. Preview/production hosting remains M9, not M8, M10, or M11.
 
@@ -87,7 +89,10 @@ milestone.
 
 ### M12 — Telehealth Media Maturity (planned)
 
-Daily/WebRTC on the shipped session shell. No task IDs yet.
+Daily/WebRTC on the shipped session shell. Tasks:
+[BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md) (pending),
+[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md) (pending). Not chat, recording,
+Socket.IO, or AWS.
 
 ### M13 — Billing / Payments UX (planned)
 
@@ -113,6 +118,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. |
 | M10 Product Analytics, Notifications & Role Administration | DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026 (shipped) | Live overview API and UI, notification producers + UI, role PATCH + UI. Bounded seed, Nest overview API, live dashboard cards, appointment producers, in-app notification center, and role assignment HTTP/UI shipped. No Redis, OAuth, Daily, Stripe, or AWS. |
 | M11 Application Security & Session Hardening | BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005 (shipped) | Nest HttpOnly cookies, live cookie client, mock MFA UI, security-events HTTP/UI, production-gap docs. Not OAuth, production MFA, rate limiting, Redis, or AWS. |
+| M12 Telehealth Media Maturity | BE-016, FE-030 (pending) | Daily media token HTTP plus Daily call-object UI on the shipped session shell. Fake adapter when `DAILY_API_KEY` is unset. Not chat, recording, Socket.IO, Stripe, or AWS. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

@@ -46,6 +46,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-027 — Live cookie session client
 - FE-028 — Mock MFA challenge UI
 - FE-029 — Security-events UI
+- FE-030 — Daily media in the telehealth session shell
 
 ## Backend
 
@@ -63,6 +64,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-013 — Role assignment HTTP
 - BE-014 — HttpOnly cookie session HTTP
 - BE-015 — Security-events HTTP
+- BE-016 — Telehealth Daily media token HTTP
 
 ## Security
 
@@ -109,3 +111,8 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-015 — Security-events HTTP
 - FE-029 — Security-events UI
 - SEC-005 — Production-gap documentation
+
+## Product (M12)
+
+- BE-016 — Telehealth Daily media token HTTP
+- FE-030 — Daily media in the telehealth session shell

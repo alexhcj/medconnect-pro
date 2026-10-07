@@ -72,7 +72,9 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - Deploy/preview is **M9**, **PAUSED / BLOCKED** — AWS account unavailable (close audit found no
   missing IDs; not closed; not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks
   INFRA-013; INFRA-013 paused). **M10** is shipped. **M11** is shipped (BE-014, FE-027, FE-028, BE-015,
-  FE-029, SEC-005). Next product module is **M12 — Telehealth Media Maturity** (no task IDs yet).
+  FE-029, SEC-005). Next product module is **M12 — Telehealth Media Maturity**
+  ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+  [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md), pending).
   Local product work does not wait on AWS.
 
 ## Slice 11 — Application security and session hardening (M11)
@@ -82,3 +84,9 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - mock MFA challenge UI ([FE-028](../tasks/frontend/FE-028-mock-mfa-challenge-ui.md), shipped);
 - security-events UI ([FE-029](../tasks/frontend/FE-029-security-events-ui.md), shipped; depends on
   [BE-015](../tasks/backend/BE-015-security-events-http.md)).
+
+## Slice 12 — Telehealth media maturity (M12)
+
+- Daily media in the session shell ([FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md),
+  pending; depends on [BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md)).
+  Design required on FE-030. Mock mode keeps placeholders. Not chat, recording, or Socket.IO.

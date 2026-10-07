@@ -152,7 +152,9 @@ Application version **0.71.0**. Snapshot:
 - **M11 shipped** (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005): Nest HttpOnly cookies, live
   cookie client, mock MFA UI, security-events HTTP/UI, and production-gap docs
   ([docs/security/](./docs/security/README.md)). Next product module is **M12 — Telehealth Media
-  Maturity** (no task IDs yet). Local product work does not wait on AWS.
+  Maturity** ([BE-016](./docs/tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+  [FE-030](./docs/tasks/frontend/FE-030-daily-media-session-shell.md), pending). Local product
+  work does not wait on AWS.
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live
 video, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
