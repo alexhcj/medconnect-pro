@@ -3,7 +3,7 @@ id: FE-029
 type: task
 area: frontend
 feature: administration
-status: pending
+status: implemented
 priority: medium
 estimate: 2
 dependencies: [FE-016, BE-015]
@@ -22,11 +22,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd"
+  frame: "App / Administration — 01 Security events — default (desktop) (158:56)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -48,7 +48,7 @@ audit viewer, without merging the two lists.
 [FE-016](FE-016-administration-ui-nest-api.md) connected the audit viewer to Nest.
 [FE-026](FE-026-role-assignment-ui.md) parked security-events UI on M11. HTTP is
 [BE-015](../backend/BE-015-security-events-http.md). Capability
-`administration.security-events-http` is `planned`.
+`administration.security-events-http` is `shipped`.
 
 Implements / extends `administration.security-events-http`.
 
@@ -93,11 +93,11 @@ Implements / extends `administration.security-events-http`.
 
 ## Acceptance Criteria
 
-- [ ] `design.status` is `approved` with `file_url` and `frame` before implementation
-- [ ] PRACTICE_ADMIN can open security events on `/dashboard/admin` in live mode
-- [ ] Audit viewer still loads
-- [ ] 403 and empty states map to accessible UI (no silent success)
-- [ ] Catalog + capability matrix describe security-events HTTP as shipped with tenant limits
+- [x] `design.status` is `approved` with `file_url` and `frame` before implementation
+- [x] PRACTICE_ADMIN can open security events on `/dashboard/admin` in live mode
+- [x] Audit viewer still loads
+- [x] 403 and empty states map to accessible UI (no silent success)
+- [x] Catalog + capability matrix describe security-events HTTP as shipped with tenant limits
       (not a session-policy editor)
 
 ## Dependencies
@@ -106,7 +106,9 @@ Implements / extends `administration.security-events-http`.
 - Design brief via [design-brief-prompt.md](../../processes/prompts/design-brief-prompt.md) on
   **this** task
 
-Shared Figma file: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+Figma (shared library; approved page **App / Administration**, primary frame
+`01 Security events — default (desktop)` / `158:56`):
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=158-56
 
 ## Validation
 
@@ -121,15 +123,20 @@ Shared Figma file: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 
 ## Implementation notes
 
-Suggested order: after BE-015. May run in parallel with FE-027 / FE-028. Design must be
-approved on this task before implementation.
+Suggested order: after BE-015. May run in parallel with FE-027 / FE-028. Design is
+approved on this task; implementation may proceed via the plan-mode prompt.
 
 Writing this spec is not a version bump. Design-metadata approval is not a version bump.
 Shipping this slice is **MINOR**.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Distinct `SecurityEventViewer` on `/dashboard/admin` for live
+  `GET /admin/security-events` and mock `docs/mocks/security-events.json`. Users and audit
+  viewers unchanged. No client `practiceId`.
+- Tests: Vitest live unwrap/403, mock `auth.*`-only list, viewer loading/empty/error/403 plus
+  keyboard Retry; mock Playwright; `e2e:live` administration check for `auth.login.succeeded`.
 - PR:
-- Notes:
+- Notes: Version 0.70.0 → 0.71.0 (MINOR). Plane MEDCONNECT-84 is a human update. Live
+  `e2e:live` requires Postgres, seed, and API on :3001. Companion Figma frames used audit-style
+  loading/empty/`role="alert"` + Retry copy. FE-026 `121:7` unchanged.

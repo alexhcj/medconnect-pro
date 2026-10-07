@@ -5,6 +5,7 @@ import type {Role} from '@/types/auth/roles';
 
 export const adminUsersQueryKey = ['admin', 'users'] as const;
 export const adminAuditEventsQueryKey = ['admin', 'audit-events'] as const;
+export const adminSecurityEventsQueryKey = ['admin', 'security-events'] as const;
 
 export function useAdminUsers(enabled = true) {
 	return useQuery({
@@ -20,6 +21,16 @@ export function useAuditEvents(enabled = true) {
 	return useQuery({
 		queryKey: adminAuditEventsQueryKey,
 		queryFn: () => adminAPI.listAuditEvents(),
+		enabled,
+		staleTime: 5 * 60 * 1000,
+		gcTime: 10 * 60 * 1000,
+	});
+}
+
+export function useSecurityEvents(enabled = true) {
+	return useQuery({
+		queryKey: adminSecurityEventsQueryKey,
+		queryFn: () => adminAPI.listSecurityEvents(),
 		enabled,
 		staleTime: 5 * 60 * 1000,
 		gcTime: 10 * 60 * 1000,

@@ -105,6 +105,55 @@ describe('adminRealAPI', () => {
 		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 
+	it('lists security events from Nest and unwraps AuditEventSearchResultRdo', async () => {
+		localStorage.setItem('auth_token', 'demo-access-token');
+		const fetchMock = vi.fn().mockResolvedValue(
+			jsonResponse({events: [eventRdo], hasMore: false}),
+		);
+		vi.stubGlobal('fetch', fetchMock);
+
+		const events = await adminRealAPI.listSecurityEvents();
+
+		expect(events).toEqual([
+			expect.objectContaining({
+				id: eventId,
+				action: 'auth.login.succeeded',
+				resourceType: 'session',
+				practiceId,
+				actorUserId: userId,
+			}),
+		]);
+		expect(fetchMock).toHaveBeenCalledWith(
+			'http://localhost:3001/admin/security-events',
+			expect.any(Object),
+		);
+		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
+	});
+
+	it('maps a 403 security-events envelope onto ApiError', async () => {
+		localStorage.setItem('auth_token', 'demo-access-token');
+		const fetchMock = vi.fn().mockResolvedValue(
+			jsonResponse(
+				{
+					error: {
+						code: 'FORBIDDEN',
+						message: 'You do not have permission to perform this action',
+					},
+					correlationId: '66666666-6666-4666-8666-666666666666',
+				},
+				403,
+			),
+		);
+		vi.stubGlobal('fetch', fetchMock);
+
+		await expect(adminRealAPI.listSecurityEvents()).rejects.toMatchObject({
+			status: 403,
+			code: 'FORBIDDEN',
+			message: 'You do not have permission to perform this action',
+		});
+	});
+
 	it('PATCHes a membership role without a client practiceId', async () => {
 		localStorage.setItem('auth_token', 'demo-access-token');
 		const updated: PracticeUserRdo = {...providerRdo, role: 'NURSE'};

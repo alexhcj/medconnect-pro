@@ -1,5 +1,5 @@
 import {ApiError} from '@/lib/api/http';
-import {fixtureAdminUsers, fixtureAuditEvents} from '@/lib/api/mocks/fixtures';
+import {fixtureAdminUsers, fixtureAuditEvents, fixtureSecurityEvents} from '@/lib/api/mocks/fixtures';
 import {readMockSession} from '@/lib/api/mocks/mock-session-store';
 import {mockDelay, mockLog, shouldSimulateError} from '@/lib/api/mocks/runtime';
 import type {AuditEvent} from '@/types/admin/audit-event';
@@ -10,10 +10,12 @@ const FORBIDDEN_MESSAGE = 'You do not have permission to perform this action';
 
 let users: PracticeUser[] = structuredClone(fixtureAdminUsers);
 let events: AuditEvent[] = structuredClone(fixtureAuditEvents);
+let securityEvents: AuditEvent[] = structuredClone(fixtureSecurityEvents);
 
 export function resetAdminMock(): void {
 	users = structuredClone(fixtureAdminUsers);
 	events = structuredClone(fixtureAuditEvents);
+	securityEvents = structuredClone(fixtureSecurityEvents);
 }
 
 async function withMock<T>(work: () => T, errorMessage: string): Promise<T> {
@@ -53,6 +55,12 @@ export const adminMockAPI = {
 
 	listAuditEvents: async (): Promise<AuditEvent[]> =>
 		withMock(() => events.map((event) => ({...event})), 'Mock: Failed to load audit events'),
+
+	listSecurityEvents: async (): Promise<AuditEvent[]> =>
+		withMock(
+			() => securityEvents.map((event) => ({...event})),
+			'Mock: Failed to load security events',
+		),
 
 	assignRole: async (userId: string, role: Role): Promise<PracticeUser> =>
 		withMock(() => {

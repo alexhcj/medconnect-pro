@@ -21,6 +21,10 @@ function adminAuditEventsUrl(): string {
 	return `${nestApiBaseUrl()}/admin/audit-events`;
 }
 
+function adminSecurityEventsUrl(): string {
+	return `${nestApiBaseUrl()}/admin/security-events`;
+}
+
 function adminUserRolesUrl(userId: string): string {
 	return `${adminUsersUrl()}/${userId}/roles`;
 }
@@ -32,6 +36,10 @@ export const adminRealAPI = {
 	},
 	listAuditEvents: async (): Promise<AuditEvent[]> => {
 		const result = await apiFetch<AuditEventSearchResultRdo>(adminAuditEventsUrl());
+		return result.events.map(auditEventFromRdo);
+	},
+	listSecurityEvents: async (): Promise<AuditEvent[]> => {
+		const result = await apiFetch<AuditEventSearchResultRdo>(adminSecurityEventsUrl());
 		return result.events.map(auditEventFromRdo);
 	},
 	assignRole: async (userId: string, role: Role): Promise<PracticeUser> => {

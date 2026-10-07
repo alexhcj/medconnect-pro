@@ -34,5 +34,5 @@ not a new backend domain. **M9 — Deployment / preview infrastructure** is **PA
 AWS account unavailable (close audit found no missing IDs; not closed; not cancelled;
 INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). **M10** is
 shipped (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026). Next product module is **M11**
-(BE-014, FE-027, FE-028, BE-015 shipped; FE-029, SEC-005 pending). Local product work does not
+(BE-014, FE-027, FE-028, BE-015, FE-029 shipped; SEC-005 pending). Local product work does not
 wait on AWS.

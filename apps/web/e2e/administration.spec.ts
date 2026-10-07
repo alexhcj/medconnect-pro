@@ -34,5 +34,13 @@ test.describe('Administration', () => {
 		await expect(events).toContainText('patient.accessed');
 		await expect(events).toContainText('access.denied');
 		await expect(events).toContainText('user_mock_practice_admin');
+
+		const security = page.getByRole('list', {name: 'Security events'});
+		await expect(security).toContainText('auth.login.succeeded');
+		await expect(security).toContainText('auth.login.failed');
+		await expect(security).toContainText('auth.mfa.succeeded');
+		await expect(security).toContainText('auth.logout');
+		await expect(security).not.toContainText('patient.accessed');
+		await expect(security).toContainText('user_mock_practice_admin');
 	});
 });

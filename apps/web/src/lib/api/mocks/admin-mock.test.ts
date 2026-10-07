@@ -75,6 +75,40 @@ describe('adminMockAPI', () => {
 		expect(JSON.stringify(events)).not.toMatch(/password|@example\.test/i);
 	});
 
+	it('lists synthetic security events with auth actions only', async () => {
+		const events = await adminMockAPI.listSecurityEvents();
+
+		expect(events.length).toBeGreaterThan(0);
+		expect(events.map((event) => event.action)).toEqual([
+			'auth.login.succeeded',
+			'auth.login.failed',
+			'auth.mfa.succeeded',
+			'auth.logout',
+		]);
+		expect(events[0]).toEqual(
+			expect.objectContaining({
+				id: 'demo-security-001',
+				practiceId: 'demo-practice-001',
+				actorUserId: 'user_mock_practice_admin',
+				action: 'auth.login.succeeded',
+				resourceType: 'session',
+				resourceId: null,
+			}),
+		);
+		expect(events.every((event) => event.action.startsWith('auth.'))).toBe(true);
+		expect(events.some((event) => event.action === 'patient.accessed')).toBe(false);
+		expect(JSON.stringify(events)).not.toMatch(/password|@example\.test/i);
+	});
+
+	it('does not add role-change rows to the security-events list', async () => {
+		writeMockSession(sessionFor('user_mock_practice_admin', 'PRACTICE_ADMIN'));
+		const before = await adminMockAPI.listSecurityEvents();
+		await adminMockAPI.assignRole('user_mock_provider', 'NURSE');
+		const after = await adminMockAPI.listSecurityEvents();
+		expect(after).toHaveLength(before.length);
+		expect(after.some((event) => event.action === 'membership.role_changed')).toBe(false);
+	});
+
 	it('assigns a membership role and records membership.role_changed', async () => {
 		writeMockSession(sessionFor('user_mock_practice_admin', 'PRACTICE_ADMIN'));
 		const updated = await adminMockAPI.assignRole('user_mock_provider', 'NURSE');

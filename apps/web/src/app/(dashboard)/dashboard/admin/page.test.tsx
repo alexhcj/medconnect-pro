@@ -3,16 +3,19 @@ import AdministrationPage from '@/app/(dashboard)/dashboard/admin/page';
 import type {AuditEvent} from '@/types/admin/audit-event';
 import type {PracticeUser} from '@/types/admin/practice-user';
 
-const {useAdminUsers, useAuditEvents, useAssignUserRole, useSessionStatus} = vi.hoisted(() => ({
-	useAdminUsers: vi.fn(),
-	useAuditEvents: vi.fn(),
-	useAssignUserRole: vi.fn(),
-	useSessionStatus: vi.fn(),
-}));
+const {useAdminUsers, useAuditEvents, useSecurityEvents, useAssignUserRole, useSessionStatus} =
+	vi.hoisted(() => ({
+		useAdminUsers: vi.fn(),
+		useAuditEvents: vi.fn(),
+		useSecurityEvents: vi.fn(),
+		useAssignUserRole: vi.fn(),
+		useSessionStatus: vi.fn(),
+	}));
 
 vi.mock('@/lib/hooks/use-admin', () => ({
 	useAdminUsers,
 	useAuditEvents,
+	useSecurityEvents,
 	useAssignUserRole,
 }));
 
@@ -39,10 +42,22 @@ const sampleEvent: AuditEvent = {
 	createdAt: '2026-09-26T14:00:00.000Z',
 };
 
+const sampleSecurityEvent: AuditEvent = {
+	id: 'demo-security-002',
+	practiceId: 'demo-practice-001',
+	actorUserId: 'user_mock_provider',
+	action: 'auth.login.failed',
+	resourceType: 'session',
+	resourceId: null,
+	correlationId: 'demo-security-correlation-002',
+	createdAt: '2026-10-06T07:52:00.000Z',
+};
+
 describe('AdministrationPage', () => {
 	beforeEach(() => {
 		useAdminUsers.mockClear();
 		useAuditEvents.mockClear();
+		useSecurityEvents.mockClear();
 		useAssignUserRole.mockReturnValue({
 			mutate: vi.fn(),
 			isPending: false,
@@ -67,9 +82,15 @@ describe('AdministrationPage', () => {
 			isError: false,
 			refetch: vi.fn(),
 		});
+		useSecurityEvents.mockReturnValue({
+			data: [sampleSecurityEvent],
+			isPending: false,
+			isError: false,
+			refetch: vi.fn(),
+		});
 	});
 
-	it('renders the heading, user list, and audit viewer', () => {
+	it('renders the heading, user list, audit viewer, and security-events viewer', () => {
 		render(<AdministrationPage />);
 
 		expect(screen.getByRole('heading', {level: 1, name: 'Administration'})).toBeInTheDocument();
@@ -85,6 +106,9 @@ describe('AdministrationPage', () => {
 			'PRACTICE_ADMIN',
 		);
 		expect(screen.getByRole('list', {name: 'Audit events'})).toHaveTextContent('auth.login.succeeded');
+		expect(screen.getByRole('list', {name: 'Security events'})).toHaveTextContent(
+			'auth.login.failed',
+		);
 	});
 
 	it('denies a nurse session without fetching admin lists', () => {
@@ -97,8 +121,10 @@ describe('AdministrationPage', () => {
 		expect(screen.getByRole('status')).toHaveTextContent('You do not have access to administration.');
 		expect(screen.queryByRole('list', {name: 'Practice users'})).not.toBeInTheDocument();
 		expect(screen.queryByRole('list', {name: 'Audit events'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('list', {name: 'Security events'})).not.toBeInTheDocument();
 		expect(useAdminUsers).not.toHaveBeenCalled();
 		expect(useAuditEvents).not.toHaveBeenCalled();
+		expect(useSecurityEvents).not.toHaveBeenCalled();
 	});
 
 	it('shows a session loading state', () => {
@@ -111,5 +137,6 @@ describe('AdministrationPage', () => {
 		expect(screen.getByText('Loading administration')).toBeInTheDocument();
 		expect(useAdminUsers).not.toHaveBeenCalled();
 		expect(useAuditEvents).not.toHaveBeenCalled();
+		expect(useSecurityEvents).not.toHaveBeenCalled();
 	});
 });

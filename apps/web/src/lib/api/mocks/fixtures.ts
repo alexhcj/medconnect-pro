@@ -11,6 +11,7 @@ import appointmentsFixture from '@docs/mocks/appointments.json';
 import invoicesFixture from '@docs/mocks/invoices.json';
 import adminUsersFixture from '@docs/mocks/admin-users.json';
 import auditEventsFixture from '@docs/mocks/audit-events.json';
+import securityEventsFixture from '@docs/mocks/security-events.json';
 import notificationsFixture from '@docs/mocks/notifications.json';
 import {Invoice} from '@/types/billing/invoice';
 import type {PracticeUser} from '@/types/admin/practice-user';
@@ -49,6 +50,7 @@ export const fixtureDashboardMetrics = dashboardFixture.metrics as DashboardMetr
 export const fixtureInvoices = invoicesFixture.invoices as Array<Omit<Invoice, 'patientName'>>;
 export const fixtureAdminUsers = adminUsersFixture.users as PracticeUser[];
 export const fixtureAuditEvents = auditEventsFixture.events as AuditEvent[];
+export const fixtureSecurityEvents = securityEventsFixture.events as AuditEvent[];
 
 export interface InboxNotificationFixture extends InboxNotification {
 	recipientUserId: string;

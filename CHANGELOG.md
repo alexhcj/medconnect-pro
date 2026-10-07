@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.71.0] - 2026-10-07
+
+### Added
+
+- Security-events UI (FE-029): `/dashboard/admin` shows a distinct Security events viewer for
+  Nest `GET /admin/security-events` (tenant-scoped `auth.*` rows). Mock fixture keeps mock mode
+  demonstrable. Catalog `administration.security-events-http` is shipped as qualified — not a
+  SIEM, HIPAA audit export, or session-policy editor.
+
 ## [0.70.0] - 2026-10-07
 
 ### Added

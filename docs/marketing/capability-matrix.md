@@ -25,7 +25,7 @@ Columns:
 | Billing | [billing](../product/billing.md) | Invoice list/detail | Concept/demo for payments and claims; invoices are real demo data | Hosted payments, claims submission, EDI |
 | Analytics | [analytics](../product/analytics.md) | Live Nest dashboard overview cards; mock fixtures when mocks on | Qualified — demo cards, not a warehouse or HIPAA analytics | Extra chart widgets remain unscheduled |
 | Notifications | [notifications](../product/notifications.md) | In-app inbox, mark-read, and channel preferences (session user only) | Qualified — not push, SMS, or email carriers | Push/SMS/email carriers, Redis |
-| Administration | [administration](../product/administration.md) | User directory, audit viewer, and role assignment with tenant/grant limits | Yes, with those limits | Security-events HTTP remains M11 |
+| Administration | [administration](../product/administration.md) | User directory, audit viewer, role assignment, and tenant-scoped security-events viewer | Yes, with tenant/grant limits; security events are auth/session rows, not a SIEM | — |
 | RBAC, tenant isolation, audit, document ACL | [security](../product/security.md) | Yes (demo patterns) | Yes, as implemented engineering patterns | — |
 | HIPAA certification | [security](../product/security.md) | No | Must not claim | Organizational compliance is out of this demo |
 | GitHub Actions CI | — | Yes (PR/`main` quality gates) | Not a hosted production | INFRA-005 |

@@ -2,6 +2,7 @@
 
 import {ADMIN_DEMO_NOTICE} from '@/components/admin/admin-demo-notice';
 import {AuditEventViewer} from '@/components/admin/audit-event-viewer';
+import {SecurityEventViewer} from '@/components/admin/security-event-viewer';
 import {UserRoleList} from '@/components/admin/user-role-list';
 import {canAccessAdministration} from '@/lib/auth/admin-access';
 import {useSessionStatus} from '@/lib/hooks/use-session';
@@ -32,6 +33,7 @@ export default function AdministrationPage() {
 				<div className="space-y-6">
 					<UserRoleList />
 					<AuditEventViewer />
+					<SecurityEventViewer />
 				</div>
 			)}
 		</div>

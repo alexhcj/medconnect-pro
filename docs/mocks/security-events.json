@@ -1,0 +1,46 @@
+{
+	"generated_at": "synthetic-demo-fixture",
+	"notice": "All records are fictional. Events store actor, tenant, action, and resource ids only — no emails, notes, or clinical text. Auth/session rows only (auth.*).",
+	"events": [
+		{
+			"id": "demo-security-001",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_practice_admin",
+			"action": "auth.login.succeeded",
+			"resourceType": "session",
+			"resourceId": null,
+			"correlationId": "demo-security-correlation-001",
+			"createdAt": "2026-10-06T08:00:00.000Z"
+		},
+		{
+			"id": "demo-security-002",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_provider",
+			"action": "auth.login.failed",
+			"resourceType": "session",
+			"resourceId": null,
+			"correlationId": "demo-security-correlation-002",
+			"createdAt": "2026-10-06T07:52:00.000Z"
+		},
+		{
+			"id": "demo-security-003",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_practice_admin",
+			"action": "auth.mfa.succeeded",
+			"resourceType": "session",
+			"resourceId": null,
+			"correlationId": "demo-security-correlation-003",
+			"createdAt": "2026-10-06T08:01:00.000Z"
+		},
+		{
+			"id": "demo-security-004",
+			"practiceId": "demo-practice-001",
+			"actorUserId": "user_mock_practice_admin",
+			"action": "auth.logout",
+			"resourceType": "session",
+			"resourceId": null,
+			"correlationId": "demo-security-correlation-004",
+			"createdAt": "2026-10-05T17:14:00.000Z"
+		}
+	]
+}

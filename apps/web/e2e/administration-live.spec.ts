@@ -35,6 +35,11 @@ test.describe('Live administration users and audit', () => {
 		const events = page.getByRole('list', {name: 'Audit events'});
 		await expect(events).toContainText('auth.login.succeeded');
 		await expect(events).not.toContainText('user_mock_practice_admin');
+
+		const security = page.getByRole('list', {name: 'Security events'});
+		await expect(security).toContainText('auth.login.succeeded');
+		await expect(security).not.toContainText('user_mock_');
+		await expect(security).not.toContainText('patient.accessed');
 	});
 
 	test('practice admin changes the seeded provider role and restores it', async ({page}) => {
@@ -47,7 +52,7 @@ test.describe('Live administration users and audit', () => {
 		try {
 			await select.selectOption('NURSE');
 			await expect(select).toHaveValue('NURSE');
-			await expect(page.getByRole('status', {name: 'Role updated'})).toBeVisible();
+			await expect(page.getByRole('status').filter({hasText: 'Role updated'})).toBeVisible();
 		} finally {
 			await select.selectOption('PROVIDER');
 			await expect(select).toHaveValue('PROVIDER');
