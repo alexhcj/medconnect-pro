@@ -124,7 +124,7 @@ Email/SMS are adapter boundaries, not live carriers ([BE-008](../tasks/backend/B
 - `GET /admin/users`
 - `GET /admin/audit-events`
 - `PATCH /admin/users/:id/roles` — implemented (**M10** [BE-013](../tasks/backend/BE-013-role-assignment-http.md))
-- `GET /admin/security-events` — planned (M11); not implemented
+- `GET /admin/security-events` — implemented (**M11** [BE-015](../tasks/backend/BE-015-security-events-http.md))
 
 ## API conventions
 

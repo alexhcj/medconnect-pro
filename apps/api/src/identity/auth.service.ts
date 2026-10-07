@@ -16,7 +16,11 @@ import {
 import type {Clock} from './clock.js';
 import {CLOCK} from './clock.js';
 import {IdentityMembershipLookup} from './membership-lookup.js';
-import {matchMockIdpAccount, MOCK_IDP_USERS, type MockIdpAccount} from './mock-idp.js';
+import {
+	findMockIdpAccountByEmail,
+	MOCK_IDP_USERS,
+	type MockIdpAccount,
+} from './mock-idp.js';
 import {SessionRepository} from './session.repository.js';
 import {ABSOLUTE_TTL_MS, ACCESS_TTL_MS, IDLE_TTL_MS, MFA_TTL_MS} from './session-policy.js';
 import {generateToken, hashToken, constantTimeEqual} from './token.js';
@@ -61,8 +65,12 @@ export class AuthService {
 		password: string;
 		practiceId?: string;
 	}): Promise<LoginResult> {
-		const account = matchMockIdpAccount(this.accounts, input.email, input.password);
+		const account = findMockIdpAccountByEmail(this.accounts, input.email);
 		if (!account) {
+			throw new InvalidCredentialsError();
+		}
+		if (!constantTimeEqual(input.password, account.password)) {
+			await this.tryRecordLoginFailed(account.email, input.practiceId);
 			throw new InvalidCredentialsError();
 		}
 		const user = await this.memberships.findUserByEmail(account.email);
@@ -305,6 +313,40 @@ export class AuthService {
 			refreshToken,
 			expiresIn: this.expiresIn(accessExpiresAt, now),
 		};
+	}
+
+	private resolveFailedLoginMembership(
+		memberships: PracticeMembership[],
+		practiceId: string | undefined,
+	): PracticeMembership | undefined {
+		if (memberships.length === 0) {
+			return undefined;
+		}
+		if (practiceId !== undefined) {
+			return memberships.find((membership) => membership.practiceId === practiceId);
+		}
+		if (memberships.length !== 1) {
+			return undefined;
+		}
+		return memberships[0];
+	}
+
+	private async tryRecordLoginFailed(email: string, practiceId?: string): Promise<void> {
+		const user = await this.memberships.findUserByEmail(email);
+		if (!user) {
+			return;
+		}
+		const membership = this.resolveFailedLoginMembership(
+			await this.memberships.listForUser(user.id),
+			practiceId,
+		);
+		if (!membership) {
+			return;
+		}
+		await this.recordAuth('auth.login.failed', null, {
+			practiceId: membership.practiceId,
+			actorUserId: user.id,
+		});
 	}
 
 	private async recordMfaFailure(session: AuthSession): Promise<void> {

@@ -379,6 +379,14 @@ function buildCases(): MatrixCase[] {
 					roleHasPermissions(roleFor(harness), ['admin:practice']) ? 200 : 403,
 			},
 			{
+				name: `${actor} GET /admin/security-events`,
+				actor,
+				method: 'get',
+				path: () => '/admin/security-events',
+				expectedStatus: (harness) =>
+					roleHasPermissions(roleFor(harness), ['admin:practice']) ? 200 : 403,
+			},
+			{
 				name: `${actor} GET /admin/users`,
 				actor,
 				method: 'get',

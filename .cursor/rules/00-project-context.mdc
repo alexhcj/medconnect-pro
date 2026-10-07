@@ -81,8 +81,8 @@ Do not prematurely split these into independently deployed microservices.
 The application models healthcare-oriented engineering patterns.
 
 Implemented in the demo: mock IdP sessions, labeled mock MFA challenge in the live UI, RBAC,
-tenant isolation, resource-level authorization, audit logging, least-privilege DB role, secrets
-outside source control.
+tenant isolation, resource-level authorization, audit logging, tenant-scoped security-events HTTP,
+least-privilege DB role, secrets outside source control.
 
 Target, not implemented: OAuth 2.0 / OpenID Connect (Authorization Code + PKCE), production MFA,
 encryption at rest as an infrastructure property, TLS at the deployment edge.

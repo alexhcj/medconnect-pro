@@ -5,10 +5,11 @@ import {TenancyModule} from '../tenancy/tenant.module.js';
 import {AuditEventRepository} from './audit-event.repository.js';
 import {AuditController} from './audit.controller.js';
 import {AuditService} from './audit.service.js';
+import {SecurityEventsController} from './security-events.controller.js';
 
 @Module({
 	imports: [TenancyModule, TypeOrmModule.forFeature([AuditEvent])],
-	controllers: [AuditController],
+	controllers: [AuditController, SecurityEventsController],
 	providers: [AuditEventRepository, AuditService],
 	exports: [AuditEventRepository],
 })

@@ -25,6 +25,7 @@ export type AuditEventActorScope = {
 
 export type AuditEventSearchQuery = {
 	action?: string;
+	actionPrefix?: string;
 	resourceType?: string;
 	from?: Date;
 	to?: Date;
@@ -71,6 +72,11 @@ export class AuditEventRepository {
 			.createQueryBuilder('event')
 			.where('event.practiceId = :practiceId', {practiceId});
 
+		if (query.actionPrefix) {
+			qb.andWhere('event.action LIKE :actionPrefix', {
+				actionPrefix: `${query.actionPrefix}%`,
+			});
+		}
 		if (query.action) {
 			qb.andWhere('event.action = :action', {action: query.action});
 		}

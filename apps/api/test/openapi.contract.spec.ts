@@ -99,6 +99,7 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/billing/payments']?.post?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/billing/claims']?.get?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/admin/audit-events']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/admin/security-events']?.get?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/admin/users']?.get?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/admin/users/{id}/roles']?.patch?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/dashboard/overview']?.get?.security).toEqual(sessionSecurity);

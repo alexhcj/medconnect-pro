@@ -2,7 +2,11 @@ import {readFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {describe, expect, it} from 'vitest';
-import {defaultMockIdpAccounts, matchMockIdpAccount} from './mock-idp.js';
+import {
+	defaultMockIdpAccounts,
+	findMockIdpAccountByEmail,
+	matchMockIdpAccount,
+} from './mock-idp.js';
 
 describe('mock IdP fixture', () => {
 	const demoUsersPath = join(
@@ -39,6 +43,15 @@ describe('mock IdP fixture', () => {
 		expect(
 			matchMockIdpAccount(defaultMockIdpAccounts, 'nobody@example.test', 'Synthetic-Pass-1'),
 		).toBeUndefined();
+		expect(findMockIdpAccountByEmail(defaultMockIdpAccounts, 'nobody@example.test')).toBeUndefined();
+	});
+
+	it('finds a labeled account by email without checking the password', () => {
+		expect(admin).toBeDefined();
+		if (!admin) {
+			return;
+		}
+		expect(findMockIdpAccountByEmail(defaultMockIdpAccounts, admin.email.toUpperCase())).toBe(admin);
 	});
 
 	it('includes a test-only MFA account', () => {

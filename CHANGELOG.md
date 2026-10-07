@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.70.0] - 2026-10-07
+
+### Added
+
+- Security-events HTTP (BE-015): `GET /admin/security-events` lists tenant-scoped `auth.*` rows
+  for `admin:practice`. Known-user failed logins emit `auth.login.failed`; unknown emails do not
+  confirm existence. Reuses `audit_events` (no new table or permission). The administration viewer
+  remains FE-029.
+
 ## [0.69.0] - 2026-10-07
 
 ### Added

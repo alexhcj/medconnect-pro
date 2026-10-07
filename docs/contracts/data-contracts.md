@@ -288,6 +288,15 @@ identity and action metadata only: `id`, `practiceId`, `actorUserId`, `action`, 
 `resourceId`, `correlationId`, `createdAt`. There is no payload object. Emails, passwords, notes,
 and clinical text must not appear. Reads require `admin:practice`. Tenant comes from the session.
 
+## Security events
+
+`GET /admin/security-events` returns the same RDO fields as audit events from the same
+`audit_events` table, filtered server-side to `auth.*` actions (login, logout, MFA, refresh-reuse,
+and failed login for a resolvable known user). It does not replace the audit list. Unknown emails
+do not produce a practice row. Passwords, MFA secrets, and session hashes must not appear. Reads
+require `admin:practice`. Tenant comes from the session. Optional client `practiceId` is ignored
+for authorization and rejected on mismatch.
+
 ## Practice user directory
 
 `GET /admin/users` returns session-tenant memberships joined from `practice_memberships` and

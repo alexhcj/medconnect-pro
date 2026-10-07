@@ -35,13 +35,20 @@ export const defaultMockIdpAccounts: readonly MockIdpAccount[] = [
 	},
 ];
 
+export function findMockIdpAccountByEmail(
+	accounts: readonly MockIdpAccount[],
+	email: string,
+): MockIdpAccount | undefined {
+	const normalized = email.trim().toLowerCase();
+	return accounts.find((item) => item.email.toLowerCase() === normalized);
+}
+
 export function matchMockIdpAccount(
 	accounts: readonly MockIdpAccount[],
 	email: string,
 	password: string,
 ): MockIdpAccount | undefined {
-	const normalized = email.trim().toLowerCase();
-	const account = accounts.find((item) => item.email.toLowerCase() === normalized);
+	const account = findMockIdpAccountByEmail(accounts, email);
 	if (!account || !constantTimeEqual(password, account.password)) {
 		return undefined;
 	}

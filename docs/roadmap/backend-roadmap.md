@@ -19,11 +19,11 @@ Domain order (not historical ship order). Join to demo milestones in the
 12. Administration/compliance (SEC-002–004, QA-004, BE-010 user directory HTTP; shipped in M7).
     Role PATCH is [BE-013](../tasks/backend/BE-013-role-assignment-http.md) (M10, shipped).
     Security-events HTTP is [BE-015](../tasks/backend/BE-015-security-events-http.md) (M11,
-    pending).
+    shipped).
 13. Scale/reliability (deferred with M9 deploy/preview; M9 paused on AWS).
 14. Application security and session hardening (M11): cookie session HTTP
     ([BE-014](../tasks/backend/BE-014-httponly-cookie-session-http.md), shipped), security-events HTTP
-    ([BE-015](../tasks/backend/BE-015-security-events-http.md), pending), production-gap docs
+    ([BE-015](../tasks/backend/BE-015-security-events-http.md), shipped), production-gap docs
     ([SEC-005](../tasks/security/SEC-005-production-gap-documentation.md), pending).
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
@@ -34,5 +34,5 @@ not a new backend domain. **M9 — Deployment / preview infrastructure** is **PA
 AWS account unavailable (close audit found no missing IDs; not closed; not cancelled;
 INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). **M10** is
 shipped (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026). Next product module is **M11**
-(BE-014, FE-027, FE-028 shipped; BE-015, FE-029, SEC-005 pending). Local product work does not
+(BE-014, FE-027, FE-028, BE-015 shipped; FE-029, SEC-005 pending). Local product work does not
 wait on AWS.

@@ -18,7 +18,7 @@ IDs; M9 is **not closed** and **not cancelled**.
 are shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
 is pending and blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
 which remains paused. **M10** is shipped (DATA-002, BE-011, FE-024, BE-012, FE-025,
-BE-013, FE-026). Next product module is **M11** (BE-014, FE-027, FE-028 shipped; BE-015,
+BE-013, FE-026). Next product module is **M11** (BE-014, FE-027, FE-028, BE-015 shipped;
 FE-029, SEC-005 pending). Local product
 work does not wait on AWS. Not part of M8.
 
@@ -29,7 +29,7 @@ work does not wait on AWS. Not part of M8.
 - Mock-first Next.js dashboard and live Nest mode (`dev:real` / `e2e:live`)
 - Live integration: login/logout/refresh, patients, clinical lists, document list/download,
   appointments, telehealth session create/join/end, billing invoices, admin users, role PATCH
-  and assignment UI, admin audit, dashboard overview cards, in-app notification inbox
+  and assignment UI, admin audit, security-events HTTP, dashboard overview cards, in-app notification inbox
 - Local Vitest (web + API), Playwright mock + live, API HTTP/RLS/authz-matrix/OpenAPI contract tests
 - GitHub Actions quality gates on pull requests and `main` (INFRA-005)
 - Secrets classification, GitHub OIDC, and Secrets Manager containers (INFRA-006; apply is operator-run)
@@ -48,7 +48,7 @@ work does not wait on AWS. Not part of M8.
 
 - Production OAuth 2.0 / OIDC + PKCE ([ADR-003](../decisions/ADR-003-authentication.md))
 - Live video / Daily / Socket.IO
-- Payments, claims submission, security-events HTTP
+- Payments, claims submission, security-events UI (FE-029)
 - Hosted AWS first-apply (INFRA-014; blocks INFRA-013; M9 paused)
 - `v1.0.0` production-release gate (INFRA-013; paused until INFRA-014)
 - Redis, custom KMS hierarchy

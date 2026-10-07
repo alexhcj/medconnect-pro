@@ -149,7 +149,7 @@ Application version **0.67.0**. Snapshot:
   (blocks INFRA-013), INFRA-013 paused.
 - **M10 shipped** (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026): live Nest dashboard
   overview, in-app notification inbox/preferences, and practice role assignment.
-- Next product module is **M11** (BE-014, FE-027, FE-028 shipped; BE-015, FE-029, SEC-005
+- Next product module is **M11** (BE-014, FE-027, FE-028, BE-015 shipped; FE-029, SEC-005
   pending). Local product work does not wait on AWS.
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live

@@ -203,7 +203,7 @@ Canonical documentation is `/docs`. Start with:
   remains required until INFRA-013 records production as live.
 - Notifications are an in-app inbox with mark-read and channel preferences (session user only);
   not push, SMS, or email carriers.
-- Security-events HTTP is not shipped (M11).
+- Security-events UI is not shipped (FE-029). Nest `GET /admin/security-events` is shipped (BE-015).
 
 ## Demo-data / no-PHI statement
 

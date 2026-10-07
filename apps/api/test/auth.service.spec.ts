@@ -127,14 +127,54 @@ describe('AuthService', () => {
 	});
 
 	it('rejects unknown credentials and accounts with no membership', async () => {
+		audit.record.mockClear();
 		await expect(
 			service.login({email: 'missing@synthetic.example', password}),
 		).rejects.toBeInstanceOf(InvalidCredentialsError);
+		expect(audit.record).not.toHaveBeenCalled();
+
 		await expect(service.login({email: singleUser.email, password: 'wrong-password-1'})).rejects.toBeInstanceOf(
 			InvalidCredentialsError,
 		);
+		expect(audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: 'auth.login.failed',
+				resourceType: 'session',
+				resourceId: null,
+			}),
+			expect.objectContaining({practiceId: practiceA.id, actorUserId: singleUser.id}),
+		);
+		expect(JSON.stringify(audit.record.mock.calls)).not.toMatch(/synthetic\.example|wrong-password/);
+
+		audit.record.mockClear();
+		await expect(service.login({email: orphanUser.email, password: 'wrong-password-1'})).rejects.toBeInstanceOf(
+			InvalidCredentialsError,
+		);
+		expect(audit.record).not.toHaveBeenCalled();
+
 		await expect(service.login({email: orphanUser.email, password})).rejects.toBeInstanceOf(
 			InvalidCredentialsError,
+		);
+		expect(audit.record).not.toHaveBeenCalled();
+	});
+
+	it('does not emit login.failed when several memberships exist and none is selected', async () => {
+		audit.record.mockClear();
+		await expect(
+			service.login({email: multiUser.email, password: 'wrong-password-1'}),
+		).rejects.toBeInstanceOf(InvalidCredentialsError);
+		expect(audit.record).not.toHaveBeenCalled();
+
+		await expect(
+			service.login({
+				email: multiUser.email,
+				password: 'wrong-password-1',
+				practiceId: practiceB.id,
+			}),
+		).rejects.toBeInstanceOf(InvalidCredentialsError);
+		expect(audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({action: 'auth.login.failed', resourceId: null}),
+			expect.objectContaining({practiceId: practiceB.id, actorUserId: multiUser.id}),
 		);
 	});
 

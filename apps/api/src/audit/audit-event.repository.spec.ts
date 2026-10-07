@@ -84,4 +84,36 @@ describe('AuditEventRepository', () => {
 		expect(page.events.some((event) => event.action === 'patient.accessed')).toBe(true);
 		expect(page.events.some((event) => event.action === 'auth.login.succeeded')).toBe(false);
 	});
+
+	it('lists auth.* rows only when an action prefix is set', async () => {
+		tenant.set({
+			practiceId: practiceA.id,
+			actorUserId: userA.id,
+			role: 'PRACTICE_ADMIN',
+		});
+		await repo.record({
+			action: 'auth.login.failed',
+			resourceType: 'session',
+			resourceId: null,
+			correlationId: 'cid-failed',
+		});
+		await repo.record({
+			action: 'access.denied',
+			resourceType: 'admin',
+			resourceId: null,
+			correlationId: 'cid-denied',
+		});
+
+		const security = await repo.list({actionPrefix: 'auth.'});
+		expect(security.events.length).toBeGreaterThan(0);
+		expect(security.events.every((event) => event.action.startsWith('auth.'))).toBe(true);
+		expect(security.events.some((event) => event.action === 'auth.login.failed')).toBe(true);
+		expect(security.events.some((event) => event.action === 'access.denied')).toBe(false);
+
+		const exactNonAuth = await repo.list({
+			actionPrefix: 'auth.',
+			action: 'patient.accessed',
+		});
+		expect(exactNonAuth.events).toHaveLength(0);
+	});
 });

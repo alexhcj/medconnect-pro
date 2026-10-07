@@ -3,7 +3,7 @@ id: BE-015
 type: task
 area: backend
 feature: administration
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [SEC-003, BE-009]
@@ -19,7 +19,7 @@ related_docs:
     ../security/SEC-003-audit-event-model.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -79,13 +79,13 @@ Implements / extends `administration.security-events-http`.
 
 ## Acceptance Criteria
 
-- [ ] `GET /admin/security-events` returns tenant-scoped security-relevant events
-- [ ] Anonymous 401; roles without `admin:practice` are 403
-- [ ] PRACTICE_ADMIN sees own-tenant rows only
-- [ ] Cross-tenant and client `practiceId` mismatch do not oracle
-- [ ] Failed login for a known user can appear; unknown emails do not confirm existence
-- [ ] `GET /admin/audit-events` behavior is unchanged
-- [ ] OpenAPI includes the path; HTTP tests plus a matrix row
+- [x] `GET /admin/security-events` returns tenant-scoped security-relevant events
+- [x] Anonymous 401; roles without `admin:practice` are 403
+- [x] PRACTICE_ADMIN sees own-tenant rows only
+- [x] Cross-tenant and client `practiceId` mismatch do not oracle
+- [x] Failed login for a known user can appear; unknown emails do not confirm existence
+- [x] `GET /admin/audit-events` behavior is unchanged
+- [x] OpenAPI includes the path; HTTP tests plus a matrix row
 
 ## Dependencies
 
@@ -111,7 +111,11 @@ Writing this spec is not a version bump. Shipping this slice is **MINOR**.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `GET /admin/security-events` on `AuditModule` (`admin:practice`, session tenant)
+  filters `audit_events` to `auth.*`. Known-user wrong password emits `auth.login.failed` with
+  `resourceId` null; unknown emails and unscoped memberships do not. Same RDO as audit events. No
+  new table or permission. `GET /admin/audit-events` unchanged. Viewer remains FE-029.
+- Tests: repository prefix isolation; auth.service failed-login emission; HTTP 401/403/tenant/
+  oracle cases; QA-004 matrix row; OpenAPI cookie-or-bearer contract (`npm run test:api`).
 - PR:
-- Notes:
+- Notes: Catalog `administration.security-events-http` stays planned until FE-029. Version 0.70.0.

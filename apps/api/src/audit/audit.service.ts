@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import type {AuditEvent} from '../persistence/entities/audit-event.entity.js';
 import {
 	AuditEventRepository,
+	type AuditEventPage,
 	type AuditEventSearchQuery,
 } from './audit-event.repository.js';
 import type {AuditEventRdo, AuditEventSearchResultRdo} from './audit.rdo.js';
@@ -12,7 +13,19 @@ export class AuditService {
 	constructor(private readonly events: AuditEventRepository) {}
 
 	async list(query: AuditEventListQuery): Promise<AuditEventSearchResultRdo> {
-		const page = await this.events.list(toSearchQuery(query));
+		return this.toResult(await this.events.list(toSearchQuery(query)));
+	}
+
+	async listSecurity(query: AuditEventListQuery): Promise<AuditEventSearchResultRdo> {
+		return this.toResult(
+			await this.events.list({
+				...toSearchQuery(query),
+				actionPrefix: 'auth.',
+			}),
+		);
+	}
+
+	private toResult(page: AuditEventPage): AuditEventSearchResultRdo {
 		return {
 			events: page.events.map(toAuditEventRdo),
 			nextPage: page.nextPage,
