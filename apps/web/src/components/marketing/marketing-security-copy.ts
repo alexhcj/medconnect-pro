@@ -91,8 +91,8 @@ export const MARKETING_SECURITY_NOT_IN_DEMO = {
 		{
 			title: 'Production MFA',
 			description:
-				'A mock MFA challenge exists. Production TOTP or WebAuthn is not implemented.',
-			detail: 'The live UI does not complete a production MFA flow.',
+				'Live /login completes a labeled mock MFA challenge. Production TOTP or WebAuthn is not implemented.',
+			detail: 'Do not describe mock MFA as production MFA.',
 			status: 'Not shipped',
 		},
 		{

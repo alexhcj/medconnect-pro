@@ -1,6 +1,13 @@
 import {DEFAULT_ROLE_PERMISSIONS} from '@/types/auth/permissions';
 import {parseRole, type Role} from '@/types/auth/roles';
-import {ActivityEvent, ConcurrentSessionInfo, ExtendSessionResponse, SessionInfo} from '@/types/auth/session';
+import {
+	ActivityEvent,
+	ConcurrentSessionInfo,
+	ExtendSessionResponse,
+	LoginOutcome,
+	SessionInfo,
+	VerifyMfaInput,
+} from '@/types/auth/session';
 import {ApiError} from '@/lib/api/http';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 import {
@@ -57,7 +64,7 @@ async function withMock<T>(work: () => T, errorMessage: string): Promise<T> {
 }
 
 export const sessionMockAPI = {
-	login: async (email: string, password: string): Promise<SessionInfo> => {
+	login: async (email: string, password: string): Promise<LoginOutcome> => {
 		await mockDelay();
 		const match = fixtureDemoUsers.find(
 			(user) => user.email.toLowerCase() === email.trim().toLowerCase() && user.password === password,
@@ -75,7 +82,13 @@ export const sessionMockAPI = {
 		});
 		writeMockSession(session);
 		mockLog('info', 'Mock login succeeded', match.email);
-		return session;
+		return {kind: 'session', session};
+	},
+
+	verifyMfa: async (input: VerifyMfaInput): Promise<SessionInfo> => {
+		await mockDelay();
+		void input;
+		throw new ApiError('Mock MFA is not used in mock mode', 400);
 	},
 
 	logout: async (): Promise<void> => {

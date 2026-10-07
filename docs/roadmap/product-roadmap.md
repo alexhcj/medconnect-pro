@@ -4,7 +4,7 @@ Current ship state is [post-mvp-baseline.md](post-mvp-baseline.md), not the hist
 Demo milestones M0–M8 are shipped (FE-017–FE-023). Deployment/preview is **M9**,
 **PAUSED / BLOCKED** — AWS account unavailable (close audit found no missing IDs; not closed;
 not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013
-paused). **M10** is shipped. Next product module is **M11** (BE-014, FE-027 shipped; FE-028,
+paused). **M10** is shipped. Next product module is **M11** (BE-014, FE-027, FE-028 shipped;
 BE-015, FE-029, SEC-005 pending). Local
 product work does not wait on AWS.
 

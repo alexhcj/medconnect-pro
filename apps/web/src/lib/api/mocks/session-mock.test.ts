@@ -18,8 +18,12 @@ describe('sessionMockAPI', () => {
 
 	it('establishes a PRACTICE_ADMIN session for the demo account', async () => {
 		const demo = fixtureDemoUsers[0];
-		const session = await sessionMockAPI.login(demo.email, demo.password);
-		expect(session.userRole).toBe('PRACTICE_ADMIN');
+		const result = await sessionMockAPI.login(demo.email, demo.password);
+		expect(result.kind).toBe('session');
+		if (result.kind !== 'session') {
+			return;
+		}
+		expect(result.session.userRole).toBe('PRACTICE_ADMIN');
 		expect(readMockSession()?.userId).toBe(demo.userId);
 		await expect(sessionMockAPI.getCurrentSession()).resolves.toMatchObject({
 			userId: demo.userId,

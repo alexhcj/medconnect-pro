@@ -80,7 +80,7 @@ Do not prematurely split these into independently deployed microservices.
 
 The application models healthcare-oriented engineering patterns.
 
-Implemented in the demo: mock IdP sessions, MFA challenge (not completed in the live UI), RBAC,
+Implemented in the demo: mock IdP sessions, labeled mock MFA challenge in the live UI, RBAC,
 tenant isolation, resource-level authorization, audit logging, least-privilege DB role, secrets
 outside source control.
 

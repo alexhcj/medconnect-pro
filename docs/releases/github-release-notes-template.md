@@ -144,7 +144,7 @@ Frontend checks are not authorization. Do not trust a browser-supplied tenant id
 ## Authentication
 
 Identity is a **mock IdP**: email/password, opaque bearer sessions, refresh-token rotation,
-idle/absolute expiry, and a mock MFA challenge that is **not** completed in the live UI.
+idle/absolute expiry, and a labeled mock MFA challenge on live `/login` (not production TOTP).
 
 This is **not** production identity infrastructure. Production OAuth 2.0 / OpenID Connect
 (Authorization Code + PKCE) and production MFA remain the target in

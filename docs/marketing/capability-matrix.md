@@ -17,7 +17,7 @@ Columns:
 
 | Capability | Catalog | Demo app | Public site | Planned |
 | --- | --- | --- | --- | --- |
-| Authentication (mock IdP, sessions) | [identity-access](../product/identity-access.md) | Yes (Nest HttpOnly cookies + opaque bearer JSON for machine clients; live Next does not persist tokens) | Yes — labeled mock identity, not production OAuth | OAuth 2.0 / OIDC + PKCE, production MFA ([ADR-003](../decisions/ADR-003-authentication.md)) |
+| Authentication (mock IdP, sessions) | [identity-access](../product/identity-access.md) | Yes (Nest HttpOnly cookies + opaque bearer JSON for machine clients; live Next does not persist tokens; labeled mock MFA on `/login`) | Yes — labeled mock identity and mock MFA, not production OAuth or production MFA | OAuth 2.0 / OIDC + PKCE, production MFA ([ADR-003](../decisions/ADR-003-authentication.md)) |
 | Patient management | [patient-management](../product/patient-management.md) | Yes | Yes | — |
 | Scheduling (appointments, calendar) | [scheduling](../product/scheduling.md) | Yes | Yes | — |
 | Clinical / EHR foundation | [patient-management](../product/patient-management.md) | Yes (lists on patient profile) | Yes, as foundation | External EHR integrations |

@@ -45,6 +45,12 @@ export const PRACTICE_NAME = 'Harbor Synthetic Practice';
  */
 export const LIVE_DEMO_PROVIDER_ID = '11111111-1111-4111-8111-111111111111';
 export const PROVIDER_EMAIL = 'jordan.ellis@synthetic.example';
+/**
+ * Stable synthetic MFA nurse for the live mock MFA challenge (FE-028).
+ * Must match `userId` in `docs/mocks/demo-users.json`.
+ */
+export const LIVE_DEMO_MFA_NURSE_ID = '33333333-3333-4333-8333-333333333333';
+export const MFA_NURSE_EMAIL = 'mfa.nurse@example.test';
 const LIVE_TELEHEALTH_NOTES = 'Live demo telehealth visit';
 const ANNUAL_FOLLOW_UP_NOTES = 'Annual follow-up';
 
@@ -243,6 +249,24 @@ export async function seedMockIdentity(): Promise<void> {
 				practiceId: practice.id,
 				userId: provider.id,
 				role: 'PROVIDER',
+			});
+		}
+
+		let mfaNurse = await users.findOne({where: {id: LIVE_DEMO_MFA_NURSE_ID}});
+		if (!mfaNurse) {
+			mfaNurse = await users.findOne({where: {email: MFA_NURSE_EMAIL}});
+		}
+		if (!mfaNurse) {
+			mfaNurse = await users.save({id: LIVE_DEMO_MFA_NURSE_ID, email: MFA_NURSE_EMAIL});
+		}
+		const mfaNurseMembership = await memberships.findOne({
+			where: {practiceId: practice.id, userId: mfaNurse.id},
+		});
+		if (!mfaNurseMembership) {
+			await memberships.save({
+				practiceId: practice.id,
+				userId: mfaNurse.id,
+				role: 'NURSE',
 			});
 		}
 
@@ -551,7 +575,7 @@ export async function seedMockIdentity(): Promise<void> {
 		}
 
 		Logger.log(
-			`Seeded synthetic practice admin, provider ${provider.id}, demo patients, appointments, an in-window telehealth visit, clinical rows, a document, invoices, and inbox rows`,
+			`Seeded synthetic practice admin, provider ${provider.id}, MFA nurse ${mfaNurse.id}, demo patients, appointments, an in-window telehealth visit, clinical rows, a document, invoices, and inbox rows`,
 			'MockIdentity',
 		);
 	} finally {

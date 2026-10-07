@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.69.0] - 2026-10-07
+
+### Added
+
+- Mock MFA challenge UI (FE-028): live `/login` shows a labeled mock MFA step when Nest returns
+  `mfaRequired`, submits `POST /auth/mfa/verify`, and establishes the cookie session. Harbor seed
+  now includes a NURSE membership for `mfa.nurse@example.test`. Catalog
+  `identity-access.mfa-challenge` is shipped as qualified mock MFA, not production TOTP or WebAuthn.
+  Non-MFA demo users remain one-step login.
+
 ## [0.68.0] - 2026-10-06
 
 ### Changed

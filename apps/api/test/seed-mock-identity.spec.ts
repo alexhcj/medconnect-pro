@@ -2,6 +2,8 @@ import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {DataSource} from 'typeorm';
 import {
 	DEMO_EMAIL,
+	LIVE_DEMO_MFA_NURSE_ID,
+	MFA_NURSE_EMAIL,
 	PRACTICE_NAME,
 	PROVIDER_EMAIL,
 	seedMockIdentity,
@@ -12,6 +14,7 @@ import {Invoice} from '../src/persistence/entities/invoice.entity.js';
 import {Notification} from '../src/persistence/entities/notification.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {Practice} from '../src/persistence/entities/practice.entity.js';
+import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
 import {User} from '../src/persistence/entities/user.entity.js';
 import {createAdminDataSource} from './admin-data-source.js';
 
@@ -100,6 +103,20 @@ describe('seed:mock-identity bounded corpus', () => {
 		expect(first.providerInboxCount).toBeGreaterThanOrEqual(2);
 		expect(first.patientEmails).toContain('avery.quinn@synthetic.example');
 		expect(first.patientEmails).toContain('blake.chen@synthetic.example');
+
+		const mfaNurse = await dataSource.getRepository(User).findOne({
+			where: {email: MFA_NURSE_EMAIL},
+		});
+		expect(mfaNurse).toBeTruthy();
+		expect(mfaNurse!.id).toBe(LIVE_DEMO_MFA_NURSE_ID);
+		const practice = await dataSource.getRepository(Practice).findOne({
+			where: {name: PRACTICE_NAME},
+		});
+		expect(practice).toBeTruthy();
+		const nurseMembership = await dataSource.getRepository(PracticeMembership).findOne({
+			where: {practiceId: practice!.id, userId: mfaNurse!.id},
+		});
+		expect(nurseMembership?.role).toBe('NURSE');
 		expect(new Set(first.patientEmails).size).toBe(first.patientEmails.length);
 		expect(first.nonSyntheticPatients).toBe(0);
 		expect(first.nonSyntheticAppointments).toBe(0);

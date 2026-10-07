@@ -12,6 +12,25 @@ export interface SessionInfo {
 	currentContext: string;
 }
 
+export type SessionLoginResult = {
+	kind: 'session';
+	session: SessionInfo;
+};
+
+export type MfaChallengeResult = {
+	kind: 'mfa';
+	mfaToken: string;
+	expiresIn: number;
+};
+
+export type LoginOutcome = SessionLoginResult | MfaChallengeResult;
+
+export type VerifyMfaInput = {
+	email: string;
+	code: string;
+	mfaToken: string;
+};
+
 export interface ConcurrentSessionInfo {
 	sessionId: string;
 	location: string;

@@ -7,6 +7,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
 import Link from 'next/link';
 import {Button} from '@/components/ui/button';
+import {MfaChallengeForm} from '@/components/auth/mfa-challenge-form';
 import {useLogin} from '@/lib/hooks/use-session';
 import {DASHBOARD_PATH} from '@/lib/auth/paths';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
@@ -19,12 +20,19 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
+type MfaChallengeState = {
+	email: string;
+	mfaToken: string;
+	expiresIn: number;
+};
+
 const demoUser = fixtureDemoUsers[0];
 
 export function LoginForm() {
 	const router = useRouter();
 	const login = useLogin();
 	const [formError, setFormError] = useState<string | null>(null);
+	const [challenge, setChallenge] = useState<MfaChallengeState | null>(null);
 
 	const {
 		register,
@@ -42,7 +50,15 @@ export function LoginForm() {
 	const onSubmit = async (data: LoginFormData) => {
 		setFormError(null);
 		try {
-			await login.mutateAsync(data);
+			const result = await login.mutateAsync(data);
+			if (result.kind === 'mfa') {
+				setChallenge({
+					email: data.email,
+					mfaToken: result.mfaToken,
+					expiresIn: result.expiresIn,
+				});
+				return;
+			}
 			router.push(DASHBOARD_PATH);
 		} catch (error) {
 			if (error instanceof ApiError && error.status === 401) {
@@ -52,6 +68,18 @@ export function LoginForm() {
 			setFormError('Unable to sign in. Try again.');
 		}
 	};
+
+	if (challenge) {
+		return (
+			<MfaChallengeForm
+				email={challenge.email}
+				mfaToken={challenge.mfaToken}
+				expiresIn={challenge.expiresIn}
+				onBack={() => setChallenge(null)}
+				onVerified={() => router.push(DASHBOARD_PATH)}
+			/>
+		);
+	}
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-canvas p-4">

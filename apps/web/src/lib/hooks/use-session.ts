@@ -1,5 +1,5 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {ActivityEvent, SessionInfo} from "@/types/auth/session";
+import {ActivityEvent, SessionInfo, VerifyMfaInput} from "@/types/auth/session";
 import {toast} from "react-hot-toast";
 import {useCallback, useEffect, useRef} from "react";
 import {sessionAPI} from "@/lib/api/session-api";
@@ -28,6 +28,17 @@ export function useLogin() {
 	return useMutation({
 		mutationFn: ({email, password}: {email: string; password: string}) =>
 			sessionAPI.login(email, password),
+		onSuccess: (result) => {
+			if (result.kind === 'session') {
+				queryClient.setQueryData(['session', 'current'], result.session);
+			}
+		},
+	});
+}
+
+export function useVerifyMfa() {
+	return useMutation({
+		mutationFn: (input: VerifyMfaInput) => sessionAPI.verifyMfa(input),
 		onSuccess: (session) => {
 			queryClient.setQueryData(['session', 'current'], session);
 		},

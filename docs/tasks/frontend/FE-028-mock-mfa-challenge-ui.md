@@ -3,7 +3,7 @@ id: FE-028
 type: task
 area: frontend
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-027, BE-009]
@@ -22,11 +22,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd"
+  frame: "App / Login — 02 MFA challenge — default (desktop) (135:13)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -101,12 +101,12 @@ Implements / extends `identity-access.mfa-challenge`.
 
 ## Acceptance Criteria
 
-- [ ] `design.status` is `approved` with `file_url` and `frame` before implementation
-- [ ] Live login as the seeded MFA user shows the challenge step
-- [ ] Correct fixture code establishes a cookie session and reaches the dashboard
-- [ ] Wrong or expired code is an accessible error (no silent success)
-- [ ] Non-MFA demo users are unchanged
-- [ ] Catalog `identity-access.mfa-challenge` is `shipped` with `public: qualified` (mock, not
+- [x] `design.status` is `approved` with `file_url` and `frame` before implementation
+- [x] Live login as the seeded MFA user shows the challenge step
+- [x] Correct fixture code establishes a cookie session and reaches the dashboard
+- [x] Wrong or expired code is an accessible error (no silent success)
+- [x] Non-MFA demo users are unchanged
+- [x] Catalog `identity-access.mfa-challenge` is `shipped` with `public: qualified` (mock, not
       production MFA); capability matrix does not claim production MFA
 
 ## Dependencies
@@ -115,7 +115,9 @@ Implements / extends `identity-access.mfa-challenge`.
 - Design brief via [design-brief-prompt.md](../../processes/prompts/design-brief-prompt.md) on
   **this** task
 
-Shared Figma file: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+Figma (shared library; approved page **App / Login**, primary frame
+`02 MFA challenge — default (desktop)` / `135:13`):
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=135-13
 
 ## Validation
 
@@ -138,7 +140,10 @@ Shipping this slice is **MINOR**.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Live `/login` challenge after Nest `mfaRequired`; `POST /auth/mfa/verify` with
+  in-memory `mfaToken`; Harbor NURSE membership for `mfa.nurse@example.test`; catalog shipped as
+  qualified mock MFA.
+- Tests: Vitest session mapping/verify/401; login-form challenge step; MFA form a11y/error/expiry;
+  `e2e/auth-mfa-live.spec.ts`.
 - PR:
-- Notes:
+- Notes: Design was already approved (App / Login, primary frame 135:13). MINOR 0.68.0 → 0.69.0.

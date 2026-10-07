@@ -6,6 +6,9 @@ export const NURSE_EMAIL = 'nurse@example.test';
 export const NURSE_PASSWORD = 'Demo-Nurse-1';
 export const LIVE_PROVIDER_EMAIL = 'jordan.ellis@synthetic.example';
 export const LIVE_PROVIDER_PASSWORD = 'Demo-Provider-1';
+export const MFA_NURSE_EMAIL = 'mfa.nurse@example.test';
+export const MFA_NURSE_PASSWORD = 'Demo-Mfa-1';
+export const MFA_NURSE_CODE = '135790';
 
 export async function signInAsPracticeAdmin(page: Page) {
 	await signIn(page, DEMO_EMAIL, DEMO_PASSWORD);

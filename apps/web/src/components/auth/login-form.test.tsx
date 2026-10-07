@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {LoginForm} from '@/components/auth/login-form';
 import {clearMockSession, readMockSession} from '@/lib/api/mocks/mock-session-store';
+import {sessionMockAPI} from '@/lib/api/mocks/session-mock';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 
 const push = vi.fn();
@@ -26,6 +27,7 @@ describe('LoginForm', () => {
 	beforeEach(() => {
 		clearMockSession();
 		push.mockReset();
+		vi.restoreAllMocks();
 	});
 
 	it('labels the mock identity provider and lists the demo account', () => {
@@ -61,5 +63,27 @@ describe('LoginForm', () => {
 		expect(await screen.findByRole('alert')).toHaveTextContent(/invalid email or password/i);
 		expect(readMockSession()).toBeNull();
 		expect(push).not.toHaveBeenCalled();
+	});
+
+	it('shows the mock MFA challenge after Nest requires MFA', async () => {
+		const user = userEvent.setup();
+		vi.spyOn(sessionMockAPI, 'login').mockResolvedValue({
+			kind: 'mfa',
+			mfaToken: 'opaque-mfa',
+			expiresIn: 300,
+		});
+		renderLogin();
+
+		await user.type(screen.getByLabelText('Email'), 'mfa.nurse@example.test');
+		await user.type(screen.getByLabelText('Password'), 'Demo-Mfa-1');
+		await user.click(screen.getByRole('button', {name: 'Sign in'}));
+
+		expect(await screen.findByRole('heading', {name: 'Verify mock MFA'})).toBeInTheDocument();
+		expect(screen.getByLabelText('Verification code')).toBeInTheDocument();
+		expect(readMockSession()).toBeNull();
+		expect(push).not.toHaveBeenCalled();
+
+		await user.click(screen.getByRole('button', {name: 'Back to sign in'}));
+		expect(screen.getByRole('heading', {name: 'Sign in'})).toBeInTheDocument();
 	});
 });

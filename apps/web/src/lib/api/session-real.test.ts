@@ -42,7 +42,12 @@ describe('sessionRealAPI', () => {
 			vi.fn().mockResolvedValue(jsonResponse(200, tokenPair('opaque-access', 'opaque-refresh'))),
 		);
 
-		const session = await sessionRealAPI.login(demo.email, demo.password);
+		const result = await sessionRealAPI.login(demo.email, demo.password);
+		expect(result.kind).toBe('session');
+		if (result.kind !== 'session') {
+			return;
+		}
+		const session = result.session;
 
 		expect(session.userRole).toBe('PRACTICE_ADMIN');
 		expect(session.permissions).toContain('write:demographics');
@@ -75,7 +80,12 @@ describe('sessionRealAPI', () => {
 			vi.fn().mockResolvedValue(jsonResponse(200, tokenPair('provider-access', 'provider-refresh'))),
 		);
 
-		const session = await sessionRealAPI.login(provider.email, provider.password);
+		const result = await sessionRealAPI.login(provider.email, provider.password);
+		expect(result.kind).toBe('session');
+		if (result.kind !== 'session') {
+			return;
+		}
+		const session = result.session;
 
 		expect(session.userRole).toBe('PROVIDER');
 		expect(session.userId).toBe('11111111-1111-4111-8111-111111111111');
@@ -85,7 +95,7 @@ describe('sessionRealAPI', () => {
 		expect(window.localStorage.getItem(LIVE_REFRESH_STORAGE_KEY)).toBeNull();
 	});
 
-	it('does not persist a session when Nest requires MFA', async () => {
+	it('returns an MFA challenge without persisting a session', async () => {
 		vi.stubGlobal(
 			'fetch',
 			vi.fn().mockResolvedValue(
@@ -93,7 +103,65 @@ describe('sessionRealAPI', () => {
 			),
 		);
 
-		await expect(sessionRealAPI.login('mfa.nurse@example.test', 'Demo-Mfa-1')).rejects.toBeInstanceOf(ApiError);
+		const result = await sessionRealAPI.login('mfa.nurse@example.test', 'Demo-Mfa-1');
+		expect(result).toEqual({kind: 'mfa', mfaToken: 'opaque-mfa', expiresIn: 300});
+		expect(readLiveSession()).toBeNull();
+		expect(window.localStorage.getItem(MOCK_TOKEN_STORAGE_KEY)).toBeNull();
+		expect(window.localStorage.getItem(LIVE_REFRESH_STORAGE_KEY)).toBeNull();
+		expect(window.localStorage.getItem('mcp_live_session')).toBeNull();
+	});
+
+	it('verifies mock MFA and stores session metadata without Nest tokens', async () => {
+		const mfaNurse = fixtureDemoUsers.find((user) => user.email === 'mfa.nurse@example.test');
+		expect(mfaNurse).toBeDefined();
+		if (!mfaNurse) {
+			return;
+		}
+
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(jsonResponse(200, tokenPair('mfa-access', 'mfa-refresh'))),
+		);
+
+		const session = await sessionRealAPI.verifyMfa({
+			email: mfaNurse.email,
+			code: '135790',
+			mfaToken: 'opaque-mfa',
+		});
+
+		expect(session.userRole).toBe('NURSE');
+		expect(session.userId).toBe(mfaNurse.userId);
+		expect(readLiveSession()).toMatchObject({userId: mfaNurse.userId, userRole: 'NURSE'});
+		expect(window.localStorage.getItem(MOCK_TOKEN_STORAGE_KEY)).toBeNull();
+		expect(window.localStorage.getItem(LIVE_REFRESH_STORAGE_KEY)).toBeNull();
+		expect(fetch).toHaveBeenCalledWith(
+			'http://localhost:3001/auth/mfa/verify',
+			expect.objectContaining({
+				method: 'POST',
+				credentials: 'include',
+				body: JSON.stringify({code: '135790', mfaToken: 'opaque-mfa'}),
+			}),
+		);
+		expectCredentialed((fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[1] as RequestInit);
+	});
+
+	it('does not persist a session when MFA verification fails', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(
+				jsonResponse(401, {
+					error: {code: 'UNAUTHENTICATED', message: 'MFA verification failed'},
+				}),
+			),
+		);
+
+		await expect(
+			sessionRealAPI.verifyMfa({
+				email: 'mfa.nurse@example.test',
+				code: '000000',
+				mfaToken: 'opaque-mfa',
+			}),
+		).rejects.toMatchObject({status: 401, message: 'MFA verification failed'});
 		expect(readLiveSession()).toBeNull();
 	});
 

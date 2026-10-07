@@ -1,6 +1,14 @@
 import {DEFAULT_ROLE_PERMISSIONS} from '@/types/auth/permissions';
 import {parseRole} from '@/types/auth/roles';
-import type {ActivityEvent, ConcurrentSessionInfo, ExtendSessionResponse, SessionInfo} from '@/types/auth/session';
+import type {
+	ActivityEvent,
+	ConcurrentSessionInfo,
+	ExtendSessionResponse,
+	LoginOutcome,
+	MfaChallengeResult,
+	SessionInfo,
+	VerifyMfaInput,
+} from '@/types/auth/session';
 import {ApiError, apiErrorFromBody, apiFetch, liveRequestInit} from '@/lib/api/http';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 import {clearLiveSession, readLiveSession, writeLiveSession} from '@/lib/api/live-session-store';
@@ -26,8 +34,17 @@ function isTokenPair(value: unknown): value is TokenPair {
 	);
 }
 
-function isMfaChallenge(value: unknown): boolean {
-	return Boolean(value && typeof value === 'object' && (value as {mfaRequired?: unknown}).mfaRequired === true);
+function isMfaChallenge(value: unknown): value is {mfaRequired: true; mfaToken: string; expiresIn: number} {
+	if (!value || typeof value !== 'object') {
+		return false;
+	}
+	const body = value as {mfaRequired?: unknown; mfaToken?: unknown; expiresIn?: unknown};
+	return (
+		body.mfaRequired === true &&
+		typeof body.mfaToken === 'string' &&
+		body.mfaToken.length > 0 &&
+		typeof body.expiresIn === 'number'
+	);
 }
 
 function sessionForKnownDemo(email: string, expiresIn: number): SessionInfo {
@@ -53,8 +70,14 @@ async function readJson(response: Response): Promise<unknown> {
 	return response.json().catch(() => ({}));
 }
 
+function persistSession(email: string, expiresIn: number): SessionInfo {
+	const session = sessionForKnownDemo(email, expiresIn);
+	writeLiveSession(session);
+	return session;
+}
+
 export const sessionRealAPI = {
-	login: async (email: string, password: string): Promise<SessionInfo> => {
+	login: async (email: string, password: string): Promise<LoginOutcome> => {
 		const response = await fetch(
 			`${nestApiBaseUrl()}/auth/login`,
 			liveRequestInit({
@@ -68,14 +91,36 @@ export const sessionRealAPI = {
 			throw apiErrorFromBody(body, response.status);
 		}
 		if (isMfaChallenge(body)) {
-			throw new ApiError('Unable to sign in. Try again.', 403);
+			const challenge: MfaChallengeResult = {
+				kind: 'mfa',
+				mfaToken: body.mfaToken,
+				expiresIn: body.expiresIn,
+			};
+			return challenge;
 		}
 		if (!isTokenPair(body)) {
 			throw new ApiError('Unable to sign in. Try again.', 502);
 		}
-		const session = sessionForKnownDemo(email, body.expiresIn);
-		writeLiveSession(session);
-		return session;
+		return {kind: 'session', session: persistSession(email, body.expiresIn)};
+	},
+
+	verifyMfa: async ({email, code, mfaToken}: VerifyMfaInput): Promise<SessionInfo> => {
+		const response = await fetch(
+			`${nestApiBaseUrl()}/auth/mfa/verify`,
+			liveRequestInit({
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({code, mfaToken}),
+			}),
+		);
+		const body = await readJson(response);
+		if (!response.ok) {
+			throw apiErrorFromBody(body, response.status);
+		}
+		if (!isTokenPair(body)) {
+			throw new ApiError('Unable to sign in. Try again.', 502);
+		}
+		return persistSession(email, body.expiresIn);
 	},
 
 	logout: async (): Promise<void> => {
