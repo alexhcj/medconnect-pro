@@ -71,9 +71,9 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - Polish and product visuals ([FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.md), shipped).
 - Deploy/preview is **M9**, **PAUSED / BLOCKED** — AWS account unavailable (close audit found no
   missing IDs; not closed; not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks
-  INFRA-013; INFRA-013 paused). **M10** is shipped. Next product module is **M11** (BE-014, FE-027, FE-028, BE-015,
-  FE-029 shipped; SEC-005 pending). Local product
-  work does not wait on AWS.
+  INFRA-013; INFRA-013 paused). **M10** is shipped. **M11** is shipped (BE-014, FE-027, FE-028, BE-015,
+  FE-029, SEC-005). Next product module is **M12 — Telehealth Media Maturity** (no task IDs yet).
+  Local product work does not wait on AWS.
 
 ## Slice 11 — Application security and session hardening (M11)
 

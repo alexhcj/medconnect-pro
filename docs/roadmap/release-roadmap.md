@@ -12,15 +12,16 @@ through [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.m
 (shipped), [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
 (pending; blocks INFRA-013), [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
 (pending, paused). **M10 — Product Analytics, Notifications & Role Administration** is shipped.
-Next product module is **M11 — Application Security & Session Hardening**
+**M11 — Application Security & Session Hardening** is shipped
 ([BE-014](../tasks/backend/BE-014-httponly-cookie-session-http.md),
 [FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md),
 [FE-028](../tasks/frontend/FE-028-mock-mfa-challenge-ui.md),
 [BE-015](../tasks/backend/BE-015-security-events-http.md),
-[FE-029](../tasks/frontend/FE-029-security-events-ui.md) shipped;
-[SEC-005](../tasks/security/SEC-005-production-gap-documentation.md) pending).
+[FE-029](../tasks/frontend/FE-029-security-events-ui.md),
+[SEC-005](../tasks/security/SEC-005-production-gap-documentation.md)).
+Next product module is **M12 — Telehealth Media Maturity** (no task IDs yet).
 Local product work does not wait on AWS. Resume M9 when the AWS account can be
-configured. Preview/production hosting remains M9, not M8 or M10.
+configured. Preview/production hosting remains M9, not M8, M10, or M11.
 
 ## Demo milestones
 
@@ -78,10 +79,10 @@ Live Nest dashboard overview, notification inbox/preferences UI on BE-008, and p
 assignment. Local product work while M9 is paused. Tasks: DATA-002, BE-011, FE-024, BE-012,
 FE-025, BE-013, FE-026 (shipped).
 
-### M11 — Application Security & Session Hardening (planned)
+### M11 — Application Security & Session Hardening (shipped)
 
 Local session/cookie, mock MFA UI, security-events HTTP, and production-gap documentation.
-Tasks: BE-014, FE-027, FE-028, BE-015, FE-029 (shipped), SEC-005 (pending). Not an AWS/infrastructure
+Tasks: BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005 (shipped). Not an AWS/infrastructure
 milestone.
 
 ### M12 — Telehealth Media Maturity (planned)
@@ -111,7 +112,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M8 Marketing website and visual language | FE-017–FE-023 (shipped) | Public marketing site and shared visual language. Deploy/preview is M9. **Closed** at 0.51.1. |
 | M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. |
 | M10 Product Analytics, Notifications & Role Administration | DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026 (shipped) | Live overview API and UI, notification producers + UI, role PATCH + UI. Bounded seed, Nest overview API, live dashboard cards, appointment producers, in-app notification center, and role assignment HTTP/UI shipped. No Redis, OAuth, Daily, Stripe, or AWS. |
-| M11 Application Security & Session Hardening | BE-014, FE-027, FE-028, BE-015, FE-029 (shipped), SEC-005 (pending) | Nest HttpOnly cookies, live cookie client, mock MFA UI, security-events HTTP/UI, production-gap docs. Not OAuth, production MFA, rate limiting, Redis, or AWS. |
+| M11 Application Security & Session Hardening | BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005 (shipped) | Nest HttpOnly cookies, live cookie client, mock MFA UI, security-events HTTP/UI, production-gap docs. Not OAuth, production MFA, rate limiting, Redis, or AWS. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

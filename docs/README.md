@@ -24,6 +24,10 @@ implementation tasks, roadmaps and development workflows.
 - `product/` — [capability registry](product/README.md): statused user-facing catalog.
   Public-claim ceiling remains [capability-matrix.md](marketing/capability-matrix.md).
 - `architecture/` — system structure.
+- `security/` — [demo vs production identity/session](security/README.md) (not HIPAA certified;
+  not production OAuth). Not the permission catalog or deploy runbook.
+- `compliance/` — [HIPAA readiness](compliance/hipaa-readiness.md) (not certified) and
+  [production requirements](compliance/production-requirements.md).
 - `contracts/` — API/data contracts, including
   [identity and access](contracts/identity-and-access.md) and
   [environment configuration](contracts/environment-configuration.md).

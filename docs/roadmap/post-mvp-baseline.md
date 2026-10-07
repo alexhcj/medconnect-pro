@@ -18,8 +18,8 @@ IDs; M9 is **not closed** and **not cancelled**.
 are shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)
 is pending and blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
 which remains paused. **M10** is shipped (DATA-002, BE-011, FE-024, BE-012, FE-025,
-BE-013, FE-026). Next product module is **M11** (BE-014, FE-027, FE-028, BE-015,
-FE-029 shipped; SEC-005 pending). Local product
+BE-013, FE-026). **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005).
+Next product module is **M12 — Telehealth Media Maturity** (no task IDs yet). Local product
 work does not wait on AWS. Not part of M8.
 
 ## Actually complete
@@ -45,6 +45,11 @@ work does not wait on AWS. Not part of M8.
 - GitHub `1.0.0` release-notes template (INFRA-012; INFRA-013 fills production evidence)
 
 ## Intentionally incomplete
+
+Interviewer index for the remaining production and HIPAA-oriented gap:
+[docs/security/](../security/README.md) and
+[docs/compliance/](../compliance/hipaa-readiness.md). Cookie sessions, labeled mock MFA, and
+security-events HTTP/UI are shipped **demo** surfaces, not remaining unshipped work.
 
 - Production OAuth 2.0 / OIDC + PKCE ([ADR-003](../decisions/ADR-003-authentication.md))
 - Live video / Daily / Socket.IO

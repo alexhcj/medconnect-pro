@@ -13,6 +13,8 @@ related_docs:
   - ../roadmap/post-mvp-baseline.md
   - ../decisions/ADR-003-authentication.md
   - ../contracts/identity-and-access.md
+  - ../security/authentication-and-session.md
+  - ../compliance/production-requirements.md
 capabilities:
   - id: identity-access.mock-idp-sessions
     name: Sign in with mock identity

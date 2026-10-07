@@ -67,13 +67,13 @@ What you can demonstrate **today**. Statused catalog:
 
 | Module | In the demo | Limit |
 | --- | --- | --- |
-| Identity | Mock IdP login, logout, opaque bearer sessions, and labeled mock MFA | Not production OAuth / OIDC or production MFA |
+| Identity | Mock IdP login, logout, Nest HttpOnly cookies, opaque bearer JSON for machine clients, and labeled mock MFA | Not production OAuth / OIDC or production MFA |
 | Patients | Directory, profiles, clinical lists, document list/download | Synthetic data only; no external EHR |
 | Scheduling | Calendar, appointments, provider availability | No waitlist or check-in / check-out |
 | Telehealth | Create, join, and end an appointment-linked session shell | Not live video, Daily media, chat, or recording |
 | Billing | Invoice list and detail | Not hosted payments or claims submission |
 | Analytics | Live Nest dashboard overview cards | Synthetic demo aggregates; not a warehouse or HIPAA analytics |
-| Administration | User directory, audit viewer, and role assignment with tenant/grant limits | Not a permission-matrix editor; security-events HTTP remains M11 |
+| Administration | User directory, audit viewer, role assignment, and tenant-scoped security-events viewer | Not a permission-matrix editor, SIEM, or HIPAA audit export |
 | Security | Server-side RBAC, tenant isolation (including RLS), audit logging, document ACL | Not HIPAA certification |
 
 Notification **in-app inbox** exists on the dashboard Bell (session user only). It is not push,
@@ -140,7 +140,7 @@ They are not a live public deployment.
 
 ## Development status
 
-Application version **0.67.0**. Snapshot:
+Application version **0.71.0**. Snapshot:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md).
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).
@@ -149,8 +149,10 @@ Application version **0.67.0**. Snapshot:
   (blocks INFRA-013), INFRA-013 paused.
 - **M10 shipped** (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026): live Nest dashboard
   overview, in-app notification inbox/preferences, and practice role assignment.
-- Next product module is **M11** (BE-014, FE-027, FE-028, BE-015, FE-029 shipped; SEC-005
-  pending). Local product work does not wait on AWS.
+- **M11 shipped** (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005): Nest HttpOnly cookies, live
+  cookie client, mock MFA UI, security-events HTTP/UI, and production-gap docs
+  ([docs/security/](./docs/security/README.md)). Next product module is **M12 — Telehealth Media
+  Maturity** (no task IDs yet). Local product work does not wait on AWS.
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live
 video, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).

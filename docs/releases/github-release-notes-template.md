@@ -143,12 +143,15 @@ Frontend checks are not authorization. Do not trust a browser-supplied tenant id
 
 ## Authentication
 
-Identity is a **mock IdP**: email/password, opaque bearer sessions, refresh-token rotation,
-idle/absolute expiry, and a labeled mock MFA challenge on live `/login` (not production TOTP).
+Identity is a **mock IdP**: email/password, Nest HttpOnly session cookies (`mcp_access` /
+`mcp_refresh` / `mcp_mfa`) as the implemented-demo browser session, opaque bearer JSON for
+machine clients, refresh-token rotation, idle/absolute expiry, and a labeled mock MFA challenge
+on live `/login` (not production TOTP). Live Next does not persist access or refresh tokens.
 
 This is **not** production identity infrastructure. Production OAuth 2.0 / OpenID Connect
 (Authorization Code + PKCE) and production MFA remain the target in
-[ADR-003](../decisions/ADR-003-authentication.md) and are **not** in 1.0.0.
+[ADR-003](../decisions/ADR-003-authentication.md) and are **not** in 1.0.0. Demo vs production:
+[docs/security/](../security/README.md).
 
 `[INFRA-013: seeded demo login works on production Amplify; still labeled mock identity]`
 
@@ -183,6 +186,8 @@ Canonical documentation is `/docs`. Start with:
 - `docs/00-project-spec.md` — project identity and constraints
 - `docs/product/` — statused capability catalog
 - `docs/marketing/capability-matrix.md` — what public copy may claim
+- `docs/security/` — demo vs production identity/session (not HIPAA certified; not production OAuth)
+- `docs/compliance/` — HIPAA readiness (not certified) and remaining production requirements
 - `docs/roadmap/post-mvp-baseline.md` — shipped vs intentionally incomplete
 - `docs/decisions/` — ADRs (synthetic data, versioning, auth target, deployment topology)
 - `docs/workflows/release.md` and `docs/workflows/deploy.md` — release and operator runbooks
@@ -197,13 +202,16 @@ Canonical documentation is `/docs`. Start with:
   claims UI are labeled boundaries.
 - **Shared preview API.** Amplify PR previews talk to one preview ECS API and one preview/demo
   database, not an isolated backend per pull request.
-- **Mock identity, not production OAuth.**
+- **Mock identity, not production OAuth.** Nest HttpOnly cookies and labeled mock MFA are demo
+  surfaces, not OIDC + PKCE or production MFA. See [docs/security/](../security/README.md).
 - **No Redis, SNS/SQS, or custom KMS hierarchy** as live platform services.
 - **Operator apply/connect** (Terraform, Amplify console, GitHub `production` environment)
   remains required until INFRA-013 records production as live.
 - Notifications are an in-app inbox with mark-read and channel preferences (session user only);
   not push, SMS, or email carriers.
-- Security-events UI lists tenant-scoped `auth.*` rows (not a SIEM, HIPAA export, or session-policy editor).
+- Security-events UI lists tenant-scoped `auth.*` rows (shipped demo surface; not a SIEM, HIPAA
+  export, or session-policy editor). Remaining production and HIPAA-oriented gap:
+  [docs/compliance/](../compliance/hipaa-readiness.md).
 
 ## Demo-data / no-PHI statement
 

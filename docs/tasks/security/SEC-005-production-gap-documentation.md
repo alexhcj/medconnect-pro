@@ -3,7 +3,7 @@ id: SEC-005
 type: task
 area: security
 feature: compliance
-status: pending
+status: implemented
 priority: medium
 estimate: 2
 dependencies: [BE-014, FE-027, FE-028, BE-015, FE-029]
@@ -19,7 +19,7 @@ related_docs:
     ../../00-project-spec.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -85,12 +85,12 @@ Update, when this ships:
 
 ## Acceptance Criteria
 
-- [ ] The four files exist and state the demo is not HIPAA certified and not production OAuth
-- [ ] They describe M11 cookies, mock MFA, and security-events as demo surfaces
-- [ ] post-mvp-baseline “Intentionally incomplete” no longer lists security-events HTTP as
+- [x] The four files exist and state the demo is not HIPAA certified and not production OAuth
+- [x] They describe M11 cookies, mock MFA, and security-events as demo surfaces
+- [x] post-mvp-baseline “Intentionally incomplete” no longer lists security-events HTTP as
       unshipped; it points at the new docs
-- [ ] GitHub 1.0.0 notes template known limitations match that state
-- [ ] README / AGENTS current position no longer calls M11 task IDs remaining after close
+- [x] GitHub 1.0.0 notes template known limitations match that state
+- [x] README / AGENTS current position no longer calls M11 task IDs remaining after close
 
 ## Dependencies
 
@@ -115,7 +115,12 @@ Writing this spec is not a version bump. Completing this task is not a version b
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Added `docs/security/` (index + authentication-and-session) and
+  `docs/compliance/` (hipaa-readiness + production-requirements). Pointed
+  post-mvp-baseline, GitHub 1.0.0 notes template, `docs/README.md`, and product related_docs
+  at that index. Closed M11 current-position (README, AGENTS, release-roadmap crosswalk, and
+  lockstep roadmaps). README key capabilities now match shipped cookies and security-events.
+- Tests: Documentation review only. No application tests.
 - PR:
-- Notes:
+- Notes: No version bump (docs that do not ship a product change). Plane MEDCONNECT-85 is a
+  human update.

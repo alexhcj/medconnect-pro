@@ -12,6 +12,8 @@ related_docs:
   - ../marketing/capability-matrix.md
   - ../roadmap/post-mvp-baseline.md
   - ../architecture/security-architecture.md
+  - ../security/README.md
+  - ../compliance/hipaa-readiness.md
 capabilities:
   - id: security.rbac
     name: Role-based access control
