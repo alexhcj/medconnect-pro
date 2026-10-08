@@ -22,8 +22,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: baecdaa0-2e9a-45db-8a27-3df757697da1
+  identifier: MEDCONNECT-91
 ---
 
 # DATA-003 — External identity and OAuth flow-state persistence

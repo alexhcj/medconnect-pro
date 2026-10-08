@@ -27,8 +27,8 @@ validation:
   accessibility: false
   tests_required: false
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: e4f4e06e-8360-4dbb-bad8-4cf23b7657d8
+  identifier: MEDCONNECT-90
 ---
 
 # SEC-006 — OIDC BFF contract and ADR-014

@@ -34,8 +34,8 @@ validation:
   accessibility: true
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: f9e563a9-fd07-4ae7-b08d-7fa33ceb14c1
+  identifier: MEDCONNECT-93
 ---
 
 # FE-033 — OAuth login UX and session hydration

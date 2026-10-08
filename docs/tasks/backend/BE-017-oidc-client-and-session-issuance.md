@@ -26,8 +26,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 82f60598-b1b2-4cb2-8490-68a454a8b8f9
+  identifier: MEDCONNECT-92
 ---
 
 # BE-017 — Nest OIDC client, mapping, and session issuance
