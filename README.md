@@ -153,8 +153,10 @@ Application version **0.72.0**. Snapshot:
   cookie client, mock MFA UI, security-events HTTP/UI, and production-gap docs
   ([docs/security/](./docs/security/README.md)). **M12 — Telehealth Media Maturity** is shipped
   ([BE-016](./docs/tasks/backend/BE-016-telehealth-daily-media-token-http.md),
-  [FE-030](./docs/tasks/frontend/FE-030-daily-media-session-shell.md)). Next product module is
-  **M13 — Billing / Payments UX**. Local product work does not wait on AWS.
+  [FE-030](./docs/tasks/frontend/FE-030-daily-media-session-shell.md)). **M13 — Billing / Payments UX**
+  is shipped ([FE-031](./docs/tasks/frontend/FE-031-record-demo-payment.md),
+  [FE-032](./docs/tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims
+  submission / EDI 837, and invoice-create UI remain later. Local product work does not wait on AWS.
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, in-session
 chat/recording, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).

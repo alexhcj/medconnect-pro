@@ -21,8 +21,10 @@ which remains paused. **M10** is shipped (DATA-002, BE-011, FE-024, BE-012, FE-0
 BE-013, FE-026). **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005).
 **M12 — Telehealth Media Maturity** is shipped
 ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
-[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)). Next product module is
-**M13 — Billing / Payments UX**. Local product work does not wait on AWS. Not part of M8.
+[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)). **M13 — Billing / Payments UX**
+is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
+[FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
+EDI 837, and invoice-create UI remain later. Local product work does not wait on AWS. Not part of M8.
 
 ## Actually complete
 
@@ -32,7 +34,7 @@ BE-013, FE-026). **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-029, SEC
 - Live integration: login/logout/refresh, patients, clinical lists, document list/download,
   appointments, telehealth session create/join/media-token/end plus Daily call-object media when
   `DAILY_API_KEY` is set (labeled unavailable otherwise; mock mode keeps placeholders), billing
-  invoices, admin users, role PATCH and assignment UI, admin audit, security-events HTTP and
+  invoices, demo record-payment, labeled claims envelopes, admin users, role PATCH and assignment UI, admin audit, security-events HTTP and
   viewer, dashboard overview cards, in-app notification inbox
 - Local Vitest (web + API), Playwright mock + live, API HTTP/RLS/authz-matrix/OpenAPI contract tests
 - GitHub Actions quality gates on pull requests and `main` (INFRA-005)
@@ -75,8 +77,8 @@ security-events HTTP/UI are shipped **demo** surfaces, not remaining unshipped w
 ## Marketing claim rules
 
 Do not describe mock identity as production OAuth, demo Daily media as production telehealth or
-HIPAA-certified video, invoice list as payments, or local engineering patterns as HIPAA
-compliance. Public copy must follow
+HIPAA-certified video, demo record-payment as hosted Stripe, labeled claims envelopes as EDI
+submission, or local engineering patterns as HIPAA compliance. Public copy must follow
 [00-project-spec.md](../00-project-spec.md), this baseline,
 [docs/product/](../product/README.md), and
 [capability-matrix.md](../marketing/capability-matrix.md).

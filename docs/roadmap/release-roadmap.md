@@ -22,7 +22,10 @@ through [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.m
 **M12 — Telehealth Media Maturity** is shipped
 ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
 [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)).
-Next product module is **M13 — Billing / Payments UX**. Local product work does not wait on AWS. Resume M9 when the AWS account can be
+**M13 — Billing / Payments UX** is shipped
+([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
+[FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims
+submission / EDI 837, and invoice-create UI remain later. Local product work does not wait on AWS. Resume M9 when the AWS account can be
 configured. Preview/production hosting remains M9, not M8, M10, or M11.
 
 ## Demo milestones
@@ -94,12 +97,12 @@ Daily/WebRTC on the shipped session shell. Tasks:
 [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md) (shipped). Not chat, recording,
 Socket.IO, or AWS.
 
-### M13 — Billing / Payments UX (planned)
+### M13 — Billing / Payments UX (shipped)
 
 Enable the existing Nest payment adapter and claims envelope in the UI. Tasks:
 [FE-031](../tasks/frontend/FE-031-record-demo-payment.md) (record demo payment),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md) (claims envelopes). Not hosted
-Stripe, EDI 837 submission, invoice-create UI, or AWS.
+Stripe, EDI 837 submission, invoice-create UI, or AWS. **Closed** at 0.75.0.
 
 ## Milestone crosswalk
 
@@ -122,7 +125,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M10 Product Analytics, Notifications & Role Administration | DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026 (shipped) | Live overview API and UI, notification producers + UI, role PATCH + UI. Bounded seed, Nest overview API, live dashboard cards, appointment producers, in-app notification center, and role assignment HTTP/UI shipped. No Redis, OAuth, Daily, Stripe, or AWS. |
 | M11 Application Security & Session Hardening | BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005 (shipped) | Nest HttpOnly cookies, live cookie client, mock MFA UI, security-events HTTP/UI, production-gap docs. Not OAuth, production MFA, rate limiting, Redis, or AWS. |
 | M12 Telehealth Media Maturity | BE-016, FE-030 (shipped) | Daily media token HTTP plus Daily call-object UI on the shipped session shell. Fake adapter when `DAILY_API_KEY` is unset. Not chat, recording, Socket.IO, Stripe, or AWS. |
-| M13 Billing / Payments UX | FE-031, FE-032 (shipped) | Enable Nest `POST /billing/payments` and `GET /billing/claims` in the UI. Demo adapter and labeled envelopes; not hosted Stripe, EDI 837, invoice-create UI, or AWS. |
+| M13 Billing / Payments UX | FE-031, FE-032 (shipped) | Enable Nest `POST /billing/payments` and `GET /billing/claims` in the UI. Demo adapter and labeled envelopes; not hosted Stripe, EDI 837, invoice-create UI, or AWS. **Closed** at 0.75.0. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

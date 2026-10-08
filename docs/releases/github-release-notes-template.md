@@ -21,7 +21,7 @@ Suggested GitHub fields (fill at INFRA-013):
 
 ## Release overview
 
-MedConnect Pro **1.0.0** is the first **hosted production demo** of the M0–M12 product plus M9
+MedConnect Pro **1.0.0** is the first **hosted production demo** of the M0–M13 product plus M9
 hosting (AWS Amplify for Next.js, ECS/Fargate for NestJS). It is a portfolio and interview
 demonstration of healthcare-oriented SaaS engineering. It is **not** a deployed healthcare
 service and is **not** HIPAA certified or HIPAA compliant.
@@ -36,7 +36,7 @@ service and is **not** HIPAA certified or HIPAA compliant.
 
 ## Product / feature scope
 
-Shipped demo milestones **M0–M8**, **M10–M12**, plus **M9** hosting contracts and workflows:
+Shipped demo milestones **M0–M8**, **M10–M13**, plus **M9** hosting contracts and workflows:
 
 - M0 — repository, docs, frontend shell, local Compose
 - M1 — mock identity UI, roles, protected dashboard
@@ -56,11 +56,14 @@ Shipped demo milestones **M0–M8**, **M10–M12**, plus **M9** hosting contract
   docs (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005)
 - M12 — Daily call-object media on the session shell (BE-016, FE-030); Fake adapter when
   `DAILY_API_KEY` is unset
+- M13 — demo record-payment on the in-process adapter and labeled claims envelopes (FE-031,
+  FE-032); not hosted Stripe or EDI 837 submission
 
 Live Nest integration covers login/logout/refresh, patients, clinical lists, document
 list/download, appointments, telehealth session create/join/media-token/end, billing invoices,
-admin users, role assignment, admin audit, security-events, dashboard overview cards, and the
-in-app notification inbox. Dual mock/live frontend is intentional.
+demo record-payment, labeled claims envelopes, admin users, role assignment, admin audit,
+security-events, dashboard overview cards, and the in-app notification inbox. Dual mock/live
+frontend is intentional.
 
 Not in this release: production OAuth, in-session chat/recording/Socket.IO, hosted payments,
 claims submission, Redis, or HIPAA certification. See **Known limitations**.
