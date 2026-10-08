@@ -30,8 +30,10 @@ BE-013, FE-026). **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-029, SEC
 - PostgreSQL + TypeORM + RLS + synthetic `seed:mock-identity`
 - Mock-first Next.js dashboard and live Nest mode (`dev:real` / `e2e:live`)
 - Live integration: login/logout/refresh, patients, clinical lists, document list/download,
-  appointments, telehealth session create/join/end, billing invoices, admin users, role PATCH
-  and assignment UI, admin audit, security-events HTTP and viewer, dashboard overview cards, in-app notification inbox
+  appointments, telehealth session create/join/media-token/end plus Daily call-object media when
+  `DAILY_API_KEY` is set (labeled unavailable otherwise; mock mode keeps placeholders), billing
+  invoices, admin users, role PATCH and assignment UI, admin audit, security-events HTTP and
+  viewer, dashboard overview cards, in-app notification inbox
 - Local Vitest (web + API), Playwright mock + live, API HTTP/RLS/authz-matrix/OpenAPI contract tests
 - GitHub Actions quality gates on pull requests and `main` (INFRA-005)
 - Secrets classification, GitHub OIDC, and Secrets Manager containers (INFRA-006; apply is operator-run)
@@ -54,7 +56,7 @@ Interviewer index for the remaining production and HIPAA-oriented gap:
 security-events HTTP/UI are shipped **demo** surfaces, not remaining unshipped work.
 
 - Production OAuth 2.0 / OIDC + PKCE ([ADR-003](../decisions/ADR-003-authentication.md))
-- Live video / Daily / Socket.IO
+- Socket.IO / application realtime; in-session chat, recording, and transcription
 - Payments, claims submission
 - Hosted AWS first-apply (INFRA-014; blocks INFRA-013; M9 paused)
 - `v1.0.0` production-release gate (INFRA-013; paused until INFRA-014)
@@ -72,8 +74,9 @@ security-events HTTP/UI are shipped **demo** surfaces, not remaining unshipped w
 
 ## Marketing claim rules
 
-Do not describe mock identity as production OAuth, telehealth session shell as live video, invoice
-list as payments, or local engineering patterns as HIPAA compliance. Public copy must follow
+Do not describe mock identity as production OAuth, demo Daily media as production telehealth or
+HIPAA-certified video, invoice list as payments, or local engineering patterns as HIPAA
+compliance. Public copy must follow
 [00-project-spec.md](../00-project-spec.md), this baseline,
 [docs/product/](../product/README.md), and
 [capability-matrix.md](../marketing/capability-matrix.md).

@@ -32,7 +32,7 @@ Shipped as M4–M7 foundations except observability and remaining hardening (OAu
 cloud).
 
 - EHR foundation;
-- telehealth foundation (session shell, not live media);
+- telehealth foundation (M5 session shell; M12 Daily media is shipped and qualified);
 - billing foundation (invoices; payments/claims labeled boundaries);
 - administration (users + audit viewer + role assignment UI with tenant/grant limits);
 - security hardening (partial: RBAC, RLS, document ACL, audit);
@@ -40,10 +40,11 @@ cloud).
 
 ## Maturity
 
-Still future.
+Still future except M12 Daily media (shipped, qualified). Remaining telehealth work is chat,
+recording, and Socket.IO — not a new M12 task.
 
 - EHR integrations;
-- telehealth maturity;
+- telehealth maturity (chat, recording, Socket.IO; Daily media is M12);
 - revenue cycle;
 - reliability;
 - performance;

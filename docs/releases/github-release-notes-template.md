@@ -21,7 +21,7 @@ Suggested GitHub fields (fill at INFRA-013):
 
 ## Release overview
 
-MedConnect Pro **1.0.0** is the first **hosted production demo** of the M0–M10 product plus M9
+MedConnect Pro **1.0.0** is the first **hosted production demo** of the M0–M12 product plus M9
 hosting (AWS Amplify for Next.js, ECS/Fargate for NestJS). It is a portfolio and interview
 demonstration of healthcare-oriented SaaS engineering. It is **not** a deployed healthcare
 service and is **not** HIPAA certified or HIPAA compliant.
@@ -36,7 +36,7 @@ service and is **not** HIPAA certified or HIPAA compliant.
 
 ## Product / feature scope
 
-Shipped demo milestones **M0–M8** and **M10**, plus **M9** hosting contracts and workflows:
+Shipped demo milestones **M0–M8**, **M10–M12**, plus **M9** hosting contracts and workflows:
 
 - M0 — repository, docs, frontend shell, local Compose
 - M1 — mock identity UI, roles, protected dashboard
@@ -52,14 +52,18 @@ Shipped demo milestones **M0–M8** and **M10**, plus **M9** hosting contracts a
   production demo RDS, ECS/Fargate, Amplify Hosting, PR previews, production ECS delivery
 - M10 — live Nest dashboard overview, in-app notification inbox/preferences, and practice role
   assignment (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026)
+- M11 — HttpOnly cookie sessions, labeled mock MFA UI, security-events HTTP/UI, production-gap
+  docs (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005)
+- M12 — Daily call-object media on the session shell (BE-016, FE-030); Fake adapter when
+  `DAILY_API_KEY` is unset
 
 Live Nest integration covers login/logout/refresh, patients, clinical lists, document
-list/download, appointments, telehealth session create/join/end, billing invoices, admin users,
-role assignment, admin audit, dashboard overview cards, and the in-app notification inbox.
-Dual mock/live frontend is intentional.
+list/download, appointments, telehealth session create/join/media-token/end, billing invoices,
+admin users, role assignment, admin audit, security-events, dashboard overview cards, and the
+in-app notification inbox. Dual mock/live frontend is intentional.
 
-Not in this release: production OAuth, live telehealth media, hosted payments, claims
-submission, Redis, or HIPAA certification. See **Known limitations**.
+Not in this release: production OAuth, in-session chat/recording/Socket.IO, hosted payments,
+claims submission, Redis, or HIPAA certification. See **Known limitations**.
 
 ## Frontend
 
@@ -171,12 +175,13 @@ Production smoke is INFRA-013, not this template:
 
 ## UI / UX / design
 
-- Authenticated dashboard (patients, calendar, clinical lists, telehealth session shell,
-  billing invoices, admin users and audit)
+- Authenticated dashboard (patients, calendar, clinical lists, telehealth session shell with
+  demo Daily media when configured, billing invoices, admin users and audit)
 - Public marketing site with the shared visual language from FE-018 (Figma as canonical visual
   source)
-- Telehealth waiting-room and media controls are placeholders; billing payments/claims are
-  labeled boundaries; dashboard overview cards are mock-only in live Nest mode
+- Telehealth uses a Daily custom call object when `DAILY_API_KEY` is set; otherwise media is
+  labeled unavailable (mock mode keeps placeholders). Billing payments/claims are labeled
+  boundaries; live dashboard overview cards call Nest `GET /dashboard/overview`
 - No new design work is part of 1.0.0 itself
 
 ## Documentation
@@ -260,10 +265,8 @@ A green Amplify publish is not proof the API migrated. `[INFRA-013: confirm roll
 ## Future work
 
 - OAuth 2.0 / OpenID Connect with Authorization Code + PKCE, and production MFA
-- Live Daily / WebRTC telehealth media, chat, recording, signaling
+- In-session chat, recording, transcription, and Socket.IO / application realtime
 - Hosted payments, claims submission, EDI
-- Notifications UI
-- Dashboard analytics API (`GET /dashboard/overview`)
 - Redis / ElastiCache; SNS/SQS durable notification delivery
 - Custom KMS hierarchy
 - Organizational HIPAA assessment (out of this demo; never implied by hosting going live)
