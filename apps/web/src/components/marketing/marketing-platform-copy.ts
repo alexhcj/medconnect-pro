@@ -34,7 +34,7 @@ export const MARKETING_PLATFORM_MODULES = {
 		{
 			title: 'Billing',
 			description:
-				'Invoice list and detail. Payments and claims are labeled boundaries.',
+				'Invoice list and detail. Demo payments use an in-process adapter. Claims are labeled envelopes, not EDI submission.',
 			status: 'Not hosted payments.',
 			href: '/platform/billing',
 		},

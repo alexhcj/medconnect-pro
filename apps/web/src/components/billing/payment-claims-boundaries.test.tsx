@@ -3,12 +3,14 @@ import userEvent from '@testing-library/user-event';
 import {PaymentClaimsBoundaries} from '@/components/billing/payment-claims-boundaries';
 import type {Invoice} from '@/types/billing/invoice';
 
-const {useRecordPayment} = vi.hoisted(() => ({
+const {useRecordPayment, useClaims} = vi.hoisted(() => ({
 	useRecordPayment: vi.fn(),
+	useClaims: vi.fn(),
 }));
 
 vi.mock('@/lib/hooks/use-billing', () => ({
 	useRecordPayment,
+	useClaims,
 }));
 
 const unpaid: Invoice = {
@@ -32,6 +34,20 @@ describe('PaymentClaimsBoundaries', () => {
 			isPending: false,
 			isError: false,
 		});
+		useClaims.mockReturnValue({
+			data: [
+				{
+					id: 'demo-invoice-001',
+					invoiceId: 'demo-invoice-001',
+					status: 'not_submitted',
+					processor: 'edi837',
+					synthetic: true,
+				},
+			],
+			isPending: false,
+			isError: false,
+			refetch: vi.fn(),
+		});
 	});
 
 	it('keeps record payment disabled on the list without an invoice', () => {
@@ -41,7 +57,8 @@ describe('PaymentClaimsBoundaries', () => {
 		expect(screen.getByText(/Open an unpaid invoice to record a demo payment/)).toBeInTheDocument();
 		expect(screen.getByRole('button', {name: 'Record payment'})).toBeDisabled();
 		expect(screen.getByRole('heading', {name: 'Claims boundary'})).toBeInTheDocument();
-		expect(screen.getByText(/Claims \/ EDI 837 is not connected/)).toBeInTheDocument();
+		expect(screen.getByText(/Labeled EDI 837 envelopes derived from visible invoices/)).toBeInTheDocument();
+		expect(screen.getByRole('list', {name: 'Claim envelopes'})).toHaveTextContent('Not submitted');
 		expect(screen.queryByLabelText(/card/i)).not.toBeInTheDocument();
 	});
 

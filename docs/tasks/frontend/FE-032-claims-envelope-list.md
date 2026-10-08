@@ -3,7 +3,7 @@ id: FE-032
 type: task
 area: frontend
 feature: billing
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-031, FE-015, BE-007, FE-027]
@@ -26,10 +26,10 @@ design:
   required: true
   tool: figma
   file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd"
-  frame: ""
-  status: not_started
+  frame: "App / Billing — 01 Claims envelopes — tablet (174:2260)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -110,14 +110,14 @@ https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 
 ## Acceptance Criteria
 
-- [ ] `design.status` is `approved` with `file_url` and `frame` before implementation
-- [ ] Billing dashboard shows envelopes derived from visible invoices
-- [ ] Loading, empty, and error states exist
-- [ ] Copy does not claim claim submission, X12, or denial workflow
-- [ ] Mock Playwright asserts envelope list
-- [ ] `e2e:live` asserts envelope list plus FE-031 payment UX
-- [ ] Tablet viewport remains covered
-- [ ] Catalog: `billing.claims` shipped (qualified). Marketing, matrix, README, and
+- [x] `design.status` is `approved` with `file_url` and `frame` before implementation
+- [x] Billing dashboard shows envelopes derived from visible invoices
+- [x] Loading, empty, and error states exist
+- [x] Copy does not claim claim submission, X12, or denial workflow
+- [x] Mock Playwright asserts envelope list
+- [x] `e2e:live` asserts envelope list plus FE-031 payment UX
+- [x] Tablet viewport remains covered
+- [x] Catalog: `billing.claims` shipped (qualified). Marketing, matrix, README, and
       post-mvp-baseline incomplete line match. Module stays partial.
 
 ## Dependencies
@@ -127,8 +127,9 @@ https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 - Design brief via [design-brief-prompt.md](../../processes/prompts/design-brief-prompt.md) on
   **this** task
 
-Suggested Figma (shared library; page **App / Billing**):
-https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+Figma (shared library; approved page **App / Billing**, primary frame
+**01 Claims envelopes — tablet** (`174:2260`)):
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=174-2260
 
 ## Validation
 
@@ -155,3 +156,16 @@ and related home/platform/demo copy files.
 
 Writing this spec is not a version bump. Design-metadata approval is not a version bump.
 Shipping this slice is **MINOR**.
+
+## Completion
+
+- Implementation: Billing dashboard and invoice detail list `GET /billing/claims` envelopes
+  (`not_submitted` / `edi837` / `synthetic`). Copy labels this as not claim submission, X12, or
+  denial workflow. Loading, empty, and error (`role="alert"`) states exist. Catalog
+  `billing.claims` is shipped as qualified. Marketing, matrix, README, and post-mvp-baseline
+  incomplete line match. Module stays partial (hosted Stripe/ACH and EDI 837 remain planned).
+- Tests: Vitest for Claim RDO mapping, live GET unwrap, mock list, and UI loading/empty/error.
+  Mock Playwright asserts the envelope list. Live Playwright asserts envelopes plus FE-031
+  record-payment on an API-created invoice.
+- PR:
+- Notes: Version 0.74.0 → 0.75.0 (MINOR). Plane update is human.

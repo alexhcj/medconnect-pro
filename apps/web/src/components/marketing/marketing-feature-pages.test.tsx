@@ -110,8 +110,16 @@ describe('capability-matrix copy', () => {
 		expect(screen.getAllByText(/session shell/i).length).toBeGreaterThan(0);
 
 		rerender(<MarketingFeaturePage slug="billing" />);
-		expect(screen.getByText('Payments stay a labeled boundary. Not hosted payments.')).toBeInTheDocument();
-		expect(screen.getByText('Claims stay a labeled boundary. Not shipped.')).toBeInTheDocument();
+		expect(
+			screen.getByText(
+				'Record a synthetic Stripe or ACH payment through the in-process adapter. Not hosted Stripe or ACH origination.',
+			),
+		).toBeInTheDocument();
+		expect(
+			screen.getByText(
+				'Labeled not-submitted EDI 837 envelopes derived from invoices. Not claim submission or X12.',
+			),
+		).toBeInTheDocument();
 
 		rerender(<MarketingFeaturePage slug="analytics" />);
 		expect(screen.getByText('Synthetic demo aggregates. Not a warehouse or HIPAA analytics.')).toBeInTheDocument();

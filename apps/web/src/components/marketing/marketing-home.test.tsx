@@ -82,7 +82,8 @@ describe('MarketingHome', () => {
 		render(<MarketingHome />);
 
 		expect(screen.getAllByText(/demo Daily media when configured/).length).toBeGreaterThan(0);
-		expect(screen.getAllByText(/labeled boundaries/).length).toBeGreaterThan(0);
+		expect(screen.getAllByText(/in-process adapter/).length).toBeGreaterThan(0);
+		expect(screen.getAllByText(/labeled envelopes/).length).toBeGreaterThan(0);
 		expect(screen.getByText(/Synthetic demo aggregates, not a warehouse/)).toBeInTheDocument();
 		expect(screen.getByText(/tenant\/grant limits/)).toBeInTheDocument();
 		expect(screen.getAllByText(/Not production OAuth/).length).toBeGreaterThan(0);

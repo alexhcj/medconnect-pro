@@ -1,6 +1,7 @@
 'use client';
 
 import {useState} from 'react';
+import {ClaimsEnvelopeList} from '@/components/billing/claims-envelope-list';
 import {RecordPaymentDialog} from '@/components/billing/record-payment-dialog';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
@@ -58,9 +59,7 @@ export function PaymentClaimsBoundaries({
 					<CardTitle>Claims boundary</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<p className="text-sm text-gray-700">
-						Claims / EDI 837 is not connected. Claim status and denial workflow are out of this demo.
-					</p>
+					<ClaimsEnvelopeList />
 				</CardContent>
 			</Card>
 			{invoice && (

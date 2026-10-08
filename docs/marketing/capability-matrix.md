@@ -22,7 +22,7 @@ Columns:
 | Scheduling (appointments, calendar) | [scheduling](../product/scheduling.md) | Yes | Yes | — |
 | Clinical / EHR foundation | [patient-management](../product/patient-management.md) | Yes (lists on patient profile) | Yes, as foundation | External EHR integrations |
 | Telehealth | [telehealth](../product/telehealth.md) | Session shell plus Daily call-object media when `DAILY_API_KEY` is set; labeled unavailable otherwise; mock mode keeps placeholders | Qualified — demo Daily media, not production telehealth or HIPAA video | Chat, recording, transcription |
-| Billing | [billing](../product/billing.md) | Invoice list/detail | Concept/demo for payments and claims; invoices are real demo data | Hosted payments, claims submission, EDI |
+| Billing | [billing](../product/billing.md) | Invoice list/detail plus demo record-payment and labeled claims envelopes | Qualified demo payments and envelopes; not hosted Stripe or claims submission | Hosted payments, claims submission, EDI |
 | Analytics | [analytics](../product/analytics.md) | Live Nest dashboard overview cards; mock fixtures when mocks on | Qualified — demo cards, not a warehouse or HIPAA analytics | Extra chart widgets remain unscheduled |
 | Notifications | [notifications](../product/notifications.md) | In-app inbox, mark-read, and channel preferences (session user only) | Qualified — not push, SMS, or email carriers | Push/SMS/email carriers, Redis |
 | Administration | [administration](../product/administration.md) | User directory, audit viewer, role assignment, and tenant-scoped security-events viewer | Yes, with tenant/grant limits; security events are auth/session rows, not a SIEM | — |
@@ -34,7 +34,7 @@ Columns:
 ## Copy examples
 
 Allowed: “appointment-linked telehealth session shell”; “demo Daily call-object media when
-configured”; “invoice list with labeled payment and claims boundaries”; “live dashboard overview
+configured”; “invoice list with demo record-payment and labeled claims envelopes”; “live dashboard overview
 cards (synthetic demo aggregates)”; “security-focused architecture”; “synthetic demo data”.
 
 Not allowed: “live video visits”; “HIPAA-certified video”; “production telehealth”; “accept

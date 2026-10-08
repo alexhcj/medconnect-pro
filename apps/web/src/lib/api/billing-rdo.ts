@@ -1,3 +1,4 @@
+import type {Claim, ClaimProcessor, ClaimStatus} from '@/types/billing/claim';
 import type {Invoice, InvoiceStatus} from '@/types/billing/invoice';
 import type {Payment, PaymentMethod, PaymentStatus} from '@/types/billing/payment';
 
@@ -71,6 +72,29 @@ export function paymentFromRdo(rdo: PaymentRdo): Payment {
 		method: rdo.method,
 		processorRef: rdo.processorRef,
 		status: rdo.status,
+		synthetic: rdo.synthetic,
+	};
+}
+
+/** Envelope returned by Nest `ClaimRdo`. Derived from a visible invoice. */
+export interface ClaimRdo {
+	id: string;
+	invoiceId: string;
+	status: ClaimStatus;
+	processor: ClaimProcessor;
+	synthetic: boolean;
+}
+
+export interface ClaimListRdo {
+	claims: ClaimRdo[];
+}
+
+export function claimFromRdo(rdo: ClaimRdo): Claim {
+	return {
+		id: rdo.id,
+		invoiceId: rdo.invoiceId,
+		status: rdo.status,
+		processor: rdo.processor,
 		synthetic: rdo.synthetic,
 	};
 }

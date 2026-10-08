@@ -71,7 +71,7 @@ What you can demonstrate **today**. Statused catalog:
 | Patients | Directory, profiles, clinical lists, document list/download | Synthetic data only; no external EHR |
 | Scheduling | Calendar, appointments, provider availability | No waitlist or check-in / check-out |
 | Telehealth | Create, join, and end an appointment-linked session shell with demo Daily media when configured | Not production telehealth, HIPAA video, chat, or recording |
-| Billing | Invoice list and detail | Not hosted payments or claims submission |
+| Billing | Invoice list and detail, demo record-payment, labeled claims envelopes | Not hosted payments or claims submission |
 | Analytics | Live Nest dashboard overview cards | Synthetic demo aggregates; not a warehouse or HIPAA analytics |
 | Administration | User directory, audit viewer, role assignment, and tenant-scoped security-events viewer | Not a permission-matrix editor, SIEM, or HIPAA audit export |
 | Security | Server-side RBAC, tenant isolation (including RLS), audit logging, document ACL | Not HIPAA certification |

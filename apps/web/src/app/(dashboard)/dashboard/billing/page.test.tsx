@@ -2,14 +2,16 @@ import {render, screen} from '@testing-library/react';
 import BillingPage from '@/app/(dashboard)/dashboard/billing/page';
 import {Invoice} from '@/types/billing/invoice';
 
-const {useInvoices, useSessionStatus, useRecordPayment} = vi.hoisted(() => ({
+const {useInvoices, useSessionStatus, useClaims, useRecordPayment} = vi.hoisted(() => ({
 	useInvoices: vi.fn(),
 	useSessionStatus: vi.fn(),
+	useClaims: vi.fn(),
 	useRecordPayment: vi.fn(),
 }));
 
 vi.mock('@/lib/hooks/use-billing', () => ({
 	useInvoices,
+	useClaims,
 	useRecordPayment,
 }));
 
@@ -40,6 +42,20 @@ describe('BillingPage', () => {
 		});
 		useInvoices.mockReturnValue({
 			data: [sampleInvoice],
+			isPending: false,
+			isError: false,
+			refetch: vi.fn(),
+		});
+		useClaims.mockReturnValue({
+			data: [
+				{
+					id: sampleInvoice.id,
+					invoiceId: sampleInvoice.id,
+					status: 'not_submitted',
+					processor: 'edi837',
+					synthetic: true,
+				},
+			],
 			isPending: false,
 			isError: false,
 			refetch: vi.fn(),

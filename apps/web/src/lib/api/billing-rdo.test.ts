@@ -1,7 +1,9 @@
 import {describe, expect, it} from 'vitest';
 import {
+	claimFromRdo,
 	invoiceFromRdo,
 	paymentFromRdo,
+	type ClaimRdo,
 	type InvoiceRdo,
 	type PaymentRdo,
 } from '@/lib/api/billing-rdo';
@@ -68,6 +70,26 @@ describe('paymentFromRdo', () => {
 			method: 'ach',
 			processorRef: 'demo_00000000-0000-4000-8000-000000000001',
 			status: 'recorded',
+			synthetic: true,
+		});
+	});
+});
+
+describe('claimFromRdo', () => {
+	it('maps ClaimRdo onto the UI envelope', () => {
+		const claimRdo: ClaimRdo = {
+			id: rdo.id,
+			invoiceId: rdo.id,
+			status: 'not_submitted',
+			processor: 'edi837',
+			synthetic: true,
+		};
+
+		expect(claimFromRdo(claimRdo)).toEqual({
+			id: rdo.id,
+			invoiceId: rdo.id,
+			status: 'not_submitted',
+			processor: 'edi837',
 			synthetic: true,
 		});
 	});

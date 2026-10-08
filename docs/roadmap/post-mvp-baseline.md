@@ -57,7 +57,7 @@ security-events HTTP/UI are shipped **demo** surfaces, not remaining unshipped w
 
 - Production OAuth 2.0 / OIDC + PKCE ([ADR-003](../decisions/ADR-003-authentication.md))
 - Socket.IO / application realtime; in-session chat, recording, and transcription
-- Payments, claims submission
+- Hosted Stripe/ACH and claims submission / EDI 837
 - Hosted AWS first-apply (INFRA-014; blocks INFRA-013; M9 paused)
 - `v1.0.0` production-release gate (INFRA-013; paused until INFRA-014)
 - Redis, custom KMS hierarchy

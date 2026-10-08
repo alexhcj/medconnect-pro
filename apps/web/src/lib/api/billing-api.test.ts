@@ -105,4 +105,30 @@ describe('billingRealAPI', () => {
 		expect(String(init.body)).not.toMatch(/card|pan|accountNumber/i);
 		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
+
+	it('lists claim envelopes from Nest and unwraps ClaimListRdo', async () => {
+		localStorage.setItem('auth_token', 'demo-access-token');
+		const claim = {
+			id: invoiceId,
+			invoiceId,
+			status: 'not_submitted',
+			processor: 'edi837',
+			synthetic: true,
+		};
+		const fetchMock = vi.fn().mockResolvedValue(jsonResponse({claims: [claim]}));
+		vi.stubGlobal('fetch', fetchMock);
+
+		await expect(billingRealAPI.listClaims()).resolves.toEqual([
+			expect.objectContaining({
+				id: invoiceId,
+				invoiceId,
+				status: 'not_submitted',
+				processor: 'edi837',
+				synthetic: true,
+			}),
+		]);
+		expect(fetchMock).toHaveBeenCalledWith('http://localhost:3001/billing/claims', expect.any(Object));
+		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
+	});
 });

@@ -77,7 +77,7 @@ describe('MarketingDemo', () => {
 		}
 
 		expect(screen.getByText(/Demo Daily media when configured/)).toBeInTheDocument();
-		expect(screen.getByText(/not hosted payments/)).toBeInTheDocument();
+		expect(screen.getAllByText(/not hosted payments/i).length).toBeGreaterThan(0);
 		expect(screen.getByText(/Synthetic demo aggregates, not a warehouse/)).toBeInTheDocument();
 		expect(screen.getByText(/tenant\/grant limits/)).toBeInTheDocument();
 		expect(screen.getByText(/This is not a second sign-in form/)).toBeInTheDocument();

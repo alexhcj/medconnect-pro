@@ -4,15 +4,17 @@ import {InvoiceDetail} from '@/components/billing/invoice-detail';
 import {ApiError} from '@/lib/api/http';
 import {Invoice} from '@/types/billing/invoice';
 
-const {useInvoice, useSessionStatus, useRecordPayment} = vi.hoisted(() => ({
+const {useInvoice, useSessionStatus, useRecordPayment, useClaims} = vi.hoisted(() => ({
 	useInvoice: vi.fn(),
 	useSessionStatus: vi.fn(),
 	useRecordPayment: vi.fn(),
+	useClaims: vi.fn(),
 }));
 
 vi.mock('@/lib/hooks/use-billing', () => ({
 	useInvoice,
 	useRecordPayment,
+	useClaims,
 }));
 
 vi.mock('@/lib/hooks/use-session', () => ({
@@ -50,6 +52,20 @@ describe('InvoiceDetail', () => {
 			mutate: vi.fn(),
 			isPending: false,
 			isError: false,
+		});
+		useClaims.mockReturnValue({
+			data: [
+				{
+					id: 'demo-invoice-001',
+					invoiceId: 'demo-invoice-001',
+					status: 'not_submitted',
+					processor: 'edi837',
+					synthetic: true,
+				},
+			],
+			isPending: false,
+			isError: false,
+			refetch: vi.fn(),
 		});
 		useSessionStatus.mockReturnValue({
 			session: {userRole: 'PRACTICE_ADMIN'},

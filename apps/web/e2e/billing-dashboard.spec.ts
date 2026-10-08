@@ -26,7 +26,9 @@ test.describe('Billing dashboard', () => {
 		await expect(page.getByText(/Open an unpaid invoice to record a demo payment/)).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Record payment'})).toBeDisabled();
 		await expect(page.getByRole('heading', {name: 'Claims boundary'})).toBeVisible();
-		await expect(page.getByText(/Claims \/ EDI 837 is not connected/)).toBeVisible();
+		await expect(page.getByText(/Labeled EDI 837 envelopes derived from visible invoices/)).toBeVisible();
+		await expect(page.getByRole('list', {name: 'Claim envelopes'})).toContainText('Not submitted');
+		await expect(page.getByRole('list', {name: 'Claim envelopes'})).toContainText('EDI 837 (labeled)');
 
 		await page.getByRole('link', {name: 'View invoice demo-invoice-001 for Avery Carter'}).click();
 		await expect(page).toHaveURL(/\/dashboard\/billing\/demo-invoice-001$/);

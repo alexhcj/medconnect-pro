@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.75.0] - 2026-10-08
+
+### Added
+
+- Claims envelope list on Nest `GET /billing/claims` (FE-032): billing dashboard and invoice
+  detail show labeled `not_submitted` / `edi837` envelopes derived from visible invoices. Not
+  claim submission, X12, or denial workflow. Catalog `billing.claims` is shipped as qualified.
+  Hosted Stripe/ACH and EDI 837 remain planned. Module stays partial.
+
 ## [0.74.0] - 2026-10-08
 
 ### Added

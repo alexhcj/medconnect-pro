@@ -51,7 +51,7 @@ export const FEATURE_PAGE_METADATA: Record<
 	billing: {
 		title: 'Billing',
 		description:
-			'Invoice list and detail with synthetic demo data. Payments and claims are labeled boundaries, not hosted payments.',
+			'Invoice list and detail with synthetic demo data. Demo payments use an in-process adapter. Claims are labeled envelopes, not EDI submission or hosted payments.',
 	},
 	analytics: {
 		title: 'Analytics',
@@ -289,7 +289,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			headingId: 'billing-hero-heading',
 			eyebrow: 'Billing · invoices in the demo',
 			heading: 'Invoice list and detail',
-			body: 'Invoices are real demo data. Payments and claims stay labeled boundaries. Not hosted payments.',
+			body: 'Invoices are real demo data. Demo payments use an in-process adapter. Claims are labeled not-submitted envelopes, not EDI submission. Not hosted payments.',
 			...FEATURE_PAGE_HERO_CTAS,
 		},
 		capabilities: {
@@ -301,12 +301,14 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 					description: 'Invoice list and detail with synthetic demo data.',
 				},
 				{
-					title: 'Payments boundary',
-					description: 'Payments stay a labeled boundary. Not hosted payments.',
+					title: 'Demo payments',
+					description:
+						'Record a synthetic Stripe or ACH payment through the in-process adapter. Not hosted Stripe or ACH origination.',
 				},
 				{
-					title: 'Claims boundary',
-					description: 'Claims stay a labeled boundary. Not shipped.',
+					title: 'Claims envelopes',
+					description:
+						'Labeled not-submitted EDI 837 envelopes derived from invoices. Not claim submission or X12.',
 				},
 			],
 		},

@@ -96,5 +96,5 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - Record demo payment ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md); shipped;
   depends on [FE-015](../tasks/frontend/FE-015-billing-ui-nest-api.md) and
   [BE-007](../tasks/backend/BE-007-billing-api.md)).
-- Claims envelope list ([FE-032](../tasks/frontend/FE-032-claims-envelope-list.md); pending;
+- Claims envelope list ([FE-032](../tasks/frontend/FE-032-claims-envelope-list.md); shipped;
   depends on FE-031). Not hosted Stripe, EDI 837 submission, or invoice-create UI.

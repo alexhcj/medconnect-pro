@@ -53,6 +53,22 @@ describe('billingMockAPI', () => {
 		await expect(billingMockAPI.getInvoice('demo-invoice-004')).resolves.toMatchObject({status: 'paid'});
 	});
 
+	it('lists labeled claim envelopes derived from invoices', async () => {
+		const claims = await billingMockAPI.listClaims();
+		expect(claims.length).toBeGreaterThan(0);
+		expect(claims[0]).toEqual(
+			expect.objectContaining({
+				id: 'demo-invoice-001',
+				invoiceId: 'demo-invoice-001',
+				status: 'not_submitted',
+				processor: 'edi837',
+				synthetic: true,
+			}),
+		);
+		expect(claims.every((claim) => claim.status === 'not_submitted')).toBe(true);
+		expect(claims.every((claim) => claim.processor === 'edi837')).toBe(true);
+	});
+
 	it('conflicts when the mock invoice is already paid', async () => {
 		await expect(
 			billingMockAPI.recordPayment({invoiceId: 'demo-invoice-002', method: 'ach'}),

@@ -2,6 +2,7 @@ import type {PaymentCreateBody} from '@/lib/api/billing-rdo';
 import {ApiError} from '@/lib/api/http';
 import {fixtureInvoices, fixturePatients} from '@/lib/api/mocks/fixtures';
 import {mockDelay, mockLog, shouldSimulateError} from '@/lib/api/mocks/runtime';
+import type {Claim} from '@/types/billing/claim';
 import type {Invoice} from '@/types/billing/invoice';
 import type {Payment} from '@/types/billing/payment';
 
@@ -67,4 +68,17 @@ export const billingMockAPI = {
 				synthetic: true,
 			};
 		}, 'Mock: Failed to record payment'),
+
+	listClaims: async (): Promise<Claim[]> =>
+		withMock(
+			() =>
+				invoices.map((invoice) => ({
+					id: invoice.id,
+					invoiceId: invoice.id,
+					status: 'not_submitted' as const,
+					processor: 'edi837' as const,
+					synthetic: true,
+				})),
+			'Mock: Failed to load claims',
+		),
 };

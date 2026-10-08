@@ -1,6 +1,8 @@
 import {
+	claimFromRdo,
 	invoiceFromRdo,
 	paymentFromRdo,
+	type ClaimListRdo,
 	type InvoiceListRdo,
 	type InvoiceRdo,
 	type PaymentCreateBody,
@@ -10,6 +12,7 @@ import {apiFetch} from '@/lib/api/http';
 import {billingMockAPI} from '@/lib/api/mocks/billing-mock';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {nestApiBaseUrl} from '@/lib/api/nest-api';
+import type {Claim} from '@/types/billing/claim';
 import type {Invoice} from '@/types/billing/invoice';
 import type {Payment} from '@/types/billing/payment';
 
@@ -19,6 +22,10 @@ function billingInvoicesUrl(path = ''): string {
 
 function billingPaymentsUrl(): string {
 	return `${nestApiBaseUrl()}/billing/payments`;
+}
+
+function billingClaimsUrl(): string {
+	return `${nestApiBaseUrl()}/billing/claims`;
 }
 
 export const billingRealAPI = {
@@ -36,6 +43,10 @@ export const billingRealAPI = {
 			body: JSON.stringify({invoiceId: body.invoiceId, method: body.method}),
 		});
 		return paymentFromRdo(rdo);
+	},
+	listClaims: async (): Promise<Claim[]> => {
+		const result = await apiFetch<ClaimListRdo>(billingClaimsUrl());
+		return result.claims.map(claimFromRdo);
 	},
 };
 

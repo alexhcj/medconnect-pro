@@ -3,6 +3,7 @@ import {billingAPI} from '@/lib/api/billing-api';
 import type {PaymentCreateBody} from '@/lib/api/billing-rdo';
 
 export const billingInvoicesQueryKey = ['billing', 'invoices'] as const;
+export const billingClaimsQueryKey = ['billing', 'claims'] as const;
 
 export function invoiceQueryKey(invoiceId: string) {
 	return ['billing', 'invoice', invoiceId] as const;
@@ -28,6 +29,16 @@ export function useInvoice(invoiceId: string, enabled = true) {
 	});
 }
 
+export function useClaims(enabled = true) {
+	return useQuery({
+		queryKey: billingClaimsQueryKey,
+		queryFn: () => billingAPI.listClaims(),
+		enabled,
+		staleTime: 5 * 60 * 1000,
+		gcTime: 10 * 60 * 1000,
+	});
+}
+
 export function useRecordPayment() {
 	const queryClient = useQueryClient();
 
@@ -36,6 +47,7 @@ export function useRecordPayment() {
 		onSuccess: (_payment, body) => {
 			void queryClient.invalidateQueries({queryKey: billingInvoicesQueryKey});
 			void queryClient.invalidateQueries({queryKey: invoiceQueryKey(body.invoiceId)});
+			void queryClient.invalidateQueries({queryKey: billingClaimsQueryKey});
 		},
 	});
 }

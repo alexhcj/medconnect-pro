@@ -43,7 +43,7 @@ export const MARKETING_DEMO_WALKTHROUGH = {
 		{
 			title: 'Billing invoices',
 			description:
-				'Invoice list and detail. Payments and claims are labeled boundaries, not hosted payments.',
+				'Invoice list and detail. Demo payments use an in-process adapter. Claims are labeled envelopes, not EDI submission, not hosted payments.',
 			detail: 'Invoices are real demo data.',
 			status: {label: '/platform/billing', href: '/platform/billing'},
 		},
@@ -67,7 +67,7 @@ export const MARKETING_DEMO_WALKTHROUGH = {
 export const MARKETING_DEMO_SAFETY = {
 	heading: 'Safe exploration',
 	headingId: 'safe-exploration',
-	body: 'No HIPAA certification claim. No hosted production. Telehealth uses demo Daily media when configured; it is not production telehealth or HIPAA video. Invoices are demo data; payments and claims are labeled boundaries.',
+	body: 'No HIPAA certification claim. No hosted production. Telehealth uses demo Daily media when configured; it is not production telehealth or HIPAA video. Invoices are demo data; demo payments use an in-process adapter; claims are labeled envelopes, not EDI submission, not hosted payments.',
 } as const;
 
 export const MARKETING_DEMO_LOGIN_PREVIEW = {

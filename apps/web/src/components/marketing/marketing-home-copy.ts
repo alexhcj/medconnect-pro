@@ -25,7 +25,7 @@ export const MARKETING_HOME_MODULES = {
 		{
 			title: 'Billing',
 			description:
-				'Invoice list and detail. Payments and claims are labeled boundaries.',
+				'Invoice list and detail. Demo payments use an in-process adapter. Claims are labeled envelopes, not EDI submission.',
 		},
 		{
 			title: 'Analytics',
@@ -58,7 +58,7 @@ export const MARKETING_HOME_WORKFLOW = {
 		{
 			title: 'Review invoices and audit',
 			description:
-				'Billing invoices are real demo data; payments stay labeled boundaries.',
+				'Billing invoices are real demo data; demo payments use an in-process adapter.',
 		},
 	],
 } as const;
