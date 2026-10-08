@@ -84,7 +84,7 @@ Audit sensitive actions such as:
 - clinical changes;
 - document access;
 - appointment changes;
-- telehealth session create, join, and end;
+- telehealth session create, join, media-token mint, room delete, and end;
 - billing changes;
 - notification preference updates (no title or body in the audit row);
 - administrative security changes.
@@ -120,8 +120,10 @@ Secrets never belong in:
 
 Classification (public / environment-specific / secret) is
 [environment-configuration.md](../contracts/environment-configuration.md). Current application
-secrets are `DATABASE_URL` and `DATABASE_ADMIN_URL` only. Do not invent JWT, payment, or OAuth
-client secrets that the application does not use.
+secrets are `DATABASE_URL`, `DATABASE_ADMIN_URL`, and optional `DAILY_API_KEY` (API-only; unset
+uses the Fake Daily adapter). Do not invent JWT, payment, or OAuth client secrets that the
+application does not use. Meeting tokens and `DAILY_API_KEY` must not appear in audit rows, logs,
+Git, or docs.
 
 Use environment variables locally (`APP_ENV=local`). Hosted preview and production retrieve
 `DATABASE_URL` and `DATABASE_ADMIN_URL` from AWS Secrets Manager JSON secrets

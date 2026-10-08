@@ -44,7 +44,7 @@ account numbers), `patient_documents` (tenant-owned file metadata keyed by `prac
 `notification_preferences` (tenant-owned in-app inbox and channel flags keyed by `practice_id`
 and recipient/user; email/SMS ledger rows are not a live carrier), and `audit_events` (actor,
 tenant, action, resource type/id, correlation; no payload). Authentication, authenticated denials, patient
-access/mutations, appointment mutations, clinical creates, telehealth session create/join/end,
+access/mutations, appointment mutations, clinical creates, telehealth session create/join/media-token/end,
 billing invoice create and payment records, document list/upload/download, and notification
 preference updates write rows. Restricted HTTP list is
 [SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,

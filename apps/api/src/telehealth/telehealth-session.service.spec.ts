@@ -72,6 +72,7 @@ function sessionRow(overrides: Partial<TelehealthSession> = {}): TelehealthSessi
 		waitingStartedAt: new Date(),
 		joinedAt: null,
 		endedAt: null,
+		dailyRoomName: null,
 		synthetic: true,
 		createdAt: new Date(),
 		updatedAt: new Date(),
@@ -99,16 +100,27 @@ function harness(role: PracticeRole, userId = actorId) {
 	const audit = {
 		record: vi.fn().mockResolvedValue({}),
 	};
+	const daily = {
+		createOrGetRoom: vi.fn(async ({sessionId}: {sessionId: string}) => ({
+			roomName: `mcp-${sessionId}`,
+			roomUrl: `https://unconfigured.invalid/mcp-${sessionId}`,
+		})),
+		mintMeetingToken: vi.fn(async ({roomName}: {roomName: string}) => ({
+			token: `fake-meeting-token-${roomName}`,
+		})),
+		deleteRoom: vi.fn(async () => undefined),
+	};
 	const request = {correlationId: 'cid-telehealth'} as never;
 	const service = new TelehealthSessionService(
 		sessions as unknown as TelehealthSessionRepository,
 		appointments as unknown as AppointmentRepository,
 		patients as unknown as PatientRepository,
 		audit as unknown as AuditEventRepository,
+		daily as never,
 		tenant,
 		request,
 	);
-	return {service, sessions, appointments, patients, audit};
+	return {service, sessions, appointments, patients, audit, daily};
 }
 
 describe('TelehealthSessionService', () => {
@@ -224,5 +236,72 @@ describe('TelehealthSessionService', () => {
 		const again = await already.service.end(sessionId);
 		expect(again.state).toBe('ended');
 		expect(already.audit.record).not.toHaveBeenCalled();
+	});
+
+	it('mints a media token for visit participants, reuses the room, and omits the token from audit', async () => {
+		const provider = harness('PROVIDER', providerId);
+		const first = await provider.service.mintMediaToken(sessionId);
+		expect(first.roomUrl).toBe(`https://unconfigured.invalid/mcp-${sessionId}`);
+		expect(first.token).toBe(`fake-meeting-token-mcp-${sessionId}`);
+		expect(provider.sessions.save).toHaveBeenCalled();
+		expect(provider.audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: 'telehealth_session.media_token_minted',
+				resourceType: 'telehealth_session',
+				resourceId: sessionId,
+			}),
+		);
+		expect(JSON.stringify(provider.audit.record.mock.calls)).not.toContain(first.token);
+		expect(JSON.stringify(provider.audit.record.mock.calls)).not.toMatch(/Quinn/);
+
+		provider.sessions.getById.mockResolvedValue(
+			sessionRow({dailyRoomName: `mcp-${sessionId}`}),
+		);
+		provider.sessions.save.mockClear();
+		const second = await provider.service.mintMediaToken(sessionId);
+		expect(second.roomUrl).toBe(first.roomUrl);
+		expect(provider.sessions.save).not.toHaveBeenCalled();
+
+		const receptionist = harness('RECEPTIONIST');
+		await expect(receptionist.service.mintMediaToken(sessionId)).rejects.toBeInstanceOf(
+			PermissionDeniedError,
+		);
+
+		const nurse = harness('NURSE', nurseId);
+		await expect(nurse.service.mintMediaToken(sessionId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+		nurse.patients.isAssigned.mockResolvedValue(true);
+		await expect(nurse.service.mintMediaToken(sessionId)).resolves.toMatchObject({
+			roomUrl: first.roomUrl,
+		});
+	});
+
+	it('rejects media-token outside the join window and does not change session state', async () => {
+		const provider = harness('PROVIDER', providerId);
+		const future = appointmentRow(aroundNow(60 * 60 * 1000, 2 * 60 * 60 * 1000));
+		provider.sessions.getById.mockResolvedValue(sessionRow({appointment: future}));
+		await expect(provider.service.mintMediaToken(sessionId)).rejects.toBeInstanceOf(
+			SessionNotJoinableError,
+		);
+		expect(provider.daily.mintMeetingToken).not.toHaveBeenCalled();
+		const got = await provider.service.get(sessionId);
+		expect(got.state).toBe('waiting');
+	});
+
+	it('ends the Nest session even when Daily room delete fails', async () => {
+		const receptionist = harness('RECEPTIONIST');
+		receptionist.sessions.getById.mockResolvedValue(
+			sessionRow({dailyRoomName: `mcp-${sessionId}`}),
+		);
+		receptionist.daily.deleteRoom.mockRejectedValue(new Error('Daily timeout'));
+		const ended = await receptionist.service.end(sessionId);
+		expect(ended.state).toBe('ended');
+		expect(receptionist.audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({action: 'telehealth_session.ended', resourceId: sessionId}),
+		);
+		expect(receptionist.audit.record).not.toHaveBeenCalledWith(
+			expect.objectContaining({action: 'telehealth_session.media_room_deleted'}),
+		);
 	});
 });

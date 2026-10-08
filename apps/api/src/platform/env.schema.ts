@@ -88,6 +88,12 @@ export const envSchema = z
 			}
 			return value;
 		}, z.string().min(1).optional()),
+		DAILY_API_KEY: z.preprocess((value) => {
+			if (value === undefined || value === '') {
+				return undefined;
+			}
+			return value;
+		}, z.string().min(1).optional()),
 	})
 	.superRefine((env, ctx) => {
 		if (env.APP_ENV !== 'preview' && env.APP_ENV !== 'production') {

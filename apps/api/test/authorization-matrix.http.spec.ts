@@ -310,6 +310,13 @@ function buildCases(): MatrixCase[] {
 				expectedStatus: (h) => joinStatus(h, actor),
 			},
 			{
+				name: `${actor} POST telehealth media-token`,
+				actor,
+				method: 'post',
+				path: (harness) => `/telehealth/sessions/${harness.joinSessionId}/media-token`,
+				expectedStatus: (h) => joinStatus(h, actor),
+			},
+			{
 				name: `${actor} GET /billing/invoices`,
 				actor,
 				method: 'get',

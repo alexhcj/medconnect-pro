@@ -71,6 +71,27 @@ describe('envSchema', () => {
 		expect(parsed.data.NODE_ENV).toBe('development');
 		expect(parsed.data.DATABASE_URL).toBe(DEFAULT_DATABASE_URL);
 		expect(parsed.data.DATABASE_ADMIN_URL).toBe(DEFAULT_DATABASE_ADMIN_URL);
+		expect(parsed.data.DAILY_API_KEY).toBeUndefined();
+	});
+
+	it('treats an empty DAILY_API_KEY as unset and does not require it when hosted', () => {
+		const empty = envSchema.safeParse({DAILY_API_KEY: ''});
+		expect(empty.success).toBe(true);
+		if (empty.success) {
+			expect(empty.data.DAILY_API_KEY).toBeUndefined();
+		}
+
+		const hosted = envSchema.safeParse(hostedEnv());
+		expect(hosted.success).toBe(true);
+		if (hosted.success) {
+			expect(hosted.data.DAILY_API_KEY).toBeUndefined();
+		}
+
+		const set = envSchema.safeParse({DAILY_API_KEY: 'daily-secret'});
+		expect(set.success).toBe(true);
+		if (set.success) {
+			expect(set.data.DAILY_API_KEY).toBe('daily-secret');
+		}
 	});
 
 	it('allows NODE_ENV=test with APP_ENV=local', () => {

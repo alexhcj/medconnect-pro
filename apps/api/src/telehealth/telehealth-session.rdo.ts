@@ -61,3 +61,18 @@ export class TelehealthSessionCreateRequestRdo {
 	@ApiProperty({format: 'uuid'})
 	appointmentId!: string;
 }
+
+@ApiSchema({name: 'TelehealthMediaToken'})
+export class TelehealthMediaTokenRdo {
+	@ApiProperty({
+		example: 'https://unconfigured.invalid/mcp-00000000-0000-4000-8000-0000000000cc',
+		description: 'Daily room URL. Meeting access still requires the short-lived token.',
+	})
+	roomUrl!: string;
+
+	@ApiProperty({
+		example: 'fake-meeting-token',
+		description: 'Short-lived Daily meeting token. Clients must not persist it.',
+	})
+	token!: string;
+}

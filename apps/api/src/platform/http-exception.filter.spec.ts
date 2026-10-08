@@ -3,7 +3,11 @@ import {describe, expect, it} from 'vitest';
 import {InvalidCredentialsError, PermissionDeniedError} from '../identity/auth.errors.js';
 import {InvoiceAlreadyPaidError} from '../billing/billing.errors.js';
 import {AppointmentConflictError} from '../scheduling/appointment.errors.js';
-import {SessionAlreadyEndedError, SessionNotJoinableError} from '../telehealth/telehealth-session.errors.js';
+import {
+	DailyMediaUnavailableError,
+	SessionAlreadyEndedError,
+	SessionNotJoinableError,
+} from '../telehealth/telehealth-session.errors.js';
 import {PracticeUserNotFoundError} from '../practice/practice-user.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {EnvelopeExceptionFilter} from './http-exception.filter.js';
@@ -120,6 +124,18 @@ describe('EnvelopeExceptionFilter', () => {
 		expect(ended.getResult().statusCode).toBe(HttpStatus.CONFLICT);
 		expect(ended.getResult().body.error.code).toBe('SESSION_ENDED');
 		expect(JSON.stringify(ended.getResult().body)).not.toMatch(/Quinn|Avery/);
+	});
+
+	it('maps Daily media failures to a 502 envelope without token material', () => {
+		const {host, getResult} = createHost('cid-media');
+		filter.catch(new DailyMediaUnavailableError(), host);
+		const result = getResult();
+		expect(result.statusCode).toBe(HttpStatus.BAD_GATEWAY);
+		expect(result.body.error).toEqual({
+			code: 'MEDIA_UNAVAILABLE',
+			message: 'Live media is currently unavailable.',
+		});
+		expect(JSON.stringify(result.body)).not.toMatch(/Bearer|eyJ|DAILY_API_KEY/);
 	});
 
 	it('maps a paid invoice conflict to a 409 envelope without card data', () => {

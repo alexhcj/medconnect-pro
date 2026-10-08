@@ -140,7 +140,7 @@ They are not a live public deployment.
 
 ## Development status
 
-Application version **0.71.0**. Snapshot:
+Application version **0.72.0**. Snapshot:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md).
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).
@@ -152,8 +152,8 @@ Application version **0.71.0**. Snapshot:
 - **M11 shipped** (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005): Nest HttpOnly cookies, live
   cookie client, mock MFA UI, security-events HTTP/UI, and production-gap docs
   ([docs/security/](./docs/security/README.md)). Next product module is **M12 — Telehealth Media
-  Maturity** ([BE-016](./docs/tasks/backend/BE-016-telehealth-daily-media-token-http.md),
-  [FE-030](./docs/tasks/frontend/FE-030-daily-media-session-shell.md), pending). Local product
+  Maturity** ([BE-016](./docs/tasks/backend/BE-016-telehealth-daily-media-token-http.md) shipped,
+  [FE-030](./docs/tasks/frontend/FE-030-daily-media-session-shell.md) pending). Local product
   work does not wait on AWS.
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live

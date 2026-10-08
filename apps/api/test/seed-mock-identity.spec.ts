@@ -12,6 +12,7 @@ import {utcDateKey} from '../src/identity/seed-mock-identity-corpus.js';
 import {Appointment} from '../src/persistence/entities/appointment.entity.js';
 import {Invoice} from '../src/persistence/entities/invoice.entity.js';
 import {Notification} from '../src/persistence/entities/notification.entity.js';
+import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../src/persistence/entities/patient.entity.js';
 import {Practice} from '../src/persistence/entities/practice.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
@@ -117,6 +118,14 @@ describe('seed:mock-identity bounded corpus', () => {
 			where: {practiceId: practice!.id, userId: mfaNurse!.id},
 		});
 		expect(nurseMembership?.role).toBe('NURSE');
+		const avery = await dataSource.getRepository(Patient).findOne({
+			where: {practiceId: practice!.id, email: 'avery.quinn@synthetic.example'},
+		});
+		expect(avery).toBeTruthy();
+		const nurseAssignment = await dataSource.getRepository(PatientAssignment).findOne({
+			where: {patientId: avery!.id, userId: mfaNurse!.id},
+		});
+		expect(nurseAssignment).toBeTruthy();
 		expect(new Set(first.patientEmails).size).toBe(first.patientEmails.length);
 		expect(first.nonSyntheticPatients).toBe(0);
 		expect(first.nonSyntheticAppointments).toBe(0);

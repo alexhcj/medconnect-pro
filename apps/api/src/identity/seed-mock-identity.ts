@@ -13,6 +13,7 @@ import {Invoice} from '../persistence/entities/invoice.entity.js';
 import {Medication} from '../persistence/entities/medication.entity.js';
 import {Notification} from '../persistence/entities/notification.entity.js';
 import {PatientDocument} from '../persistence/entities/patient-document.entity.js';
+import {PatientAssignment} from '../persistence/entities/patient-assignment.entity.js';
 import {Patient} from '../persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {Practice} from '../persistence/entities/practice.entity.js';
@@ -199,6 +200,7 @@ export async function seedMockIdentity(): Promise<void> {
 		const practices = dataSource.getRepository(Practice);
 		const memberships = dataSource.getRepository(PracticeMembership);
 		const patients = dataSource.getRepository(Patient);
+		const assignments = dataSource.getRepository(PatientAssignment);
 		const appointments = dataSource.getRepository(Appointment);
 		const telehealthSessions = dataSource.getRepository(TelehealthSession);
 		const historyRows = dataSource.getRepository(ClinicalHistory);
@@ -283,6 +285,17 @@ export async function seedMockIdentity(): Promise<void> {
 		await parkAppointmentByNotes(appointments, practice.id, TODAY_OFFICE_NOTES, now);
 
 		if (seededPatient) {
+			const nurseAssignment = await assignments.findOne({
+				where: {practiceId: practice.id, patientId: seededPatient.id, userId: mfaNurse.id},
+			});
+			if (!nurseAssignment) {
+				await assignments.save({
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					userId: mfaNurse.id,
+				});
+			}
+
 			await upsertAppointmentByNotes(appointments, {
 				practiceId: practice.id,
 				providerId: provider.id,
@@ -575,7 +588,7 @@ export async function seedMockIdentity(): Promise<void> {
 		}
 
 		Logger.log(
-			`Seeded synthetic practice admin, provider ${provider.id}, MFA nurse ${mfaNurse.id}, demo patients, appointments, an in-window telehealth visit, clinical rows, a document, invoices, and inbox rows`,
+			`Seeded synthetic practice admin, provider ${provider.id}, MFA nurse ${mfaNurse.id} assigned to Avery Quinn, demo patients, appointments, an in-window telehealth visit, clinical rows, a document, invoices, and inbox rows`,
 			'MockIdentity',
 		);
 	} finally {

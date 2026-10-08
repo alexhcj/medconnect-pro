@@ -61,11 +61,13 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | --- | --- | --- |
 | `DATABASE_URL` | api | Runtime Nest role (`medconnect_app`). Subject to RLS. |
 | `DATABASE_ADMIN_URL` | api | Table owner for migrations and seed. |
+| `DAILY_API_KEY` | api | Daily REST key for media-token minting. Unset selects the Fake adapter. Never `NEXT_PUBLIC_*`. Not in the current Secrets Manager JSON (hosted injection is M9, paused). |
 
 No JWT signing secret, payment processor key, or OAuth client secret exists in the application.
-Do not invent them here. `NEXT_PUBLIC_*` must never hold `DATABASE_*` or AWS keys. Amplify
+Do not invent those here. `DAILY_API_KEY` is the only third-party API secret in this catalog.
+`NEXT_PUBLIC_*` must never hold `DATABASE_*`, `DAILY_API_KEY`, or AWS keys. Amplify
 configuration is public frontend values only. The Amplify console must not hold `DATABASE_*`
-values or Secrets Manager ARNs as frontend environment variables.
+values, `DAILY_API_KEY`, or Secrets Manager ARNs as frontend environment variables.
 
 Plane `PLANE_API_KEY` is developer tooling, not application runtime, and must not be injected
 into ECS or Amplify.

@@ -49,6 +49,9 @@ export class TelehealthSession {
 	@Column({name: 'ended_at', type: 'timestamptz', nullable: true})
 	endedAt!: Date | null;
 
+	@Column({name: 'daily_room_name', type: 'varchar', length: 128, nullable: true})
+	dailyRoomName!: string | null;
+
 	@Column({type: 'boolean', default: true})
 	synthetic!: boolean;
 

@@ -3,11 +3,11 @@ id: BE-016
 type: task
 area: backend
 feature: telehealth
-status: pending
+status: implemented
 priority: high
 estimate: 4
 dependencies: [BE-006, BE-009]
-related_adrs: [ADR-002-tenant-isolation.md]
+related_adrs: [ADR-002-tenant-isolation.md, ADR-013-daily-custom-call-object.md]
 related_docs:
   [
     ../../architecture/backend-architecture.md,
@@ -18,11 +18,12 @@ related_docs:
     ../../contracts/environment-configuration.md,
     ../../contracts/identity-and-access.md,
     ../../product/telehealth.md,
+    ../../decisions/ADR-013-daily-custom-call-object.md,
     BE-006-telehealth-session-api.md,
     BE-009-identity-and-access-http.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -101,15 +102,15 @@ Implements / extends `telehealth.live-media` (HTTP half).
 
 ## Acceptance Criteria
 
-- [ ] Authorized visit participant receives `roomUrl` and a meeting token; unauthorized and
+- [x] Authorized visit participant receives `roomUrl` and a meeting token; unauthorized and
       cross-tenant callers get the existing not-found or forbidden pattern (no oracle)
-- [ ] Receptionist cannot mint a media token
-- [ ] Tokens are not written to audit rows or logs
-- [ ] Unset `DAILY_API_KEY` uses the Fake adapter; HTTP tests pass in CI without Daily
-- [ ] Join, end, and grace behavior from BE-006 is unchanged
-- [ ] OpenAPI includes `POST /telehealth/sessions/:id/media-token`
-- [ ] Environment catalog lists `DAILY_API_KEY` as an API-only secret
-- [ ] ADR-013 is accepted in `docs/decisions/`
+- [x] Receptionist cannot mint a media token
+- [x] Tokens are not written to audit rows or logs
+- [x] Unset `DAILY_API_KEY` uses the Fake adapter; HTTP tests pass in CI without Daily
+- [x] Join, end, and grace behavior from BE-006 is unchanged
+- [x] OpenAPI includes `POST /telehealth/sessions/:id/media-token`
+- [x] Environment catalog lists `DAILY_API_KEY` as an API-only secret
+- [x] ADR-013 is accepted in `docs/decisions/`
 
 ## Dependencies
 
@@ -147,7 +148,10 @@ Writing this spec is not a version bump. Shipping this slice is **MINOR**.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `DailyMediaPort` (Fake vs REST), `daily_room_name` migration,
+  `POST /telehealth/sessions/:id/media-token`, best-effort Daily delete on end, ADR-013.
+- Tests: port/adapter unit tests, service mint/reuse/end-on-Daily-failure, HTTP cookie-or-bearer
+  surface via Bearer in `telehealth.http.spec.ts`, OpenAPI cookie-or-bearer assert.
 - PR:
-- Notes:
+- Notes: Version 0.71.0 → 0.72.0 (MINOR). Product `telehealth.live-media` stays planned until
+  FE-030. Plane MEDCONNECT-87 is a human update.

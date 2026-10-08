@@ -2831,9 +2831,91 @@
         ]
       }
     },
+    "/telehealth/sessions/{id}/media-token": {
+      "post": {
+        "description": "Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists cannot mint. Uses the same join window as POST .../join. Lazy-creates a private Daily room on first mint and reuses it afterward. This is media transport, not the application session. Join does not mint a token.",
+        "operationId": "TelehealthSessionController_mediaToken",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelehealthMediaToken"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mint a Daily meeting token for a telehealth session",
+        "tags": [
+          "telehealth"
+        ]
+      }
+    },
     "/telehealth/sessions/{id}/end": {
       "post": {
-        "description": "Requires write:appointments. Closes the application visit for all participants. Idempotent when the session is already ended.",
+        "description": "Requires write:appointments. Closes the application visit for all participants. Idempotent when the session is already ended. Best-effort deletes the Daily room; Nest ended remains source of truth if Daily fails.",
         "operationId": "TelehealthSessionController_end",
         "parameters": [
           {
@@ -5110,6 +5192,25 @@
           "state",
           "waitingStartedAt",
           "synthetic"
+        ]
+      },
+      "TelehealthMediaToken": {
+        "type": "object",
+        "properties": {
+          "roomUrl": {
+            "type": "string",
+            "example": "https://unconfigured.invalid/mcp-00000000-0000-4000-8000-0000000000cc",
+            "description": "Daily room URL. Meeting access still requires the short-lived token."
+          },
+          "token": {
+            "type": "string",
+            "example": "fake-meeting-token",
+            "description": "Short-lived Daily meeting token. Clients must not persist it."
+          }
+        },
+        "required": [
+          "roomUrl",
+          "token"
         ]
       },
       "InvoiceLineItem": {

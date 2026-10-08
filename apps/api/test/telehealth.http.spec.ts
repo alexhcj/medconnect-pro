@@ -486,6 +486,133 @@ describe('telehealth session HTTP', () => {
 		expect(JSON.stringify(mismatch.body)).not.toContain(practiceB.id);
 	});
 
+	it('mints a media token for visit participants and forbids receptionist and cross-tenant callers', async () => {
+		const desk = await login(receptionist.email);
+		await cancelOpenAppointments(desk);
+		const appointment = await createAppointment(desk, {
+			start: isoFromNow(-3 * 60 * 1000),
+			end: isoFromNow(45 * 60 * 1000),
+		});
+		const created = await request(app.getHttpServer())
+			.post('/telehealth/sessions')
+			.set('Authorization', `Bearer ${desk}`)
+			.send({appointmentId: appointment.id})
+			.expect(201);
+
+		const receptionistMint = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/media-token`)
+			.set('Authorization', `Bearer ${desk}`)
+			.expect(403);
+		expect(receptionistMint.body.error.code).toBe('FORBIDDEN');
+
+		const providerToken = await login(provider.email);
+		const minted = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/media-token`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.set('X-Correlation-ID', `cid-th-media-${suffix}`)
+			.expect(200);
+		expect(minted.body.roomUrl).toEqual(expect.stringMatching(/^https:\/\//));
+		expect(typeof minted.body.token).toBe('string');
+		expect(minted.body.token.length).toBeGreaterThan(0);
+		expect(minted.body).not.toHaveProperty('dailyRoomName');
+
+		const row = await dataSource.getRepository(TelehealthSession).findOneByOrFail({
+			id: created.body.id,
+		});
+		expect(row.dailyRoomName).toBeTruthy();
+
+		const again = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/media-token`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(200);
+		expect(again.body.roomUrl).toBe(minted.body.roomUrl);
+		const reused = await dataSource.getRepository(TelehealthSession).findOneByOrFail({
+			id: created.body.id,
+		});
+		expect(reused.dailyRoomName).toBe(row.dailyRoomName);
+
+		const mintAudits = await dataSource.getRepository(AuditEvent).find({
+			where: {
+				practiceId: practiceA.id,
+				resourceId: created.body.id,
+				action: 'telehealth_session.media_token_minted',
+			},
+		});
+		expect(mintAudits[0]?.correlationId).toBe(`cid-th-media-${suffix}`);
+		expect(JSON.stringify(mintAudits)).not.toContain(minted.body.token);
+		expect(JSON.stringify(mintAudits)).not.toContain(`Avery Tele${suffix}`);
+
+		const patientToken = await login(portalUser.email);
+		const patientMint = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/media-token`)
+			.set('Authorization', `Bearer ${patientToken}`)
+			.expect(200);
+		expect(patientMint.body.roomUrl).toBe(minted.body.roomUrl);
+
+		const nurseToken = await login(nurse.email);
+		const existingAssignment = await dataSource.getRepository(PatientAssignment).findOne({
+			where: {patientId: patient.id, userId: nurse.id},
+		});
+		if (!existingAssignment) {
+			await dataSource.getRepository(PatientAssignment).save({
+				practiceId: practiceA.id,
+				patientId: patient.id,
+				userId: nurse.id,
+			});
+		}
+		const nurseMint = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/media-token`)
+			.set('Authorization', `Bearer ${nurseToken}`)
+			.expect(200);
+		expect(nurseMint.body.token).toEqual(expect.any(String));
+
+		const foreignAppointment = await dataSource.getRepository(Appointment).save({
+			practiceId: practiceB.id,
+			patientId: foreignPatient.id,
+			providerUserId: outsider.id,
+			startAt: new Date(Date.now() + 10 * 60 * 60 * 1000),
+			endAt: new Date(Date.now() + 11 * 60 * 60 * 1000),
+			type: 'telehealth',
+			state: 'scheduled',
+			synthetic: true,
+		});
+		const foreignSession = await dataSource.getRepository(TelehealthSession).save({
+			practiceId: practiceB.id,
+			appointmentId: foreignAppointment.id,
+			state: 'waiting',
+			waitingStartedAt: new Date(),
+			synthetic: true,
+		});
+		const foreign = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${foreignSession.id}/media-token`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(404);
+		expect(foreign.body.error.code).toBe('NOT_FOUND');
+		expect(JSON.stringify(foreign.body)).not.toContain(practiceB.id);
+
+		const mismatch = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/media-token`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.send({practiceId: practiceB.id})
+			.expect(403);
+		expect(mismatch.body.error.code).toBe('FORBIDDEN');
+		expect(JSON.stringify(mismatch.body)).not.toContain(practiceB.id);
+
+		const ended = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/end`)
+			.set('Authorization', `Bearer ${desk}`)
+			.expect(200);
+		expect(ended.body.state).toBe('ended');
+		const deleteAudits = await dataSource.getRepository(AuditEvent).find({
+			where: {
+				practiceId: practiceA.id,
+				resourceId: created.body.id,
+				action: 'telehealth_session.media_room_deleted',
+			},
+		});
+		expect(deleteAudits.length).toBeGreaterThan(0);
+	});
+
 	it('denies create from a nurse and a patient user', async () => {
 		const desk = await login(receptionist.email);
 		await cancelOpenAppointments(desk);

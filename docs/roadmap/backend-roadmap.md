@@ -26,9 +26,9 @@ Domain order (not historical ship order). Join to demo milestones in the
     ([BE-015](../tasks/backend/BE-015-security-events-http.md), shipped), production-gap docs
     ([SEC-005](../tasks/security/SEC-005-production-gap-documentation.md), shipped).
 15. Telehealth media (M12): Daily media token HTTP
-    ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md), pending).
-    Frontend Daily session shell is [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md).
-    Not Socket.IO signaling, chat, or recording.
+    ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md), shipped).
+    Frontend Daily session shell is [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)
+    (pending). Not Socket.IO signaling, chat, or recording.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.
@@ -39,6 +39,6 @@ AWS account unavailable (close audit found no missing IDs; not closed; not cance
 INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). **M10** is
 shipped (DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026). **M11** is shipped
 (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005). Next product module is **M12 — Telehealth
-Media Maturity** ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
-[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md), pending). Local product
+Media Maturity** ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md)
+shipped, [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md) pending). Local product
 work does not wait on AWS.

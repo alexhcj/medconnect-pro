@@ -32,6 +32,7 @@ import {
 import {NotificationNotFoundError} from '../notifications/notification.errors.js';
 import {PracticeUserNotFoundError} from '../practice/practice-user.errors.js';
 import {
+	DailyMediaUnavailableError,
 	InvalidTelehealthAppointmentError,
 	SessionAlreadyEndedError,
 	SessionNotJoinableError,
@@ -209,6 +210,15 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 				error: {
 					code: 'SESSION_ENDED',
 					message: 'A telehealth session for this appointment has already ended.',
+				},
+			};
+		}
+		if (exception instanceof DailyMediaUnavailableError) {
+			return {
+				status: HttpStatus.BAD_GATEWAY,
+				error: {
+					code: 'MEDIA_UNAVAILABLE',
+					message: 'Live media is currently unavailable.',
 				},
 			};
 		}

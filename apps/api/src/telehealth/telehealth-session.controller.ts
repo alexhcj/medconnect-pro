@@ -13,6 +13,7 @@ import {
 import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {
+	TelehealthMediaTokenRdo,
 	TelehealthSessionCreateRequestRdo,
 	TelehealthSessionRdo,
 } from './telehealth-session.rdo.js';
@@ -79,12 +80,28 @@ export class TelehealthSessionController {
 		return this.sessions.join(params.id);
 	}
 
+	@Post(':id/media-token')
+	@HttpCode(200)
+	@ApiOperation({
+		summary: 'Mint a Daily meeting token for a telehealth session',
+		description:
+			'Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists cannot mint. Uses the same join window as POST .../join. Lazy-creates a private Daily room on first mint and reuses it afterward. This is media transport, not the application session. Join does not mint a token.',
+	})
+	@ApiOkResponse({type: TelehealthMediaTokenRdo})
+	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})
+	@ApiConflictResponse({type: ErrorEnvelopeRdo})
+	mediaToken(
+		@Param({schema: telehealthSessionIdParamsSchema}) params: TelehealthSessionIdParams,
+	): Promise<TelehealthMediaTokenRdo> {
+		return this.sessions.mintMediaToken(params.id);
+	}
+
 	@Post(':id/end')
 	@HttpCode(200)
 	@ApiOperation({
 		summary: 'End a telehealth session',
 		description:
-			'Requires write:appointments. Closes the application visit for all participants. Idempotent when the session is already ended.',
+			'Requires write:appointments. Closes the application visit for all participants. Idempotent when the session is already ended. Best-effort deletes the Daily room; Nest ended remains source of truth if Daily fails.',
 	})
 	@ApiOkResponse({type: TelehealthSessionRdo})
 	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})

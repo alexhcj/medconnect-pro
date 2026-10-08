@@ -142,6 +142,7 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 	assertCookieOrBearer(document, '/telehealth/sessions', 'post');
 	assertCookieOrBearer(document, '/telehealth/sessions/{id}', 'get');
 	assertCookieOrBearer(document, '/telehealth/sessions/{id}/join', 'post');
+	assertCookieOrBearer(document, '/telehealth/sessions/{id}/media-token', 'post');
 	assertCookieOrBearer(document, '/telehealth/sessions/{id}/end', 'post');
 	assertCookieOrBearer(document, '/dashboard/overview', 'get');
 	const patientById = document.paths?.['/patients/{id}'];

@@ -6,7 +6,7 @@ area: telehealth
 marketing_path: /platform/telehealth
 status: partial
 claim: "Appointment-linked session shell. Not live video."
-related_tasks: [FE-007, FE-014, BE-006]
+related_tasks: [FE-007, FE-014, BE-006, BE-016]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md
@@ -31,7 +31,7 @@ capabilities:
     demo: not in the demo
     public: no
     planned_next: Daily / WebRTC, signaling
-    related_tasks: []
+    related_tasks: [BE-016]
   - id: telehealth.chat-recording
     name: In-session chat, recording, and transcription
     status: planned

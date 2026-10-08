@@ -69,8 +69,10 @@ Response concepts:
 
 ## Telehealth session
 
-Application session over a telehealth appointment. This is not a media/WebRTC room and does not
-mint join tokens.
+Application session over a telehealth appointment. Create, get, join, and end do not mint Daily
+meeting tokens. Media is a separate transport: `POST .../media-token` returns an ephemeral
+`roomUrl` and meeting token. The session row may persist only an opaque `daily_room_name`. Meeting
+tokens are never stored.
 
 Request concepts:
 
@@ -85,11 +87,19 @@ Response concepts:
 - waiting/join/end timestamps
 - synthetic (always true)
 
+Media-token response concepts:
+
+- roomUrl
+- short-lived meeting token (not persisted)
+
 State machine:
 
 - `waiting` after create
 - `in_session` after an authorized participant joins
 - `ended` after `POST .../end` or after lazy grace expiry
+
+Media-token does not change that state machine. Token TTL is bounded by the join window (appointment
+end plus 15 minutes). Nest `ended` remains source of truth if Daily room delete fails.
 
 One session row per appointment. Creating again returns the existing non-ended session. Recreating
 after `ended` is rejected.

@@ -141,6 +141,9 @@ catalog without new permission strings:
   `read:assigned_patients` for nurses, `read:own_patient` for portal users).
 - **Join:** visit participant only — the appointment’s provider, the portal patient, or an assigned
   nurse. Receptionists may create and end sessions but cannot join.
+- **Media token** ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md)): the same
+  visit-participant rule as join. Receptionists cannot mint. Client `practiceId` is ignored for
+  authorization and rejected on mismatch.
 
 Unknown and cross-tenant session ids return the same not-found response as other tenant-owned
 resources.

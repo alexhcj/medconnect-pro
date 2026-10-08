@@ -88,12 +88,14 @@ cards from fixtures.
 ## Telehealth
 
 These routes are the application session for an appointment-linked visit, not a media room. Media
-transport (Daily/WebRTC) is a separate boundary. `POST .../end` closes the visit for all
-participants; there is no participant-leave route yet.
+transport (Daily/WebRTC) is a separate boundary. `POST .../media-token` mints a short-lived Daily
+meeting token after the same visit-participant authorization as join. `POST .../end` closes the
+visit for all participants; there is no participant-leave route yet.
 
 - `POST /telehealth/sessions`
 - `GET /telehealth/sessions/:id`
 - `POST /telehealth/sessions/:id/join`
+- `POST /telehealth/sessions/:id/media-token`
 - `POST /telehealth/sessions/:id/end`
 
 ## Billing

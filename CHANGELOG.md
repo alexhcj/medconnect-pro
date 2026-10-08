@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.72.0] - 2026-10-07
+
+### Added
+
+- Telehealth Daily media token HTTP (BE-016): `POST /telehealth/sessions/:id/media-token` mints a
+  short-lived Daily meeting token after the same visit-participant authorization as join. Nest
+  holds `DAILY_API_KEY`; unset key uses a Fake adapter so CI needs no Daily credentials. Session
+  rows persist only an opaque room name. ADR-013 records Daily custom call object (not Prebuilt,
+  not Socket.IO media). Live camera UI remains FE-030; public copy still must not claim live video.
+
 ## [0.71.0] - 2026-10-07
 
 ### Added

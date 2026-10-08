@@ -25,3 +25,10 @@ export class SessionAlreadyEndedError extends Error {
 		this.name = 'SessionAlreadyEndedError';
 	}
 }
+
+export class DailyMediaUnavailableError extends Error {
+	constructor() {
+		super('Live media is currently unavailable.');
+		this.name = 'DailyMediaUnavailableError';
+	}
+}
