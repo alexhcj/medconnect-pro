@@ -29,6 +29,10 @@ Domain order (not historical ship order). Join to demo milestones in the
     ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md), shipped).
     Frontend Daily session shell is [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)
     (shipped). Not Socket.IO signaling, chat, or recording.
+16. Billing payments/claims UX (M13): no new Nest routes. Frontend join is
+    [FE-031](../tasks/frontend/FE-031-record-demo-payment.md) and
+    [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md) on shipped
+    [BE-007](../tasks/backend/BE-007-billing-api.md). Not Stripe SDK or EDI generation.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.

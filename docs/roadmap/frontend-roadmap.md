@@ -90,3 +90,11 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - Daily media in the session shell ([FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md),
   shipped; depends on [BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md), shipped).
   Mock mode keeps placeholders. Not chat, recording, or Socket.IO.
+
+## Slice 13 — Billing payments and claims UX (M13)
+
+- Record demo payment ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md); pending;
+  depends on [FE-015](../tasks/frontend/FE-015-billing-ui-nest-api.md) and
+  [BE-007](../tasks/backend/BE-007-billing-api.md)).
+- Claims envelope list ([FE-032](../tasks/frontend/FE-032-claims-envelope-list.md); pending;
+  depends on FE-031). Not hosted Stripe, EDI 837 submission, or invoice-create UI.

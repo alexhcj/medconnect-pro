@@ -47,6 +47,8 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-028 — Mock MFA challenge UI
 - FE-029 — Security-events UI
 - FE-030 — Daily media in the telehealth session shell
+- FE-031 — Record demo payment on Nest payment adapter
+- FE-032 — Claims envelope list on Nest claims API
 
 ## Backend
 
@@ -116,3 +118,8 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 
 - BE-016 — Telehealth Daily media token HTTP
 - FE-030 — Daily media in the telehealth session shell
+
+## Product (M13)
+
+- FE-031 — Record demo payment on Nest payment adapter
+- FE-032 — Claims envelope list on Nest claims API
