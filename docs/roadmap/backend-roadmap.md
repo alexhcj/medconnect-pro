@@ -33,6 +33,11 @@ Domain order (not historical ship order). Join to demo milestones in the
     [FE-031](../tasks/frontend/FE-031-record-demo-payment.md) and
     [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md) on shipped
     [BE-007](../tasks/backend/BE-007-billing-api.md). Not Stripe SDK or EDI generation.
+17. OAuth / external identity (M14): contract and ADR-014
+    ([SEC-006](../tasks/security/SEC-006-oidc-bff-contract-and-adr.md)), persistence
+    ([DATA-003](../tasks/backend/DATA-003-external-identity-persistence.md)), Nest OIDC client and
+    session issuance ([BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md)); all
+    pending. Reuses the BE-014 cookie session. Not NextAuth, Redis, or rate limiting.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.

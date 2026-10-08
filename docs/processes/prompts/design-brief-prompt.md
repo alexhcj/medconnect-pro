@@ -7,7 +7,7 @@ Related: [design-to-development-flow.md](../flows/design-to-development-flow.md)
 
 ---
 
-Read the current project documentation and FE-023 specification.
+Read the current project documentation and [TASK-ID] specification.
 
 Before generating a design:
 

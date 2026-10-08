@@ -123,3 +123,10 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 
 - FE-031 — Record demo payment on Nest payment adapter
 - FE-032 — Claims envelope list on Nest claims API
+
+## Product (M14)
+
+- SEC-006 — OIDC BFF contract and ADR-014
+- DATA-003 — External identity and OAuth flow-state persistence
+- BE-017 — Nest OIDC client, mapping, and session issuance
+- FE-033 — OAuth login UX and session hydration

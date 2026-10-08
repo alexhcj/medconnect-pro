@@ -100,3 +100,9 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
   [BE-007](../tasks/backend/BE-007-billing-api.md)).
 - Claims envelope list ([FE-032](../tasks/frontend/FE-032-claims-envelope-list.md); shipped;
   depends on FE-031). Not hosted Stripe, EDI 837 submission, or invoice-create UI.
+
+## Slice 14 — OAuth / external identity (M14)
+
+- OAuth login UX and session hydration ([FE-033](../tasks/frontend/FE-033-oauth-login-ux.md);
+  pending; depends on [BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md); design
+  required). Not NextAuth or account-linking UI.

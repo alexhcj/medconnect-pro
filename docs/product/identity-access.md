@@ -6,7 +6,7 @@ area: identity-access
 marketing_path: /login
 status: partial
 claim: "Mock IdP sessions and labeled mock MFA. Not production OAuth or production MFA."
-related_tasks: [FE-010, BE-009, BE-014, SEC-001, FE-027, FE-028]
+related_tasks: [FE-010, BE-009, BE-014, SEC-001, FE-027, FE-028, SEC-006, DATA-003, BE-017, FE-033]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md
@@ -35,7 +35,7 @@ capabilities:
     status: planned
     demo: not in the demo
     public: no
-    related_tasks: []
+    related_tasks: [SEC-006, DATA-003, BE-017, FE-033]
 ---
 
 # Identity and access
