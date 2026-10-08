@@ -4,9 +4,11 @@ import type {ReactNode} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {Button} from '@/components/ui/button';
+import {DailyMediaSession} from '@/components/telehealth/daily-media-session';
 import {MediaPlaceholders} from '@/components/telehealth/media-placeholders';
 import {TELEHEALTH_DEMO_NOTICE, TelehealthAppointmentLinkage} from '@/components/telehealth/telehealth-appointment-linkage';
 import {WaitingRoom} from '@/components/telehealth/waiting-room';
+import {isMockMode} from '@/lib/api/mocks/runtime';
 import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
 import {
 	useJoinTelehealthSession,
@@ -37,6 +39,7 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 	const visit = useTelehealthSession(sessionId, canAccess);
 	const join = useJoinTelehealthSession();
 	const leave = useLeaveTelehealthSession();
+	const mockMode = isMockMode();
 
 	if (isAuthLoading) {
 		return (
@@ -103,7 +106,7 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 						/>
 					)}
 
-					{visit.data.state === 'in_session' && (
+					{visit.data.state === 'in_session' && mockMode && (
 						<div className="space-y-4">
 							<MediaPlaceholders />
 							{leave.isError && (
@@ -126,6 +129,25 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 								End session
 							</Button>
 						</div>
+					)}
+
+					{visit.data.state === 'in_session' && !mockMode && (
+						<DailyMediaSession
+							sessionId={sessionId}
+							session={visit.data}
+							userRole={authSession?.userRole}
+							isEnding={leave.isPending}
+							endError={
+								leave.isError
+									? telehealthActionErrorMessage(leave.error, 'Unable to end this session.')
+									: undefined
+							}
+							onEnd={() =>
+								leave.mutate(sessionId, {
+									onSuccess: () => router.push('/dashboard/telehealth'),
+								})
+							}
+						/>
 					)}
 				</div>
 			)}

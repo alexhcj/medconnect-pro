@@ -33,12 +33,15 @@ test.describe('Live telehealth session shell', () => {
 		await expect(page.getByText('Dr. Jordan Ellis')).toBeVisible();
 
 		await page.getByRole('button', {name: 'Join session'}).click();
-		await expect(page.getByText('Demo placeholder. Not a live video connection.')).toBeVisible();
+		await expect(
+			page
+				.getByText('Live media is not configured in this environment')
+				.or(page.getByText('Connected', {exact: true})),
+		).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Camera'})).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Microphone'})).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Screen share'})).toBeVisible();
 		await expect(page.locator('iframe')).toHaveCount(0);
-		await expect(page.locator('video')).toHaveCount(0);
 
 		await page.getByRole('button', {name: 'End session'}).click();
 		await expect(page).toHaveURL(/\/dashboard\/telehealth$/);

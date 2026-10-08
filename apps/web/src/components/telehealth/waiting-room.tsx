@@ -14,8 +14,8 @@ export function WaitingRoom({onJoin, isJoining, errorMessage}: WaitingRoomProps)
 			<div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
 				<h2 className="text-lg font-semibold text-gray-900">Waiting room</h2>
 				<p className="mt-2 text-sm text-gray-700">
-					You are in the waiting room. Join the session when you are ready. This is not a live video
-					connection.
+					You are in the waiting room. Join the session when you are ready. Camera, microphone, and
+					screen share start after you join.
 				</p>
 			</div>
 			{errorMessage && (

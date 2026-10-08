@@ -21,7 +21,7 @@ Healthcare-oriented and HIPAA-oriented describe demonstrated engineering pattern
 ## Screenshots
 
 Synthetic demo screens from the authenticated app. Not a production medical record. Dashboard
-cards are live Nest aggregates in `dev:real` (fixture cards when mocks are on); telehealth is a session shell (not live video); identity is a labeled mock IdP.
+cards are live Nest aggregates in `dev:real` (fixture cards when mocks are on); telehealth is a session shell with demo Daily media when configured; identity is a labeled mock IdP.
 
 <p align="center">
   <img src="./apps/web/public/marketing/patients.png" alt="Patients directory with synthetic demo records" width="100%">
@@ -70,7 +70,7 @@ What you can demonstrate **today**. Statused catalog:
 | Identity | Mock IdP login, logout, Nest HttpOnly cookies, opaque bearer JSON for machine clients, and labeled mock MFA | Not production OAuth / OIDC or production MFA |
 | Patients | Directory, profiles, clinical lists, document list/download | Synthetic data only; no external EHR |
 | Scheduling | Calendar, appointments, provider availability | No waitlist or check-in / check-out |
-| Telehealth | Create, join, and end an appointment-linked session shell | Not live video, Daily media, chat, or recording |
+| Telehealth | Create, join, and end an appointment-linked session shell with demo Daily media when configured | Not production telehealth, HIPAA video, chat, or recording |
 | Billing | Invoice list and detail | Not hosted payments or claims submission |
 | Analytics | Live Nest dashboard overview cards | Synthetic demo aggregates; not a warehouse or HIPAA analytics |
 | Administration | User directory, audit viewer, role assignment, and tenant-scoped security-events viewer | Not a permission-matrix editor, SIEM, or HIPAA audit export |
@@ -89,8 +89,8 @@ SMS, or email delivery.
 - Tailwind CSS, Headless UI, Lucide React
 - Recharts, React Big Calendar
 
-Daily SDK and Socket.IO client are in the tree as boundaries. Live telehealth media and
-application realtime are **not** wired.
+Daily SDK is wired as a custom call object on the telehealth session shell when the API has
+`DAILY_API_KEY`. Socket.IO remains unwired. Chat and recording are **not** in the demo.
 
 ### Backend (`apps/api`)
 
@@ -98,8 +98,8 @@ application realtime are **not** wired.
 - REST + OpenAPI (`npm run openapi:generate`, `/api/docs-json`, optional `/api/docs`)
 - PostgreSQL 18 (local Compose + TypeORM, including RLS)
 
-Redis, S3/KMS as a local runtime, WebSockets / Socket.IO, and WebRTC / Daily media are **not**
-wired in the running demo.
+Redis, S3/KMS as a local runtime, and WebSockets / Socket.IO are **not** wired in the running
+demo. Daily media is labeled unavailable when `DAILY_API_KEY` is unset.
 
 ### Infrastructure in the repository
 
@@ -151,13 +151,13 @@ Application version **0.72.0**. Snapshot:
   overview, in-app notification inbox/preferences, and practice role assignment.
 - **M11 shipped** (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005): Nest HttpOnly cookies, live
   cookie client, mock MFA UI, security-events HTTP/UI, and production-gap docs
-  ([docs/security/](./docs/security/README.md)). Next product module is **M12 — Telehealth Media
-  Maturity** ([BE-016](./docs/tasks/backend/BE-016-telehealth-daily-media-token-http.md) shipped,
-  [FE-030](./docs/tasks/frontend/FE-030-daily-media-session-shell.md) pending). Local product
-  work does not wait on AWS.
+  ([docs/security/](./docs/security/README.md)). **M12 — Telehealth Media Maturity** is shipped
+  ([BE-016](./docs/tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+  [FE-030](./docs/tasks/frontend/FE-030-daily-media-session-shell.md)). Next product module is
+  **M13 — Billing / Payments UX**. Local product work does not wait on AWS.
 
-Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, live
-video, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
+Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, in-session
+chat/recording, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
 
 ## Deployment / demo
 

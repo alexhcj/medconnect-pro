@@ -41,8 +41,8 @@ name: Telehealth
 area: telehealth                  # task `feature:` slug when one exists
 marketing_path: /platform/telehealth  # omit when there is no public page
 status: partial                   # shipped | partial | planned | out_of_scope
-claim: "Appointment-linked session shell. Not live video."
-related_tasks: [FE-007, FE-014, BE-006]
+claim: "Appointment-linked session shell with demo Daily media when configured. Not production telehealth or HIPAA video."
+related_tasks: [FE-007, FE-014, BE-006, BE-016, FE-030]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md

@@ -46,7 +46,7 @@ export const FEATURE_PAGE_METADATA: Record<
 	telehealth: {
 		title: 'Telehealth',
 		description:
-			'Appointment-linked telehealth session shell: create, join, and end. Not live video, Daily, or WebRTC.',
+			'Appointment-linked telehealth session shell with demo Daily media when configured. Not production telehealth or HIPAA video.',
 	},
 	billing: {
 		title: 'Billing',
@@ -192,7 +192,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 				{
 					title: 'Link a virtual visit',
 					description:
-						'Connect the appointment to the telehealth session shell. No live video.',
+						'Connect the appointment to the telehealth session shell. Demo Daily media is on that module.',
 				},
 			],
 		},
@@ -215,7 +215,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			headingId: 'telehealth-hero-heading',
 			eyebrow: 'Telehealth · session shell',
 			heading: 'Appointment-linked virtual-visit workflow',
-			body: 'Create, join, and end a session shell with waiting-room placeholders. Not live video.',
+			body: 'Create, join, and end a session shell. Live mode uses demo Daily call-object media when configured. Not production telehealth or HIPAA video.',
 			...FEATURE_PAGE_HERO_CTAS,
 		},
 		capabilities: {
@@ -229,11 +229,12 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 				{
 					title: 'Create, join, and end',
 					description:
-						'Session-shell controls as implemented. Waiting-room placeholders included.',
+						'Session-shell controls as implemented. Presence waiting after join until a remote participant (or labeled unavailable).',
 				},
 				{
 					title: 'Honest status',
-					description: 'Not live video. Not Daily or WebRTC.',
+					description:
+						'Demo Daily media when configured. Not production telehealth or HIPAA video. Chat and recording are not in the demo.',
 				},
 			],
 		},
@@ -261,11 +262,11 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 				{
 					title: 'Create or join the session shell',
 					description:
-						'Waiting-room placeholders are part of the shell. No live video.',
+						'Join the waiting room, then Daily media when the API is configured. Unset Daily keys show labeled unavailable.',
 				},
 				{
 					title: 'End the session',
-					description: 'Create, join, and end only. Not Daily or WebRTC.',
+					description: 'Leave Daily, then end the Nest session. Chat and recording are not in the demo.',
 				},
 			],
 		},

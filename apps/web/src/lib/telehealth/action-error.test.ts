@@ -37,6 +37,15 @@ describe('telehealthActionErrorMessage', () => {
 		).toBe('Appointment is not eligible for a telehealth session');
 	});
 
+	it('surfaces Nest 502 media-unavailable messages', () => {
+		expect(
+			telehealthActionErrorMessage(
+				new ApiError('Live media is currently unavailable.', 502, {code: 'MEDIA_UNAVAILABLE'}),
+				'Unable to start live media.',
+			),
+		).toBe('Live media is currently unavailable.');
+	});
+
 	it('keeps the fallback for other errors', () => {
 		expect(telehealthActionErrorMessage(new ApiError('Resource not found', 404), 'Unable to load this telehealth session.')).toBe(
 			'Unable to load this telehealth session.',

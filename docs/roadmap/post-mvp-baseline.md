@@ -19,10 +19,10 @@ are shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and
 is pending and blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md),
 which remains paused. **M10** is shipped (DATA-002, BE-011, FE-024, BE-012, FE-025,
 BE-013, FE-026). **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005).
-Next product module is **M12 — Telehealth Media Maturity**
-([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md) shipped,
-[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md) pending). Local product
-work does not wait on AWS. Not part of M8.
+**M12 — Telehealth Media Maturity** is shipped
+([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)). Next product module is
+**M13 — Billing / Payments UX**. Local product work does not wait on AWS. Not part of M8.
 
 ## Actually complete
 

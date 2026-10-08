@@ -82,7 +82,7 @@ export const MARKETING_ABOUT_STACK = {
 	},
 	planned: {
 		title: 'Planned — not shipped',
-		body: 'Redis, S3/KMS, Daily/WebRTC, AWS, Docker, Terraform, and GitHub Actions are planned. Do not present them as current.',
+		body: 'Redis, S3/KMS, AWS, Docker, and Terraform remain planned. Do not present them as current. Daily call-object media is in the demo when configured.',
 	},
 } as const;
 

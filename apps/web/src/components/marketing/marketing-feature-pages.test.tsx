@@ -101,10 +101,12 @@ describe('capability-matrix copy', () => {
 
 		rerender(<MarketingFeaturePage slug="appointments" />);
 		expect(screen.getByText('Browse the practice calendar in the demo.')).toBeInTheDocument();
-		expect(screen.getByText(/No live video/)).toBeInTheDocument();
+		expect(screen.getByText(/Demo Daily media is on that module/)).toBeInTheDocument();
 
 		rerender(<MarketingFeaturePage slug="telehealth" />);
-		expect(screen.getByText('Not live video. Not Daily or WebRTC.')).toBeInTheDocument();
+		expect(
+			screen.getByText(/Not production telehealth or HIPAA video. Chat and recording are not in the demo./),
+		).toBeInTheDocument();
 		expect(screen.getAllByText(/session shell/i).length).toBeGreaterThan(0);
 
 		rerender(<MarketingFeaturePage slug="billing" />);

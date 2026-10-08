@@ -40,7 +40,7 @@ npm workspaces:
 - Lucide React for icons
 - Recharts
 - React Big Calendar
-- Daily SDK for the planned telehealth slice
+- Daily SDK for telehealth call-object media
 - Socket.IO client for planned application realtime features
 
 ## Current backend

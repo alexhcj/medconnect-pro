@@ -41,7 +41,7 @@ capabilities:
 # Scheduling
 
 Public path is `/platform/appointments` (not `/platform/scheduling`). Appointments can link to
-the telehealth session shell; that is not live video.
+the telehealth session shell (demo Daily media when configured).
 
 | ID | Name | Status | Demo | Public |
 | --- | --- | --- | --- | --- |

@@ -5,10 +5,10 @@ Demo milestones M0–M8 are shipped (FE-017–FE-023). Deployment/preview is **M
 **PAUSED / BLOCKED** — AWS account unavailable (close audit found no missing IDs; not closed;
 not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013
 paused). **M10** is shipped. **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-029,
-SEC-005). Next product module is **M12 — Telehealth Media Maturity**
-([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md) shipped,
-[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md) pending). Local
-product work does not wait on AWS.
+SEC-005). **M12 — Telehealth Media Maturity** is shipped
+([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)). Next product module is
+**M13 — Billing / Payments UX**. Local product work does not wait on AWS.
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
 expansion is still unshipped.

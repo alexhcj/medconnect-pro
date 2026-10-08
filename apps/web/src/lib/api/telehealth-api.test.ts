@@ -136,4 +136,23 @@ describe('telehealthRealAPI', () => {
 		);
 		expect(JSON.stringify(fetchMock.mock.calls)).not.toContain('/leave');
 	});
+
+	it('mints a media token without persisting it on the session', async () => {
+		const fetchMock = vi.fn().mockResolvedValue(
+			jsonResponse({
+				roomUrl: 'https://example.daily.co/mcp-session',
+				token: 'meeting-token',
+			}),
+		);
+		vi.stubGlobal('fetch', fetchMock);
+
+		await expect(telehealthRealAPI.mintMediaToken(sessionId)).resolves.toEqual({
+			roomUrl: 'https://example.daily.co/mcp-session',
+			token: 'meeting-token',
+		});
+		expect(fetchMock).toHaveBeenCalledWith(
+			`http://localhost:3001/telehealth/sessions/${sessionId}/media-token`,
+			expect.objectContaining({method: 'POST'}),
+		);
+	});
 });

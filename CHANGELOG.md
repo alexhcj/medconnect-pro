@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.73.0] - 2026-10-08
+
+### Added
+
+- Daily call-object media in the telehealth session shell (FE-030): after Nest join, live mode
+  mints `POST /telehealth/sessions/:id/media-token` and joins `@daily-co/daily-js` (not Prebuilt).
+  Camera, microphone, and screen share control Daily. Presence waiting until a remote participant.
+  Unset `DAILY_API_KEY` (Fake adapter `unconfigured.invalid`) is labeled unavailable so CI needs
+  no Daily credentials. Mock mode keeps placeholders. Catalog `telehealth.live-media` and
+  `telehealth.waiting-room` are shipped as qualified — not production telehealth or HIPAA video.
+  Chat and recording remain planned.
+
 ## [0.72.0] - 2026-10-07
 
 ### Added

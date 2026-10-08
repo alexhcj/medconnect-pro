@@ -86,7 +86,7 @@ mobile nav, page container, section composition, and `FeaturePageLayout` for `/p
 
 Copy must follow [docs/product/](../product/README.md) and
 [capability-matrix.md](../marketing/capability-matrix.md). Do not claim HIPAA
-certification, production OAuth, live video, or hosted payments. Sitemap:
+certification, production OAuth, production telehealth / HIPAA video, or hosted payments. Sitemap:
 [sitemap.md](../marketing/sitemap.md).
 
 ### Design tokens

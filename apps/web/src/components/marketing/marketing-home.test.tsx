@@ -81,7 +81,7 @@ describe('MarketingHome', () => {
 	it('keeps capability-qualified module copy', () => {
 		render(<MarketingHome />);
 
-		expect(screen.getAllByText(/Not live video/).length).toBeGreaterThan(0);
+		expect(screen.getAllByText(/demo Daily media when configured/).length).toBeGreaterThan(0);
 		expect(screen.getAllByText(/labeled boundaries/).length).toBeGreaterThan(0);
 		expect(screen.getByText(/Synthetic demo aggregates, not a warehouse/)).toBeInTheDocument();
 		expect(screen.getByText(/tenant\/grant limits/)).toBeInTheDocument();

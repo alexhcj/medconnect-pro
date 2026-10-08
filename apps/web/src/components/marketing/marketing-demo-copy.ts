@@ -36,8 +36,8 @@ export const MARKETING_DEMO_WALKTHROUGH = {
 		},
 		{
 			title: 'Telehealth session shell',
-			description: 'Create, join, and end appointment-linked sessions. Not live video.',
-			detail: 'Waiting-room placeholders only.',
+			description: 'Create, join, and end appointment-linked sessions. Demo Daily media when configured.',
+			detail: 'Labeled unavailable without a Daily key. Mock mode keeps placeholders.',
 			status: {label: '/platform/telehealth', href: '/platform/telehealth'},
 		},
 		{
@@ -67,7 +67,7 @@ export const MARKETING_DEMO_WALKTHROUGH = {
 export const MARKETING_DEMO_SAFETY = {
 	heading: 'Safe exploration',
 	headingId: 'safe-exploration',
-	body: 'No HIPAA certification claim. No hosted production. Telehealth is a session shell, not live video. Invoices are demo data; payments and claims are labeled boundaries.',
+	body: 'No HIPAA certification claim. No hosted production. Telehealth uses demo Daily media when configured; it is not production telehealth or HIPAA video. Invoices are demo data; payments and claims are labeled boundaries.',
 } as const;
 
 export const MARKETING_DEMO_LOGIN_PREVIEW = {

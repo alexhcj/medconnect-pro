@@ -75,7 +75,7 @@ describe('MarketingPlatform', () => {
 	it('keeps capability-qualified copy and does not over-claim', () => {
 		render(<MarketingPlatform />);
 
-		expect(screen.getByText('Not live video.')).toBeInTheDocument();
+		expect(screen.getByText('Not production telehealth or HIPAA video.')).toBeInTheDocument();
 		expect(screen.getByText('Not hosted payments.')).toBeInTheDocument();
 		expect(screen.getByText('Not a warehouse or HIPAA analytics.')).toBeInTheDocument();
 		expect(screen.getByText('Security-events HTTP is not shipped.')).toBeInTheDocument();

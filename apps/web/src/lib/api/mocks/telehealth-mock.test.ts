@@ -65,4 +65,8 @@ describe('telehealthMockAPI', () => {
 			status: 404,
 		});
 	});
+
+	it('does not expose a media-token method', () => {
+		expect(telehealthMockAPI).not.toHaveProperty('mintMediaToken');
+	});
 });

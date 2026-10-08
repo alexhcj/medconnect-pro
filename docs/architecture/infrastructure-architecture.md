@@ -29,9 +29,10 @@ shipped; [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hos
 pending, blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md);
 INFRA-013 paused). M9 is **PAUSED / BLOCKED** — AWS account setup unavailable; it is **not
 closed** and **not cancelled**. **M10** is shipped. **M11** is shipped (BE-014, FE-027, FE-028, BE-015,
-FE-029, SEC-005). Next product module is **M12 — Telehealth Media Maturity**
-([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md) shipped,
-[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md) pending).
+FE-029, SEC-005). **M12 — Telehealth Media Maturity** is shipped
+([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+[FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)). Next product module is
+**M13 — Billing / Payments UX**.
 Topology is
 [ADR-012](../decisions/ADR-012-deployment-topology.md): Amplify for Next.js, ECS/Fargate for
 NestJS, environments `local` / `preview` / `production`. Operator apply and the Amplify GitHub

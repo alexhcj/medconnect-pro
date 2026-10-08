@@ -3,11 +3,11 @@ id: FE-030
 type: task
 area: frontend
 feature: telehealth
-status: pending
+status: implemented
 priority: high
 estimate: 5
 dependencies: [FE-014, FE-027, BE-016]
-related_adrs: [ADR-011-figma-canonical-visual-source.md]
+related_adrs: [ADR-011-figma-canonical-visual-source.md, ADR-013-daily-custom-call-object.md]
 related_docs:
   [
     ../../architecture/frontend-architecture.md,
@@ -23,11 +23,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd"
+  frame: "App / Telehealth session — 04 Connected — tablet (167:5)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -118,16 +118,16 @@ https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 
 ## Acceptance Criteria
 
-- [ ] `design.status` is `approved` with `file_url` and `frame` before implementation
-- [ ] Live join shows real Daily media when `DAILY_API_KEY` is configured; labeled unavailable
+- [x] `design.status` is `approved` with `file_url` and `frame` before implementation
+- [x] Live join shows real Daily media when `DAILY_API_KEY` is configured; labeled unavailable
       when it is not
-- [ ] Camera, microphone, and screen share control Daily
-- [ ] Waiting room is presence-based after Nest join
-- [ ] Mock Playwright still uses placeholders; mock tests do not call Daily
-- [ ] One `e2e:live` path: lobby → join → media-token → connected **or** labeled unavailable →
+- [x] Camera, microphone, and screen share control Daily
+- [x] Waiting room is presence-based after Nest join
+- [x] Mock Playwright still uses placeholders; mock tests do not call Daily
+- [x] One `e2e:live` path: lobby → join → media-token → connected **or** labeled unavailable →
       end. Daily credentials are not required in CI
-- [ ] Tablet viewport remains covered
-- [ ] Catalog: `telehealth.live-media` shipped (qualified); `telehealth.waiting-room` shipped
+- [x] Tablet viewport remains covered
+- [x] Catalog: `telehealth.live-media` shipped (qualified); `telehealth.waiting-room` shipped
       (qualified). Marketing copy no longer says live video is absent while the demo shows it
 
 ## Dependencies
@@ -136,8 +136,9 @@ https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 - Design brief via [design-brief-prompt.md](../../processes/prompts/design-brief-prompt.md) on
   **this** task
 
-Figma (shared library; frames not yet approved):
-https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+Figma (shared library; approved page **App / Telehealth session**, primary frame
+**04 Connected — tablet** (`167:5`)):
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=167-5
 
 ## Validation
 
@@ -149,9 +150,9 @@ https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 
 ## Risks / Considerations
 
-- Unapproved design is an implementation blocker.
+- Design is approved; remaining work is implementation.
 - Playwright cannot reliably exercise getUserMedia; do not require a captured camera feed.
-- Marketing currently says “Not live video.” Update claims in the same change as the UI.
+- Marketing no longer says live video is absent while the demo shows Daily media.
 - Do not present Daily as a production telehealth deployment or HIPAA-certified video.
 
 ## Implementation notes
@@ -164,7 +165,14 @@ Shipping this slice is **MINOR**.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Daily call-object media on `/dashboard/telehealth/[sessionId]` after Nest
+  `POST .../media-token`. Fake `unconfigured.invalid` rooms show labeled unavailable. Mock mode
+  keeps placeholders. End leaves Daily then Nest `POST .../end`.
+- Tests: Vitest for media-token client, unconfigured host, Daily hook (join/controls/waiting/
+  unavailable/end), Daily UI states, mock shell placeholders. Live e2e asserts unavailable or
+  Connected without requiring a camera feed.
 - PR:
-- Notes:
+- Notes: Version 0.72.0 → 0.73.0 (MINOR). Catalog `telehealth.live-media` and
+  `telehealth.waiting-room` shipped as qualified. Module stays partial (`telehealth.chat-recording`
+  planned). Plane MEDCONNECT-86 is a human update. Manual two-browser check still needs a local
+  `DAILY_API_KEY`.

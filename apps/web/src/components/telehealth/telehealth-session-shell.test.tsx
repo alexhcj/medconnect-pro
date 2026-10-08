@@ -84,6 +84,17 @@ describe('TelehealthSessionShell', () => {
 		expect(mutate).toHaveBeenCalledWith('session-demo-appointment-002');
 	});
 
+	it('does not import Daily media into mock in-session chrome', () => {
+		mockVisit({data: {...waitingSession, state: 'in_session'}});
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+
+		expect(screen.getByText('Demo placeholder. Not a live video connection.')).toBeInTheDocument();
+		expect(screen.getByRole('status')).toHaveTextContent('Demo placeholder');
+		expect(
+			screen.queryByText('Live media is not configured in this environment'),
+		).not.toBeInTheDocument();
+	});
+
 	it('shows media placeholders and leaves an in-session visit', async () => {
 		const mutate = vi.fn();
 		useLeaveTelehealthSession.mockReturnValue({mutate, isPending: false, isError: false});

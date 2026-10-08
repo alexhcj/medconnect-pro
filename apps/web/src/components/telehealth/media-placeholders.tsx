@@ -2,15 +2,22 @@
 
 import {useState} from 'react';
 import {Button} from '@/components/ui/button';
+import {MediaConnectionStatus} from '@/components/telehealth/media-connection-status';
+import {cn} from '@/lib/utils/utils';
 
-function PlaceholderTile({label, active}: {label: string; active: boolean}) {
+function PlaceholderTile({label, feed, active}: {label: string; feed: string; active: boolean}) {
 	return (
 		<div
-			className={`flex min-h-40 items-center justify-center rounded-lg border ${
-				active ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-gray-100'
-			}`}
+			className={cn(
+				'flex min-h-40 flex-col justify-between rounded-lg border p-3',
+				active ? 'border-brand bg-brand-subtle' : 'border-gray-200 bg-gray-100',
+			)}
 		>
-			<p className="text-sm font-medium text-gray-700">{label}</p>
+			<p className="text-center text-sm font-medium text-gray-700">{feed}</p>
+			<div className="inline-flex w-fit items-center gap-2 rounded bg-surface px-2 py-1">
+				<span className="inline-block size-2 rounded-full bg-success" aria-hidden />
+				<span className="text-xs text-foreground">{label}</span>
+			</div>
 		</div>
 	);
 }
@@ -23,10 +30,16 @@ export function MediaPlaceholders() {
 	return (
 		<div className="space-y-4">
 			<p className="text-sm text-gray-600">Demo placeholder. Not a live video connection.</p>
+			<MediaConnectionStatus state="mock" />
 			<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-				<PlaceholderTile label={cameraOn ? 'Your camera is on (placeholder)' : 'Your camera is off'} active={cameraOn} />
 				<PlaceholderTile
-					label={screenShareOn ? 'Screen share is on (placeholder)' : 'Participant video placeholder'}
+					label="You"
+					feed={cameraOn ? 'Your camera is on (placeholder)' : 'Your camera is off'}
+					active={cameraOn}
+				/>
+				<PlaceholderTile
+					label="Participant"
+					feed={screenShareOn ? 'Screen share is on (placeholder)' : 'Participant video placeholder'}
 					active={screenShareOn}
 				/>
 			</div>

@@ -27,8 +27,8 @@ export const MARKETING_PLATFORM_MODULES = {
 		},
 		{
 			title: 'Telehealth',
-			description: 'Appointment-linked session shell.',
-			status: 'Not live video.',
+			description: 'Appointment-linked session shell with demo Daily media when configured.',
+			status: 'Not production telehealth or HIPAA video.',
 			href: '/platform/telehealth',
 		},
 		{

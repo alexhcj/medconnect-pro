@@ -20,7 +20,7 @@ export const MARKETING_HOME_MODULES = {
 		},
 		{
 			title: 'Telehealth',
-			description: 'Appointment-linked session shell. Not live video.',
+			description: 'Appointment-linked session shell with demo Daily media when configured.',
 		},
 		{
 			title: 'Billing',
@@ -53,7 +53,7 @@ export const MARKETING_HOME_WORKFLOW = {
 		},
 		{
 			title: 'Schedule and join a session shell',
-			description: 'Appointments plus telehealth create/join/end. No live video.',
+			description: 'Appointments plus telehealth create/join/end. Demo Daily media when configured.',
 		},
 		{
 			title: 'Review invoices and audit',

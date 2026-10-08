@@ -196,8 +196,9 @@ Canonical documentation is `/docs`. Start with:
 ## Known limitations
 
 - **Not HIPAA certified or HIPAA compliant.** Engineering patterns are not a formal assessment.
-- **No live video.** Telehealth is an appointment-linked session shell (create/join/end,
-  waiting-room placeholders). Daily / WebRTC media is not live.
+- **Not production telehealth or HIPAA-certified video.** Telehealth uses a Daily custom call
+  object when `DAILY_API_KEY` is set; otherwise media is labeled unavailable. Chat and recording
+  are not in the demo.
 - **No hosted payments or claims submission.** Invoices are synthetic demo data; payment and
   claims UI are labeled boundaries.
 - **Shared preview API.** Amplify PR previews talk to one preview ECS API and one preview/demo
