@@ -4,13 +4,15 @@ import {InvoiceDetail} from '@/components/billing/invoice-detail';
 import {ApiError} from '@/lib/api/http';
 import {Invoice} from '@/types/billing/invoice';
 
-const {useInvoice, useSessionStatus} = vi.hoisted(() => ({
+const {useInvoice, useSessionStatus, useRecordPayment} = vi.hoisted(() => ({
 	useInvoice: vi.fn(),
 	useSessionStatus: vi.fn(),
+	useRecordPayment: vi.fn(),
 }));
 
 vi.mock('@/lib/hooks/use-billing', () => ({
 	useInvoice,
+	useRecordPayment,
 }));
 
 vi.mock('@/lib/hooks/use-session', () => ({
@@ -44,6 +46,11 @@ function mockInvoice(overrides: Record<string, unknown> = {}) {
 describe('InvoiceDetail', () => {
 	beforeEach(() => {
 		useInvoice.mockClear();
+		useRecordPayment.mockReturnValue({
+			mutate: vi.fn(),
+			isPending: false,
+			isError: false,
+		});
 		useSessionStatus.mockReturnValue({
 			session: {userRole: 'PRACTICE_ADMIN'},
 			isLoading: false,
@@ -55,7 +62,8 @@ describe('InvoiceDetail', () => {
 		render(<InvoiceDetail invoiceId="demo-invoice-001" />);
 
 		expect(screen.getByRole('heading', {level: 1, name: 'Invoice'})).toBeInTheDocument();
-		expect(screen.getByText('Synthetic demo. Payments and claims are not processed.')).toBeInTheDocument();
+		expect(screen.getByText('Synthetic demo. Demo payments do not collect card numbers.')).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Record payment'})).toBeEnabled();
 		expect(screen.getByText('demo-invoice-001')).toBeInTheDocument();
 		expect(screen.getByText('Avery Carter')).toBeInTheDocument();
 		expect(screen.getByText('Issued')).toBeInTheDocument();
@@ -65,6 +73,20 @@ describe('InvoiceDetail', () => {
 		expect(screen.getByRole('heading', {name: 'Claims boundary'})).toBeInTheDocument();
 		expect(screen.getByRole('link', {name: 'Back to billing'})).toHaveAttribute('href', '/dashboard/billing');
 		expect(useInvoice).toHaveBeenCalledWith('demo-invoice-001', true);
+	});
+
+	it('disables record payment for a provider session', () => {
+		useSessionStatus.mockReturnValue({
+			session: {userRole: 'PROVIDER'},
+			isLoading: false,
+		});
+		mockInvoice();
+		render(<InvoiceDetail invoiceId="demo-invoice-001" />);
+
+		expect(screen.getByRole('button', {name: 'Record payment'})).toBeDisabled();
+		expect(
+			screen.getByText(/Providers can review invoices. Recording a payment requires a practice admin or receptionist./),
+		).toBeInTheDocument();
 	});
 
 	it('denies a nurse session', () => {

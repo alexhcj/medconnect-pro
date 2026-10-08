@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.74.0] - 2026-10-08
+
+### Added
+
+- Record demo payment on the Nest in-process adapter (FE-031): practice admins and receptionists
+  can record `stripe` or `ach` against an unpaid invoice through existing `POST /billing/payments`.
+  No card or bank fields. Providers stay read-only. Catalog `billing.payments` is shipped as
+  qualified — not hosted Stripe or ACH origination. Claims envelopes remain FE-032.
+
 ## [0.73.0] - 2026-10-08
 
 ### Added

@@ -1,7 +1,9 @@
+import type {PaymentCreateBody} from '@/lib/api/billing-rdo';
 import {ApiError} from '@/lib/api/http';
 import {fixtureInvoices, fixturePatients} from '@/lib/api/mocks/fixtures';
 import {mockDelay, mockLog, shouldSimulateError} from '@/lib/api/mocks/runtime';
 import type {Invoice} from '@/types/billing/invoice';
+import type {Payment} from '@/types/billing/payment';
 
 function patientDisplayName(patientId: string): string {
 	const patient = fixturePatients.find((item) => item.id === patientId);
@@ -43,4 +45,26 @@ export const billingMockAPI = {
 			}
 			return invoice;
 		}, 'Mock: Failed to load invoice'),
+
+	recordPayment: async (body: PaymentCreateBody): Promise<Payment> =>
+		withMock(() => {
+			const invoice = invoices.find((item) => item.id === body.invoiceId);
+			if (!invoice) {
+				notFound();
+			}
+			if (invoice.status === 'paid') {
+				throw new ApiError('This invoice has already been paid.', 409, {code: 'INVOICE_ALREADY_PAID'});
+			}
+			invoice.status = 'paid';
+			return {
+				id: `demo-payment-${invoice.id}`,
+				invoiceId: invoice.id,
+				practiceId: invoice.practiceId,
+				amountCents: invoice.amountCents,
+				method: body.method,
+				processorRef: `demo_mock_${invoice.id}`,
+				status: 'recorded',
+				synthetic: true,
+			};
+		}, 'Mock: Failed to record payment'),
 };

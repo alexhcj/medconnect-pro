@@ -1,5 +1,10 @@
 import {describe, expect, it} from 'vitest';
-import {invoiceFromRdo, type InvoiceRdo} from '@/lib/api/billing-rdo';
+import {
+	invoiceFromRdo,
+	paymentFromRdo,
+	type InvoiceRdo,
+	type PaymentRdo,
+} from '@/lib/api/billing-rdo';
 import {canAccessBillingDashboard} from '@/lib/auth/billing-access';
 
 const rdo: InvoiceRdo = {
@@ -39,5 +44,31 @@ describe('invoiceFromRdo', () => {
 		expect(canAccessBillingDashboard('PRACTICE_ADMIN')).toBe(true);
 		expect(canAccessBillingDashboard('NURSE')).toBe(false);
 		expect(canAccessBillingDashboard).toHaveLength(1);
+	});
+});
+
+describe('paymentFromRdo', () => {
+	it('maps PaymentRdo without using practiceId for authorization', () => {
+		const paymentRdo: PaymentRdo = {
+			id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+			invoiceId: rdo.id,
+			practiceId: rdo.practiceId,
+			amountCents: 15000,
+			method: 'ach',
+			processorRef: 'demo_00000000-0000-4000-8000-000000000001',
+			status: 'recorded',
+			synthetic: true,
+		};
+
+		expect(paymentFromRdo(paymentRdo)).toEqual({
+			id: paymentRdo.id,
+			invoiceId: rdo.id,
+			practiceId: rdo.practiceId,
+			amountCents: 15000,
+			method: 'ach',
+			processorRef: 'demo_00000000-0000-4000-8000-000000000001',
+			status: 'recorded',
+			synthetic: true,
+		});
 	});
 });

@@ -1,12 +1,24 @@
-import {invoiceFromRdo, type InvoiceListRdo, type InvoiceRdo} from '@/lib/api/billing-rdo';
+import {
+	invoiceFromRdo,
+	paymentFromRdo,
+	type InvoiceListRdo,
+	type InvoiceRdo,
+	type PaymentCreateBody,
+	type PaymentRdo,
+} from '@/lib/api/billing-rdo';
 import {apiFetch} from '@/lib/api/http';
 import {billingMockAPI} from '@/lib/api/mocks/billing-mock';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {nestApiBaseUrl} from '@/lib/api/nest-api';
 import type {Invoice} from '@/types/billing/invoice';
+import type {Payment} from '@/types/billing/payment';
 
 function billingInvoicesUrl(path = ''): string {
 	return `${nestApiBaseUrl()}/billing/invoices${path}`;
+}
+
+function billingPaymentsUrl(): string {
+	return `${nestApiBaseUrl()}/billing/payments`;
 }
 
 export const billingRealAPI = {
@@ -17,6 +29,13 @@ export const billingRealAPI = {
 	getInvoice: async (invoiceId: string): Promise<Invoice> => {
 		const rdo = await apiFetch<InvoiceRdo>(billingInvoicesUrl(`/${invoiceId}`));
 		return invoiceFromRdo(rdo);
+	},
+	recordPayment: async (body: PaymentCreateBody): Promise<Payment> => {
+		const rdo = await apiFetch<PaymentRdo>(billingPaymentsUrl(), {
+			method: 'POST',
+			body: JSON.stringify({invoiceId: body.invoiceId, method: body.method}),
+		});
+		return paymentFromRdo(rdo);
 	},
 };
 

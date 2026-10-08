@@ -2,13 +2,15 @@ import {render, screen} from '@testing-library/react';
 import BillingPage from '@/app/(dashboard)/dashboard/billing/page';
 import {Invoice} from '@/types/billing/invoice';
 
-const {useInvoices, useSessionStatus} = vi.hoisted(() => ({
+const {useInvoices, useSessionStatus, useRecordPayment} = vi.hoisted(() => ({
 	useInvoices: vi.fn(),
 	useSessionStatus: vi.fn(),
+	useRecordPayment: vi.fn(),
 }));
 
 vi.mock('@/lib/hooks/use-billing', () => ({
 	useInvoices,
+	useRecordPayment,
 }));
 
 vi.mock('@/lib/hooks/use-session', () => ({
@@ -42,13 +44,19 @@ describe('BillingPage', () => {
 			isError: false,
 			refetch: vi.fn(),
 		});
+		useRecordPayment.mockReturnValue({
+			mutate: vi.fn(),
+			isPending: false,
+			isError: false,
+		});
 	});
 
 	it('renders the dashboard heading, invoices, and labeled boundaries', () => {
 		render(<BillingPage />);
 
 		expect(screen.getByRole('heading', {level: 1, name: 'Billing'})).toBeInTheDocument();
-		expect(screen.getByText('Synthetic demo. Payments and claims are not processed.')).toBeInTheDocument();
+		expect(screen.getByText('Synthetic demo. Demo payments do not collect card numbers.')).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Record payment'})).toBeDisabled();
 		expect(screen.getByRole('list', {name: 'Invoices'})).toHaveTextContent('Avery Carter');
 		expect(screen.getByRole('heading', {name: 'Payment boundary'})).toBeInTheDocument();
 		expect(screen.getByRole('heading', {name: 'Claims boundary'})).toBeInTheDocument();

@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {canAccessBillingDashboard} from '@/lib/auth/billing-access';
+import {canAccessBillingDashboard, canRecordPayment} from '@/lib/auth/billing-access';
 
 describe('billing access', () => {
 	it('allows billing nav roles', () => {
@@ -13,5 +13,18 @@ describe('billing access', () => {
 	it('denies nurse and a missing role', () => {
 		expect(canAccessBillingDashboard('NURSE')).toBe(false);
 		expect(canAccessBillingDashboard(undefined)).toBe(false);
+	});
+
+	it('allows practice write roles to record a payment', () => {
+		expect(canRecordPayment('SUPER_ADMIN')).toBe(true);
+		expect(canRecordPayment('PRACTICE_ADMIN')).toBe(true);
+		expect(canRecordPayment('RECEPTIONIST')).toBe(true);
+		expect(canRecordPayment('PATIENT')).toBe(true);
+	});
+
+	it('denies provider and nurse from recording a payment', () => {
+		expect(canRecordPayment('PROVIDER')).toBe(false);
+		expect(canRecordPayment('NURSE')).toBe(false);
+		expect(canRecordPayment(undefined)).toBe(false);
 	});
 });

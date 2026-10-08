@@ -1,5 +1,11 @@
 import {describe, expect, it} from 'vitest';
-import {formatInvoiceAmount, formatInvoiceDate, invoiceStatusLabel} from '@/lib/billing/format';
+import {
+	claimProcessorLabel,
+	claimStatusLabel,
+	formatInvoiceAmount,
+	formatInvoiceDate,
+	invoiceStatusLabel,
+} from '@/lib/billing/format';
 
 describe('invoice format helpers', () => {
 	it('formats amounts as USD currency', () => {
@@ -11,6 +17,11 @@ describe('invoice format helpers', () => {
 		expect(invoiceStatusLabel('issued')).toBe('Issued');
 		expect(invoiceStatusLabel('paid')).toBe('Paid');
 		expect(invoiceStatusLabel('overdue')).toBe('Overdue');
+	});
+
+	it('labels claim envelope status and processor', () => {
+		expect(claimStatusLabel('not_submitted')).toBe('Not submitted');
+		expect(claimProcessorLabel('edi837')).toBe('EDI 837 (labeled)');
 	});
 
 	it('formats an ISO date with the locale date string', () => {

@@ -93,7 +93,7 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 
 ## Slice 13 — Billing payments and claims UX (M13)
 
-- Record demo payment ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md); pending;
+- Record demo payment ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md); shipped;
   depends on [FE-015](../tasks/frontend/FE-015-billing-ui-nest-api.md) and
   [BE-007](../tasks/backend/BE-007-billing-api.md)).
 - Claims envelope list ([FE-032](../tasks/frontend/FE-032-claims-envelope-list.md); pending;

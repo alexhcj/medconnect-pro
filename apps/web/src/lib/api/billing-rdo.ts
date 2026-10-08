@@ -1,4 +1,5 @@
 import type {Invoice, InvoiceStatus} from '@/types/billing/invoice';
+import type {Payment, PaymentMethod, PaymentStatus} from '@/types/billing/payment';
 
 /** Line item returned by Nest `InvoiceLineItemRdo`. */
 export interface InvoiceLineItemRdo {
@@ -40,6 +41,36 @@ export function invoiceFromRdo(rdo: InvoiceRdo): Invoice {
 			description: item.description,
 			amountCents: item.amountCents,
 		})),
+		synthetic: rdo.synthetic,
+	};
+}
+
+/** Payment returned by Nest `PaymentRdo`. `practiceId` is informational only. */
+export interface PaymentRdo {
+	id: string;
+	invoiceId: string;
+	practiceId: string;
+	amountCents: number;
+	method: PaymentMethod;
+	processorRef: string;
+	status: PaymentStatus;
+	synthetic: boolean;
+}
+
+export interface PaymentCreateBody {
+	invoiceId: string;
+	method: PaymentMethod;
+}
+
+export function paymentFromRdo(rdo: PaymentRdo): Payment {
+	return {
+		id: rdo.id,
+		invoiceId: rdo.invoiceId,
+		practiceId: rdo.practiceId,
+		amountCents: rdo.amountCents,
+		method: rdo.method,
+		processorRef: rdo.processorRef,
+		status: rdo.status,
 		synthetic: rdo.synthetic,
 	};
 }

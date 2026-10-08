@@ -5,14 +5,14 @@ import Link from 'next/link';
 import {BILLING_DEMO_NOTICE} from '@/components/billing/billing-demo-notice';
 import {PaymentClaimsBoundaries} from '@/components/billing/payment-claims-boundaries';
 import {Button} from '@/components/ui/button';
-import {canAccessBillingDashboard} from '@/lib/auth/billing-access';
+import {canAccessBillingDashboard, canRecordPayment} from '@/lib/auth/billing-access';
 import {billingLoadErrorMessage} from '@/lib/billing/load-error';
 import {formatInvoiceAmount, formatInvoiceDate, invoiceStatusLabel} from '@/lib/billing/format';
 import {useInvoice} from '@/lib/hooks/use-billing';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import type {Invoice} from '@/types/billing/invoice';
 
-function InvoiceDetailBody({invoice}: {invoice: Invoice}) {
+function InvoiceDetailBody({invoice, canRecord}: {invoice: Invoice; canRecord: boolean}) {
 	return (
 		<div className="space-y-6">
 			<section className="rounded-lg border border-gray-200 bg-white p-4" aria-labelledby="invoice-details-heading">
@@ -68,7 +68,7 @@ function InvoiceDetailBody({invoice}: {invoice: Invoice}) {
 				</ul>
 			</section>
 
-			<PaymentClaimsBoundaries />
+			<PaymentClaimsBoundaries invoice={invoice} canRecord={canRecord} />
 		</div>
 	);
 }
@@ -90,6 +90,7 @@ function DetailChrome({children}: {children: ReactNode}) {
 export function InvoiceDetail({invoiceId}: {invoiceId: string}) {
 	const {session: authSession, isLoading: isAuthLoading} = useSessionStatus();
 	const canAccess = !isAuthLoading && canAccessBillingDashboard(authSession?.userRole);
+	const canRecord = canRecordPayment(authSession?.userRole);
 	const invoice = useInvoice(invoiceId, canAccess);
 
 	if (isAuthLoading) {
@@ -137,7 +138,7 @@ export function InvoiceDetail({invoiceId}: {invoiceId: string}) {
 			)}
 
 			{!invoice.isPending && !invoice.isError && invoice.data && (
-				<InvoiceDetailBody invoice={invoice.data} />
+				<InvoiceDetailBody invoice={invoice.data} canRecord={canRecord} />
 			)}
 		</DetailChrome>
 	);

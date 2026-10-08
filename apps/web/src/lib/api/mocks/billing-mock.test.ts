@@ -37,4 +37,28 @@ describe('billingMockAPI', () => {
 		});
 		await expect(billingMockAPI.getInvoice('demo-invoice-missing')).rejects.toBeInstanceOf(ApiError);
 	});
+
+	it('records a payment and marks the invoice paid', async () => {
+		const payment = await billingMockAPI.recordPayment({
+			invoiceId: 'demo-invoice-004',
+			method: 'stripe',
+		});
+		expect(payment).toMatchObject({
+			invoiceId: 'demo-invoice-004',
+			method: 'stripe',
+			status: 'recorded',
+			synthetic: true,
+		});
+		expect(payment.processorRef.startsWith('demo_')).toBe(true);
+		await expect(billingMockAPI.getInvoice('demo-invoice-004')).resolves.toMatchObject({status: 'paid'});
+	});
+
+	it('conflicts when the mock invoice is already paid', async () => {
+		await expect(
+			billingMockAPI.recordPayment({invoiceId: 'demo-invoice-002', method: 'ach'}),
+		).rejects.toMatchObject({
+			status: 409,
+			code: 'INVOICE_ALREADY_PAID',
+		});
+	});
 });

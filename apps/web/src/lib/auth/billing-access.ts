@@ -14,3 +14,14 @@ export function canAccessBillingDashboard(role: Role | undefined): boolean {
 	}
 	return BILLING_NAV.roles.includes(role);
 }
+
+/**
+ * UX-only. Matches Nest `canRecordPayment`: practice admin, receptionist, super admin,
+ * and portal self-pay. Providers and nurses cannot record on this surface.
+ */
+export function canRecordPayment(role: Role | undefined): boolean {
+	if (!role || role === 'NURSE' || role === 'PROVIDER') {
+		return false;
+	}
+	return role === 'SUPER_ADMIN' || role === 'PRACTICE_ADMIN' || role === 'RECEPTIONIST' || role === 'PATIENT';
+}

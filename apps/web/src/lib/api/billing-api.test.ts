@@ -76,4 +76,33 @@ describe('billingRealAPI', () => {
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('demo-invoice');
 		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
+
+	it('records a payment with invoiceId and method only', async () => {
+		localStorage.setItem('auth_token', 'demo-access-token');
+		const payment = {
+			id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+			invoiceId,
+			practiceId: rdo.practiceId,
+			amountCents: 15000,
+			method: 'ach',
+			processorRef: 'demo_00000000-0000-4000-8000-000000000001',
+			status: 'recorded',
+			synthetic: true,
+		};
+		const fetchMock = vi.fn().mockResolvedValue(jsonResponse(payment, 201));
+		vi.stubGlobal('fetch', fetchMock);
+
+		await expect(billingRealAPI.recordPayment({invoiceId, method: 'ach'})).resolves.toMatchObject({
+			invoiceId,
+			method: 'ach',
+			processorRef: 'demo_00000000-0000-4000-8000-000000000001',
+			synthetic: true,
+		});
+		expect(fetchMock).toHaveBeenCalledWith('http://localhost:3001/billing/payments', expect.any(Object));
+		const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+		expect(init.method).toBe('POST');
+		expect(JSON.parse(String(init.body))).toEqual({invoiceId, method: 'ach'});
+		expect(String(init.body)).not.toMatch(/card|pan|accountNumber/i);
+		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
+	});
 });

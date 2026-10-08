@@ -3,7 +3,7 @@ id: FE-031
 type: task
 area: frontend
 feature: billing
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-015, BE-007, FE-027]
@@ -26,10 +26,10 @@ design:
   required: true
   tool: figma
   file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd"
-  frame: ""
-  status: not_started
+  frame: "App / Billing — 02 Record payment dialog — tablet (174:2198)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -117,17 +117,17 @@ https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 
 ## Acceptance Criteria
 
-- [ ] `design.status` is `approved` with `file_url` and `frame` before implementation
-- [ ] Unpaid invoice: entitled role can record `stripe` or `ach`; invoice becomes Paid;
+- [x] `design.status` is `approved` with `file_url` and `frame` before implementation
+- [x] Unpaid invoice: entitled role can record `stripe` or `ach`; invoice becomes Paid;
       `processorRef` is visible; no card or bank fields
-- [ ] PROVIDER: Record payment is disabled
-- [ ] Paid invoice: Record payment is disabled
-- [ ] 409 already-paid is surfaced with `role="alert"`
-- [ ] Mock Playwright records a payment on a mock unpaid invoice
-- [ ] One `e2e:live` path creates a throwaway invoice then records payment (does not mutate the
+- [x] PROVIDER: Record payment is disabled
+- [x] Paid invoice: Record payment is disabled
+- [x] 409 already-paid is surfaced with `role="alert"`
+- [x] Mock Playwright records a payment on a mock unpaid invoice
+- [x] One `e2e:live` path creates a throwaway invoice then records payment (does not mutate the
       seeded overdue Avery Quinn row)
-- [ ] Tablet viewport remains covered
-- [ ] Catalog: `billing.payments` shipped (qualified); `planned_next` hosted Stripe/ACH.
+- [x] Tablet viewport remains covered
+- [x] Catalog: `billing.payments` shipped (qualified); `planned_next` hosted Stripe/ACH.
       Module stays partial (`billing.claims` still planned until FE-032)
 
 ## Dependencies
@@ -137,8 +137,9 @@ https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
   **this** task
 - Blocks: FE-032 (shared billing chrome)
 
-Suggested Figma (shared library; page **App / Billing**):
-https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+Figma (shared library; approved page **App / Billing**, primary frame
+**02 Record payment dialog — tablet** (`174:2198`)):
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=174-2198
 
 ## Validation
 
@@ -170,3 +171,17 @@ exists in the dashboard. Do not add a Stripe package.
 
 Writing this spec is not a version bump. Design-metadata approval is not a version bump.
 Shipping this slice is **MINOR**.
+
+## Completion
+
+- Implementation: Record payment on unpaid invoice detail via `POST /billing/payments`
+  (`invoiceId` + `method` only). Entitled roles get a Headless dialog (stripe/ach). PROVIDER and
+  paid invoices stay disabled. Success shows an opaque `demo_…` processor ref. 409 uses
+  `role="alert"`. Claims card stays static for FE-032. Live e2e creates a throwaway invoice
+  instead of paying the seeded Avery Quinn overdue row.
+- Tests: Vitest for Payment RDO, live POST (cookie, no PAN), mock mutation/409, `canRecordPayment`,
+  dialog and boundary states. Mock Playwright pays `demo-invoice-003`. Live Playwright pays an
+  API-created invoice.
+- PR:
+- Notes: Version 0.73.0 → 0.74.0 (MINOR). Catalog `billing.payments` shipped as qualified.
+  Module stays partial (`billing.claims` planned). Hosted Stripe/ACH remains `planned_next`.
