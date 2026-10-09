@@ -11,8 +11,8 @@ FE-025, BE-013, FE-026). **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-
 SEC-005). **M12 — Telehealth Media Maturity** is shipped (BE-016, FE-030). **M13 — Billing /
 Payments UX** is shipped (FE-031, FE-032). Hosted Stripe/ACH, claims submission / EDI 837, and
 invoice-create UI remain later. **M14 — OAuth / External Identity** is shipped and
-**closed** at 0.77.0 (SEC-006, DATA-003, BE-017, FE-033). M15 (next; not yet defined) owns rate
-limiting. Local product work does not wait on AWS.
+**closed** at 0.77.0 (SEC-006, DATA-003, BE-017, FE-033). **M15 — API Protection and Rate
+Limiting** is defined and pending (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). Local product work does not wait on AWS.
 
 Frontend application: `apps/web`.
 Backend application: `apps/api` (NestJS 12 platform; OpenAPI via `npm run openapi:generate`).

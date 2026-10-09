@@ -106,3 +106,9 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - OAuth login UX and session hydration ([FE-033](../tasks/frontend/FE-033-oauth-login-ux.md);
   shipped; depends on [BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md); design
   required). Not NextAuth or account-linking UI.
+
+## Slice 15 — API protection and rate limiting (M15)
+
+- Rate-limited auth UX ([FE-034](../tasks/frontend/FE-034-rate-limited-auth-ux.md); pending;
+  depends on [BE-019](../tasks/backend/BE-019-auth-and-sensitive-route-rate-limits.md); design not
+  required, reuses the existing error alert).

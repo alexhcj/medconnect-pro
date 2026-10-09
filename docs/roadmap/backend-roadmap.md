@@ -37,7 +37,14 @@ Domain order (not historical ship order). Join to demo milestones in the
     ([SEC-006](../tasks/security/SEC-006-oidc-bff-contract-and-adr.md)), persistence
     ([DATA-003](../tasks/backend/DATA-003-external-identity-persistence.md)), Nest OIDC client and
     session issuance ([BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md)); all
-    pending. Reuses the BE-014 cookie session. Not NextAuth, Redis, or rate limiting.
+    shipped. Reuses the BE-014 cookie session. Not NextAuth, Redis, or rate limiting.
+18. API protection and rate limiting (M15): contract and ADR-015
+    ([SEC-007](../tasks/security/SEC-007-rate-limit-and-api-protection-contract.md)), bucket
+    persistence ([DATA-004](../tasks/backend/DATA-004-rate-limit-bucket-persistence.md)), limiter
+    platform and `TRUST_PROXY` ([BE-018](../tasks/backend/BE-018-rate-limit-platform-and-client-ip.md)),
+    route policies ([BE-019](../tasks/backend/BE-019-auth-and-sensitive-route-rate-limits.md)), API
+    security headers ([BE-020](../tasks/backend/BE-020-api-security-headers.md)); all pending.
+    PostgreSQL store; not Redis or WAF.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.

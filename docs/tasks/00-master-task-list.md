@@ -130,3 +130,12 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - DATA-003 — External identity and OAuth flow-state persistence
 - BE-017 — Nest OIDC client, mapping, and session issuance
 - FE-033 — OAuth login UX and session hydration
+
+## Product (M15)
+
+- SEC-007 — Rate-limit, proxy-trust, and API-header contract (ADR-015)
+- DATA-004 — Rate-limit bucket persistence
+- BE-018 — Rate-limit platform and trusted client IP
+- BE-019 — Auth and sensitive-route rate-limit policies
+- BE-020 — API security headers and no-store auth responses
+- FE-034 — Rate-limited auth UX
