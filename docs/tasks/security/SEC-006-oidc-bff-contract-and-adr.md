@@ -3,7 +3,7 @@ id: SEC-006
 type: task
 area: security
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [SEC-001, BE-014]
@@ -21,7 +21,7 @@ related_docs:
     ../../package-baseline.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -87,11 +87,11 @@ First M14 task. Blocks [DATA-003](../backend/DATA-003-external-identity-persiste
 
 ## Acceptance Criteria
 
-- [ ] ADR-014 exists, Accepted, and names rejected alternatives
-- [ ] Identity contract documents mapping, protections, audit actions, and RBAC preservation
-- [ ] Endpoint index lists the three planned routes
-- [ ] Environment contract classifies every `OIDC_*` key; no real values anywhere in `/docs`
-- [ ] No doc claims production OAuth or HIPAA identity
+- [x] ADR-014 exists, Accepted, and names rejected alternatives
+- [x] Identity contract documents mapping, protections, audit actions, and RBAC preservation
+- [x] Endpoint index lists the three planned routes
+- [x] Environment contract classifies every `OIDC_*` key; no real values anywhere in `/docs`
+- [x] No doc claims production OAuth or HIPAA identity
 
 ## Dependencies
 

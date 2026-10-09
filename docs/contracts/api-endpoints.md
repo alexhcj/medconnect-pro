@@ -34,6 +34,14 @@ refresh, logout, and login until an IdP exists:
 - `POST /auth/logout-all` — cookie or Bearer
 - `POST /auth/mfa/verify` — body `mfaToken` or `mcp_mfa` cookie
 
+Planned demo OIDC routes ([BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md),
+[ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md)); not production OAuth:
+
+- `GET /auth/oauth/:provider/start` — create flow state (PKCE, `state`, `nonce`) and redirect to
+  the provider
+- `GET /auth/oauth/:provider/callback` — validate, map identity, issue the existing session cookies
+- `GET /auth/session` — cookie or Bearer; server-resolved user, role, and practice
+
 Protected routes accept the `mcp_access` cookie **or** `Authorization: Bearer`. Browser clients
 should send `credentials: 'include'`. Hosted cookie-authenticated mutations also send
 `X-CSRF-Token`. Live Next uses cookies and does not persist tokens

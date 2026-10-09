@@ -121,9 +121,11 @@ Secrets never belong in:
 Classification (public / environment-specific / secret) is
 [environment-configuration.md](../contracts/environment-configuration.md). Current application
 secrets are `DATABASE_URL`, `DATABASE_ADMIN_URL`, and optional `DAILY_API_KEY` (API-only; unset
-uses the Fake Daily adapter). Do not invent JWT, payment, or OAuth client secrets that the
-application does not use. Meeting tokens and `DAILY_API_KEY` must not appear in audit rows, logs,
-Git, or docs.
+uses the Fake Daily adapter), plus the planned API-only `OIDC_CLIENT_SECRET` for the demo OIDC
+client ([ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md); unset uses the Fake
+OIDC adapter locally). Do not invent JWT or payment secrets that the application does not use.
+Meeting tokens, provider OAuth tokens, `DAILY_API_KEY`, and `OIDC_CLIENT_SECRET` must not appear
+in audit rows, logs, Git, or docs.
 
 Use environment variables locally (`APP_ENV=local`). Hosted preview and production retrieve
 `DATABASE_URL` and `DATABASE_ADMIN_URL` from AWS Secrets Manager JSON secrets

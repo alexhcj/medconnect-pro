@@ -18,3 +18,7 @@ the complete identity solution.
 
 The frontend may use a mock identity provider/session for demonstration, but mock authentication
 must not be described as production identity infrastructure.
+
+## Related
+
+- [ADR-014](ADR-014-oidc-bff-and-external-identity.md) — Nest OIDC BFF and external identity (M14).

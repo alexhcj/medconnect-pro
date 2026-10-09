@@ -262,6 +262,30 @@ Live Next uses HttpOnly session cookies and does not persist access or refresh t
 ([FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md)). Mock-mode `localStorage` is still
 not the cookie model.
 
+### Implemented demo OIDC (M14)
+
+Planned until [BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md) ships.
+Decision: [ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md). This is a demo
+integration, not production OAuth or HIPAA identity.
+
+- **Flow:** `GET /auth/oauth/:provider/start` → provider authorize → `GET /auth/oauth/:provider/callback`
+  → Nest issues the existing `mcp_*` cookies → redirect to a relative `returnTo`. The browser never
+  receives provider tokens.
+- **Mapping:** `(provider, sub)` match → user; else `email_verified` email matching a
+  pre-provisioned user → first link; else reject. No JIT provisioning or self-signup. Mismatched
+  `sub` / email never merges.
+- **Protections:** PKCE S256; one-time `state` (PostgreSQL `oauth_flow_states`, short-lived);
+  `nonce`; exact registered redirect URI; ID token `iss`, `aud`, `exp` validation;
+  `email_verified` required; `returnTo` must be a relative path on an allowlist.
+- **RBAC preservation:** roles and tenant come only from `practice_memberships`. IdP claims never
+  become roles, permissions, or tenants.
+- **Session reuse:** same idle/absolute/concurrent policy, refresh rotation, CSRF, and logout as
+  BE-014. OAuth sessions do not chain mock MFA. Mock password login remains.
+- **Audit actions:** `auth.oauth.succeeded`, `auth.oauth.failed`, `auth.oauth.linked`,
+  `auth.oauth.identity_mismatch`. No tokens or provider claims beyond ids in metadata.
+- **Local demo:** seeded `*@example.test` users cannot use real Google. The Fake adapter (Google
+  env unset, local/test only) and the `OIDC_DEMO_EMAIL` seed hook cover local sign-in.
+
 ### Idle, absolute, and concurrent policy
 
 - **Idle timeout:** 15 minutes without activity. The existing warning/extend UX may prompt before
