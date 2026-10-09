@@ -93,7 +93,7 @@ States and copy:
 
 Approved decisions:
 
-- Provider is chosen by a `NEXT_PUBLIC_OIDC_PROVIDER=google|fake` env flag (no new API surface).
+- Provider is chosen by a `NEXT_PUBLIC_OAUTH_PROVIDER=google|fake` env flag (no new API surface).
 - Provider button sits above the email form.
 - Fake label: "Continue with Fake OIDC (demo)" with a neutral icon.
 - Unavailable: disabled with helper text, not hidden.

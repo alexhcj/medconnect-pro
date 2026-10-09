@@ -105,7 +105,7 @@ Enable the existing Nest payment adapter and claims envelope in the UI. Tasks:
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md) (claims envelopes). Not hosted
 Stripe, EDI 837 submission, invoice-create UI, or AWS. **Closed** at 0.75.0.
 
-### M14 — OAuth / External Identity (pending)
+### M14 — OAuth / External Identity (shipped)
 
 Demo OAuth 2.0 / OIDC Authorization Code + PKCE with Nest as the client, issuing the existing
 HttpOnly session. Google first; Fake adapter for local/CI. Mock password login and RBAC preserved.
@@ -113,7 +113,8 @@ Tasks: [SEC-006](../tasks/security/SEC-006-oidc-bff-contract-and-adr.md),
 [DATA-003](../tasks/backend/DATA-003-external-identity-persistence.md),
 [BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md),
 [FE-033](../tasks/frontend/FE-033-oauth-login-ux.md) (shipped). Not NextAuth, JIT signup, rate
-limiting, production MFA, Redis, or AWS.
+limiting, production MFA, Redis, or AWS. Rate limiting is deferred to M15, the next milestone
+(not yet defined). **Closed** at 0.77.0.
 
 ## Milestone crosswalk
 
@@ -137,7 +138,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M11 Application Security & Session Hardening | BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005 (shipped) | Nest HttpOnly cookies, live cookie client, mock MFA UI, security-events HTTP/UI, production-gap docs. Not OAuth, production MFA, rate limiting, Redis, or AWS. |
 | M12 Telehealth Media Maturity | BE-016, FE-030 (shipped) | Daily media token HTTP plus Daily call-object UI on the shipped session shell. Fake adapter when `DAILY_API_KEY` is unset. Not chat, recording, Socket.IO, Stripe, or AWS. |
 | M13 Billing / Payments UX | FE-031, FE-032 (shipped) | Enable Nest `POST /billing/payments` and `GET /billing/claims` in the UI. Demo adapter and labeled envelopes; not hosted Stripe, EDI 837, invoice-create UI, or AWS. **Closed** at 0.75.0. |
-| M14 OAuth / External Identity | SEC-006, DATA-003, BE-017, FE-033 (shipped) | Nest OIDC client + PKCE, `external_identities`, existing cookie session, OAuth login UX. Google + Fake adapter. Not NextAuth, rate limiting, production MFA, Redis, or AWS. |
+| M14 OAuth / External Identity | SEC-006, DATA-003, BE-017, FE-033 (shipped) | Nest OIDC client + PKCE, `external_identities`, existing cookie session, OAuth login UX. Google + Fake adapter. Not NextAuth, rate limiting, production MFA, Redis, or AWS. **Closed** at 0.77.0. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the
