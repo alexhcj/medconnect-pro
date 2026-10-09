@@ -31,7 +31,9 @@ indexes. The NestJS API stores this in PostgreSQL via TypeORM migrations
 tenant context; they must not trust client-supplied `practice_id`.
 
 The current persistence slice includes `practices`, `users` (synthetic identity keys, no passwords),
-`practice_memberships`, `auth_sessions` (opaque mock session hashes, not passwords), `patients`
+`practice_memberships`, `auth_sessions` (opaque mock session hashes, not passwords),
+`external_identities` (unique `(provider, subject)` links to `users`, one per provider per user),
+`oauth_flow_states` (one-time OIDC state hash, nonce, PKCE verifier, `return_to`), `patients`
 (demographics, assigned provider, and optional portal user), `patient_assignments` for
 assigned-patient reads, `appointments` (schedule, type, and state, with provider overlap exclusion),
 `telehealth_sessions` (one application session per telehealth appointment, with waiting/in-session/ended
@@ -63,7 +65,7 @@ demographics HTTP is [BE-003](../tasks/backend/BE-003-patient-api.md). Appointme
 PostgreSQL row-level security is enabled on tenant-owned business tables
 ([SEC-002](../tasks/security/SEC-002-tenant-isolation.md)). Policies compare `practice_id` (or
 `practices.id`) to the server-set GUC `app.current_practice_id`. Identity-resolution tables
-(`users`, `auth_sessions`, `practice_memberships`) have no RLS so login can derive tenant
+(`users`, `auth_sessions`, `practice_memberships`, `external_identities`, `oauth_flow_states`) have no RLS so login can derive tenant
 before that GUC is set. The Nest runtime connects as non-owner role `medconnect_app`;
 migrations, seed, and test fixtures use table-owner `DATABASE_ADMIN_URL`. Cache keys remain
 future work until Redis exists. Document objects use tenant-prefixed paths

@@ -3,7 +3,7 @@ id: DATA-003
 type: task
 area: backend
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [DATA-001, SEC-006]
@@ -16,7 +16,7 @@ related_docs:
     BE-009-identity-and-access-http.md,
   ]
 implementation:
-  status: not_started
+  status: done
 validation:
   responsive: false
   accessibility: false
@@ -60,12 +60,12 @@ Model decided in [SEC-006](../security/SEC-006-oidc-bff-contract-and-adr.md) / A
 
 ## Acceptance Criteria
 
-- [ ] Migrations apply and revert on Compose PostgreSQL
-- [ ] Duplicate `(provider, subject)` and duplicate `(user_id, provider)` fail at the database
-- [ ] Consume is one-time: second consume and expired state both return nothing
-- [ ] `state` is stored only as a hash
-- [ ] Runtime role can read/write both tables; no RLS policies added
-- [ ] `npm run test:api` passes
+- [x] Migrations apply and revert on Compose PostgreSQL
+- [x] Duplicate `(provider, subject)` and duplicate `(user_id, provider)` fail at the database
+- [x] Consume is one-time: second consume and expired state both return nothing
+- [x] `state` is stored only as a hash
+- [x] Runtime role can read/write both tables; no RLS policies added
+- [x] `npm run test:api` passes
 
 ## Dependencies
 

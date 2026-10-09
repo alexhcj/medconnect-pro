@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.75.1] - 2026-10-09
+
+### Added
+
+- External identity persistence for M14 OIDC (DATA-003): `external_identities` (unique
+  `(provider, subject)` and `(user_id, provider)`) and one-time `oauth_flow_states` (state stored
+  only as a hash, atomic consume, expired rows pruned on create). Identity-resolution tables with
+  no RLS; runtime role `medconnect_app` has DML grants. No HTTP routes or UI yet (BE-017, FE-033).
+
 ## [0.75.0] - 2026-10-08
 
 ### Added

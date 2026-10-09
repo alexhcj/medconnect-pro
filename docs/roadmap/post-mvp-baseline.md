@@ -25,7 +25,7 @@ BE-013, FE-026). **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-029, SEC
 is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
 EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity** is in
-progress (SEC-006 shipped; DATA-003, BE-017, FE-033 pending). Local product work does not wait on AWS. Not part of M8.
+progress (SEC-006, DATA-003 shipped; BE-017, FE-033 pending). Local product work does not wait on AWS. Not part of M8.
 
 ## Actually complete
 

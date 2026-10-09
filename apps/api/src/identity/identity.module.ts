@@ -3,6 +3,8 @@ import {APP_GUARD} from '@nestjs/core';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {AuditModule} from '../audit/audit.module.js';
 import {AuthSession} from '../persistence/entities/auth-session.entity.js';
+import {ExternalIdentity} from '../persistence/entities/external-identity.entity.js';
+import {OAuthFlowState} from '../persistence/entities/oauth-flow-state.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {User} from '../persistence/entities/user.entity.js';
 import {TenancyModule} from '../tenancy/tenant.module.js';
@@ -10,6 +12,8 @@ import {AuthController} from './auth.controller.js';
 import {AuthGuard} from './auth.guard.js';
 import {AuthService} from './auth.service.js';
 import {CLOCK, systemClock} from './clock.js';
+import {ExternalIdentityRepository} from './external-identity.repository.js';
+import {OAuthFlowStateRepository} from './oauth-flow-state.repository.js';
 import {IdentityMembershipLookup} from './membership-lookup.js';
 import {defaultMockIdpAccounts, MOCK_IDP_USERS} from './mock-idp.js';
 import {PermissionsGuard} from './permissions.guard.js';
@@ -19,12 +23,20 @@ import {SessionRepository} from './session.repository.js';
 	imports: [
 		TenancyModule,
 		AuditModule,
-		TypeOrmModule.forFeature([User, PracticeMembership, AuthSession]),
+		TypeOrmModule.forFeature([
+			User,
+			PracticeMembership,
+			AuthSession,
+			ExternalIdentity,
+			OAuthFlowState,
+		]),
 	],
 	controllers: [AuthController],
 	providers: [
 		AuthService,
 		SessionRepository,
+		ExternalIdentityRepository,
+		OAuthFlowStateRepository,
 		IdentityMembershipLookup,
 		{provide: MOCK_IDP_USERS, useValue: defaultMockIdpAccounts},
 		{provide: CLOCK, useValue: systemClock},

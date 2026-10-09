@@ -11,7 +11,7 @@ FE-025, BE-013, FE-026). **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-
 SEC-005). **M12 — Telehealth Media Maturity** is shipped (BE-016, FE-030). **M13 — Billing /
 Payments UX** is shipped (FE-031, FE-032). Hosted Stripe/ACH, claims submission / EDI 837, and
 invoice-create UI remain later. **M14 — OAuth / External Identity** is in progress (SEC-006
-shipped; DATA-003, BE-017, FE-033 pending). Local product work does not wait on AWS.
+and DATA-003 shipped; BE-017, FE-033 pending). Local product work does not wait on AWS.
 
 Frontend application: `apps/web`.
 Backend application: `apps/api` (NestJS 12 platform; OpenAPI via `npm run openapi:generate`).

@@ -3,11 +3,13 @@ import {AuditEvent} from './audit-event.entity.js';
 import {AuthSession} from './auth-session.entity.js';
 import {ClinicalCondition} from './clinical-condition.entity.js';
 import {ClinicalHistory} from './clinical-history.entity.js';
+import {ExternalIdentity} from './external-identity.entity.js';
 import {InvoiceLineItem} from './invoice-line-item.entity.js';
 import {Invoice} from './invoice.entity.js';
 import {Medication} from './medication.entity.js';
 import {NotificationPreference} from './notification-preference.entity.js';
 import {Notification} from './notification.entity.js';
+import {OAuthFlowState} from './oauth-flow-state.entity.js';
 import {PatientAssignment} from './patient-assignment.entity.js';
 import {PatientDocument} from './patient-document.entity.js';
 import {Patient} from './patient.entity.js';
@@ -26,6 +28,8 @@ export const persistenceEntities = [
 	PatientAssignment,
 	PatientDocument,
 	AuthSession,
+	ExternalIdentity,
+	OAuthFlowState,
 	Appointment,
 	AuditEvent,
 	ClinicalHistory,
@@ -46,11 +50,13 @@ export {
 	AuthSession,
 	ClinicalCondition,
 	ClinicalHistory,
+	ExternalIdentity,
 	Invoice,
 	InvoiceLineItem,
 	Medication,
 	Notification,
 	NotificationPreference,
+	OAuthFlowState,
 	Patient,
 	PatientAssignment,
 	PatientDocument,
