@@ -26,6 +26,10 @@ const booleanFromEnv = z.preprocess((value) => {
 	return value;
 }, z.boolean().optional());
 
+const emptyToUndefined = (value: unknown) => (value === '' ? undefined : value);
+
+const optionalString = z.preprocess(emptyToUndefined, z.string().min(1).optional());
+
 const optionalPostgresUrl = (label: string) =>
 	z.preprocess((value) => {
 		if (value === undefined || value === '') {
@@ -88,12 +92,13 @@ export const envSchema = z
 			}
 			return value;
 		}, z.string().min(1).optional()),
-		DAILY_API_KEY: z.preprocess((value) => {
-			if (value === undefined || value === '') {
-				return undefined;
-			}
-			return value;
-		}, z.string().min(1).optional()),
+		DAILY_API_KEY: optionalString,
+		OIDC_PROVIDER: z.preprocess(emptyToUndefined, z.enum(['google', 'fake']).optional()),
+		OIDC_ISSUER: z.preprocess(emptyToUndefined, z.url().optional()),
+		OIDC_CLIENT_ID: optionalString,
+		OIDC_CLIENT_SECRET: optionalString,
+		OIDC_REDIRECT_URI: z.preprocess(emptyToUndefined, z.url().optional()),
+		OIDC_DEMO_EMAIL: optionalString,
 	})
 	.superRefine((env, ctx) => {
 		if (env.APP_ENV !== 'preview' && env.APP_ENV !== 'production') {

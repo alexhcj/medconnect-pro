@@ -54,11 +54,11 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `API_BASE_URL` | web | Server-only BFF proxy origin. Same classification as `NEXT_PUBLIC_API_BASE_URL`. |
 | `WEB_ORIGIN` | api | Single CORS origin. Local default `http://localhost:3000`. |
 | `WEB_ORIGINS` | api | Comma-separated CORS allowlist. Unioned with `WEB_ORIGIN`. Preview may include `https://*.amplifyapp.com`. Production must be exact origins only. |
-| `OIDC_PROVIDER` | api | Planned (BE-017). Provider key, e.g. `google` or `fake`. |
-| `OIDC_ISSUER` | api | Planned. Provider issuer URL; validated against ID token `iss`. |
-| `OIDC_CLIENT_ID` | api | Planned. Public client identifier; validated against ID token `aud`. |
-| `OIDC_REDIRECT_URI` | api | Planned. Exact registered callback URL per environment. |
-| `OIDC_DEMO_EMAIL` | api | Planned, optional. `APP_ENV=local` / tests only seed hook linking a demo email to a seeded user. Ignored when hosted. |
+| `OIDC_PROVIDER` | api | Optional (BE-017). `google` or `fake`. Google is selected when issuer, client ID, secret, and redirect URI are all set. Fake is never selected when hosted. |
+| `OIDC_ISSUER` | api | Provider issuer URL (e.g. `https://accounts.google.com`); validated against ID token `iss`. |
+| `OIDC_CLIENT_ID` | api | Public client identifier; validated against ID token `aud`. |
+| `OIDC_REDIRECT_URI` | api | Exact registered callback URL per environment (e.g. `http://localhost:3001/auth/oauth/google/callback`). |
+| `OIDC_DEMO_EMAIL` | api | Optional. With `APP_ENV=local`, `seed:mock-identity` provisions this email as a practice admin so a real Google account can link, and the Fake adapter uses it as its default sign-in email. Ignored by the seed when hosted. |
 
 ### Secret
 
@@ -67,7 +67,7 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `DATABASE_URL` | api | Runtime Nest role (`medconnect_app`). Subject to RLS. |
 | `DATABASE_ADMIN_URL` | api | Table owner for migrations and seed. |
 | `DAILY_API_KEY` | api | Daily REST key for media-token minting. Unset selects the Fake adapter. Never `NEXT_PUBLIC_*`. Not in the current Secrets Manager JSON (hosted injection is M9, paused). |
-| `OIDC_CLIENT_SECRET` | api | Planned (BE-017, [ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md)). Confidential OIDC client secret. Unset selects the Fake OIDC adapter (`APP_ENV=local` / tests only). Never `NEXT_PUBLIC_*`. Hosted Secrets Manager injection is M9 / later. |
+| `OIDC_CLIENT_SECRET` | api | Optional (BE-017, [ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md)). Confidential OIDC client secret. Unset selects the Fake OIDC adapter (`APP_ENV=local` / tests only); hosted without it, OAuth start returns 503 `OAUTH_UNAVAILABLE`. Never `NEXT_PUBLIC_*`. Hosted Secrets Manager injection is M9 / later. |
 
 No JWT signing secret or payment processor key exists in the application. Do not invent those
 here. `DAILY_API_KEY` and `OIDC_CLIENT_SECRET` are the only third-party secrets in this catalog.

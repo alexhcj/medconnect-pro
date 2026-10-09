@@ -6,6 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.76.0] - 2026-10-09
+
+### Added
+
+- Demo OIDC Authorization Code + PKCE on Nest (BE-017): `GET /auth/oauth/:provider/start` and
+  `/callback` for Google (`openid-client`, when configured) and a Fake adapter (`APP_ENV=local`
+  only). The callback validates one-time state, PKCE S256, `nonce`, `iss`, `aud`, `exp`, and
+  `email_verified`. It maps to pre-provisioned users per ADR-014 (no JIT signup, no merge on
+  mismatch) and issues the same HttpOnly session as password login, with role and practice taken
+  from memberships only. `returnTo` is limited to `/dashboard` paths. Any failure redirects to
+  `/login?reason=oauth_failed` with no provider detail, and provider tokens are discarded.
+- `GET /auth/session` (cookie or Bearer) returns the server-resolved `userId`, `email`, `role`,
+  `practiceId`, and `expiresIn`.
+- Audit actions `auth.oauth.succeeded|failed|linked|identity_mismatch` (visible in security events).
+- Optional `OIDC_*` env keys. Hosted OAuth without config answers 503 `OAUTH_UNAVAILABLE`.
+  `OIDC_DEMO_EMAIL` provisions a local demo user via `seed:mock-identity`.
+- No login UI yet (FE-033). Not production OAuth or HIPAA identity.
+
 ## [0.75.1] - 2026-10-09
 
 ### Added

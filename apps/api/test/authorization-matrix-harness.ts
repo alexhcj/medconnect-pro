@@ -12,6 +12,7 @@ import {configureApp} from '../src/platform/configure-app.js';
 import {Appointment} from '../src/persistence/entities/appointment.entity.js';
 import {AuditEvent} from '../src/persistence/entities/audit-event.entity.js';
 import {AuthSession} from '../src/persistence/entities/auth-session.entity.js';
+import {ExternalIdentity} from '../src/persistence/entities/external-identity.entity.js';
 import {ClinicalCondition} from '../src/persistence/entities/clinical-condition.entity.js';
 import {ClinicalHistory} from '../src/persistence/entities/clinical-history.entity.js';
 import {InvoiceLineItem} from '../src/persistence/entities/invoice-line-item.entity.js';
@@ -31,6 +32,7 @@ import {Vital} from '../src/persistence/entities/vital.entity.js';
 import type {PracticeRole} from '../src/tenancy/practice-role.js';
 import type {PatientDemographics} from '../src/practice/patient.repository.js';
 import {createAdminDataSource} from './admin-data-source.js';
+import {runFakeOAuth} from './oauth-flow.js';
 import {syntheticDemographics, syntheticPatientColumns} from './synthetic-patient.js';
 
 export const MATRIX_PASSWORD = 'Synthetic-Pass-1';
@@ -70,6 +72,8 @@ export type AuthorizationMatrixHarness = {
 	createSessionAppointmentId: string;
 	foreignSessionId: string;
 	login: (email: string) => Promise<string>;
+	/** Same session issuance through the Fake OIDC Authorization Code + PKCE flow. */
+	oauthLogin: (email: string) => Promise<string>;
 	patientBody: (overrides?: Partial<PatientDemographics>) => Record<string, unknown>;
 	dispose: () => Promise<void>;
 };
@@ -274,6 +278,14 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		return response.body.accessToken as string;
 	}
 
+	async function oauthLogin(email: string): Promise<string> {
+		const result = await runFakeOAuth(app, email);
+		if (!result.accessToken) {
+			throw new Error(`Fake OAuth did not issue a session (redirect ${result.location})`);
+		}
+		return result.accessToken;
+	}
+
 	function patientBody(overrides: Partial<PatientDemographics> = {}): Record<string, unknown> {
 		const demographics = syntheticDemographics(provider.id, {
 			email: `create.${randomUUID().slice(0, 8)}@synthetic.example`,
@@ -315,6 +327,7 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 				const userIds = Object.values(actors).map((actor) => actor.id);
 				await dataSource.getRepository(AuditEvent).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(AuthSession).delete({userId: In(userIds)});
+				await dataSource.getRepository(ExternalIdentity).delete({userId: In(userIds)});
 				await dataSource.getRepository(Payment).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(InvoiceLineItem).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(Invoice).delete({practiceId: In(practiceIds)});
@@ -363,6 +376,7 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		createSessionAppointmentId: createSessionAppointment.id,
 		foreignSessionId: foreignSession.id,
 		login,
+		oauthLogin,
 		patientBody,
 		dispose,
 	};

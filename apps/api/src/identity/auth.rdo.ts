@@ -69,6 +69,27 @@ export class TokenPairRdo {
 	expiresIn!: number;
 }
 
+@ApiSchema({name: 'AuthSessionInfo'})
+export class AuthSessionInfoRdo {
+	@ApiProperty({format: 'uuid'})
+	userId!: string;
+
+	@ApiProperty({example: 'practice.admin@example.test'})
+	email!: string;
+
+	@ApiProperty({
+		enum: ['SUPER_ADMIN', 'PRACTICE_ADMIN', 'PROVIDER', 'NURSE', 'RECEPTIONIST', 'PATIENT'],
+		description: 'Server-resolved from the practice membership. Never from IdP claims.',
+	})
+	role!: string;
+
+	@ApiProperty({format: 'uuid'})
+	practiceId!: string;
+
+	@ApiProperty({example: 900, description: 'Access token lifetime remaining in seconds.'})
+	expiresIn!: number;
+}
+
 @ApiSchema({name: 'MfaChallenge'})
 export class MfaChallengeRdo {
 	@ApiProperty({enum: [true], example: true})

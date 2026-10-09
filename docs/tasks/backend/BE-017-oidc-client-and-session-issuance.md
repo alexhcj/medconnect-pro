@@ -3,11 +3,11 @@ id: BE-017
 type: task
 area: backend
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 5
 dependencies: [DATA-003, BE-009, BE-014, SEC-006]
-related_adrs: [ADR-003-authentication.md]
+related_adrs: [ADR-003-authentication.md, ADR-014-oidc-bff-and-external-identity.md]
 related_docs:
   [
     ../../contracts/identity-and-access.md,
@@ -20,7 +20,7 @@ related_docs:
     ../security/SEC-006-oidc-bff-contract-and-adr.md,
   ]
 implementation:
-  status: not_started
+  status: done
 validation:
   responsive: false
   accessibility: false
@@ -75,20 +75,20 @@ auth module, Passport, or NextAuth.
 
 ## Acceptance Criteria
 
-- [ ] Fake happy path sets `mcp_access` / `mcp_refresh`; the session passes `AuthGuard`,
+- [x] Fake happy path sets `mcp_access` / `mcp_refresh`; the session passes `AuthGuard`,
       `PermissionsGuard`, and tenant probes with the membership role
-- [ ] Missing, unknown, expired, and replayed `state` fail without a session
-- [ ] Wrong PKCE verifier, wrong `nonce`, wrong `aud`/`iss`, and unverified email fail
-- [ ] Unknown email is rejected (no user row created)
-- [ ] First verified-email login creates one `external_identities` row and audits `auth.oauth.linked`
-- [ ] `sub` linked to another user, or a different `sub` for an already-linked user, is rejected
+- [x] Missing, unknown, expired, and replayed `state` fail without a session
+- [x] Wrong PKCE verifier, wrong `nonce`, wrong `aud`/`iss`, and unverified email fail
+- [x] Unknown email is rejected (no user row created)
+- [x] First verified-email login creates one `external_identities` row and audits `auth.oauth.linked`
+- [x] `sub` linked to another user, or a different `sub` for an already-linked user, is rejected
       and audits `auth.oauth.identity_mismatch`
-- [ ] Absolute or off-allowlist `returnTo` is rejected (no open redirect)
-- [ ] Browser-facing errors are generic; no provider error detail or token in the redirect
-- [ ] IdP claims cannot change role or practice
-- [ ] `GET /auth/session` returns the server-resolved role and practice for cookie and Bearer
-- [ ] Password login, mock MFA, refresh rotation/reuse, logout, logout-all tests still pass
-- [ ] No real client ID or secret committed; OpenAPI contract test passes
+- [x] Absolute or off-allowlist `returnTo` is rejected (no open redirect)
+- [x] Browser-facing errors are generic; no provider error detail or token in the redirect
+- [x] IdP claims cannot change role or practice
+- [x] `GET /auth/session` returns the server-resolved role and practice for cookie and Bearer
+- [x] Password login, mock MFA, refresh rotation/reuse, logout, logout-all tests still pass
+- [x] No real client ID or secret committed; OpenAPI contract test passes
 
 ## Dependencies
 

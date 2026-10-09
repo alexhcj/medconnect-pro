@@ -34,13 +34,19 @@ refresh, logout, and login until an IdP exists:
 - `POST /auth/logout-all` — cookie or Bearer
 - `POST /auth/mfa/verify` — body `mfaToken` or `mcp_mfa` cookie
 
-Planned demo OIDC routes ([BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md),
-[ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md)); not production OAuth:
+Demo OIDC routes ([BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md),
+[ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md)); not production OAuth.
+Providers: `google` (when configured) and `fake` (`APP_ENV=local` only):
 
-- `GET /auth/oauth/:provider/start` — create flow state (PKCE, `state`, `nonce`) and redirect to
-  the provider
-- `GET /auth/oauth/:provider/callback` — validate, map identity, issue the existing session cookies
-- `GET /auth/session` — cookie or Bearer; server-resolved user, role, and practice
+- `GET /auth/oauth/:provider/start?returnTo=` — public; `returnTo` must be `/dashboard` or a path
+  under it (default `/dashboard`). Creates flow state (PKCE S256, `state`, `nonce`) and 302s to the
+  provider. Unknown provider or bad `returnTo` → 400; hosted OAuth not configured → 503
+  `OAUTH_UNAVAILABLE`.
+- `GET /auth/oauth/:provider/callback` — public; validates and maps identity, sets the existing
+  session cookies, then 302s to `WEB_ORIGIN/login/oauth/complete?returnTo=<path>`. Any failure 302s
+  to `WEB_ORIGIN/login?reason=oauth_failed` with no provider detail.
+- `GET /auth/session` — cookie or Bearer; `userId`, `email`, `role`, `practiceId`, `expiresIn`
+  (server-resolved; no tokens)
 
 Protected routes accept the `mcp_access` cookie **or** `Authorization: Bearer`. Browser clients
 should send `credentials: 'include'`. Hosted cookie-authenticated mutations also send

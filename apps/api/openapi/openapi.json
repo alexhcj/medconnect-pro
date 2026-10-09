@@ -3870,6 +3870,47 @@
         ]
       }
     },
+    "/auth/session": {
+      "get": {
+        "description": "Server-resolved user, role, and practice for the cookie or Bearer session. Contains no tokens or secrets.",
+        "operationId": "AuthController_session",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionInfo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Describe the current session",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/auth/logout": {
       "post": {
         "operationId": "AuthController_logout",
@@ -3931,6 +3972,91 @@
           }
         ],
         "summary": "Revoke every mock session for the authenticated user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/oauth/{provider}/start": {
+      "get": {
+        "description": "Creates one-time state, a PKCE S256 verifier, and a nonce, then redirects to the provider authorize URL. Demo integration; not production OAuth or HIPAA identity.",
+        "operationId": "OAuthController_start",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "google",
+                "fake"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "returnTo",
+            "required": false,
+            "in": "query",
+            "description": "Relative in-app path under /dashboard. Absolute or off-allowlist values are rejected.",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the provider authorize URL."
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Start demo OIDC sign-in",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/oauth/{provider}/callback": {
+      "get": {
+        "description": "Consumes state, exchanges the code with the PKCE verifier, validates the ID token, maps to a provisioned user, and sets the same HttpOnly session cookies as password login. Any failure redirects to /login?reason=oauth_failed with no provider detail.",
+        "operationId": "OAuthController_callback",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "google",
+                "fake"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the web OAuth complete page or the generic failure page."
+          }
+        },
+        "summary": "Complete demo OIDC sign-in",
         "tags": [
           "auth"
         ]
@@ -5656,6 +5782,47 @@
         "required": [
           "mfaRequired",
           "mfaToken",
+          "expiresIn"
+        ]
+      },
+      "AuthSessionInfo": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "example": "practice.admin@example.test"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "SUPER_ADMIN",
+              "PRACTICE_ADMIN",
+              "PROVIDER",
+              "NURSE",
+              "RECEPTIONIST",
+              "PATIENT"
+            ],
+            "description": "Server-resolved from the practice membership. Never from IdP claims."
+          },
+          "practiceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expiresIn": {
+            "type": "number",
+            "example": 900,
+            "description": "Access token lifetime remaining in seconds."
+          }
+        },
+        "required": [
+          "userId",
+          "email",
+          "role",
+          "practiceId",
           "expiresIn"
         ]
       },

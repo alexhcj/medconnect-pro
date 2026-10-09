@@ -32,8 +32,8 @@ capabilities:
     related_tasks: [SEC-001, FE-028]
   - id: identity-access.oauth-oidc-pkce
     name: Production OAuth 2.0 / OIDC + PKCE
-    status: planned
-    demo: not in the demo
+    status: partial
+    demo: Nest demo OIDC Authorization Code + PKCE (Google + local Fake adapter) issues the existing HttpOnly session; no login UI yet (FE-033); not production OAuth
     public: no
     related_tasks: [SEC-006, DATA-003, BE-017, FE-033]
 ---
@@ -52,4 +52,4 @@ not a marketing `/sign-in` route.
 | --- | --- | --- | --- | --- |
 | `identity-access.mock-idp-sessions` | Sign in with mock identity | shipped | mock IdP sessions; Nest HttpOnly cookies | qualified |
 | `identity-access.mfa-challenge` | MFA challenge | shipped | labeled mock MFA on live `/login` | qualified |
-| `identity-access.oauth-oidc-pkce` | Production OAuth 2.0 / OIDC + PKCE | planned | not in the demo | no |
+| `identity-access.oauth-oidc-pkce` | Production OAuth 2.0 / OIDC + PKCE | partial | Nest demo OIDC routes (BE-017); login UI pending (FE-033) | no |

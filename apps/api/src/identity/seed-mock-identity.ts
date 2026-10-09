@@ -21,6 +21,7 @@ import {TelehealthSession} from '../persistence/entities/telehealth-session.enti
 import {User} from '../persistence/entities/user.entity.js';
 import {Vital} from '../persistence/entities/vital.entity.js';
 import {resolveAdminDatabaseUrl} from '../persistence/default-database-url.js';
+import {resolveAppEnv} from '../platform/cors-origins.js';
 import {postgresConnectionOptions} from '../persistence/typeorm.options.js';
 import {defaultMockIdpAccounts} from './mock-idp.js';
 import {
@@ -234,6 +235,22 @@ export async function seedMockIdentity(): Promise<void> {
 				userId: admin.id,
 				role: account.role,
 			});
+		}
+
+		const oidcDemoEmail = process.env.OIDC_DEMO_EMAIL?.trim().toLowerCase();
+		if (oidcDemoEmail && resolveAppEnv() === 'local') {
+			let oidcDemoUser = await users.findOne({where: {email: oidcDemoEmail}});
+			if (!oidcDemoUser) {
+				oidcDemoUser = await users.save({email: oidcDemoEmail});
+			}
+			const oidcMembership = await memberships.findOne({where: {userId: oidcDemoUser.id}});
+			if (!oidcMembership) {
+				await memberships.save({
+					practiceId: practice.id,
+					userId: oidcDemoUser.id,
+					role: 'PRACTICE_ADMIN',
+				});
+			}
 		}
 
 		let provider = await users.findOne({where: {id: LIVE_DEMO_PROVIDER_ID}});

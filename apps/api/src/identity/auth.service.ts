@@ -185,6 +185,40 @@ export class AuthService {
 		return {session: saved, membership};
 	}
 
+	/**
+	 * Issues the same opaque session as password login for an already-authenticated user (OIDC).
+	 * Role and practice come only from server memberships.
+	 */
+	async issueSessionForUser(
+		userId: string,
+	): Promise<{pair: TokenPair; session: AuthSession; membership: PracticeMembership}> {
+		const membership = this.bindMembership(await this.memberships.listForUser(userId), undefined);
+		const {pair, session} = await this.insertSession(userId, membership.id, this.clock.now());
+		return {pair, session, membership};
+	}
+
+	async describeSession(sessionId: string): Promise<{
+		userId: string;
+		email: string;
+		role: string;
+		practiceId: string;
+		expiresIn: number;
+	}> {
+		const session = await this.sessions.findById(sessionId);
+		const membership = session ? await this.memberships.getById(session.membershipId) : undefined;
+		const user = session ? await this.memberships.findUserById(session.userId) : undefined;
+		if (!session?.accessExpiresAt || !membership || !user || membership.userId !== user.id) {
+			throw new SessionInvalidError();
+		}
+		return {
+			userId: user.id,
+			email: user.email,
+			role: membership.role,
+			practiceId: membership.practiceId,
+			expiresIn: this.expiresIn(session.accessExpiresAt, this.clock.now()),
+		};
+	}
+
 	async logout(sessionId: string): Promise<void> {
 		const session = await this.sessions.findById(sessionId);
 		await this.sessions.revoke(sessionId, this.clock.now());

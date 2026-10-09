@@ -1,4 +1,6 @@
 import {Module} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import type {Env} from '../platform/env.schema.js';
 import {APP_GUARD} from '@nestjs/core';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {AuditModule} from '../audit/audit.module.js';
@@ -17,6 +19,10 @@ import {OAuthFlowStateRepository} from './oauth-flow-state.repository.js';
 import {IdentityMembershipLookup} from './membership-lookup.js';
 import {defaultMockIdpAccounts, MOCK_IDP_USERS} from './mock-idp.js';
 import {PermissionsGuard} from './permissions.guard.js';
+import {OAuthController} from './oauth.controller.js';
+import {OAuthService} from './oauth.service.js';
+import {createOidcProvider} from './oidc/oidc-provider.factory.js';
+import {OIDC_PROVIDER_PORT} from './oidc/oidc-provider.port.js';
 import {SessionRepository} from './session.repository.js';
 
 @Module({
@@ -31,9 +37,24 @@ import {SessionRepository} from './session.repository.js';
 			OAuthFlowState,
 		]),
 	],
-	controllers: [AuthController],
+	controllers: [AuthController, OAuthController],
 	providers: [
 		AuthService,
+		OAuthService,
+		{
+			provide: OIDC_PROVIDER_PORT,
+			useFactory: (config: ConfigService<Env, true>) =>
+				createOidcProvider({
+					APP_ENV: config.get('APP_ENV', {infer: true}),
+					OIDC_PROVIDER: config.get('OIDC_PROVIDER', {infer: true}),
+					OIDC_ISSUER: config.get('OIDC_ISSUER', {infer: true}),
+					OIDC_CLIENT_ID: config.get('OIDC_CLIENT_ID', {infer: true}),
+					OIDC_CLIENT_SECRET: config.get('OIDC_CLIENT_SECRET', {infer: true}),
+					OIDC_REDIRECT_URI: config.get('OIDC_REDIRECT_URI', {infer: true}),
+					OIDC_DEMO_EMAIL: config.get('OIDC_DEMO_EMAIL', {infer: true}),
+				}),
+			inject: [ConfigService],
+		},
 		SessionRepository,
 		ExternalIdentityRepository,
 		OAuthFlowStateRepository,

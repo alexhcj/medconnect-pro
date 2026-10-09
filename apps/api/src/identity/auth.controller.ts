@@ -1,4 +1,4 @@
-import {Body, Controller, HttpCode, Post, Req, Res} from '@nestjs/common';
+import {Body, Controller, Get, HttpCode, Post, Req, Res} from '@nestjs/common';
 import {
 	ApiBody,
 	ApiExtraModels,
@@ -16,7 +16,7 @@ import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {SessionInvalidError} from './auth.errors.js';
 import {ApiSessionAuth, Public} from './auth.decorators.js';
 import type {RequestAuth} from './auth.guard.js';
-import {LoginRequestRdo, MfaChallengeRdo, MfaVerifyRequestRdo, RefreshRequestRdo, TokenPairRdo} from './auth.rdo.js';
+import {AuthSessionInfoRdo, LoginRequestRdo, MfaChallengeRdo, MfaVerifyRequestRdo, RefreshRequestRdo, TokenPairRdo} from './auth.rdo.js';
 import {loginSchema, mfaVerifySchema, refreshSchema, type LoginBody, type MfaVerifyBody, type RefreshBody} from './auth.schema.js';
 import {AuthService} from './auth.service.js';
 import {assertCookieMutationCsrf} from './csrf.js';
@@ -138,6 +138,22 @@ export class AuthController {
 		clearMfaCookie(response, appEnv);
 		applySessionCookies(response, tokens, appEnv);
 		return tokens;
+	}
+
+	@Get('session')
+	@ApiSessionAuth()
+	@ApiOperation({
+		summary: 'Describe the current session',
+		description:
+			'Server-resolved user, role, and practice for the cookie or Bearer session. Contains no tokens or secrets.',
+	})
+	@ApiOkResponse({type: AuthSessionInfoRdo})
+	@ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
+	async session(@Req() request: Request & RequestAuth): Promise<AuthSessionInfoRdo> {
+		if (!request.authSessionId) {
+			throw new SessionInvalidError();
+		}
+		return this.auth.describeSession(request.authSessionId);
 	}
 
 	@Post('logout')

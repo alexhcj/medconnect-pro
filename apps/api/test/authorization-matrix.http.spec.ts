@@ -461,11 +461,11 @@ describe('authorization matrix HTTP', () => {
 		harness = await createAuthorizationMatrixHarness();
 		tokens = {
 			provider: await harness.login(harness.actors.provider.email),
-			nurse: await harness.login(harness.actors.nurse.email),
+			nurse: await harness.oauthLogin(harness.actors.nurse.email),
 			receptionist: await harness.login(harness.actors.receptionist.email),
 			patient: await harness.login(harness.actors.patient.email),
 			practiceAdmin: await harness.login(harness.actors.practiceAdmin.email),
-			outsider: await harness.login(harness.actors.outsider.email),
+			outsider: await harness.oauthLogin(harness.actors.outsider.email),
 		};
 	});
 

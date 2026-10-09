@@ -65,6 +65,10 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/auth/mfa/verify']?.post?.security).toBeUndefined();
 		expect(document.paths?.['/auth/logout']?.post?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/auth/logout-all']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/auth/session']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/auth/oauth/{provider}/start']?.get?.security).toBeUndefined();
+		expect(document.paths?.['/auth/oauth/{provider}/callback']?.get?.security).toBeUndefined();
+		expect(document.paths).not.toHaveProperty('/auth/oauth/fake/authorize');
 		expect(document.paths?.['/patients']?.get?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/patients']?.post?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/patients/{id}']?.get?.security).toEqual(sessionSecurity);
