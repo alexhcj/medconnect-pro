@@ -3,7 +3,7 @@ id: SEC-007
 type: task
 area: security
 feature: api-protection
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [SEC-006, BE-014, BE-015]
@@ -18,7 +18,7 @@ related_docs:
     ../../compliance/production-requirements.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -78,12 +78,12 @@ PostgreSQL for short-lived auth state. The gap is listed in
 
 ## Acceptance Criteria
 
-- [ ] ADR-015 accepted with alternatives (Redis, in-memory only, throttler) and consequences
-- [ ] Policy table lists every target route with limit, window, key, and failure mode
-- [ ] 429 and 503 envelopes documented as additive contract changes
-- [ ] `TRUST_PROXY` semantics and spoofing risk documented
-- [ ] Header list and `no-store` route set documented
-- [ ] No application code changed; no secrets or PHI in docs
+- [x] ADR-015 accepted with alternatives (Redis, in-memory only, throttler) and consequences
+- [x] Policy table lists every target route with limit, window, key, and failure mode
+- [x] 429 and 503 envelopes documented as additive contract changes
+- [x] `TRUST_PROXY` semantics and spoofing risk documented
+- [x] Header list and `no-store` route set documented
+- [x] No application code changed; no secrets or PHI in docs
 
 ## Dependencies
 
@@ -100,3 +100,5 @@ PostgreSQL for short-lived auth state. The gap is listed in
 - Hosted hop count is unverifiable until INFRA-014; keep it configurable.
 
 ## Completion
+
+Shipped as docs only: [ADR-015](../../decisions/ADR-015-rate-limiting-and-api-protection.md), additive 429/503 envelopes and `auth.rate_limited` in data-contracts, auth rate limits in identity-and-access, `TRUST_PROXY` and `RATE_LIMIT_KEY_SECRET` in environment-configuration, and ADR-015 references in security and API architecture. No version bump (ADR-007).

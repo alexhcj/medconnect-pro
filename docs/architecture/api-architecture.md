@@ -52,6 +52,11 @@ Response DTO
 Frontend
 ```
 
+Planned in M15 ([ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)): a
+security-header middleware runs on every response, and opt-in routes run a rate-limit guard after
+session resolution and before the handler. Rejections use the standard error envelope (429
+`RATE_LIMITED`, or 503 `RATE_LIMIT_UNAVAILABLE` on auth routes).
+
 ## OpenAPI policy
 
 OpenAPI is generated from the NestJS backend ([BE-002](../tasks/backend/BE-002-openapi-foundation.md)).

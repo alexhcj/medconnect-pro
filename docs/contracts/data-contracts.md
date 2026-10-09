@@ -307,6 +307,10 @@ do not produce a practice row. Passwords, MFA secrets, and session hashes must n
 require `admin:practice`. Tenant comes from the session. Optional client `practiceId` is ignored
 for authorization and rejected on mismatch.
 
+M15 (planned) adds `auth.rate_limited`, written only when a rate-limited request resolves to a
+known practice user, at most once per key per window, with no IP, email, or key hash
+([ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)).
+
 ## Practice user directory
 
 `GET /admin/users` returns session-tenant memberships joined from `practice_memberships` and
@@ -354,6 +358,11 @@ JSON error responses from `apps/api` use this shape (no stack traces, tokens, or
 - Missing or invalid credentials use `code` `UNAUTHENTICATED` and HTTP 401.
 - Authenticated callers without permission, or a client `practiceId` that does not match the
   session tenant, use `code` `FORBIDDEN` and HTTP 403.
+- Rate-limited requests (M15, planned; [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md))
+  use HTTP 429, `code` `RATE_LIMITED`, `details` `{ "retryAfterSeconds": number }`, and a
+  `Retry-After` header in seconds. Additive.
+- When the limiter store is unavailable on auth/OAuth routes, the API returns HTTP 503 with `code`
+  `RATE_LIMIT_UNAVAILABLE` (fail closed). Other protected routes fail open. Additive.
 - Clients may send `X-Correlation-ID`; the API always returns it (incoming value or a generated UUID).
 
 ## Correlation

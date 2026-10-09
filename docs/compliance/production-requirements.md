@@ -17,7 +17,7 @@ catalog. Non-security product gaps (live video, hosted payments) stay on
 | --- | --- |
 | OAuth 2.0 / OIDC + PKCE | Target in [ADR-003](../decisions/ADR-003-authentication.md). Catalog `identity-access.oauth-oidc-pkce` is shipped as a demo integration only; a production IdP remains a target. |
 | Hosted / production MFA | TOTP or WebAuthn. Labeled mock MFA on `/login` is not this. |
-| Rate limiting | Named in [security-review.md](../workflows/security-review.md); not implemented as an API control. |
+| Rate limiting | Named in [security-review.md](../workflows/security-review.md); not implemented as an API control. Contract defined in [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md) (M15). |
 | Organizational BAAs and policies | Out of this demo. Do not invent vendor BAAs. See [hipaa-readiness.md](hipaa-readiness.md). |
 | Monitoring / observability | Infrastructure target; not a live demo platform service. |
 | M9 hosted first-apply | [INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md) pending; blocks [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md). M9 is paused. |

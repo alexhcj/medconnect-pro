@@ -89,6 +89,22 @@ Audit sensitive actions such as:
 - notification preference updates (no title or body in the audit row);
 - administrative security changes.
 
+## API protection
+
+Planned in M15 per [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md); not
+implemented yet.
+
+- Opt-in per-route fixed-window rate limits (custom guard + `@RateLimit` decorator) on a
+  PostgreSQL `rate_limit_buckets` store. No Redis.
+- Client IP from `TRUST_PROXY` hop count (default `0`, `X-Forwarded-For` ignored).
+- HMAC-hashed keys; no raw IP, email, or token stored or logged.
+- 429 `RATE_LIMITED` + `Retry-After`; auth routes fail closed with 503 `RATE_LIMIT_UNAVAILABLE`.
+- `auth.rate_limited` security event for resolvable known users only.
+- API security headers (`nosniff`, `no-referrer`, frame denial, HSTS outside local) and
+  `Cache-Control: no-store` on auth, OAuth, and media-token responses.
+
+Edge/WAF rate rules remain M9 / production work.
+
 ## Encryption
 
 Target infrastructure properties (not demonstrated in local Compose):

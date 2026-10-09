@@ -289,6 +289,23 @@ integration, not production OAuth or HIPAA identity.
 - **Local demo:** seeded `*@example.test` users cannot use real Google. The Fake adapter (Google
   env unset, local/test only) and the `OIDC_DEMO_EMAIL` seed hook cover local sign-in.
 
+### Auth rate limits (M15, planned)
+
+Defined in [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md); implemented by
+BE-018 and BE-019.
+
+- `POST /auth/login`: 5 per 15 min per client IP + normalized email, and 20 per 15 min per IP.
+- `POST /auth/mfa/verify`: 5 per 10 min per MFA session + IP.
+- `POST /auth/refresh`: 30 per 5 min per IP.
+- `GET /auth/oauth/:provider/start`, `/callback`, and Fake `authorize`: 20 per 5 min per IP.
+- Exceeded: HTTP 429 `RATE_LIMITED` with `details.retryAfterSeconds` and `Retry-After`. Limiter
+  store unavailable: HTTP 503 `RATE_LIMIT_UNAVAILABLE` (auth routes fail closed).
+- Client IP follows `TRUST_PROXY`. Keys are HMAC-hashed; raw IPs, emails, and tokens are never
+  stored or logged.
+- `auth.rate_limited` is audited only for a resolvable known practice user, at most once per key
+  per window. No permanent account lockout.
+- Every `/auth/*` response, including `/auth/oauth/*`, carries `Cache-Control: no-store`.
+
 ### Idle, absolute, and concurrent policy
 
 - **Idle timeout:** 15 minutes without activity. The existing warning/extend UX may prompt before
