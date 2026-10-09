@@ -26,7 +26,7 @@ through [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.m
 ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims
 submission / EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity** is
-in progress (SEC-006, DATA-003, BE-017 shipped; FE-033 pending). Local product work does not wait on AWS. Resume M9 when the AWS account can be
+shipped (SEC-006, DATA-003, BE-017, FE-033). Local product work does not wait on AWS. Resume M9 when the AWS account can be
 configured. Preview/production hosting remains M9, not M8, M10, or M11.
 
 ## Demo milestones
@@ -112,7 +112,7 @@ HttpOnly session. Google first; Fake adapter for local/CI. Mock password login a
 Tasks: [SEC-006](../tasks/security/SEC-006-oidc-bff-contract-and-adr.md),
 [DATA-003](../tasks/backend/DATA-003-external-identity-persistence.md),
 [BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md),
-[FE-033](../tasks/frontend/FE-033-oauth-login-ux.md) (pending). Not NextAuth, JIT signup, rate
+[FE-033](../tasks/frontend/FE-033-oauth-login-ux.md) (shipped). Not NextAuth, JIT signup, rate
 limiting, production MFA, Redis, or AWS.
 
 ## Milestone crosswalk
@@ -137,7 +137,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M11 Application Security & Session Hardening | BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005 (shipped) | Nest HttpOnly cookies, live cookie client, mock MFA UI, security-events HTTP/UI, production-gap docs. Not OAuth, production MFA, rate limiting, Redis, or AWS. |
 | M12 Telehealth Media Maturity | BE-016, FE-030 (shipped) | Daily media token HTTP plus Daily call-object UI on the shipped session shell. Fake adapter when `DAILY_API_KEY` is unset. Not chat, recording, Socket.IO, Stripe, or AWS. |
 | M13 Billing / Payments UX | FE-031, FE-032 (shipped) | Enable Nest `POST /billing/payments` and `GET /billing/claims` in the UI. Demo adapter and labeled envelopes; not hosted Stripe, EDI 837, invoice-create UI, or AWS. **Closed** at 0.75.0. |
-| M14 OAuth / External Identity | SEC-006, DATA-003, BE-017 (shipped), FE-033 (pending) | Nest OIDC client + PKCE, `external_identities`, existing cookie session, OAuth login UX. Google + Fake adapter. Not NextAuth, rate limiting, production MFA, Redis, or AWS. |
+| M14 OAuth / External Identity | SEC-006, DATA-003, BE-017, FE-033 (shipped) | Nest OIDC client + PKCE, `external_identities`, existing cookie session, OAuth login UX. Google + Fake adapter. Not NextAuth, rate limiting, production MFA, Redis, or AWS. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

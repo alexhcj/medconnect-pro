@@ -6,6 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.77.0] - 2026-10-09
+
+### Added
+
+- FE-033: "Continue with Google" / Fake provider button on live `/login` that starts the Nest
+  demo OIDC + PKCE flow, with a redirecting state and a labeled unavailable state in mock mode.
+- `/login/oauth/complete` hydrates the client session from `GET /auth/session` and returns to an
+  allowlisted `/dashboard` path, or to `/login?reason=oauth_failed` on failure.
+- Accessible `/login?reason=` banners for `oauth_failed`, `unauthorized`, and `signed_out`.
+- Live Playwright spec for the Fake-adapter round-trip and the failure path.
+
+### Changed
+
+- Live `getCurrentSession` recovers an empty client store from `GET /auth/session` (cookies
+  still valid after reload) instead of returning 401.
+- `identity-access.oauth-oidc-pkce` is shipped with a qualified public claim: "Demo OIDC + PKCE
+  (Google or Fake). Not a production IdP." M14 is shipped.
+
 ## [0.76.0] - 2026-10-09
 
 ### Added

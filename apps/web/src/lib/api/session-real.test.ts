@@ -222,6 +222,44 @@ describe('sessionRealAPI', () => {
 		);
 	});
 
+	it('recovers an empty store from GET /auth/session with the server role', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(
+				jsonResponse(200, {
+					userId: '22222222-2222-4222-8222-222222222222',
+					email: 'oauth.user@example.test',
+					role: 'NURSE',
+					practiceId: '33333333-3333-4333-8333-333333333333',
+					expiresIn: 600,
+				}),
+			),
+		);
+
+		const session = await sessionRealAPI.getCurrentSession();
+		expect(session).toMatchObject({userId: '22222222-2222-4222-8222-222222222222', userRole: 'NURSE'});
+		expect(readLiveSession()?.userRole).toBe('NURSE');
+		expect(fetch).toHaveBeenCalledWith(
+			'http://localhost:3001/auth/session',
+			expect.objectContaining({method: 'GET', credentials: 'include'}),
+		);
+		expectCredentialed((fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[1] as RequestInit);
+		const stored = Object.keys(window.localStorage).map((key) => window.localStorage.getItem(key) ?? '');
+		expect(stored.join('')).not.toMatch(/token/i);
+	});
+
+	it('returns 401 when the server has no session', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(
+				jsonResponse(401, {error: {code: 'UNAUTHENTICATED', message: 'Unauthorized'}}),
+			),
+		);
+
+		await expect(sessionRealAPI.hydrateSession()).rejects.toMatchObject({status: 401});
+		expect(readLiveSession()).toBeNull();
+	});
+
 	it('terminates live sessions through Nest logout-all', async () => {
 		vi.stubGlobal(
 			'fetch',

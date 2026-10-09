@@ -66,6 +66,52 @@ function sessionForKnownDemo(email: string, expiresIn: number): SessionInfo {
 	};
 }
 
+interface ServerSessionInfo {
+	userId: string;
+	role: string;
+	expiresIn: number;
+}
+
+function isServerSessionInfo(value: unknown): value is ServerSessionInfo {
+	if (!value || typeof value !== 'object') {
+		return false;
+	}
+	const body = value as {userId?: unknown; role?: unknown; expiresIn?: unknown};
+	return (
+		typeof body.userId === 'string' &&
+		body.userId.length > 0 &&
+		typeof body.role === 'string' &&
+		typeof body.expiresIn === 'number'
+	);
+}
+
+async function hydrateFromServer(): Promise<SessionInfo> {
+	const response = await fetch(`${nestApiBaseUrl()}/auth/session`, liveRequestInit({method: 'GET'}));
+	const body = await readJson(response);
+	if (!response.ok || !isServerSessionInfo(body)) {
+		clearLiveSession();
+		throw new ApiError('Unauthorized', 401);
+	}
+	const userRole = parseRole(body.role);
+	if (!userRole) {
+		clearLiveSession();
+		throw new ApiError('Unauthorized', 401);
+	}
+	const now = Date.now();
+	const session: SessionInfo = {
+		sessionId: `live_${crypto.randomUUID()}`,
+		userId: body.userId,
+		userRole,
+		expiresAt: now + body.expiresIn * 1000,
+		lastActivity: now,
+		isActive: true,
+		permissions: [...DEFAULT_ROLE_PERMISSIONS[userRole]],
+		currentContext: 'dashboard',
+	};
+	writeLiveSession(session);
+	return session;
+}
+
 async function readJson(response: Response): Promise<unknown> {
 	return response.json().catch(() => ({}));
 }
@@ -134,12 +180,10 @@ export const sessionRealAPI = {
 	},
 
 	getCurrentSession: async (): Promise<SessionInfo> => {
-		const session = readLiveSession();
-		if (!session) {
-			throw new ApiError('Unauthorized', 401);
-		}
-		return session;
+		return readLiveSession() ?? hydrateFromServer();
 	},
+
+	hydrateSession: (): Promise<SessionInfo> => hydrateFromServer(),
 
 	extendSession: async (): Promise<ExtendSessionResponse> => {
 		const current = readLiveSession();

@@ -1,7 +1,8 @@
 'use client';
 
 import {useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {CircleAlert, Info} from 'lucide-react';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
@@ -12,6 +13,14 @@ import {useLogin} from '@/lib/hooks/use-session';
 import {DASHBOARD_PATH} from '@/lib/auth/paths';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 import {ApiError} from '@/lib/api/http';
+import {isMockMode} from '@/lib/api/mocks/runtime';
+import {OAuthProviderButton} from '@/components/auth/oauth-provider-button';
+import {
+	configuredOAuthProvider,
+	LOGIN_REASON_MESSAGES,
+	parseLoginReason,
+	type LoginReason,
+} from '@/lib/auth/oauth';
 
 const loginSchema = z.object({
 	email: z.email('Enter a valid email address'),
@@ -26,10 +35,33 @@ type MfaChallengeState = {
 	expiresIn: number;
 };
 
-const demoUser = fixtureDemoUsers[0];
+const demoAccounts = [
+	{title: 'Practice admin (one-step)', user: fixtureDemoUsers[0]},
+	{title: 'MFA nurse (mock MFA)', user: fixtureDemoUsers.find((user) => user.email === 'mfa.nurse@example.test')},
+].filter((account): account is {title: string; user: (typeof fixtureDemoUsers)[number]} => Boolean(account.user));
+
+function ReasonBanner({reason}: {reason: LoginReason}) {
+	const message = LOGIN_REASON_MESSAGES[reason];
+	if (reason === 'oauth_failed') {
+		return (
+			<div className="mt-4 flex items-start gap-2 rounded-md bg-danger-subtle p-3 text-sm font-medium text-danger" role="alert">
+				<CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+				<p>{message}</p>
+			</div>
+		);
+	}
+	const tone = reason === 'unauthorized' ? 'bg-warning-subtle text-warning' : 'bg-brand-subtle text-brand-strong';
+	return (
+		<div className={`mt-4 flex items-start gap-2 rounded-md p-3 text-sm font-medium ${tone}`} role="status">
+			<Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+			<p>{message}</p>
+		</div>
+	);
+}
 
 export function LoginForm() {
 	const router = useRouter();
+	const reason = parseLoginReason(useSearchParams().get('reason'));
 	const login = useLogin();
 	const [formError, setFormError] = useState<string | null>(null);
 	const [challenge, setChallenge] = useState<MfaChallengeState | null>(null);
@@ -83,25 +115,41 @@ export function LoginForm() {
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-canvas p-4">
-			<div className="w-full max-w-md rounded-xl border border-border bg-surface p-8 shadow-sm">
+			<div className="w-full max-w-md rounded-xl border border-border bg-surface px-4 py-6 shadow-sm sm:p-8">
 				<h1 className="text-2xl font-bold text-foreground">Sign in</h1>
 				<p className="mt-2 text-sm text-foreground-secondary">
 					Sign in to the MedConnect Pro dashboard.
 				</p>
-				<p className="mt-3 rounded-md bg-warning-subtle p-3 text-xs text-warning" role="note">
-					This is a <strong>mock identity provider</strong> for the demo. It is not production
-					identity infrastructure.
+				{reason && <ReasonBanner reason={reason} />}
+				<p className="mt-4 rounded-md bg-warning-subtle p-3 text-xs text-warning" role="note">
+					<strong>Demo identity.</strong> Google/Fake OIDC sign-in is a demo integration, not a
+					production IdP. Email sign-in uses a mock identity provider.
 				</p>
 
-				{demoUser && (
-					<div className="mt-4 rounded-md border border-border bg-subtle p-3 text-xs text-foreground-secondary">
-						<p className="font-medium text-foreground">Demo account</p>
-						<p className="mt-1">
-							Email: <span className="font-mono">{demoUser.email}</span>
-						</p>
-						<p>
-							Password: <span className="font-mono">{demoUser.password}</span>
-						</p>
+				<div className="mt-4">
+					<OAuthProviderButton provider={configuredOAuthProvider()} available={!isMockMode()} />
+				</div>
+
+				<div className="mt-4 flex items-center gap-3" aria-hidden="true">
+					<span className="h-px flex-1 bg-border" />
+					<span className="text-xs text-foreground-muted">or sign in with email</span>
+					<span className="h-px flex-1 bg-border" />
+				</div>
+
+				{demoAccounts.length > 0 && (
+					<div className="mt-4 space-y-3 rounded-md border border-border bg-subtle p-3 text-xs text-foreground-secondary">
+						<p className="text-sm font-medium text-foreground">Demo accounts</p>
+						{demoAccounts.map(({title, user}) => (
+							<div key={user.email} className="space-y-1">
+								<p className="text-sm font-medium text-foreground">{title}</p>
+								<p>
+									Email: <span className="font-mono">{user.email}</span>
+								</p>
+								<p>
+									Password: <span className="font-mono">{user.password}</span>
+								</p>
+							</div>
+						))}
 					</div>
 				)}
 

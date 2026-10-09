@@ -265,7 +265,9 @@ not the cookie model.
 ### Implemented demo OIDC (M14)
 
 Nest side shipped in [BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md); the
-login UI is [FE-033](../tasks/frontend/FE-033-oauth-login-ux.md) (pending). The `returnTo`
+login UI shipped in [FE-033](../tasks/frontend/FE-033-oauth-login-ux.md): `/login/oauth/complete`
+hydrates the client session from `GET /auth/session`, and `/login?reason=` renders
+`oauth_failed`, `unauthorized`, and `signed_out`. The `returnTo`
 allowlist is `/dashboard` and paths under it. Decision: [ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md). This is a demo
 integration, not production OAuth or HIPAA identity.
 

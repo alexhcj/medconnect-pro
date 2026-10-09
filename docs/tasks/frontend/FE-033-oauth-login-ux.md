@@ -3,7 +3,7 @@ id: FE-033
 type: task
 area: frontend
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [BE-017, FE-027]
@@ -24,11 +24,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=182-2184"
+  frame: "App / Login — FE-033 frames (182:2184)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -72,6 +72,36 @@ Shared Figma file: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 - When shipped: `identity-access.oauth-oidc-pkce` → `shipped`, `public: qualified`, claim “Demo
   OIDC + PKCE (Google or Fake). Not a production IdP.”; marketing matrix in lockstep.
 
+## Design Brief
+
+Frames for the shared Figma file:
+
+- `/login` default at 1440, 768, and 375. Mobile variants for redirecting, unavailable, and
+  `reason` banners.
+- `/login/oauth/complete` loading screen (same card shell, `role="status"`).
+
+States and copy:
+
+- Provider button (`Button` outline, full width, at least 44px tall) above a divider labeled
+  "or sign in with email". The existing password form and demo account box stay as they are.
+- Redirecting: the button shows `isLoading` and the password form is disabled.
+- Unavailable (mocks on or not configured): button disabled, with helper text linked by
+  `aria-describedby`.
+- `oauth_failed`: danger `role="alert"` banner that receives focus and shows no provider detail.
+  `unauthorized` / `signed_out`: `role="status"` banner. Unknown `reason` values show nothing.
+- The mock-IdP note covers both paths and stays within the capability-matrix claim.
+
+Approved decisions:
+
+- Provider is chosen by a `NEXT_PUBLIC_OIDC_PROVIDER=google|fake` env flag (no new API surface).
+- Provider button sits above the email form.
+- Fake label: "Continue with Fake OIDC (demo)" with a neutral icon.
+- Unavailable: disabled with helper text, not hidden.
+- Google button follows Google sign-in branding (white button, official G mark).
+- Redirecting also disables the password form.
+- Note copy: "Demo identity. Google/Fake OIDC sign-in is a demo integration, not a production
+  IdP. Email sign-in uses a mock identity provider."
+
 ## Out of Scope
 
 - Redesigning the password form, MFA form, register, or password reset
@@ -80,15 +110,15 @@ Shared Figma file: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
 
 ## Acceptance Criteria
 
-- [ ] Live provider button starts the Nest flow; loading/disabled while redirecting
-- [ ] Complete route lands a Fake-provider user on `/dashboard` with the server role
-- [ ] Failure returns to `/login` with an accessible error; no provider detail shown
-- [ ] Password login and mock MFA still work (existing tests pass)
-- [ ] Reload with valid cookies but empty store recovers the session
-- [ ] Logout clears cookies and the store
-- [ ] Nothing written to `localStorage` contains a token
-- [ ] Tablet and mobile layouts; keyboard and screen-reader accessible
-- [ ] Capability registry and marketing matrix updated together
+- [x] Live provider button starts the Nest flow; loading/disabled while redirecting
+- [x] Complete route lands a Fake-provider user on `/dashboard` with the server role
+- [x] Failure returns to `/login` with an accessible error; no provider detail shown
+- [x] Password login and mock MFA still work (existing tests pass)
+- [x] Reload with valid cookies but empty store recovers the session
+- [x] Logout clears cookies and the store
+- [x] Nothing written to `localStorage` contains a token
+- [x] Tablet and mobile layouts; keyboard and screen-reader accessible
+- [x] Capability registry and marketing matrix updated together
 
 ## Dependencies
 

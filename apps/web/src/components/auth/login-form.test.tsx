@@ -7,9 +7,11 @@ import {sessionMockAPI} from '@/lib/api/mocks/session-mock';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 
 const push = vi.fn();
+let searchParams = new URLSearchParams();
 
 vi.mock('next/navigation', () => ({
 	useRouter: () => ({push}),
+	useSearchParams: () => searchParams,
 }));
 
 function renderLogin() {
@@ -27,6 +29,7 @@ describe('LoginForm', () => {
 	beforeEach(() => {
 		clearMockSession();
 		push.mockReset();
+		searchParams = new URLSearchParams();
 		vi.restoreAllMocks();
 	});
 
@@ -35,6 +38,30 @@ describe('LoginForm', () => {
 		expect(screen.getByRole('heading', {name: 'Sign in'})).toBeInTheDocument();
 		expect(screen.getByRole('note')).toHaveTextContent(/mock identity provider/i);
 		expect(screen.getByText(fixtureDemoUsers[0].email)).toBeInTheDocument();
+	});
+
+	it('labels the provider button unavailable in mock mode', () => {
+		renderLogin();
+		const button = screen.getByRole('button', {name: /continue with/i});
+		expect(button).toBeDisabled();
+		expect(button).toHaveAccessibleDescription(/unavailable in mock mode/i);
+	});
+
+	it.each([
+		['oauth_failed', 'alert', /couldn't sign you in with that provider/i],
+		['unauthorized', 'status', /your session ended/i],
+		['signed_out', 'status', /you have signed out/i],
+	])('announces reason=%s', (reason, role, message) => {
+		searchParams = new URLSearchParams({reason});
+		renderLogin();
+		expect(screen.getByRole(role)).toHaveTextContent(message);
+	});
+
+	it('ignores unknown reason values', () => {
+		searchParams = new URLSearchParams({reason: '<script>'});
+		renderLogin();
+		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByRole('status')).toBeNull();
 	});
 
 	it('signs in with demo credentials and navigates to the dashboard', async () => {

@@ -106,6 +106,10 @@ export const sessionMockAPI = {
 		return session;
 	},
 
+	hydrateSession: async (): Promise<SessionInfo> => {
+		throw new ApiError('Unauthorized', 401);
+	},
+
 	extendSession: async (): Promise<ExtendSessionResponse> =>
 		withMock(() => {
 			const current = readMockSession();

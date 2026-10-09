@@ -15,7 +15,7 @@ catalog. Non-security product gaps (live video, hosted payments) stay on
 
 | Gap | Notes |
 | --- | --- |
-| OAuth 2.0 / OIDC + PKCE | Target in [ADR-003](../decisions/ADR-003-authentication.md). Catalog `identity-access.oauth-oidc-pkce` is planned. |
+| OAuth 2.0 / OIDC + PKCE | Target in [ADR-003](../decisions/ADR-003-authentication.md). Catalog `identity-access.oauth-oidc-pkce` is shipped as a demo integration only; a production IdP remains a target. |
 | Hosted / production MFA | TOTP or WebAuthn. Labeled mock MFA on `/login` is not this. |
 | Rate limiting | Named in [security-review.md](../workflows/security-review.md); not implemented as an API control. |
 | Organizational BAAs and policies | Out of this demo. Do not invent vendor BAAs. See [hipaa-readiness.md](hipaa-readiness.md). |

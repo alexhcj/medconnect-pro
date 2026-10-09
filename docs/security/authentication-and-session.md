@@ -25,6 +25,7 @@ Mock-mode `localStorage` is still not the cookie model.
 
 [ADR-003](../decisions/ADR-003-authentication.md): OAuth 2.0 + OpenID Connect with Authorization
 Code + PKCE, and production MFA. Catalog row
-`identity-access.oauth-oidc-pkce` is **planned**.
+`identity-access.oauth-oidc-pkce` is **shipped** as a demo integration (Google or Fake adapter);
+production OAuth / IdP and production MFA remain targets.
 
 Remaining production list: [production-requirements.md](../compliance/production-requirements.md).
