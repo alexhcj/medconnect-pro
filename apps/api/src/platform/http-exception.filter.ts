@@ -79,8 +79,7 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 			return this.fromHttpException(exception);
 		}
 
-		this.logger.error('Unhandled exception', {correlationId});
-		return {
+		this.logger.error('Unhandled exception', {correlationId});		return {
 			status: HttpStatus.INTERNAL_SERVER_ERROR,
 			error: {
 				code: 'INTERNAL_ERROR',

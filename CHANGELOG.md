@@ -6,6 +6,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.79.0] - 2026-10-10
+
+### Added
+
+- BE-019: ADR-015 rate-limit policies. `POST /auth/login` (5 per 15 min per IP + normalized email,
+  20 per 15 min per IP), `POST /auth/mfa/verify` (5 per 10 min per MFA session + IP),
+  `POST /auth/refresh` (30 per 5 min per IP), and OAuth start, callback, and Fake authorize (20 per
+  5 min per IP) fail closed. `POST /telehealth/sessions/:id/media-token`,
+  `GET /patients/:id/documents/:documentId/content`, and `POST /billing/payments` limit per session
+  user and fail open.
+- Account-wide login failure limit (ADR-015 amendment): 10 failed attempts per 15 min per
+  normalized email from any IP, checked before credentials so it holds across real IP rotation.
+  Unknown emails count the same way (no enumeration), successes do not count, and it fails
+  closed. `RateLimitStore.peek` reads a bucket without counting.
+- `auth.rate_limited` security event (resource `session`, no email, IP, token, or key hash),
+  written once per key per window and only when the request resolves to a known practice user.
+- OpenAPI documents 429 (and 503 on fail-closed routes) on every policy route; the contract check
+  asserts it.
+
+### Changed
+
+- A throttled `GET /auth/oauth/:provider/callback` redirects to `/login?reason=oauth_failed` with
+  `Retry-After` instead of returning JSON.
+- `RateLimitGuard` is now request-scoped so it runs after the request-scoped `AuthGuard`;
+  session-user keys did not resolve before.
+
 ## [0.78.0] - 2026-10-10
 
 ### Added

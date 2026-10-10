@@ -3,7 +3,7 @@ id: BE-019
 type: task
 area: backend
 feature: api-protection
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [BE-018, BE-015, BE-017]
@@ -17,7 +17,7 @@ related_docs:
     BE-018-rate-limit-platform-and-client-ip.md,
   ]
 implementation:
-  status: not_started
+  status: done
 validation:
   responsive: false
   accessibility: false
@@ -55,15 +55,17 @@ security event.
 
 ## Acceptance Criteria
 
-- [ ] Per-account login limit holds while the source IP rotates (`TRUST_PROXY=1` test)
-- [ ] Per-IP login limit holds across different emails
-- [ ] MFA verify is blocked well before the fixture code space is exhausted
-- [ ] Refresh and OAuth routes return 429 (or the generic redirect for callback) past the limit
-- [ ] A normal Fake OAuth flow (`test/oauth-flow.ts`) and normal login still succeed
-- [ ] Media-token, document download, and payment return 429 past the limit
-- [ ] Security-events shows `auth.rate_limited` with no email, IP, or token
-- [ ] Authorization matrix and all existing HTTP suites pass
-- [ ] OpenAPI documents 429 on every policy route; contract test passes
+- [x] Per-account login limit holds while the source IP rotates (`TRUST_PROXY=1` test): the
+  account-wide failure bucket (ADR-015 amendment) holds across real IP changes; the per-device
+  bucket holds while forged untrusted `X-Forwarded-For` hops rotate
+- [x] Per-IP login limit holds across different emails
+- [x] MFA verify is blocked well before the fixture code space is exhausted
+- [x] Refresh and OAuth routes return 429 (or the generic redirect for callback) past the limit
+- [x] A normal Fake OAuth flow (`test/oauth-flow.ts`) and normal login still succeed
+- [x] Media-token, document download, and payment return 429 past the limit
+- [x] Security-events shows `auth.rate_limited` with no email, IP, or token
+- [x] Authorization matrix and all existing HTTP suites pass
+- [x] OpenAPI documents 429 on every policy route; contract test passes
 
 ## Dependencies
 
@@ -82,3 +84,26 @@ security event.
 - MINOR version bump.
 
 ## Completion
+
+Shipped in 0.79.0. Policies live in `apps/api/src/rate-limit/rate-limit.policies.ts` (ADR-015
+values) and are applied with `@RateLimit` on the auth, OAuth, media-token, document content
+(`GET /patients/:id/documents/:documentId/content`), and payment routes. `RateLimitGuard` is now
+request-scoped: Nest runs static global guards before request-scoped ones, so it previously ran
+before `AuthGuard` and session-user keys never resolved. The guard calls `RATE_LIMIT_AUDITOR`
+(`IdentityRateLimitAuditor`) on the first rejection in a window (`count === limit + 1`). It
+writes `auth.rate_limited` only for a resolvable practice user. Session-user routes also audit.
+A throttled OAuth callback redirects to `/login?reason=oauth_failed` with `Retry-After`
+(`OAuthCallbackRateLimitFilter`). HTTP specs override `RATE_LIMIT_STORE` with a shared in-memory
+store that `vitest.setup.ts` resets before each test. Tests: `test/auth-rate-limit.http.spec.ts`
+and key unit tests in `src/rate-limit/rate-limit.spec.ts`. The OpenAPI check asserts 429 on every
+policy route.
+
+The per-account conflict was resolved by the ADR-015 amendment (BE-019, layered option C). A
+third login control, `auth.login.account_failures`, counts failed password attempts per
+normalized email from any IP (10 per 15 min, approved). `AuthService.login`
+checks it before credentials via `RateLimitStore.peek` (`AccountLoginLimiter`) and increments it
+on every invalid-credentials outcome, unknown emails included, so a 429 reveals nothing. It fails
+closed, and successful logins do not count. `auth.rate_limited` is written once, when a failure
+starts the cooldown for a known user. Tests: real IP rotation, legitimate user, cooldown
+recovery, no enumeration, per-device and per-IP limits, and atomic concurrent counting on
+PostgreSQL (`test/account-login-limiter.persistence.spec.ts`).

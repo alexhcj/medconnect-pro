@@ -5,6 +5,7 @@ import {AuditEventRepository} from '../audit/audit-event.repository.js';
 import type {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import type {AuthSession} from '../persistence/entities/auth-session.entity.js';
 import {getCorrelationId} from '../platform/correlation.js';
+import {AccountLoginLimiter} from '../rate-limit/account-login-limiter.js';
 import {isPracticeRole} from '../tenancy/practice-role.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {
@@ -15,7 +16,7 @@ import {
 } from './auth.errors.js';
 import type {Clock} from './clock.js';
 import {CLOCK} from './clock.js';
-import {IdentityMembershipLookup} from './membership-lookup.js';
+import {IdentityMembershipLookup, resolveAttributableMembership} from './membership-lookup.js';
 import {
 	findMockIdpAccountByEmail,
 	MOCK_IDP_USERS,
@@ -58,6 +59,7 @@ export class AuthService {
 		@Inject(CLOCK) private readonly clock: Clock,
 		private readonly audit: AuditEventRepository,
 		@Inject(REQUEST) private readonly request: Request,
+		@Inject(AccountLoginLimiter) private readonly accountLimiter: AccountLoginLimiter,
 	) {}
 
 	async login(input: {
@@ -65,12 +67,15 @@ export class AuthService {
 		password: string;
 		practiceId?: string;
 	}): Promise<LoginResult> {
+		await this.accountLimiter.assertAllowed(input.email);
 		const account = findMockIdpAccountByEmail(this.accounts, input.email);
 		if (!account) {
+			await this.recordAccountFailure(input.email, input.practiceId);
 			throw new InvalidCredentialsError();
 		}
 		if (!constantTimeEqual(input.password, account.password)) {
 			await this.tryRecordLoginFailed(account.email, input.practiceId);
+			await this.recordAccountFailure(account.email, input.practiceId);
 			throw new InvalidCredentialsError();
 		}
 		const user = await this.memberships.findUserByEmail(account.email);
@@ -349,38 +354,38 @@ export class AuthService {
 		};
 	}
 
-	private resolveFailedLoginMembership(
-		memberships: PracticeMembership[],
-		practiceId: string | undefined,
-	): PracticeMembership | undefined {
-		if (memberships.length === 0) {
-			return undefined;
+	private async tryRecordLoginFailed(email: string, practiceId?: string): Promise<void> {
+		const scope = await this.resolveLoginScope(email, practiceId);
+		if (scope) {
+			await this.recordAuth('auth.login.failed', null, scope);
 		}
-		if (practiceId !== undefined) {
-			return memberships.find((membership) => membership.practiceId === practiceId);
-		}
-		if (memberships.length !== 1) {
-			return undefined;
-		}
-		return memberships[0];
 	}
 
-	private async tryRecordLoginFailed(email: string, practiceId?: string): Promise<void> {
-		const user = await this.memberships.findUserByEmail(email);
-		if (!user) {
+	/** Counts toward the account-wide budget; audits once when this failure starts the cooldown. */
+	private async recordAccountFailure(email: string, practiceId?: string): Promise<void> {
+		const {firstRejection} = await this.accountLimiter.recordFailure(email);
+		if (!firstRejection) {
 			return;
 		}
-		const membership = this.resolveFailedLoginMembership(
+		const scope = await this.resolveLoginScope(email, practiceId);
+		if (scope) {
+			await this.recordAuth('auth.rate_limited', null, scope);
+		}
+	}
+
+	private async resolveLoginScope(
+		email: string,
+		practiceId: string | undefined,
+	): Promise<AuditScope | undefined> {
+		const user = await this.memberships.findUserByEmail(email);
+		if (!user) {
+			return undefined;
+		}
+		const membership = resolveAttributableMembership(
 			await this.memberships.listForUser(user.id),
 			practiceId,
 		);
-		if (!membership) {
-			return;
-		}
-		await this.recordAuth('auth.login.failed', null, {
-			practiceId: membership.practiceId,
-			actorUserId: user.id,
-		});
+		return membership ? {practiceId: membership.practiceId, actorUserId: user.id} : undefined;
 	}
 
 	private async recordMfaFailure(session: AuthSession): Promise<void> {

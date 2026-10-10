@@ -7,4 +7,6 @@ export const RATE_LIMIT_STORE = Symbol('RATE_LIMIT_STORE');
 /** Fixed-window counter storage (ADR-015). Keys are already HMAC hashes. */
 export interface RateLimitStore {
 	increment(policy: string, keyHash: string, windowMs: number, now: Date): Promise<BucketCount>;
+	/** Current count in the window containing `now` without counting a hit (0 when absent). */
+	peek(policy: string, keyHash: string, windowMs: number, now: Date): Promise<BucketCount>;
 }

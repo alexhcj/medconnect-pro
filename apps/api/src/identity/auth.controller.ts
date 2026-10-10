@@ -13,6 +13,8 @@ import {
 import type {Request, Response} from 'express';
 import {resolveAppEnv} from '../platform/cors-origins.js';
 import {ErrorEnvelopeRdo, RateLimitedErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
+import {RateLimit} from '../rate-limit/rate-limit.decorator.js';
+import {RATE_LIMIT_POLICIES} from '../rate-limit/rate-limit.policies.js';
 import {SessionInvalidError} from './auth.errors.js';
 import {ApiSessionAuth, Public} from './auth.decorators.js';
 import type {RequestAuth} from './auth.guard.js';
@@ -38,6 +40,7 @@ export class AuthController {
 
 	@Post('login')
 	@Public()
+	@RateLimit(RATE_LIMIT_POLICIES.loginDevice, RATE_LIMIT_POLICIES.loginIp)
 	@HttpCode(200)
 	@ApiOperation({
 		summary: 'Mock IdP login',
@@ -78,6 +81,7 @@ export class AuthController {
 
 	@Post('refresh')
 	@Public()
+	@RateLimit(RATE_LIMIT_POLICIES.refresh)
 	@HttpCode(200)
 	@ApiOperation({
 		summary: 'Rotate the mock refresh token',
@@ -109,6 +113,7 @@ export class AuthController {
 
 	@Post('mfa/verify')
 	@Public()
+	@RateLimit(RATE_LIMIT_POLICIES.mfaVerify)
 	@HttpCode(200)
 	@ApiOperation({
 		summary: 'Verify a mock MFA challenge',

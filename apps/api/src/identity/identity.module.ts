@@ -9,6 +9,8 @@ import {ExternalIdentity} from '../persistence/entities/external-identity.entity
 import {OAuthFlowState} from '../persistence/entities/oauth-flow-state.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {User} from '../persistence/entities/user.entity.js';
+import {AccountLoginLimiter} from '../rate-limit/account-login-limiter.js';
+import {RATE_LIMIT_AUDITOR} from '../rate-limit/rate-limit-auditor.js';
 import {RateLimitGuard} from '../rate-limit/rate-limit.guard.js';
 import {RateLimitModule} from '../rate-limit/rate-limit.module.js';
 import {TenancyModule} from '../tenancy/tenant.module.js';
@@ -18,6 +20,7 @@ import {AuthService} from './auth.service.js';
 import {CLOCK, systemClock} from './clock.js';
 import {ExternalIdentityRepository} from './external-identity.repository.js';
 import {OAuthFlowStateRepository} from './oauth-flow-state.repository.js';
+import {IdentityRateLimitAuditor} from './identity-rate-limit-auditor.js';
 import {IdentityMembershipLookup} from './membership-lookup.js';
 import {defaultMockIdpAccounts, MOCK_IDP_USERS} from './mock-idp.js';
 import {PermissionsGuard} from './permissions.guard.js';
@@ -64,6 +67,8 @@ import {SessionRepository} from './session.repository.js';
 		IdentityMembershipLookup,
 		{provide: MOCK_IDP_USERS, useValue: defaultMockIdpAccounts},
 		{provide: CLOCK, useValue: systemClock},
+		AccountLoginLimiter,
+		{provide: RATE_LIMIT_AUDITOR, useClass: IdentityRateLimitAuditor},
 		{provide: APP_GUARD, useClass: AuthGuard},
 		{provide: APP_GUARD, useClass: RateLimitGuard},
 		{provide: APP_GUARD, useClass: PermissionsGuard},

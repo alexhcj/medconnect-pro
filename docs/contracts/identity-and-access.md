@@ -289,15 +289,22 @@ integration, not production OAuth or HIPAA identity.
 - **Local demo:** seeded `*@example.test` users cannot use real Google. The Fake adapter (Google
   env unset, local/test only) and the `OIDC_DEMO_EMAIL` seed hook cover local sign-in.
 
-### Auth rate limits (M15, planned)
+### Auth rate limits (M15)
 
 Defined in [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md); implemented by
-BE-018 and BE-019.
+BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.policies.ts`).
 
-- `POST /auth/login`: 5 per 15 min per client IP + normalized email, and 20 per 15 min per IP.
+- `POST /auth/login`: three buckets. 5 per 15 min per client IP + normalized email (per device),
+  20 per 15 min per IP, and 10 failed attempts per 15 min per normalized email from any IP (per
+  account; checked before credentials, counts unknown emails too, successes never count). All
+  return the same 429; there is no permanent lockout.
 - `POST /auth/mfa/verify`: 5 per 10 min per MFA session + IP.
 - `POST /auth/refresh`: 30 per 5 min per IP.
-- `GET /auth/oauth/:provider/start`, `/callback`, and Fake `authorize`: 20 per 5 min per IP.
+- `GET /auth/oauth/:provider/start`, `/callback`, and Fake `authorize`: 20 per 5 min per IP. A
+  throttled callback redirects to `/login?reason=oauth_failed` (with `Retry-After`) instead of JSON.
+- Session user (fail open): `POST /telehealth/sessions/:id/media-token` 30 per 5 min,
+  `GET /patients/:id/documents/:documentId/content` 60 per 5 min, `POST /billing/payments` 10 per
+  5 min.
 - Exceeded: HTTP 429 `RATE_LIMITED` with `details.retryAfterSeconds` and `Retry-After`. Limiter
   store unavailable: HTTP 503 `RATE_LIMIT_UNAVAILABLE` (auth routes fail closed).
 - Client IP follows `TRUST_PROXY`. Keys are HMAC-hashed; raw IPs, emails, and tokens are never

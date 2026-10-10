@@ -17,7 +17,7 @@ Columns:
 
 | Capability | Catalog | Demo app | Public site | Planned |
 | --- | --- | --- | --- | --- |
-| Authentication (mock IdP, sessions) | [identity-access](../product/identity-access.md) | Yes (Nest HttpOnly cookies + opaque bearer JSON for machine clients; live Next does not persist tokens; labeled mock MFA on `/login`; demo OIDC + PKCE with Google or Fake adapter) | Yes — labeled mock identity, mock MFA, and "Demo OIDC + PKCE (Google or Fake). Not a production IdP." Not production OAuth or production MFA | Production OAuth / IdP, production MFA ([ADR-003](../decisions/ADR-003-authentication.md)) |
+| Authentication (mock IdP, sessions) | [identity-access](../product/identity-access.md) | Yes (Nest HttpOnly cookies + opaque bearer JSON for machine clients; live Next does not persist tokens; labeled mock MFA on `/login`; demo OIDC + PKCE with Google or Fake adapter; demo API rate limits on login, MFA, refresh, OAuth, media-token, document download, and payments with `auth.rate_limited` security events) | Yes — labeled mock identity, mock MFA, and "Demo OIDC + PKCE (Google or Fake). Not a production IdP." May say "demo rate limiting on sign-in and sensitive API routes". Not production OAuth, production MFA, or production abuse protection | Production OAuth / IdP, production MFA ([ADR-003](../decisions/ADR-003-authentication.md)); 429 auth UX (FE-034) |
 | Patient management | [patient-management](../product/patient-management.md) | Yes | Yes | — |
 | Scheduling (appointments, calendar) | [scheduling](../product/scheduling.md) | Yes | Yes | — |
 | Clinical / EHR foundation | [patient-management](../product/patient-management.md) | Yes (lists on patient profile) | Yes, as foundation | External EHR integrations |

@@ -8,6 +8,17 @@ const PRUNE_BATCH = 500;
 
 export type BucketCount = {count: number; resetAt: Date};
 
+function bucketWindow(keyHash: string, windowMs: number, now: Date): {windowStart: Date; resetAt: Date} {
+	if (!KEY_HASH.test(keyHash)) {
+		throw new Error('Rate-limit key must be a 64-character lowercase hex hash');
+	}
+	if (!Number.isInteger(windowMs) || windowMs <= 0) {
+		throw new Error('Rate-limit window must be a positive integer of milliseconds');
+	}
+	const windowStart = new Date(Math.floor(now.getTime() / windowMs) * windowMs);
+	return {windowStart, resetAt: new Date(windowStart.getTime() + windowMs)};
+}
+
 @Injectable()
 export class RateLimitBucketRepository {
 	constructor(
@@ -22,14 +33,7 @@ export class RateLimitBucketRepository {
 		windowMs: number,
 		now: Date,
 	): Promise<BucketCount> {
-		if (!KEY_HASH.test(keyHash)) {
-			throw new Error('Rate-limit key must be a 64-character lowercase hex hash');
-		}
-		if (!Number.isInteger(windowMs) || windowMs <= 0) {
-			throw new Error('Rate-limit window must be a positive integer of milliseconds');
-		}
-		const windowStart = new Date(Math.floor(now.getTime() / windowMs) * windowMs);
-		const resetAt = new Date(windowStart.getTime() + windowMs);
+		const {windowStart, resetAt} = bucketWindow(keyHash, windowMs, now);
 
 		await this.pruneExpired(now);
 		const raw = (await this.rows.query(
@@ -41,6 +45,16 @@ export class RateLimitBucketRepository {
 			[policy, keyHash, windowStart, resetAt],
 		)) as Array<{count: number}>;
 		return {count: Number(raw[0].count), resetAt};
+	}
+
+	async peek(policy: string, keyHash: string, windowMs: number, now: Date): Promise<BucketCount> {
+		const {windowStart, resetAt} = bucketWindow(keyHash, windowMs, now);
+		const raw = (await this.rows.query(
+			`SELECT "count" FROM "rate_limit_buckets"
+			WHERE "policy" = $1 AND "key_hash" = $2 AND "window_start" = $3`,
+			[policy, keyHash, windowStart],
+		)) as Array<{count: number}>;
+		return {count: raw[0] ? Number(raw[0].count) : 0, resetAt};
 	}
 
 	async pruneExpired(now: Date, limit = PRUNE_BATCH): Promise<void> {

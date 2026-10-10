@@ -28,6 +28,8 @@ import {
 	runFakeOAuth,
 	startFakeOAuth,
 } from './oauth-flow.js';
+import {RATE_LIMIT_STORE} from '../src/rate-limit/rate-limit-store.js';
+import {testRateLimitStore} from './rate-limit-test-store.js';
 
 const password = 'Synthetic-Pass-1';
 const FAILED = `${DEFAULT_LOCAL_WEB_ORIGIN}/login?reason=oauth_failed`;
@@ -75,6 +77,8 @@ describe('OAuth HTTP (Fake OIDC)', () => {
 		const moduleRef = await Test.createTestingModule({imports: [AppModule]})
 			.overrideProvider(MOCK_IDP_USERS)
 			.useValue(catalog)
+			.overrideProvider(RATE_LIMIT_STORE)
+			.useValue(testRateLimitStore)
 			.compile();
 		dataSource = await createAdminDataSource();
 		app = moduleRef.createNestApplication();
@@ -347,6 +351,8 @@ describe('OAuth HTTP (unconfigured hosted provider)', () => {
 		const moduleRef = await Test.createTestingModule({imports: [AppModule]})
 			.overrideProvider(OIDC_PROVIDER_PORT)
 			.useValue(new UnavailableOidcAdapter('google'))
+			.overrideProvider(RATE_LIMIT_STORE)
+			.useValue(testRateLimitStore)
 			.compile();
 		app = moduleRef.createNestApplication();
 		configureApp(app);

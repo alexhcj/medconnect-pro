@@ -145,6 +145,18 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 	assertCookieOrBearer(document, '/telehealth/sessions/{id}/media-token', 'post');
 	assertCookieOrBearer(document, '/telehealth/sessions/{id}/end', 'post');
 	assertCookieOrBearer(document, '/dashboard/overview', 'get');
+	for (const [path, method] of [
+		['/auth/login', 'post'],
+		['/auth/mfa/verify', 'post'],
+		['/auth/refresh', 'post'],
+		['/auth/oauth/{provider}/start', 'get'],
+		['/auth/oauth/{provider}/callback', 'get'],
+		['/telehealth/sessions/{id}/media-token', 'post'],
+		['/patients/{id}/documents/{documentId}/content', 'get'],
+		['/billing/payments', 'post'],
+	] as const) {
+		assertRateLimited(document, path, method);
+	}
 	const patientById = document.paths?.['/patients/{id}'];
 	if (patientById && 'delete' in patientById) {
 		throw new Error('DELETE /patients/{id} is not part of the patient contract');
@@ -156,7 +168,14 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 
 type DocumentedOperation = {
 	security?: Array<Record<string, unknown>>;
+	responses?: Record<string, unknown>;
 };
+
+function assertRateLimited(document: OpenAPIObject, path: string, method: string): void {
+	if (!documentedOperation(document, path, method)?.responses?.['429']) {
+		throw new Error(`${method.toUpperCase()} ${path} must document 429 RATE_LIMITED`);
+	}
+}
 
 function documentedOperation(
 	document: OpenAPIObject,

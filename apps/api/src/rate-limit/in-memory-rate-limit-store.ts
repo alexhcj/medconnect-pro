@@ -12,6 +12,12 @@ export class InMemoryRateLimitStore implements RateLimitStore {
 		return {count, resetAt: new Date(windowStart + windowMs)};
 	}
 
+	async peek(policy: string, keyHash: string, windowMs: number, now: Date): Promise<BucketCount> {
+		const windowStart = Math.floor(now.getTime() / windowMs) * windowMs;
+		const count = this.buckets.get(`${policy}\n${keyHash}\n${windowStart}`) ?? 0;
+		return {count, resetAt: new Date(windowStart + windowMs)};
+	}
+
 	reset(): void {
 		this.buckets.clear();
 	}

@@ -4,6 +4,23 @@ import {Repository} from 'typeorm';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {User} from '../persistence/entities/user.entity.js';
 
+/** Practice to attribute a failed or throttled login to; ambiguous users resolve to none. */
+export function resolveAttributableMembership(
+	memberships: PracticeMembership[],
+	practiceId: string | undefined,
+): PracticeMembership | undefined {
+	if (memberships.length === 0) {
+		return undefined;
+	}
+	if (practiceId !== undefined) {
+		return memberships.find((membership) => membership.practiceId === practiceId);
+	}
+	if (memberships.length !== 1) {
+		return undefined;
+	}
+	return memberships[0];
+}
+
 /**
  * Loads identity rows by user id. Tenant context is derived from these memberships,
  * so this lookup must not call TenantContext.require().

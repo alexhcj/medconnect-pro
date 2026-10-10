@@ -12,4 +12,8 @@ export type RateLimitPolicy = {
 	failure: 'closed' | 'open';
 	/** Raw key material. Returning `undefined` skips this policy for the request. */
 	key: (req: RateLimitRequest) => string | undefined;
+	/** How to resolve a practice user for `auth.rate_limited`; unset policies never audit. */
+	audit?: RateLimitAuditKind;
 };
+
+export type RateLimitAuditKind = 'login_email' | 'mfa_session' | 'session_user';

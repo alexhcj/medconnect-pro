@@ -9,4 +9,8 @@ export class PostgresRateLimitStore implements RateLimitStore {
 	increment(policy: string, keyHash: string, windowMs: number, now: Date): Promise<BucketCount> {
 		return this.buckets.increment(policy, keyHash, windowMs, now);
 	}
+
+	peek(policy: string, keyHash: string, windowMs: number, now: Date): Promise<BucketCount> {
+		return this.buckets.peek(policy, keyHash, windowMs, now);
+	}
 }

@@ -2897,6 +2897,24 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -3320,6 +3338,24 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -3618,6 +3654,24 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -3757,6 +3811,34 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "RATE_LIMIT_UNAVAILABLE: the rate limiter store is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "summary": "Mock IdP login",
@@ -3799,6 +3881,34 @@
           },
           "401": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "RATE_LIMIT_UNAVAILABLE: the rate limiter store is unavailable.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3855,6 +3965,34 @@
           },
           "401": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "RATE_LIMIT_UNAVAILABLE: the rate limiter store is unavailable.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4016,8 +4154,26 @@
               }
             }
           },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
+          },
           "503": {
-            "description": "",
+            "description": "RATE_LIMIT_UNAVAILABLE: the rate limiter store is unavailable.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4035,7 +4191,7 @@
     },
     "/auth/oauth/{provider}/callback": {
       "get": {
-        "description": "Consumes state, exchanges the code with the PKCE verifier, validates the ID token, maps to a provisioned user, and sets the same HttpOnly session cookies as password login. Any failure redirects to /login?reason=oauth_failed with no provider detail.",
+        "description": "Consumes state, exchanges the code with the PKCE verifier, validates the ID token, maps to a provisioned user, and sets the same HttpOnly session cookies as password login. Any failure redirects to /login?reason=oauth_failed with no provider detail. Rate limiting also redirects there (with Retry-After) instead of returning the documented 429/503 JSON.",
         "operationId": "OAuthController_callback",
         "parameters": [
           {
@@ -4054,6 +4210,34 @@
         "responses": {
           "302": {
             "description": "Redirect to the web OAuth complete page or the generic failure page."
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "RATE_LIMIT_UNAVAILABLE: the rate limiter store is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "summary": "Complete demo OIDC sign-in",
@@ -5320,6 +5504,61 @@
           "synthetic"
         ]
       },
+      "RateLimitedDetails": {
+        "type": "object",
+        "properties": {
+          "retryAfterSeconds": {
+            "type": "number",
+            "example": 120,
+            "minimum": 1,
+            "description": "Seconds until the window resets"
+          }
+        },
+        "required": [
+          "retryAfterSeconds"
+        ]
+      },
+      "RateLimitedErrorBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "RATE_LIMITED",
+            "enum": [
+              "RATE_LIMITED"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "example": "Too many requests. Try again later."
+          },
+          "details": {
+            "$ref": "#/components/schemas/RateLimitedDetails"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "details"
+        ]
+      },
+      "RateLimitedErrorEnvelope": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/RateLimitedErrorBody"
+          },
+          "correlationId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "00000000-0000-4000-8000-000000000001"
+          }
+        },
+        "required": [
+          "error",
+          "correlationId"
+        ]
+      },
       "TelehealthMediaToken": {
         "type": "object",
         "properties": {
@@ -5725,61 +5964,6 @@
         "required": [
           "synthetic",
           "metrics"
-        ]
-      },
-      "RateLimitedDetails": {
-        "type": "object",
-        "properties": {
-          "retryAfterSeconds": {
-            "type": "number",
-            "example": 120,
-            "minimum": 1,
-            "description": "Seconds until the window resets"
-          }
-        },
-        "required": [
-          "retryAfterSeconds"
-        ]
-      },
-      "RateLimitedErrorBody": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "example": "RATE_LIMITED",
-            "enum": [
-              "RATE_LIMITED"
-            ]
-          },
-          "message": {
-            "type": "string",
-            "example": "Too many requests. Try again later."
-          },
-          "details": {
-            "$ref": "#/components/schemas/RateLimitedDetails"
-          }
-        },
-        "required": [
-          "code",
-          "message",
-          "details"
-        ]
-      },
-      "RateLimitedErrorEnvelope": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "$ref": "#/components/schemas/RateLimitedErrorBody"
-          },
-          "correlationId": {
-            "type": "string",
-            "format": "uuid",
-            "example": "00000000-0000-4000-8000-000000000001"
-          }
-        },
-        "required": [
-          "error",
-          "correlationId"
         ]
       },
       "TokenPair": {

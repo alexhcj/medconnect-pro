@@ -24,6 +24,10 @@ class ProbeStore implements RateLimitStore {
 		return this.memory.increment(policy, keyHash, windowMs, now);
 	}
 
+	peek(policy: string, keyHash: string, windowMs: number, now: Date) {
+		return this.memory.peek(policy, keyHash, windowMs, now);
+	}
+
 	reset(): void {
 		this.memory.reset();
 		this.keyHashes.length = 0;

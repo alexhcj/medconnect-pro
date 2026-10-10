@@ -25,6 +25,8 @@ import {
 import type {Request} from 'express';
 import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
+import {RateLimit} from '../rate-limit/rate-limit.decorator.js';
+import {RATE_LIMIT_POLICIES} from '../rate-limit/rate-limit.policies.js';
 import {MAX_DOCUMENT_BYTES} from './document-file.js';
 import {DocumentFileInvalidError} from './document.errors.js';
 import {
@@ -90,6 +92,7 @@ export class DocumentsController {
 	}
 
 	@Get(':documentId/content')
+	@RateLimit(RATE_LIMIT_POLICIES.documentDownload)
 	@ApiOperation({
 		summary: 'Download a patient document',
 		description:

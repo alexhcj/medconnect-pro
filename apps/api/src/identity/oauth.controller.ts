@@ -8,6 +8,7 @@ import {
 	Param,
 	Query,
 	Res,
+	UseFilters,
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -22,7 +23,10 @@ import {
 import type {Response} from 'express';
 import {DEFAULT_LOCAL_WEB_ORIGIN, resolveAppEnv} from '../platform/cors-origins.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
+import {RateLimit} from '../rate-limit/rate-limit.decorator.js';
+import {RATE_LIMIT_POLICIES} from '../rate-limit/rate-limit.policies.js';
 import {Public} from './auth.decorators.js';
+import {OAuthCallbackRateLimitFilter} from './oauth-callback-rate-limit.filter.js';
 import {
 	OAuthBadRequestError,
 	OAuthService,
@@ -53,6 +57,7 @@ export class OAuthController {
 
 	@Get('fake/authorize')
 	@Public()
+	@RateLimit(RATE_LIMIT_POLICIES.oauthFakeAuthorize)
 	@ApiExcludeEndpoint()
 	fakeAuthorize(
 		@Query('state') state: unknown,
@@ -84,6 +89,7 @@ export class OAuthController {
 
 	@Get(':provider/start')
 	@Public()
+	@RateLimit(RATE_LIMIT_POLICIES.oauthStart)
 	@ApiOperation({
 		summary: 'Start demo OIDC sign-in',
 		description:
@@ -126,10 +132,12 @@ export class OAuthController {
 
 	@Get(':provider/callback')
 	@Public()
+	@RateLimit(RATE_LIMIT_POLICIES.oauthCallback)
+	@UseFilters(new OAuthCallbackRateLimitFilter(() => `${webOrigin()}${OAUTH_FAILED_PATH}`))
 	@ApiOperation({
 		summary: 'Complete demo OIDC sign-in',
 		description:
-			'Consumes state, exchanges the code with the PKCE verifier, validates the ID token, maps to a provisioned user, and sets the same HttpOnly session cookies as password login. Any failure redirects to /login?reason=oauth_failed with no provider detail.',
+			'Consumes state, exchanges the code with the PKCE verifier, validates the ID token, maps to a provisioned user, and sets the same HttpOnly session cookies as password login. Any failure redirects to /login?reason=oauth_failed with no provider detail. Rate limiting also redirects there (with Retry-After) instead of returning the documented 429/503 JSON.',
 	})
 	@ApiParam({name: 'provider', enum: ['google', 'fake']})
 	@ApiFoundResponse({description: 'Redirect to the web OAuth complete page or the generic failure page.'})

@@ -20,6 +20,8 @@ import {User} from '../src/persistence/entities/user.entity.js';
 import {Vital} from '../src/persistence/entities/vital.entity.js';
 import {syntheticPatientColumns} from './synthetic-patient.js';
 import {createAdminDataSource} from './admin-data-source.js';
+import {RATE_LIMIT_STORE} from '../src/rate-limit/rate-limit-store.js';
+import {testRateLimitStore} from './rate-limit-test-store.js';
 
 const password = 'Synthetic-Pass-1';
 
@@ -104,6 +106,8 @@ describe('clinical HTTP', () => {
 		})
 			.overrideProvider(MOCK_IDP_USERS)
 			.useValue(catalog)
+			.overrideProvider(RATE_LIMIT_STORE)
+			.useValue(testRateLimitStore)
 			.compile();
 
 		dataSource = await createAdminDataSource();

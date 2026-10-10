@@ -15,6 +15,10 @@ import {PracticeMembership} from '../src/persistence/entities/practice-membershi
 import {Practice} from '../src/persistence/entities/practice.entity.js';
 import {User} from '../src/persistence/entities/user.entity.js';
 import {TenantMismatchError} from '../src/tenancy/tenant-errors.js';
+import type {ConfigService} from '@nestjs/config';
+import {DEV_RATE_LIMIT_KEY_SECRET, type Env} from '../src/platform/env.schema.js';
+import {AccountLoginLimiter} from '../src/rate-limit/account-login-limiter.js';
+import {InMemoryRateLimitStore} from '../src/rate-limit/in-memory-rate-limit-store.js';
 import {createAdminDataSource} from './admin-data-source.js';
 
 const password = 'Synthetic-Pass-1';
@@ -106,6 +110,9 @@ describe('AuthService', () => {
 			clock,
 			audit as unknown as AuditEventRepository,
 			request,
+			new AccountLoginLimiter(new InMemoryRateLimitStore(), clock, {
+				get: () => DEV_RATE_LIMIT_KEY_SECRET,
+			} as unknown as ConfigService<Env, true>),
 		);
 	});
 

@@ -12,6 +12,8 @@ import {
 } from '@nestjs/swagger';
 import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
+import {RateLimit} from '../rate-limit/rate-limit.decorator.js';
+import {RATE_LIMIT_POLICIES} from '../rate-limit/rate-limit.policies.js';
 import {
 	TelehealthMediaTokenRdo,
 	TelehealthSessionCreateRequestRdo,
@@ -82,6 +84,7 @@ export class TelehealthSessionController {
 
 	@Post(':id/media-token')
 	@HttpCode(200)
+	@RateLimit(RATE_LIMIT_POLICIES.mediaToken)
 	@ApiOperation({
 		summary: 'Mint a Daily meeting token for a telehealth session',
 		description:

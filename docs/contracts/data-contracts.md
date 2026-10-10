@@ -307,8 +307,9 @@ do not produce a practice row. Passwords, MFA secrets, and session hashes must n
 require `admin:practice`. Tenant comes from the session. Optional client `practiceId` is ignored
 for authorization and rejected on mismatch.
 
-M15 (planned) adds `auth.rate_limited`, written only when a rate-limited request resolves to a
-known practice user, at most once per key per window, with no IP, email, or key hash
+M15 (BE-019) adds `auth.rate_limited` (`resourceType` `session`, `resourceId` null), written only
+when a rate-limited request resolves to a known practice user, at most once per key per window,
+with no IP, email, or key hash
 ([ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)).
 
 ## Practice user directory
@@ -359,8 +360,8 @@ JSON error responses from `apps/api` use this shape (no stack traces, tokens, or
 - Authenticated callers without permission, or a client `practiceId` that does not match the
   session tenant, use `code` `FORBIDDEN` and HTTP 403.
 - Rate-limited requests (M15; envelope and limiter shipped in
-  [BE-018](../tasks/backend/BE-018-rate-limit-platform-and-client-ip.md), route policies pending
-  BE-019; [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md))
+  [BE-018](../tasks/backend/BE-018-rate-limit-platform-and-client-ip.md), route policies
+  [BE-019](../tasks/backend/BE-019-auth-and-sensitive-route-rate-limits.md); [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md))
   use HTTP 429, `code` `RATE_LIMITED`, `details` `{ "retryAfterSeconds": number }`, and a
   `Retry-After` header in seconds. Additive. `details` is an object for this code (OpenAPI
   `RateLimitedErrorEnvelope`); validation errors keep the `[{path, message}]` array. Counters persist in PostgreSQL `rate_limit_buckets`

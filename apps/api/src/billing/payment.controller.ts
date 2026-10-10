@@ -11,6 +11,8 @@ import {
 } from '@nestjs/swagger';
 import {ApiSessionAuth} from '../identity/auth.decorators.js';
 import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
+import {RateLimit} from '../rate-limit/rate-limit.decorator.js';
+import {RATE_LIMIT_POLICIES} from '../rate-limit/rate-limit.policies.js';
 import {PaymentCreateRequestRdo, PaymentRdo} from './billing.rdo.js';
 import {paymentCreateSchema, type PaymentCreateBody} from './billing.schema.js';
 import {BillingService} from './billing.service.js';
@@ -25,6 +27,7 @@ export class PaymentController {
 
 	@Post()
 	@HttpCode(201)
+	@RateLimit(RATE_LIMIT_POLICIES.payment)
 	@ApiOperation({
 		summary: 'Record a synthetic payment against an invoice',
 		description:
