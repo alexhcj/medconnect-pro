@@ -25,7 +25,11 @@ test.describe('Telehealth session shell', () => {
 		await expect(visits).toContainText('Telehealth');
 		await expect(visits).toContainText('demo-appointment-002');
 
-		await page.getByRole('link', {name: 'Join visit'}).click();
+		await visits
+			.getByRole('listitem')
+			.filter({hasText: 'demo-appointment-002'})
+			.getByRole('link', {name: 'Join visit'})
+			.click();
 		await expect(page).toHaveURL(/\/dashboard\/telehealth\/session-demo-appointment-002$/);
 		await expect(page.getByRole('heading', {level: 1, name: 'Telehealth session'})).toBeVisible();
 		await expect(page.getByRole('heading', {level: 2, name: 'Waiting room'})).toBeVisible();

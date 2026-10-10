@@ -35,6 +35,18 @@
       "type": "follow_up",
       "state": "cancelled",
       "synthetic": true
+    },
+    {
+      "id": "demo-appointment-004",
+      "practiceId": "demo-practice-001",
+      "patientId": "demo-patient-001",
+      "providerId": "demo-provider-001",
+      "start": "2026-10-10T15:00:00.000Z",
+      "end": "2026-10-10T19:00:00.000Z",
+      "type": "telehealth",
+      "state": "confirmed",
+      "notes": "Two-device live demo. Mock runtime replaces start/end with a current join window.",
+      "synthetic": true
     }
   ]
 }

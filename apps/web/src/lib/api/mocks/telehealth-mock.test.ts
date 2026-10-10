@@ -9,17 +9,29 @@ describe('telehealthMockAPI', () => {
 	it('lists joinable telehealth visits derived from appointments', async () => {
 		const visits = await telehealthMockAPI.listJoinableVisits();
 
-		expect(visits).toEqual([
-			expect.objectContaining({
-				id: 'session-demo-appointment-002',
-				appointmentId: 'demo-appointment-002',
-				patientName: 'Taylor Bennett',
-				providerName: 'Dr. Casey Walsh',
-				type: 'telehealth',
-				state: 'waiting',
-				synthetic: true,
-			}),
-		]);
+		expect(visits).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					id: 'session-demo-appointment-002',
+					appointmentId: 'demo-appointment-002',
+					patientName: 'Taylor Bennett',
+					providerName: 'Dr. Casey Walsh',
+					type: 'telehealth',
+					state: 'waiting',
+					synthetic: true,
+				}),
+				expect.objectContaining({
+					id: 'session-demo-appointment-004',
+					appointmentId: 'demo-appointment-004',
+					patientName: 'Avery Carter',
+					providerName: 'Dr. Jordan Ellis',
+					type: 'telehealth',
+					state: 'waiting',
+					synthetic: true,
+				}),
+			]),
+		);
+		expect(visits).toHaveLength(2);
 	});
 
 	it('creates a derived session from a joinable appointment', async () => {

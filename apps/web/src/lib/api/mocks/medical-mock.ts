@@ -55,7 +55,27 @@ function withParticipants(
 	};
 }
 
-appointments.push(...structuredClone(fixtureAppointments).map((appointment) => withParticipants(appointment)));
+const TWO_DEVICE_TELEHEALTH_ID = 'demo-appointment-004';
+const TWO_DEVICE_LOOKBEHIND_MS = 2 * 60 * 1000;
+const TWO_DEVICE_DURATION_MS = 4 * 60 * 60 * 1000;
+
+function withCurrentJoinWindow(appointment: Appointment): Appointment {
+	if (appointment.id !== TWO_DEVICE_TELEHEALTH_ID) {
+		return appointment;
+	}
+	const start = new Date(Date.now() - TWO_DEVICE_LOOKBEHIND_MS);
+	return {
+		...appointment,
+		start: start.toISOString(),
+		end: new Date(start.getTime() + TWO_DEVICE_LOOKBEHIND_MS + TWO_DEVICE_DURATION_MS).toISOString(),
+	};
+}
+
+appointments.push(
+	...structuredClone(fixtureAppointments)
+		.map((appointment) => withParticipants(appointment))
+		.map(withCurrentJoinWindow),
+);
 
 async function withMock<T>(work: () => T, errorMessage: string): Promise<T> {
 	await mockDelay();

@@ -159,6 +159,16 @@ describe('medicalMockAPI.createAppointment', () => {
 			providerName: 'Dr. Jordan Ellis',
 			state: 'scheduled',
 		});
+		const twoDevice = listed.find((appointment) => appointment.id === 'demo-appointment-004');
+		expect(twoDevice).toMatchObject({
+			type: 'telehealth',
+			state: 'confirmed',
+			patientName: 'Avery Carter',
+			providerName: 'Dr. Jordan Ellis',
+		});
+		const now = Date.now();
+		expect(Date.parse(twoDevice?.start ?? '')).toBeGreaterThan(now - 5 * 60 * 1000);
+		expect(Date.parse(twoDevice?.end ?? '')).toBeGreaterThan(now + 3 * 60 * 60 * 1000);
 	});
 
 	it('stores a synthetic appointment on the patient practice', async () => {

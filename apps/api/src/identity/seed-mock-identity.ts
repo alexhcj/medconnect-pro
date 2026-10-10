@@ -297,8 +297,8 @@ export async function seedMockIdentity(): Promise<void> {
 			where: {practiceId: practice.id, email: SEEDED_PATIENTS[0].email},
 		});
 		const now = new Date();
-		const telehealthStart = new Date(now.getTime() - 2 * 60 * 1000);
-		const telehealthEnd = new Date(now.getTime() + 45 * 60 * 1000);
+		const telehealthStart = new Date(now.getTime() - 15 * 60 * 1000);
+		const telehealthEnd = new Date(now.getTime() + 4 * 60 * 60 * 1000);
 		await parkAppointmentByNotes(appointments, practice.id, TODAY_OFFICE_NOTES, now);
 
 		if (seededPatient) {
