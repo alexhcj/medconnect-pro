@@ -3,6 +3,15 @@ import {ApiError, RateLimitedError} from '@/lib/api/http';
 import {telehealthActionErrorMessage} from '@/lib/telehealth/action-error';
 
 describe('telehealthActionErrorMessage', () => {
+	it('surfaces Nest 403 permission messages for roles that cannot create or join', () => {
+		expect(
+			telehealthActionErrorMessage(
+				new ApiError('You do not have permission to perform this action', 403, {code: 'FORBIDDEN'}),
+				'Unable to start this telehealth visit.',
+			),
+		).toBe('You do not have permission to perform this action');
+	});
+
 	it('surfaces Nest 409 conflict messages', () => {
 		expect(
 			telehealthActionErrorMessage(

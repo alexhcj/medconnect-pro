@@ -64,6 +64,23 @@ describe('JoinTelehealthVisitControl', () => {
 		expect(push).toHaveBeenCalledWith('/dashboard/telehealth/dddddddd-dddd-4ddd-8ddd-dddddddddddd');
 	});
 
+	it('surfaces a Nest 403 when a nurse or patient cannot create a session', () => {
+		vi.mocked(isMockMode).mockReturnValue(false);
+		useCreateTelehealthSession.mockReturnValue({
+			mutate: vi.fn(),
+			isPending: false,
+			isError: true,
+			error: new ApiError('You do not have permission to perform this action', 403, {
+				code: 'FORBIDDEN',
+			}),
+		});
+		render(<JoinTelehealthVisitControl appointmentId="bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb" />);
+
+		expect(screen.getByRole('alert')).toHaveTextContent(
+			'You do not have permission to perform this action',
+		);
+	});
+
 	it('surfaces a Nest 409 when live create fails', () => {
 		vi.mocked(isMockMode).mockReturnValue(false);
 		useCreateTelehealthSession.mockReturnValue({

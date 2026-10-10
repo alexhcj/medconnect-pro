@@ -4,8 +4,8 @@ import {QueryClient} from '@tanstack/react-query';
 
 export {isMockMode} from '@/lib/api/mocks/runtime';
 
-// Retrying auth failures or 429s cannot succeed and would spend more of the rate-limit budget.
-const NON_RETRYABLE_STATUSES = new Set([401, 403, 429]);
+// Retrying auth, conflict, or 429s cannot succeed and would spend more of the rate-limit budget.
+const NON_RETRYABLE_STATUSES = new Set([401, 403, 409, 429]);
 
 export function isNonRetryable(error: unknown): boolean {
 	const status = (error as {status?: unknown} | null)?.status;
@@ -33,11 +33,10 @@ export const queryClient = new QueryClient({
 		mutations: {
 			retry: (failureCount, error: unknown) => !isNonRetryable(error) && failureCount < 1,
 			onError: (error: unknown) => {
-				const err = error as { status?: number };
-				if (err?.status === 401 || err?.status === 429) {
+				if (isNonRetryable(error)) {
 					return;
 				}
-				console.error('Mutation error:', err);
+				console.error('Mutation error:', error);
 			},
 		},
 	},

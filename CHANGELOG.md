@@ -6,6 +6,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.81.2] - 2026-10-10
+
+### Fixed
+
+- Expected 403 `FORBIDDEN` mutations (nurse/patient create, receptionist join, other
+  permission-denied writes) no longer retry or console-log. Telehealth Join/End alerts surface
+  Nest’s permission message instead of a generic fallback.
+
+## [0.81.1] - 2026-10-10
+
+### Fixed
+
+- Live Join visit no longer retries or console-logs expected 409 `SESSION_ENDED` / conflict
+  mutations. The in-page "session has already ended" alert is unchanged.
+
 ## [0.81.0] - 2026-10-10
 
 ### Added
