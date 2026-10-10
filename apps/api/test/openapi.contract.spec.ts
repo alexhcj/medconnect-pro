@@ -129,6 +129,7 @@ describe('OpenAPI contract', () => {
 		const response = await request(app.getHttpServer()).get('/api/docs').expect(200);
 		expect(String(response.headers['content-type'])).toMatch(/html/);
 		expect(String(response.text)).toMatch(/swagger/i);
+		expect(response.headers['x-content-type-options']).toBe('nosniff');
 	});
 });
 

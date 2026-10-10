@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.79.1] - 2026-10-10
+
+### Security
+
+- API security headers on every response (BE-020, ADR-015): `X-Content-Type-Options: nosniff`,
+  `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Content-Security-Policy:
+  frame-ancestors 'none'`, and HSTS when `APP_ENV` is not `local`.
+- `Cache-Control: no-store` on every `/auth/*` response (including OAuth) and on
+  `POST /telehealth/sessions/:id/media-token`.
+
 ## [0.79.0] - 2026-10-10
 
 ### Added

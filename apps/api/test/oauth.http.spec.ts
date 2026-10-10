@@ -366,6 +366,7 @@ describe('OAuth HTTP (unconfigured hosted provider)', () => {
 	it('start returns a labeled 503 instead of crashing', async () => {
 		const response = await request(app.getHttpServer()).get('/auth/oauth/google/start').expect(503);
 		expect(response.body.error.code).toBe('OAUTH_UNAVAILABLE');
+		expect(response.headers['cache-control']).toBe('no-store');
 	});
 
 	it('does not expose the Fake authorize endpoint', async () => {
@@ -379,5 +380,6 @@ describe('OAuth HTTP (unconfigured hosted provider)', () => {
 			.get('/auth/oauth/google/callback?code=a&state=b')
 			.expect(302);
 		expect(response.headers.location).toBe(FAILED);
+		expect(response.headers['cache-control']).toBe('no-store');
 	});
 });

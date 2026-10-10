@@ -3,7 +3,7 @@ id: BE-020
 type: task
 area: backend
 feature: api-protection
-status: pending
+status: shipped
 priority: medium
 estimate: 1
 dependencies: [SEC-007, BE-001]
@@ -14,7 +14,7 @@ related_docs:
     ../security/SEC-007-rate-limit-and-api-protection-contract.md,
   ]
 implementation:
-  status: not_started
+  status: done
 validation:
   responsive: false
   accessibility: false
@@ -46,11 +46,12 @@ responses.
 
 ## Acceptance Criteria
 
-- [ ] Every response carries the agreed headers; HSTS absent locally, present for non-local env
-- [ ] Auth, OAuth, and media-token responses carry `Cache-Control: no-store`
-- [ ] CORS preflight and credentialed requests unchanged (`platform.http.spec.ts`)
-- [ ] Swagger UI loads
-- [ ] Existing suites pass
+- [x] Every response carries the agreed headers; HSTS absent locally, present for non-local env
+- [x] Auth, OAuth, and media-token responses carry `Cache-Control: no-store`
+- [x] CORS preflight and credentialed requests unchanged (`platform.http.spec.ts`,
+      `identity.http.spec.ts`)
+- [x] Swagger UI loads
+- [x] Existing suites pass
 
 ## Dependencies
 
@@ -65,3 +66,7 @@ responses.
 - PATCH version bump.
 
 ## Completion
+
+Shipped in 0.79.1. `createSecurityHeadersMiddleware` (`apps/api/src/platform/security-headers.middleware.ts`)
+is registered in `configureApp` before CORS, so preflights, 404s, error envelopes, and Swagger UI
+carry the headers. Generated OpenAPI is unchanged.

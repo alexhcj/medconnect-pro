@@ -517,6 +517,8 @@ describe('telehealth session HTTP', () => {
 			.expect(200);
 		expect(minted.body.roomUrl).toEqual(expect.stringMatching(/^https:\/\//));
 		expect(typeof minted.body.token).toBe('string');
+		expect(minted.headers['cache-control']).toBe('no-store');
+		expect(created.headers['cache-control']).toBeUndefined();
 		expect(minted.body.token.length).toBeGreaterThan(0);
 		expect(minted.body).not.toHaveProperty('dailyRoomName');
 

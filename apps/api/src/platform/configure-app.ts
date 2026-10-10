@@ -7,13 +7,16 @@ import {isCorsOriginAllowed, resolveAppEnv, resolveCorsOriginPolicy} from './cor
 import {readTrustProxy} from './env.schema.js';
 import {EnvelopeExceptionFilter, standardSchemaIssuesToDetails} from './http-exception.filter.js';
 import {RequestLoggingInterceptor} from './request-logging.interceptor.js';
+import {createSecurityHeadersMiddleware} from './security-headers.middleware.js';
 
 export function configureApp(app: INestApplication): void {
 	app.enableShutdownHooks();
 	const express = app.getHttpAdapter().getInstance() as {set(name: string, value: unknown): void};
 	express.set('trust proxy', readTrustProxy(process.env.TRUST_PROXY));
+	const appEnv = resolveAppEnv();
+	app.use(createSecurityHeadersMiddleware(appEnv));
 	const corsPolicy = resolveCorsOriginPolicy({
-		appEnv: resolveAppEnv(),
+		appEnv,
 		webOrigin: process.env.WEB_ORIGIN,
 		webOrigins: process.env.WEB_ORIGINS,
 	});

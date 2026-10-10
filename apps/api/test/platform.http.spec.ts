@@ -4,6 +4,7 @@ import request from 'supertest';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {AppModule} from '../src/app.module.js';
 import {configureApp} from '../src/platform/configure-app.js';
+import {DEFAULT_LOCAL_WEB_ORIGIN} from '../src/platform/cors-origins.js';
 import {ValidationProbeController} from './validation-probe.controller.js';
 import {createAdminDataSource} from './admin-data-source.js';
 import type {DataSource} from 'typeorm';
@@ -67,5 +68,36 @@ describe('platform HTTP', () => {
 		expect(Array.isArray(response.body.error.details)).toBe(true);
 		expect(response.body.error.details.length).toBeGreaterThan(0);
 		expect(JSON.stringify(response.body)).not.toMatch(/stack|password|token/i);
+		expectBaselineSecurityHeaders(response.headers);
+	});
+
+	it('sends baseline security headers without HSTS locally', async () => {
+		const ok = await request(app.getHttpServer()).get('/health').expect(200);
+		expectBaselineSecurityHeaders(ok.headers);
+		expect(ok.headers['strict-transport-security']).toBeUndefined();
+		expect(ok.headers['cache-control']).toBeUndefined();
+
+		const missing = await request(app.getHttpServer()).get('/__missing').expect(404);
+		expectBaselineSecurityHeaders(missing.headers);
+	});
+
+	it('keeps credentialed CORS preflight unchanged and marks auth routes no-store', async () => {
+		const response = await request(app.getHttpServer())
+			.options('/auth/login')
+			.set('Origin', DEFAULT_LOCAL_WEB_ORIGIN)
+			.set('Access-Control-Request-Method', 'POST')
+			.set('Access-Control-Request-Headers', 'content-type')
+			.expect(204);
+		expect(response.headers['access-control-allow-origin']).toBe(DEFAULT_LOCAL_WEB_ORIGIN);
+		expect(response.headers['access-control-allow-credentials']).toBe('true');
+		expect(response.headers['cache-control']).toBe('no-store');
+		expectBaselineSecurityHeaders(response.headers);
 	});
 });
+
+function expectBaselineSecurityHeaders(headers: Record<string, unknown>): void {
+	expect(headers['x-content-type-options']).toBe('nosniff');
+	expect(headers['referrer-policy']).toBe('no-referrer');
+	expect(headers['x-frame-options']).toBe('DENY');
+	expect(headers['content-security-policy']).toBe("frame-ancestors 'none'");
+}

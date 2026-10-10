@@ -239,6 +239,8 @@ describe('identity HTTP', () => {
 			.send({refreshToken: first.refreshToken})
 			.expect(401);
 		expect(reused.body.error.code).toBe('UNAUTHENTICATED');
+		expect(reused.headers['cache-control']).toBe('no-store');
+		expect(refreshed.headers['cache-control']).toBe('no-store');
 		await request(app.getHttpServer())
 			.get('/__test/authz')
 			.set('Authorization', `Bearer ${refreshed.body.accessToken}`)
