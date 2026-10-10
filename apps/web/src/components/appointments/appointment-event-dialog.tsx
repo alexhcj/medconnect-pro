@@ -85,9 +85,9 @@ export function AppointmentEventDialog({
 							</p>
 						)}
 						{canJoinVisit && (
-							<p>
+							<div>
 								<JoinTelehealthVisitControl appointmentId={appointment.id} />
-							</p>
+							</div>
 						)}
 					</div>
 				)}
