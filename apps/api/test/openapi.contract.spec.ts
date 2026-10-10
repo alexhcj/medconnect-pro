@@ -58,6 +58,10 @@ describe('OpenAPI contract', () => {
 			in: 'cookie',
 			name: 'mcp_access',
 		});
+		expect(document.components?.schemas?.RateLimitedErrorEnvelope).toBeDefined();
+		expect(document.components?.schemas?.RateLimitedDetails).toMatchObject({
+			required: ['retryAfterSeconds'],
+		});
 		expect(document.paths?.['/health']?.get?.security).toBeUndefined();
 		expect(document.paths?.['/ready']?.get?.security).toBeUndefined();
 		expect(document.paths?.['/auth/login']?.post?.security).toBeUndefined();

@@ -30,6 +30,19 @@ const emptyToUndefined = (value: unknown) => (value === '' ? undefined : value);
 
 const optionalString = z.preprocess(emptyToUndefined, z.string().min(1).optional());
 
+/** Local/test only; hosted environments must set RATE_LIMIT_KEY_SECRET. */
+export const DEV_RATE_LIMIT_KEY_SECRET = 'medconnect-local-rate-limit-key-secret-not-for-hosted';
+
+const trustProxySchema = z.preprocess(
+	emptyToUndefined,
+	z
+		.string()
+		.regex(/^\d+$/, 'TRUST_PROXY must be a non-negative integer hop count')
+		.transform(Number)
+		.optional()
+		.transform((value) => value ?? 0),
+);
+
 const optionalPostgresUrl = (label: string) =>
 	z.preprocess((value) => {
 		if (value === undefined || value === '') {
@@ -99,6 +112,11 @@ export const envSchema = z
 		OIDC_CLIENT_SECRET: optionalString,
 		OIDC_REDIRECT_URI: z.preprocess(emptyToUndefined, z.url().optional()),
 		OIDC_DEMO_EMAIL: optionalString,
+		TRUST_PROXY: trustProxySchema,
+		RATE_LIMIT_KEY_SECRET: z.preprocess(
+			emptyToUndefined,
+			z.string().min(32, 'RATE_LIMIT_KEY_SECRET must be at least 32 characters').optional(),
+		),
 	})
 	.superRefine((env, ctx) => {
 		if (env.APP_ENV !== 'preview' && env.APP_ENV !== 'production') {
@@ -139,6 +157,13 @@ export const envSchema = z
 				});
 			}
 		}
+		if (!env.RATE_LIMIT_KEY_SECRET) {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['RATE_LIMIT_KEY_SECRET'],
+				message: 'RATE_LIMIT_KEY_SECRET is required when APP_ENV is preview or production',
+			});
+		}
 		if (!env.DOCUMENT_S3_BUCKET) {
 			ctx.addIssue({
 				code: 'custom',
@@ -163,6 +188,11 @@ export const envSchema = z
 		...env,
 		DATABASE_URL: env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
 		DATABASE_ADMIN_URL: env.DATABASE_ADMIN_URL ?? DEFAULT_DATABASE_ADMIN_URL,
+		RATE_LIMIT_KEY_SECRET: env.RATE_LIMIT_KEY_SECRET ?? DEV_RATE_LIMIT_KEY_SECRET,
 	}));
+
+export function readTrustProxy(raw: string | undefined): number {
+	return trustProxySchema.parse(raw);
+}
 
 export type Env = z.output<typeof envSchema>;

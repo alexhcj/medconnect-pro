@@ -12,7 +12,7 @@ SEC-005). **M12 — Telehealth Media Maturity** is shipped (BE-016, FE-030). **M
 Payments UX** is shipped (FE-031, FE-032). Hosted Stripe/ACH, claims submission / EDI 837, and
 invoice-create UI remain later. **M14 — OAuth / External Identity** is shipped and
 **closed** at 0.77.0 (SEC-006, DATA-003, BE-017, FE-033). **M15 — API Protection and Rate
-Limiting** is in progress: SEC-007 and DATA-004 shipped (ADR-015); BE-018, BE-019, BE-020, FE-034 pending. Local product work does not wait on AWS.
+Limiting** is in progress: SEC-007, DATA-004, and BE-018 shipped (ADR-015); BE-019, BE-020, FE-034 pending. Local product work does not wait on AWS.
 
 Frontend application: `apps/web`.
 Backend application: `apps/api` (NestJS 12 platform; OpenAPI via `npm run openapi:generate`).

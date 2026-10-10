@@ -15,6 +15,7 @@ function hostedEnv(overrides: Record<string, string> = {}): NodeJS.ProcessEnv {
 		DATABASE_ADMIN_URL: hostedAdminUrl.replace('preview-db', 'prod-db'),
 		DOCUMENT_S3_BUCKET: 'medconnect-production-documents-example',
 		WEB_ORIGINS: 'https://demo.amplifyapp.com',
+		RATE_LIMIT_KEY_SECRET: 'hosted-rate-limit-key-secret-example-0001',
 		...overrides,
 	};
 }

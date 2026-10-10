@@ -12,7 +12,7 @@ import {
 } from '@nestjs/swagger';
 import type {Request, Response} from 'express';
 import {resolveAppEnv} from '../platform/cors-origins.js';
-import {ErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
+import {ErrorEnvelopeRdo, RateLimitedErrorEnvelopeRdo} from '../platform/error-envelope.rdo.js';
 import {SessionInvalidError} from './auth.errors.js';
 import {ApiSessionAuth, Public} from './auth.decorators.js';
 import type {RequestAuth} from './auth.guard.js';
@@ -31,7 +31,7 @@ import {
 } from './session-cookies.js';
 
 @ApiTags('auth')
-@ApiExtraModels(ErrorEnvelopeRdo, TokenPairRdo, MfaChallengeRdo)
+@ApiExtraModels(ErrorEnvelopeRdo, RateLimitedErrorEnvelopeRdo, TokenPairRdo, MfaChallengeRdo)
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly auth: AuthService) {}

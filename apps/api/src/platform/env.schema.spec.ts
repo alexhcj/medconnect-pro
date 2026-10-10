@@ -4,7 +4,7 @@ import {
 	DEFAULT_DATABASE_URL,
 	isKnownLocalComposeDatabaseUrl,
 } from '../persistence/default-database-url.js';
-import {envSchema} from './env.schema.js';
+import {DEV_RATE_LIMIT_KEY_SECRET, envSchema} from './env.schema.js';
 
 const hostedRuntimeUrl =
 	'postgresql://medconnect_app:hosted-runtime-secret@preview-db.example.internal:5432/medconnect';
@@ -19,6 +19,7 @@ function hostedEnv(overrides: Record<string, string> = {}) {
 		DATABASE_URL: hostedRuntimeUrl,
 		DATABASE_ADMIN_URL: hostedAdminUrl,
 		DOCUMENT_S3_BUCKET: hostedDocumentBucket,
+		RATE_LIMIT_KEY_SECRET: 'hosted-rate-limit-key-secret-example-0001',
 		...overrides,
 	};
 }
@@ -92,6 +93,29 @@ describe('envSchema', () => {
 		if (set.success) {
 			expect(set.data.DAILY_API_KEY).toBe('daily-secret');
 		}
+	});
+
+	it('defaults TRUST_PROXY to 0 and accepts integer hop counts', () => {
+		const unset = envSchema.safeParse({TRUST_PROXY: ''});
+		expect(unset.success && unset.data.TRUST_PROXY).toBe(0);
+		const one = envSchema.safeParse({TRUST_PROXY: '1'});
+		expect(one.success && one.data.TRUST_PROXY).toBe(1);
+	});
+
+	it.each(['abc', '-1', '1.5', 'true'])('rejects TRUST_PROXY=%s', (value) => {
+		const parsed = envSchema.safeParse({TRUST_PROXY: value});
+		expect(issueMessages(parsed)).toContain('TRUST_PROXY must be a non-negative integer hop count');
+	});
+
+	it('defaults RATE_LIMIT_KEY_SECRET locally and requires it when hosted', () => {
+		const local = envSchema.safeParse({});
+		expect(local.success && local.data.RATE_LIMIT_KEY_SECRET).toBe(DEV_RATE_LIMIT_KEY_SECRET);
+		const hosted = envSchema.safeParse(hostedEnv({RATE_LIMIT_KEY_SECRET: ''}));
+		expect(issueMessages(hosted)).toContain(
+			'RATE_LIMIT_KEY_SECRET is required when APP_ENV is preview or production',
+		);
+		const short = envSchema.safeParse({RATE_LIMIT_KEY_SECRET: 'short'});
+		expect(short.success).toBe(false);
 	});
 
 	it('allows NODE_ENV=test with APP_ENV=local', () => {

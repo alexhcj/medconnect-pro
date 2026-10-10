@@ -52,9 +52,11 @@ Response DTO
 Frontend
 ```
 
-Planned in M15 ([ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)): a
-security-header middleware runs on every response, and opt-in routes run a rate-limit guard after
-session resolution and before the handler. Rejections use the standard error envelope (429
+M15 ([ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)): opt-in routes
+(`@RateLimit(policy)`) run the global `RateLimitGuard`, registered after `AuthGuard` (a no-op on
+`@Public` routes) and before `PermissionsGuard`, so session-user keys resolve before the handler
+(shipped in BE-018; route policies pending BE-019). A security-header middleware runs on every
+response (planned, BE-020). Rejections use the standard error envelope (429
 `RATE_LIMITED`, or 503 `RATE_LIMIT_UNAVAILABLE` on auth routes).
 
 ## OpenAPI policy

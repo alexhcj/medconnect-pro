@@ -6,6 +6,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.78.0] - 2026-10-10
+
+### Added
+
+- BE-018: opt-in rate-limit platform (ADR-015). `RateLimitStore` port with the PostgreSQL bucket
+  store as default and an in-memory store for tests; global `RateLimitGuard` with
+  `@RateLimit(...policies)`; HMAC-SHA-256 bucket keys so raw IPs, emails, and tokens are never
+  stored or logged. No route policies yet (BE-019).
+- HTTP 429 `RATE_LIMITED` with `details.retryAfterSeconds` and a `Retry-After` header; HTTP 503
+  `RATE_LIMIT_UNAVAILABLE` when a fail-closed policy cannot reach the store. Fail-open policies log
+  only the policy name and correlation ID.
+- `TRUST_PROXY` (integer hop count, default `0`) sets Express `trust proxy`; client IP comes from
+  `req.ip` only. Invalid values fail env validation at boot.
+- `RATE_LIMIT_KEY_SECRET` (min 32 characters), required when `APP_ENV` is preview or production.
+- OpenAPI `RateLimitedErrorEnvelope` schema and an `ApiRateLimited` response helper.
+
+### Changed
+
+- Error envelope `details` may be an object for code-specific data; validation errors keep the
+  `[{path, message}]` array.
+
 ## [0.77.1] - 2026-10-10
 
 ### Added

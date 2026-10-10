@@ -6,7 +6,8 @@ export type ErrorDetail = {
 export type ErrorBody = {
 	code: string;
 	message: string;
-	details?: ErrorDetail[];
+	/** Field issues for validation errors, or a code-specific object such as `{retryAfterSeconds}`. */
+	details?: ErrorDetail[] | Record<string, unknown>;
 };
 
 export type ErrorEnvelope = {
@@ -26,7 +27,11 @@ export function toErrorEnvelope(
 	correlationId: string,
 	error: ErrorBody,
 ): ErrorEnvelope {
-	if (error.details && error.details.length > 0) {
+	const details = error.details;
+	const hasDetails = Array.isArray(details)
+		? details.length > 0
+		: details !== undefined && Object.keys(details).length > 0;
+	if (hasDetails) {
 		return {error, correlationId};
 	}
 	return {

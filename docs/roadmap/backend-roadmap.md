@@ -41,9 +41,9 @@ Domain order (not historical ship order). Join to demo milestones in the
 18. API protection and rate limiting (M15): contract and ADR-015
     ([SEC-007](../tasks/security/SEC-007-rate-limit-and-api-protection-contract.md)), bucket
     persistence ([DATA-004](../tasks/backend/DATA-004-rate-limit-bucket-persistence.md)), limiter
-    platform and `TRUST_PROXY` ([BE-018](../tasks/backend/BE-018-rate-limit-platform-and-client-ip.md)),
-    route policies ([BE-019](../tasks/backend/BE-019-auth-and-sensitive-route-rate-limits.md)), API
-    security headers ([BE-020](../tasks/backend/BE-020-api-security-headers.md)); all pending.
+    platform and `TRUST_PROXY` ([BE-018](../tasks/backend/BE-018-rate-limit-platform-and-client-ip.md))
+    shipped; route policies ([BE-019](../tasks/backend/BE-019-auth-and-sensitive-route-rate-limits.md)),
+    API security headers ([BE-020](../tasks/backend/BE-020-api-security-headers.md)) pending.
     PostgreSQL store; not Redis or WAF.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without

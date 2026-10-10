@@ -59,7 +59,7 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `OIDC_CLIENT_ID` | api | Public client identifier; validated against ID token `aud`. |
 | `OIDC_REDIRECT_URI` | api | Exact registered callback URL per environment (e.g. `http://localhost:3001/auth/oauth/google/callback`). |
 | `OIDC_DEMO_EMAIL` | api | Optional. With `APP_ENV=local`, `seed:mock-identity` provisions this email as a practice admin so a real Google account can link, and the Fake adapter uses it as its default sign-in email. Ignored by the seed when hosted. |
-| `TRUST_PROXY` | api | Planned (BE-018, [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). Integer hop count. Default `0`: `X-Forwarded-For` is ignored and the socket address is the client IP. `N > 0` sets Express `trust proxy` to `N`. Must equal the real number of trusted proxies; a higher value lets clients spoof their IP and pick their own rate-limit key. Hosted value is unverified until INFRA-014. |
+| `TRUST_PROXY` | api | Implemented (BE-018, [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). Integer hop count; anything else fails env validation at boot. Default `0`: `X-Forwarded-For` is ignored and the socket address is the client IP. `N > 0` sets Express `trust proxy` to `N`. Must equal the real number of trusted proxies; a higher value lets clients spoof their IP and pick their own rate-limit key. Hosted value is unverified until INFRA-014. |
 
 ### Secret
 
@@ -69,7 +69,7 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `DATABASE_ADMIN_URL` | api | Table owner for migrations and seed. |
 | `DAILY_API_KEY` | api | Daily REST key for media-token minting. Unset selects the Fake adapter. Never `NEXT_PUBLIC_*`. Not in the current Secrets Manager JSON (hosted injection is M9, paused). |
 | `OIDC_CLIENT_SECRET` | api | Optional (BE-017, [ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md)). Confidential OIDC client secret. Unset selects the Fake OIDC adapter (`APP_ENV=local` / tests only); hosted without it, OAuth start returns 503 `OAUTH_UNAVAILABLE`. Never `NEXT_PUBLIC_*`. Hosted Secrets Manager injection is M9 / later. |
-| `RATE_LIMIT_KEY_SECRET` | api | Planned (BE-018, [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). HMAC-SHA-256 key for rate-limit bucket keys so raw IPs and emails are never stored. Application-internal, not a third-party secret. Required when hosted; local may use a fixed development default. Never `NEXT_PUBLIC_*`. |
+| `RATE_LIMIT_KEY_SECRET` | api | Implemented (BE-018, [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). HMAC-SHA-256 key for rate-limit bucket keys so raw IPs and emails are never stored. Application-internal, not a third-party secret. Minimum 32 characters. Required when hosted (boot fails without it); local and tests fall back to a fixed development default. Never `NEXT_PUBLIC_*`. Hosted Secrets Manager / ECS injection is M9 (paused). |
 
 No JWT signing secret or payment processor key exists in the application. Do not invent those
 here. `DAILY_API_KEY` and `OIDC_CLIENT_SECRET` are the only third-party secrets in this catalog.

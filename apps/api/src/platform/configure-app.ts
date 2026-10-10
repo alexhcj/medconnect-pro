@@ -4,11 +4,14 @@ import {
 	type INestApplication,
 } from '@nestjs/common';
 import {isCorsOriginAllowed, resolveAppEnv, resolveCorsOriginPolicy} from './cors-origins.js';
+import {readTrustProxy} from './env.schema.js';
 import {EnvelopeExceptionFilter, standardSchemaIssuesToDetails} from './http-exception.filter.js';
 import {RequestLoggingInterceptor} from './request-logging.interceptor.js';
 
 export function configureApp(app: INestApplication): void {
 	app.enableShutdownHooks();
+	const express = app.getHttpAdapter().getInstance() as {set(name: string, value: unknown): void};
+	express.set('trust proxy', readTrustProxy(process.env.TRUST_PROXY));
 	const corsPolicy = resolveCorsOriginPolicy({
 		appEnv: resolveAppEnv(),
 		webOrigin: process.env.WEB_ORIGIN,

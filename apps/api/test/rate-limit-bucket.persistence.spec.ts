@@ -2,7 +2,9 @@ import {createHash, randomUUID} from 'node:crypto';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {DataSource, Like} from 'typeorm';
 import {RateLimitBucket} from '../src/persistence/entities/rate-limit-bucket.entity.js';
+import {PostgresRateLimitStore} from '../src/rate-limit/postgres-rate-limit-store.js';
 import {RateLimitBucketRepository} from '../src/rate-limit/rate-limit-bucket.repository.js';
+import {hashRateLimitKey} from '../src/rate-limit/rate-limit-key.js';
 import {createAdminDataSource, createAppDataSource} from './admin-data-source.js';
 
 const WINDOW_MS = 60_000;
@@ -40,6 +42,13 @@ describe('Rate-limit bucket persistence', () => {
 			count: 3,
 			resetAt,
 		});
+	});
+
+	it('PostgresRateLimitStore delegates to the bucket repository', async () => {
+		const store = new PostgresRateLimitStore(buckets);
+		const key = hashRateLimitKey('s'.repeat(32), policy, randomUUID());
+		expect((await store.increment(policy, key, WINDOW_MS, now)).count).toBe(1);
+		expect((await store.increment(policy, key, WINDOW_MS, now)).count).toBe(2);
 	});
 
 	it('loses no updates under concurrent increments on one key', async () => {

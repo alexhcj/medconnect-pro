@@ -358,9 +358,12 @@ JSON error responses from `apps/api` use this shape (no stack traces, tokens, or
 - Missing or invalid credentials use `code` `UNAUTHENTICATED` and HTTP 401.
 - Authenticated callers without permission, or a client `practiceId` that does not match the
   session tenant, use `code` `FORBIDDEN` and HTTP 403.
-- Rate-limited requests (M15, planned; [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md))
+- Rate-limited requests (M15; envelope and limiter shipped in
+  [BE-018](../tasks/backend/BE-018-rate-limit-platform-and-client-ip.md), route policies pending
+  BE-019; [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md))
   use HTTP 429, `code` `RATE_LIMITED`, `details` `{ "retryAfterSeconds": number }`, and a
-  `Retry-After` header in seconds. Additive. Counters persist in PostgreSQL `rate_limit_buckets`
+  `Retry-After` header in seconds. Additive. `details` is an object for this code (OpenAPI
+  `RateLimitedErrorEnvelope`); validation errors keep the `[{path, message}]` array. Counters persist in PostgreSQL `rate_limit_buckets`
   (policy, 64-hex key hash, window start, count, expiry; no tenant data, no RLS, no raw IP/email;
   [DATA-004](../tasks/backend/DATA-004-rate-limit-bucket-persistence.md)).
 - When the limiter store is unavailable on auth/OAuth routes, the API returns HTTP 503 with `code`

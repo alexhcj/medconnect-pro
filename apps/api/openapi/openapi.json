@@ -5727,6 +5727,61 @@
           "metrics"
         ]
       },
+      "RateLimitedDetails": {
+        "type": "object",
+        "properties": {
+          "retryAfterSeconds": {
+            "type": "number",
+            "example": 120,
+            "minimum": 1,
+            "description": "Seconds until the window resets"
+          }
+        },
+        "required": [
+          "retryAfterSeconds"
+        ]
+      },
+      "RateLimitedErrorBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "RATE_LIMITED",
+            "enum": [
+              "RATE_LIMITED"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "example": "Too many requests. Try again later."
+          },
+          "details": {
+            "$ref": "#/components/schemas/RateLimitedDetails"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "details"
+        ]
+      },
+      "RateLimitedErrorEnvelope": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/RateLimitedErrorBody"
+          },
+          "correlationId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "00000000-0000-4000-8000-000000000001"
+          }
+        },
+        "required": [
+          "error",
+          "correlationId"
+        ]
+      },
       "TokenPair": {
         "type": "object",
         "properties": {

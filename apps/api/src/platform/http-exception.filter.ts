@@ -38,6 +38,7 @@ import {
 	SessionNotJoinableError,
 	TelehealthSessionNotFoundError,
 } from '../telehealth/telehealth-session.errors.js';
+import {RateLimitedError, RateLimitUnavailableError} from '../rate-limit/rate-limit.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {getCorrelationId} from './correlation.js';
 import {
@@ -59,6 +60,9 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 
 		const {status, error} = this.normalize(exception, correlationId);
 		res.setHeader('X-Correlation-ID', correlationId);
+		if (exception instanceof RateLimitedError) {
+			res.setHeader('Retry-After', String(exception.retryAfterSeconds));
+		}
 		res.status(status).json(toErrorEnvelope(correlationId, error));
 	}
 
@@ -86,6 +90,25 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 	}
 
 	private fromDomainError(exception: unknown): {status: number; error: ErrorBody} | undefined {
+		if (exception instanceof RateLimitedError) {
+			return {
+				status: HttpStatus.TOO_MANY_REQUESTS,
+				error: {
+					code: 'RATE_LIMITED',
+					message: 'Too many requests. Try again later.',
+					details: {retryAfterSeconds: exception.retryAfterSeconds},
+				},
+			};
+		}
+		if (exception instanceof RateLimitUnavailableError) {
+			return {
+				status: HttpStatus.SERVICE_UNAVAILABLE,
+				error: {
+					code: 'RATE_LIMIT_UNAVAILABLE',
+					message: 'Service temporarily unavailable. Try again later.',
+				},
+			};
+		}
 		if (exception instanceof InvalidCredentialsError) {
 			return this.authError(HttpStatus.UNAUTHORIZED, 'UNAUTHENTICATED', 'Invalid email or password');
 		}

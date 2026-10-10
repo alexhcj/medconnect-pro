@@ -9,6 +9,7 @@ import {
 	SessionNotJoinableError,
 } from '../telehealth/telehealth-session.errors.js';
 import {PracticeUserNotFoundError} from '../practice/practice-user.errors.js';
+import {RateLimitedError, RateLimitUnavailableError} from '../rate-limit/rate-limit.errors.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {EnvelopeExceptionFilter} from './http-exception.filter.js';
 import type {ErrorEnvelope} from './error-envelope.js';
@@ -52,6 +53,31 @@ function createHost(correlationId = 'corr-1') {
 
 describe('EnvelopeExceptionFilter', () => {
 	const filter = new EnvelopeExceptionFilter();
+
+	it('maps RateLimitedError to 429 with details and Retry-After', () => {
+		const {host, getResult} = createHost('cid-rl');
+		filter.catch(new RateLimitedError(42), host);
+		const result = getResult();
+		expect(result.statusCode).toBe(HttpStatus.TOO_MANY_REQUESTS);
+		expect(result.headers['retry-after']).toBe('42');
+		expect(result.body).toEqual({
+			error: {
+				code: 'RATE_LIMITED',
+				message: 'Too many requests. Try again later.',
+				details: {retryAfterSeconds: 42},
+			},
+			correlationId: 'cid-rl',
+		});
+	});
+
+	it('maps RateLimitUnavailableError to 503 RATE_LIMIT_UNAVAILABLE', () => {
+		const {host, getResult} = createHost('cid-rlu');
+		filter.catch(new RateLimitUnavailableError(), host);
+		const result = getResult();
+		expect(result.statusCode).toBe(HttpStatus.SERVICE_UNAVAILABLE);
+		expect(result.headers['retry-after']).toBeUndefined();
+		expect(result.body.error.code).toBe('RATE_LIMIT_UNAVAILABLE');
+	});
 
 	it('maps a structured BadRequestException to the error envelope', () => {
 		const {host, getResult} = createHost('cid-validation');

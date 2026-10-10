@@ -3,7 +3,7 @@ id: BE-018
 type: task
 area: backend
 feature: api-protection
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [SEC-007, DATA-004, BE-001]
@@ -17,7 +17,7 @@ related_docs:
     DATA-004-rate-limit-bucket-persistence.md,
   ]
 implementation:
-  status: not_started
+  status: done
 validation:
   responsive: false
   accessibility: false
@@ -57,14 +57,14 @@ resolver, without applying route policies yet.
 
 ## Acceptance Criteria
 
-- [ ] Probe route: N requests allowed, request N+1 returns 429 with envelope and `Retry-After`
-- [ ] Count resets after the window (injected clock)
-- [ ] With `TRUST_PROXY=0`, varying `X-Forwarded-For` does not change the key
-- [ ] With `TRUST_PROXY=1`, the right-most untrusted hop is used
-- [ ] Store failure: fail-closed policy returns 503; fail-open policy passes and logs no key/IP
-- [ ] Invalid `TRUST_PROXY` fails env validation at boot
-- [ ] Logs and audit contain no raw IP, email, or token
-- [ ] OpenAPI regenerated; contract test passes; existing suites pass
+- [x] Probe route: N requests allowed, request N+1 returns 429 with envelope and `Retry-After`
+- [x] Count resets after the window (injected clock)
+- [x] With `TRUST_PROXY=0`, varying `X-Forwarded-For` does not change the key
+- [x] With `TRUST_PROXY=1`, the right-most untrusted hop is used
+- [x] Store failure: fail-closed policy returns 503; fail-open policy passes and logs no key/IP
+- [x] Invalid `TRUST_PROXY` fails env validation at boot
+- [x] Logs and audit contain no raw IP, email, or token
+- [x] OpenAPI regenerated; contract test passes; existing suites pass
 
 ## Dependencies
 
@@ -84,3 +84,13 @@ resolver, without applying route policies yet.
 - MINOR version bump (new API error contract).
 
 ## Completion
+
+Shipped in 0.78.0. `apps/api/src/rate-limit/`: `RateLimitStore` port (PostgreSQL default,
+in-memory for tests), `@RateLimit(...policies)` + `ApiRateLimited`, HMAC-SHA-256 keys
+(`RATE_LIMIT_KEY_SECRET`), `clientIp` via `req.ip` and `TRUST_PROXY`, and 429/503 mapping in
+`EnvelopeExceptionFilter`. `ErrorBody.details` now also accepts an object
+(`{retryAfterSeconds}`). Guard order: `RateLimitGuard` is a global guard after `AuthGuard` and
+before `PermissionsGuard`; `AuthGuard` is a no-op on `@Public` routes, so public routes are
+limited before any auth work and session-user keys resolve on authenticated routes. Tests:
+`test/rate-limit.http.spec.ts` (probe controller), `src/rate-limit/rate-limit.spec.ts`, env and
+filter specs. No route policies applied (BE-019). Hosted secret injection waits on M9.

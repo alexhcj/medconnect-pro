@@ -9,6 +9,8 @@ import {ExternalIdentity} from '../persistence/entities/external-identity.entity
 import {OAuthFlowState} from '../persistence/entities/oauth-flow-state.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {User} from '../persistence/entities/user.entity.js';
+import {RateLimitGuard} from '../rate-limit/rate-limit.guard.js';
+import {RateLimitModule} from '../rate-limit/rate-limit.module.js';
 import {TenancyModule} from '../tenancy/tenant.module.js';
 import {AuthController} from './auth.controller.js';
 import {AuthGuard} from './auth.guard.js';
@@ -29,6 +31,7 @@ import {SessionRepository} from './session.repository.js';
 	imports: [
 		TenancyModule,
 		AuditModule,
+		RateLimitModule,
 		TypeOrmModule.forFeature([
 			User,
 			PracticeMembership,
@@ -62,6 +65,7 @@ import {SessionRepository} from './session.repository.js';
 		{provide: MOCK_IDP_USERS, useValue: defaultMockIdpAccounts},
 		{provide: CLOCK, useValue: systemClock},
 		{provide: APP_GUARD, useClass: AuthGuard},
+		{provide: APP_GUARD, useClass: RateLimitGuard},
 		{provide: APP_GUARD, useClass: PermissionsGuard},
 	],
 	exports: [AuthService, MOCK_IDP_USERS, CLOCK],
