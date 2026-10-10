@@ -45,6 +45,11 @@ Domain order (not historical ship order). Join to demo milestones in the
     shipped; route policies ([BE-019](../tasks/backend/BE-019-auth-and-sensitive-route-rate-limits.md))
     and API security headers ([BE-020](../tasks/backend/BE-020-api-security-headers.md)) shipped.
     PostgreSQL store; not Redis or WAF. **Closed** at 0.80.0.
+19. Live telehealth workflow (M16): contract
+    ([SEC-008](../tasks/security/SEC-008-live-telehealth-workflow-contract.md)) and eligibility /
+    join-before-mint / create-join rate limits
+    ([BE-021](../tasks/backend/BE-021-telehealth-eligibility-and-lifecycle.md)) shipped. Frontend is
+    [FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md). Not chat, recording, or Socket.IO.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.
@@ -61,4 +66,5 @@ is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
 EDI 837, and invoice-create UI remain later. **M14** is shipped and **closed** at 0.77.0.
 **M15 — API Protection and Rate Limiting** is shipped and **closed** at 0.80.0 (SEC-007,
-DATA-004, BE-018, BE-019, BE-020, FE-034). Local product work does not wait on AWS.
+DATA-004, BE-018, BE-019, BE-020, FE-034). **M16 — Live Telehealth** is in progress (SEC-008,
+BE-021, FE-035). Local product work does not wait on AWS.

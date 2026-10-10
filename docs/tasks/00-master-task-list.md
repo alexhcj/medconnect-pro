@@ -49,6 +49,9 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-030 — Daily media in the telehealth session shell
 - FE-031 — Record demo payment on Nest payment adapter
 - FE-032 — Claims envelope list on Nest claims API
+- FE-033 — OAuth login UX and session hydration
+- FE-034 — Rate-limited auth UX
+- FE-035 — Clinical live-visit UX on the session shell
 
 ## Backend
 
@@ -67,6 +70,13 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-014 — HttpOnly cookie session HTTP
 - BE-015 — Security-events HTTP
 - BE-016 — Telehealth Daily media token HTTP
+- DATA-003 — External identity and OAuth flow-state persistence
+- BE-017 — Nest OIDC client, mapping, and session issuance
+- DATA-004 — Rate-limit bucket persistence
+- BE-018 — Rate-limit platform and trusted client IP
+- BE-019 — Auth and sensitive-route rate-limit policies
+- BE-020 — API security headers and no-store auth responses
+- BE-021 — Telehealth eligibility and lifecycle hardening
 
 ## Security
 
@@ -74,6 +84,9 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - SEC-003 — Audit events
 - SEC-004 — Document access control
 - SEC-005 — Production-gap documentation
+- SEC-006 — OIDC BFF contract and ADR-014
+- SEC-007 — Rate-limit, proxy-trust, and API-header contract (ADR-015)
+- SEC-008 — Live telehealth workflow and access contract
 
 ## QA
 
@@ -139,3 +152,9 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-019 — Auth and sensitive-route rate-limit policies
 - BE-020 — API security headers and no-store auth responses
 - FE-034 — Rate-limited auth UX
+
+## Product (M16)
+
+- SEC-008 — Live telehealth workflow and access contract
+- BE-021 — Telehealth eligibility and lifecycle hardening
+- FE-035 — Clinical live-visit UX on the session shell

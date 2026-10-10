@@ -77,7 +77,9 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
   [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)). **M13 — Billing / Payments UX**
   is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
   [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
-  EDI 837, and invoice-create UI remain later. Local product work does not wait on AWS.
+  EDI 837, and invoice-create UI remain later. **M16 — Live Telehealth** is in progress
+  ([FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md)). Local product work does not wait
+  on AWS.
 
 ## Slice 11 — Application security and session hardening (M11)
 
@@ -112,3 +114,10 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - Rate-limited auth UX ([FE-034](../tasks/frontend/FE-034-rate-limited-auth-ux.md); shipped;
   depends on [BE-019](../tasks/backend/BE-019-auth-and-sensitive-route-rate-limits.md); design not
   required, reuses the existing error alert). **Closed** at 0.80.0.
+
+## Slice 16 — Live telehealth visit UX (M16)
+
+- Clinical live-visit UX ([FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md); shipped;
+  depends on [BE-021](../tasks/backend/BE-021-telehealth-eligibility-and-lifecycle.md); design
+  approved). Pre-join device check, leave versus end, ended/ineligible states. Not chat,
+  recording, or Socket.IO.

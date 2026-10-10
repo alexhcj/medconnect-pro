@@ -13,7 +13,8 @@ Payments UX** is shipped (FE-031, FE-032). Hosted Stripe/ACH, claims submission 
 invoice-create UI remain later. **M14 — OAuth / External Identity** is shipped and
 **closed** at 0.77.0 (SEC-006, DATA-003, BE-017, FE-033). **M15 — API Protection and Rate
 Limiting** is shipped and **closed** at 0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020,
-FE-034; ADR-015). Local product work does not wait on AWS.
+FE-034; ADR-015). **M16 — Live Telehealth** is in progress (SEC-008, BE-021, FE-035). Chat,
+recording, and Socket.IO remain later. Local product work does not wait on AWS.
 
 Frontend application: `apps/web`.
 Backend application: `apps/api` (NestJS 12 platform; OpenAPI via `npm run openapi:generate`).

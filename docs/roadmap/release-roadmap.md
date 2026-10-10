@@ -27,8 +27,11 @@ through [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.m
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims
 submission / EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity** is
 shipped (SEC-006, DATA-003, BE-017, FE-033). **M15 — API Protection and Rate Limiting** is
-shipped and **closed** at 0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). Local product
-work does not wait on AWS. Resume M9 when the AWS account can be
+shipped and **closed** at 0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). **M16 — Live
+Telehealth** is in progress ([SEC-008](../tasks/security/SEC-008-live-telehealth-workflow-contract.md),
+[BE-021](../tasks/backend/BE-021-telehealth-eligibility-and-lifecycle.md),
+[FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md)). Chat, recording, and Socket.IO
+remain later. Local product work does not wait on AWS. Resume M9 when the AWS account can be
 configured. Preview/production hosting remains M9, not M8, M10, or M11.
 
 ## Demo milestones
@@ -130,6 +133,15 @@ security headers with `no-store` on auth responses, and 429 UX on login/MFA/OAut
 [FE-034](../tasks/frontend/FE-034-rate-limited-auth-ux.md) (shipped). Not Redis, WAF/CloudFront rules,
 permanent lockout, production MFA, a new IdP, or AWS. **Closed** at 0.80.0.
 
+### M16 — Live Telehealth (in progress)
+
+Coherent appointment-linked live visit on the shipped M5 session shell and M12 Daily media:
+eligibility on join/mint, join-before-mint, leave versus end, ineligible/ended UX, and pre-join
+device guidance. Tasks: [SEC-008](../tasks/security/SEC-008-live-telehealth-workflow-contract.md),
+[BE-021](../tasks/backend/BE-021-telehealth-eligibility-and-lifecycle.md),
+[FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md). Not chat, recording, transcription,
+Socket.IO, Nest `/leave`, a session list API, or AWS.
+
 ## Milestone crosswalk
 
 A milestone may be **demonstrable on frontend mocks** before the matching NestJS surface exists. A
@@ -154,6 +166,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M13 Billing / Payments UX | FE-031, FE-032 (shipped) | Enable Nest `POST /billing/payments` and `GET /billing/claims` in the UI. Demo adapter and labeled envelopes; not hosted Stripe, EDI 837, invoice-create UI, or AWS. **Closed** at 0.75.0. |
 | M14 OAuth / External Identity | SEC-006, DATA-003, BE-017, FE-033 (shipped) | Nest OIDC client + PKCE, `external_identities`, existing cookie session, OAuth login UX. Google + Fake adapter. Not NextAuth, rate limiting, production MFA, Redis, or AWS. **Closed** at 0.77.0. |
 | M15 API Protection and Rate Limiting | SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034 (shipped) | PostgreSQL limiter store, `TRUST_PROXY`, auth and sensitive-route policies, 429 envelope, `auth.rate_limited`, API security headers, 429 auth UX. Not Redis, WAF, production MFA, or AWS. **Closed** at 0.80.0. |
+| M16 Live Telehealth | SEC-008, BE-021, FE-035 (shipped) | Eligibility on join/mint, join-before-mint, leave versus end (client/Daily leave; Nest end), 502 `MEDIA_UNAVAILABLE`, create/join rate limits, pre-join device UX. Not chat, recording, Socket.IO, or AWS. Milestone close remains separate. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

@@ -12,7 +12,9 @@ is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
 EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity** is shipped and
 **closed** at 0.77.0. **M15 — API Protection and Rate Limiting** is shipped and **closed** at
-0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). Local product work does not wait on AWS.
+0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). **M16 — Live Telehealth** is in
+progress (SEC-008, BE-021, FE-035). Chat, recording, and Socket.IO remain later. Local product
+work does not wait on AWS.
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
 expansion is still unshipped.
@@ -36,7 +38,8 @@ Shipped as M4–M7 foundations plus later demo hardening (M14 OAuth, M15 rate li
 observability and cloud (M9).
 
 - EHR foundation;
-- telehealth foundation (M5 session shell; M12 Daily media is shipped and qualified);
+- telehealth foundation (M5 session shell; M12 Daily media is shipped and qualified; M16 live
+  visit workflow in progress);
 - billing foundation (invoices, demo record-payment, labeled claims envelopes);
 - administration (users + audit viewer + role assignment UI with tenant/grant limits);
 - security hardening (partial: RBAC, RLS, document ACL, audit);
@@ -44,11 +47,11 @@ observability and cloud (M9).
 
 ## Maturity
 
-Still future except M12 Daily media (shipped, qualified). Remaining telehealth work is chat,
-recording, and Socket.IO — not a new M12 task.
+M12 Daily media is shipped (qualified). **M16** hardens the live visit workflow (eligibility,
+leave versus end, pre-join). Remaining after M16 is chat, recording, and Socket.IO.
 
 - EHR integrations;
-- telehealth maturity (chat, recording, Socket.IO; Daily media is M12);
+- telehealth maturity (M16 live workflow; then chat, recording, Socket.IO);
 - revenue cycle;
 - reliability;
 - performance;
