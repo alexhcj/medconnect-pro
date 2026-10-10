@@ -16,6 +16,7 @@ import {Patient} from './patient.entity.js';
 import {Payment} from './payment.entity.js';
 import {PracticeMembership} from './practice-membership.entity.js';
 import {Practice} from './practice.entity.js';
+import {RateLimitBucket} from './rate-limit-bucket.entity.js';
 import {TelehealthSession} from './telehealth-session.entity.js';
 import {User} from './user.entity.js';
 import {Vital} from './vital.entity.js';
@@ -42,6 +43,7 @@ export const persistenceEntities = [
 	Payment,
 	Notification,
 	NotificationPreference,
+	RateLimitBucket,
 ];
 
 export {
@@ -63,6 +65,7 @@ export {
 	Payment,
 	Practice,
 	PracticeMembership,
+	RateLimitBucket,
 	TelehealthSession,
 	User,
 	Vital,

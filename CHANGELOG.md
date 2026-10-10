@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.77.1] - 2026-10-10
+
+### Added
+
+- DATA-004: PostgreSQL `rate_limit_buckets` table (policy, HMAC key hash, window start, count,
+  expiry) with a hex-only key check, an `expires_at` index, and DML-only grants for the runtime
+  role. No tenant data and no RLS (ADR-015).
+- `RateLimitBucketRepository.increment` performs one atomic upsert per hit and returns
+  `{count, resetAt}`; expired rows are pruned in bounded batches on increment.
+- Persistence spec covering concurrent increments, window reset, pruning, hash-only storage, and
+  grants.
+
 ## [0.77.0] - 2026-10-09
 
 ### Added

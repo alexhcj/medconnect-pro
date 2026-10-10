@@ -360,7 +360,9 @@ JSON error responses from `apps/api` use this shape (no stack traces, tokens, or
   session tenant, use `code` `FORBIDDEN` and HTTP 403.
 - Rate-limited requests (M15, planned; [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md))
   use HTTP 429, `code` `RATE_LIMITED`, `details` `{ "retryAfterSeconds": number }`, and a
-  `Retry-After` header in seconds. Additive.
+  `Retry-After` header in seconds. Additive. Counters persist in PostgreSQL `rate_limit_buckets`
+  (policy, 64-hex key hash, window start, count, expiry; no tenant data, no RLS, no raw IP/email;
+  [DATA-004](../tasks/backend/DATA-004-rate-limit-bucket-persistence.md)).
 - When the limiter store is unavailable on auth/OAuth routes, the API returns HTTP 503 with `code`
   `RATE_LIMIT_UNAVAILABLE` (fail closed). Other protected routes fail open. Additive.
 - Clients may send `X-Correlation-ID`; the API always returns it (incoming value or a generated UUID).

@@ -13,6 +13,7 @@ import {PatientDocuments1760000000008} from './migrations/1760000000008-PatientD
 import {Notifications1760000000009} from './migrations/1760000000009-Notifications.js';
 import {TelehealthDailyRoom1760000000010} from './migrations/1760000000010-TelehealthDailyRoom.js';
 import {ExternalIdentity1760000000011} from './migrations/1760000000011-ExternalIdentity.js';
+import {RateLimitBuckets1760000000012} from './migrations/1760000000012-RateLimitBuckets.js';
 import {TenantRlsSubscriber} from './tenant-rls.subscriber.js';
 
 function tunnelTlsOptions(): TlsOptions | undefined {
@@ -47,6 +48,7 @@ export function postgresConnectionOptions(databaseUrl: string): DataSourceOption
 			Notifications1760000000009,
 			TelehealthDailyRoom1760000000010,
 			ExternalIdentity1760000000011,
+			RateLimitBuckets1760000000012,
 		],
 		synchronize: false,
 		migrationsRun: false,

@@ -26,7 +26,7 @@ is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
 EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity** is
 shipped and **closed** at 0.77.0 (SEC-006, DATA-003, BE-017, FE-033). **M15 — API Protection
-and Rate Limiting** is defined and pending (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). Local product work does not wait on AWS. Not part of M8.
+and Rate Limiting** is in progress: SEC-007 and DATA-004 shipped; BE-018, BE-019, BE-020, FE-034 pending. Local product work does not wait on AWS. Not part of M8.
 
 ## Actually complete
 

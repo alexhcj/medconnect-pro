@@ -45,7 +45,9 @@ account numbers), `patient_documents` (tenant-owned file metadata keyed by `prac
 `patient_id`; bytes live in an object store, not in PostgreSQL), `notifications` and
 `notification_preferences` (tenant-owned in-app inbox and channel flags keyed by `practice_id`
 and recipient/user; email/SMS ledger rows are not a live carrier), and `audit_events` (actor,
-tenant, action, resource type/id, correlation; no payload). Authentication, authenticated denials, patient
+tenant, action, resource type/id, correlation; no payload), and `rate_limit_buckets`
+(fixed-window counters keyed by policy, HMAC key hash, and window start; no tenant data, no raw
+IP or email; [DATA-004](../tasks/backend/DATA-004-rate-limit-bucket-persistence.md)). Authentication, authenticated denials, patient
 access/mutations, appointment mutations, clinical creates, telehealth session create/join/media-token/end,
 billing invoice create and payment records, document list/upload/download, and notification
 preference updates write rows. Restricted HTTP list is
@@ -66,7 +68,8 @@ PostgreSQL row-level security is enabled on tenant-owned business tables
 ([SEC-002](../tasks/security/SEC-002-tenant-isolation.md)). Policies compare `practice_id` (or
 `practices.id`) to the server-set GUC `app.current_practice_id`. Identity-resolution tables
 (`users`, `auth_sessions`, `practice_memberships`, `external_identities`, `oauth_flow_states`) have no RLS so login can derive tenant
-before that GUC is set. The Nest runtime connects as non-owner role `medconnect_app`;
+before that GUC is set. `rate_limit_buckets` holds no tenant data and has no RLS
+([ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). The Nest runtime connects as non-owner role `medconnect_app`;
 migrations, seed, and test fixtures use table-owner `DATABASE_ADMIN_URL`. Cache keys remain
 future work until Redis exists. Document objects use tenant-prefixed paths
 (`practices/{practiceId}/patients/{patientId}/{documentId}`) on a local filesystem adapter when
