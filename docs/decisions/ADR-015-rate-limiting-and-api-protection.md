@@ -86,6 +86,8 @@ emails and IP-only keys produce no practice row. No IP, email, or key hash is st
 | `GET /auth/oauth/:provider/start`                                     | 20    | 5 min  | client IP                    | fail closed   |
 | `GET /auth/oauth/:provider/callback`                                  | 20    | 5 min  | client IP                    | fail closed   |
 | `GET /auth/oauth/fake/authorize` (Fake adapter, local/tests)          | 20    | 5 min  | client IP                    | fail closed   |
+| `POST /telehealth/sessions`                                           | 20    | 5 min  | session user                 | fail open     |
+| `POST /telehealth/sessions/:id/join`                                  | 30    | 5 min  | session user                 | fail open     |
 | `POST /telehealth/sessions/:id/media-token`                           | 30    | 5 min  | session user                 | fail open     |
 | `GET /patients/:id/documents/:documentId/content` (document download) | 60    | 5 min  | session user                 | fail open     |
 | `POST /billing/payments`                                              | 10    | 5 min  | session user                 | fail open     |
@@ -127,6 +129,14 @@ closed (503). The counter is the same atomic PostgreSQL upsert, shared across in
 15-minute window per 10 failures. There is no permanent lockout, successful logins do not
 consume the budget, and OAuth sign-in (not keyed by email) remains a recovery path. The
 threshold of 10 failures per 15 minutes is approved.
+
+### Amendment (SEC-008 / BE-021, 2026-10-10): telehealth create and join
+
+M16 adds fail-open session-user limits on `POST /telehealth/sessions` (20 / 5 min) and
+`POST /telehealth/sessions/:id/join` (30 / 5 min). Media-token stays 30 / 5 min. Create and join
+are credential-adjacent (they gate session initialization and visit join) but are not auth
+routes, so store failure remains fail open. Limits are code constants in BE-021 / BE-019 policy
+table and may be tuned there without a new ADR.
 
 ### Amendment (FE-034, 2026-10-10): OAuth callback landing reason
 

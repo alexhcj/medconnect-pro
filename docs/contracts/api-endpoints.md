@@ -104,8 +104,12 @@ cards from fixtures.
 
 These routes are the application session for an appointment-linked visit, not a media room. Media
 transport (Daily/WebRTC) is a separate boundary. `POST .../media-token` mints a short-lived Daily
-meeting token after the same visit-participant authorization as join. `POST .../end` closes the
-visit for all participants; there is no participant-leave route yet.
+meeting token after the same visit-participant authorization as join, and only when the Nest
+session is `in_session`. Get, join, and mint re-check appointment eligibility (type, state, grace)
+and lazily end the session when the appointment is cancelled, completed, or past grace
+([SEC-008](../tasks/security/SEC-008-live-telehealth-workflow-contract.md)). `POST .../end` closes
+the visit for all participants. Leave is a client/Daily teardown; there is no Nest
+`POST .../leave`. Daily mint failure is 502 `MEDIA_UNAVAILABLE`.
 
 - `POST /telehealth/sessions`
 - `GET /telehealth/sessions/:id`

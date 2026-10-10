@@ -84,7 +84,9 @@ Audit sensitive actions such as:
 - clinical changes;
 - document access;
 - appointment changes;
-- telehealth session create, join, media-token mint, room delete, and end;
+- telehealth session create, join, media-token mint, room delete, and end (including lazy-end
+  when the appointment is cancelled, completed, or past grace); meeting tokens and `DAILY_API_KEY`
+  must not appear in the audit row;
 - billing changes;
 - notification preference updates (no title or body in the audit row);
 - administrative security changes.
@@ -95,7 +97,8 @@ Audit sensitive actions such as:
 Not production DDoS protection, account lockout, or WAF.
 
 - Opt-in per-route fixed-window rate limits (custom guard + `@RateLimit` decorator) on a
-  PostgreSQL `rate_limit_buckets` store. No Redis.
+  PostgreSQL `rate_limit_buckets` store. No Redis. M16 adds session-user fail-open limits on
+  telehealth create (20 / 5 min) and join (30 / 5 min); media-token stays 30 / 5 min.
 - Client IP from `TRUST_PROXY` hop count (default `0`, `X-Forwarded-For` ignored).
 - HMAC-hashed keys; no raw IP, email, or token stored or logged.
 - 429 `RATE_LIMITED` + `Retry-After`; auth routes fail closed with 503 `RATE_LIMIT_UNAVAILABLE`.

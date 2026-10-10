@@ -138,12 +138,17 @@ catalog without new permission strings:
 
 - **Create / end:** `write:appointments`, and the linked appointment must be visible to the caller.
 - **Get:** the same read scope as the linked appointment (`write:appointments` practice-wide,
-  `read:assigned_patients` for nurses, `read:own_patient` for portal users).
+  `read:assigned_patients` for nurses, `read:own_patient` for portal users). Get re-checks
+  appointment eligibility and lazily ends the session when the appointment is cancelled,
+  completed, or past grace.
 - **Join:** visit participant only — the appointment’s provider, the portal patient, or an assigned
-  nurse. Receptionists may create and end sessions but cannot join.
-- **Media token** ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md)): the same
-  visit-participant rule as join. Receptionists cannot mint. Client `practiceId` is ignored for
-  authorization and rejected on mismatch.
+  nurse. Receptionists may create and end sessions but cannot join. Join re-applies create
+  eligibility (type `telehealth`, `scheduled` or `confirmed`, within grace).
+- **Media token** ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+  [BE-021](../tasks/backend/BE-021-telehealth-eligibility-and-lifecycle.md)): the same
+  visit-participant rule as join, plus Nest state `in_session`. Receptionists cannot mint. Client
+  `practiceId` is ignored for authorization and rejected on mismatch. Leave is client/Daily only
+  and does not change Nest authorization.
 
 Unknown and cross-tenant session ids return the same not-found response as other tenant-owned
 resources.
@@ -303,7 +308,9 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
 - `GET /auth/oauth/:provider/start`, `/callback`, and Fake `authorize`: 20 per 5 min per IP. A
   throttled callback redirects to `/login?reason=rate_limited` (with `Retry-After`) instead of JSON;
   an unavailable limiter store redirects to `/login?reason=oauth_failed` (FE-034).
-- Session user (fail open): `POST /telehealth/sessions/:id/media-token` 30 per 5 min,
+- Session user (fail open): `POST /telehealth/sessions` 20 per 5 min,
+  `POST /telehealth/sessions/:id/join` 30 per 5 min,
+  `POST /telehealth/sessions/:id/media-token` 30 per 5 min,
   `GET /patients/:id/documents/:documentId/content` 60 per 5 min, `POST /billing/payments` 10 per
   5 min.
 - Exceeded: HTTP 429 `RATE_LIMITED` with `details.retryAfterSeconds` and `Retry-After`. Limiter

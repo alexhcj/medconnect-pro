@@ -72,7 +72,8 @@ Response concepts:
 Application session over a telehealth appointment. Create, get, join, and end do not mint Daily
 meeting tokens. Media is a separate transport: `POST .../media-token` returns an ephemeral
 `roomUrl` and meeting token. The session row may persist only an opaque `daily_room_name`. Meeting
-tokens are never stored.
+tokens are never stored. Leave is a client/Daily action only; there is no Nest `POST .../leave`
+([SEC-008](../tasks/security/SEC-008-live-telehealth-workflow-contract.md)).
 
 Request concepts:
 
@@ -96,10 +97,14 @@ State machine:
 
 - `waiting` after create
 - `in_session` after an authorized participant joins
-- `ended` after `POST .../end` or after lazy grace expiry
+- `ended` after `POST .../end`, or after the next get/join/mint lazily persists end when the
+  appointment is cancelled, completed, or past grace
 
-Media-token does not change that state machine. Token TTL is bounded by the join window (appointment
-end plus 15 minutes). Nest `ended` remains source of truth if Daily room delete fails.
+Media-token does not change that state machine. Mint requires `state === 'in_session'`; minting
+from `waiting` returns 409 `SESSION_NOT_JOINABLE`. Token TTL is bounded by the join window
+(appointment end plus 15 minutes). Nest `ended` remains source of truth if Daily room delete
+fails. Daily REST failure on mint returns 502 `MEDIA_UNAVAILABLE` without token or API-key
+material.
 
 One session row per appointment. Creating again returns the existing non-ended session. Recreating
 after `ended` is rejected.
@@ -110,10 +115,12 @@ Not an authentication timeout ([identity-and-access.md](identity-and-access.md) 
 a production SLA.
 
 - Join window: 15 minutes before `appointment.start` through 15 minutes after `appointment.end`.
-- Create is allowed only for `type=telehealth` appointments in `scheduled` or `confirmed` whose end
-  plus 15 minutes has not already passed.
-- After appointment end plus 15 minutes, the next GET/join/end lazily persists `ended` (no worker).
-- Join outside the window returns a conflict. There is no background timeout job.
+- Create, get, join, and media-token require `type=telehealth` and appointment state `scheduled`
+  or `confirmed`, and must not be past grace. Get/join/mint on an open session whose appointment
+  is no longer eligible lazily persist `ended` (no worker) and reject further media.
+- After appointment end plus 15 minutes, the next GET/join/end/mint lazily persists `ended`.
+- Join outside the window, mint before Nest join, or access after lazy-end returns a conflict
+  (`SESSION_NOT_JOINABLE` or `SESSION_ENDED`). There is no background timeout job.
 
 ## Clinical data
 
@@ -369,6 +376,9 @@ JSON error responses from `apps/api` use this shape (no stack traces, tokens, or
   [DATA-004](../tasks/backend/DATA-004-rate-limit-bucket-persistence.md)).
 - When the limiter store is unavailable on auth/OAuth routes, the API returns HTTP 503 with `code`
   `RATE_LIMIT_UNAVAILABLE` (fail closed). Other protected routes fail open. Additive.
+- Daily media mint failure uses HTTP 502 and `code` `MEDIA_UNAVAILABLE` (no token, room URL, or
+  API key in the envelope). Additive ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
+  documented for OpenAPI in [BE-021](../tasks/backend/BE-021-telehealth-eligibility-and-lifecycle.md)).
 - Clients may send `X-Correlation-ID`; the API always returns it (incoming value or a generated UUID).
 
 ## Correlation
