@@ -128,6 +128,15 @@ closed (503). The counter is the same atomic PostgreSQL upsert, shared across in
 consume the budget, and OAuth sign-in (not keyed by email) remains a recovery path. The
 threshold of 10 failures per 15 minutes is approved.
 
+### Amendment (FE-034, 2026-10-10): OAuth callback landing reason
+
+A throttled `GET /auth/oauth/:provider/callback` redirects to `/login?reason=rate_limited` (with
+`Retry-After`) instead of the generic `oauth_failed`. Throttling is keyed per client IP and is
+already reported openly as a JSON 429 on login, MFA, and OAuth start, so naming it reveals no
+account or provider detail. Provider, state, and ID-token failures, and a limiter-store outage
+(503 path), still land on the generic `oauth_failed`. The web shows "Too many attempts. Try again
+later." because a 302 cannot pass the retry seconds to the page.
+
 ### API security headers
 
 Set by a small direct Nest middleware (BE-020), not `helmet`:

@@ -44,7 +44,8 @@ Providers: `google` (when configured) and `fake` (`APP_ENV=local` only):
   `OAUTH_UNAVAILABLE`.
 - `GET /auth/oauth/:provider/callback` — public; validates and maps identity, sets the existing
   session cookies, then 302s to `WEB_ORIGIN/login/oauth/complete?returnTo=<path>`. Any failure 302s
-  to `WEB_ORIGIN/login?reason=oauth_failed` with no provider detail.
+  to `WEB_ORIGIN/login?reason=oauth_failed` with no provider detail. A rate-limited callback 302s
+  to `WEB_ORIGIN/login?reason=rate_limited` with `Retry-After`.
 - `GET /auth/session` — cookie or Bearer; `userId`, `email`, `role`, `practiceId`, `expiresIn`
   (server-resolved; no tokens)
 

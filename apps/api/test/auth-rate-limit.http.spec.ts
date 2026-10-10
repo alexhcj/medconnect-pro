@@ -24,6 +24,7 @@ import {testRateLimitStore} from './rate-limit-test-store.js';
 const password = 'Synthetic-Pass-1';
 const mfaCode = '135791';
 const FAILED = `${DEFAULT_LOCAL_WEB_ORIGIN}/login?reason=oauth_failed`;
+const RATE_LIMITED = `${DEFAULT_LOCAL_WEB_ORIGIN}/login?reason=rate_limited`;
 
 type SecurityEventBody = {action: string; actorUserId: string; resourceType: string; resourceId: string | null};
 
@@ -311,7 +312,7 @@ describe('auth and sensitive-route rate limits (HTTP)', () => {
 		expect429(await request(server()).get('/auth/oauth/fake/authorize').set('X-Forwarded-For', ip));
 	});
 
-	it('redirects a throttled OAuth callback to the generic failure page', async () => {
+	it('redirects a throttled OAuth callback to the rate-limited login page', async () => {
 		const ip = nextIp();
 		for (let i = 0; i < RATE_LIMIT_POLICIES.oauthCallback.limit; i += 1) {
 			const res = await request(server())
@@ -324,7 +325,7 @@ describe('auth and sensitive-route rate limits (HTTP)', () => {
 			.get('/auth/oauth/fake/callback')
 			.set('X-Forwarded-For', ip)
 			.expect(302);
-		expect(blocked.headers.location).toBe(FAILED);
+		expect(blocked.headers.location).toBe(RATE_LIMITED);
 		expect(Number(blocked.headers['retry-after'])).toBeGreaterThan(0);
 		expect(blocked.headers['set-cookie']).toBeUndefined();
 	});

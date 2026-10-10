@@ -1,5 +1,5 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {apiErrorFromBody, apiFetch, ApiError, CSRF_HEADER_NAME} from '@/lib/api/http';
+import {apiErrorFromBody, apiFetch, ApiError, CSRF_HEADER_NAME, RateLimitedError, rateLimitMessage} from '@/lib/api/http';
 
 describe('apiErrorFromBody', () => {
 	it('reads the documented error envelope', () => {
@@ -30,6 +30,33 @@ describe('apiErrorFromBody', () => {
 
 	it('falls back when the body has no message', () => {
 		expect(apiErrorFromBody({}, 502).message).toBe('Request failed');
+	});
+
+	it('maps 429 RATE_LIMITED to RateLimitedError with retry seconds', () => {
+		const error = apiErrorFromBody(
+			{error: {code: 'RATE_LIMITED', message: 'raw server text', details: {retryAfterSeconds: 42.2}}},
+			429,
+		);
+		expect(error).toBeInstanceOf(RateLimitedError);
+		expect((error as RateLimitedError).retryAfterSeconds).toBe(43);
+		expect(error.message).not.toContain('raw server text');
+		expect(rateLimitMessage(error as RateLimitedError)).toBe(
+			'Too many attempts. Try again in 43 seconds.',
+		);
+	});
+
+	it.each([undefined, {}, {retryAfterSeconds: -5}, {retryAfterSeconds: '30'}, [1]])(
+		'falls back to generic text for details %j',
+		(details) => {
+			const error = apiErrorFromBody({error: {code: 'RATE_LIMITED', details}}, 429);
+			expect(error).toBeInstanceOf(RateLimitedError);
+			expect(rateLimitMessage(error as RateLimitedError)).toBe('Too many attempts. Try again later.');
+		},
+	);
+
+	it('maps a bare 429 and uses singular wording for one second', () => {
+		expect(apiErrorFromBody({}, 429)).toBeInstanceOf(RateLimitedError);
+		expect(rateLimitMessage(new RateLimitedError(1))).toBe('Too many attempts. Try again in 1 second.');
 	});
 });
 

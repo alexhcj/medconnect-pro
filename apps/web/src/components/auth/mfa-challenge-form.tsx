@@ -6,7 +6,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
 import {Button} from '@/components/ui/button';
 import {useVerifyMfa} from '@/lib/hooks/use-session';
-import {ApiError} from '@/lib/api/http';
+import {ApiError, RateLimitedError, rateLimitMessage} from '@/lib/api/http';
 
 const MOCK_MFA_CODE = '135790';
 
@@ -79,6 +79,10 @@ export function MfaChallengeForm({
 			await verifyMfa.mutateAsync({email, code: data.code, mfaToken});
 			onVerified();
 		} catch (error) {
+			if (error instanceof RateLimitedError) {
+				setFormError(rateLimitMessage(error));
+				return;
+			}
 			if (error instanceof ApiError && error.status === 401) {
 				setFormError('Verification failed. Check the demo code and try again.');
 				return;

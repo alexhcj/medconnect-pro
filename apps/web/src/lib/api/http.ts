@@ -23,6 +23,34 @@ export class ApiError extends Error {
 	}
 }
 
+export class RateLimitedError extends ApiError {
+	retryAfterSeconds?: number;
+
+	constructor(retryAfterSeconds?: number) {
+		super('Too many attempts', 429, {code: 'RATE_LIMITED'});
+		this.retryAfterSeconds = retryAfterSeconds;
+	}
+}
+
+export function rateLimitMessage(error: RateLimitedError): string {
+	const seconds = error.retryAfterSeconds;
+	if (!seconds) {
+		return 'Too many attempts. Try again later.';
+	}
+	return `Too many attempts. Try again in ${seconds} ${seconds === 1 ? 'second' : 'seconds'}.`;
+}
+
+function readRetryAfterSeconds(details: unknown): number | undefined {
+	if (!details || typeof details !== 'object' || Array.isArray(details)) {
+		return undefined;
+	}
+	const value = (details as {retryAfterSeconds?: unknown}).retryAfterSeconds;
+	if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
+		return undefined;
+	}
+	return Math.ceil(value);
+}
+
 const CSRF_COOKIE_NAME = 'mcp_csrf';
 export const CSRF_HEADER_NAME = 'X-CSRF-Token';
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
@@ -47,6 +75,16 @@ function readDetails(value: unknown): ApiErrorDetail[] | undefined {
 }
 
 export function apiErrorFromBody(body: unknown, status: number): ApiError {
+	const envelope =
+		body && typeof body === 'object' ? (body as {error?: unknown}).error : undefined;
+	const envelopeObject =
+		envelope && typeof envelope === 'object'
+			? (envelope as {code?: unknown; details?: unknown})
+			: undefined;
+	if (status === 429 || envelopeObject?.code === 'RATE_LIMITED') {
+		return new RateLimitedError(readRetryAfterSeconds(envelopeObject?.details));
+	}
+
 	if (!body || typeof body !== 'object') {
 		return new ApiError('Request failed', status);
 	}

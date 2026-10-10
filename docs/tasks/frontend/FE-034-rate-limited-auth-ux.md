@@ -3,7 +3,7 @@ id: FE-034
 type: task
 area: frontend
 feature: identity-access
-status: pending
+status: shipped
 priority: medium
 estimate: 1
 dependencies: [BE-019, FE-027, FE-028, FE-033]
@@ -21,7 +21,7 @@ design:
   frame: ""
   status: not_required
 implementation:
-  status: not_started
+  status: done
 validation:
   responsive: true
   accessibility: true
@@ -56,11 +56,11 @@ login, MFA, or OAuth.
 
 ## Acceptance Criteria
 
-- [ ] 429 maps to the typed error with retry seconds; missing details fall back to generic text
-- [ ] Login, MFA, and OAuth landing render the message and it is announced
-- [ ] No token, email, or raw server detail rendered
-- [ ] Vitest for mapping and forms; Playwright mock check passes
-- [ ] Existing auth Vitest and Playwright suites pass
+- [x] 429 maps to the typed error with retry seconds; missing details fall back to generic text
+- [x] Login, MFA, and OAuth landing render the message and it is announced
+- [x] No token, email, or raw server detail rendered
+- [x] Vitest for mapping and forms; Playwright mock check passes
+- [x] Existing auth Vitest and Playwright suites pass
 
 ## Dependencies
 
@@ -75,3 +75,9 @@ login, MFA, or OAuth.
 - PATCH version bump.
 
 ## Completion
+
+Shipped in 0.80.0 (MINOR rather than PATCH: the OAuth callback redirect contract changed).
+`RateLimitedError` and `rateLimitMessage` live in `apps/web/src/lib/api/http.ts`; the login and
+MFA forms reuse their existing `role="alert"` error. The API's `OAuthCallbackRateLimitFilter` now
+redirects throttling to `/login?reason=rate_limited` (ADR-015 amendment), which the login page
+renders as a danger alert. Mock mode rate-limits `rate.limited@example.test` with 60 seconds.

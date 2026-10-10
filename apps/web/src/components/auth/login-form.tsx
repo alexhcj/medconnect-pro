@@ -12,7 +12,7 @@ import {MfaChallengeForm} from '@/components/auth/mfa-challenge-form';
 import {useLogin} from '@/lib/hooks/use-session';
 import {DASHBOARD_PATH} from '@/lib/auth/paths';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
-import {ApiError} from '@/lib/api/http';
+import {ApiError, RateLimitedError, rateLimitMessage} from '@/lib/api/http';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {OAuthProviderButton} from '@/components/auth/oauth-provider-button';
 import {
@@ -42,7 +42,7 @@ const demoAccounts = [
 
 function ReasonBanner({reason}: {reason: LoginReason}) {
 	const message = LOGIN_REASON_MESSAGES[reason];
-	if (reason === 'oauth_failed') {
+	if (reason === 'oauth_failed' || reason === 'rate_limited') {
 		return (
 			<div className="mt-4 flex items-start gap-2 rounded-md bg-danger-subtle p-3 text-sm font-medium text-danger" role="alert">
 				<CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
@@ -93,6 +93,10 @@ export function LoginForm() {
 			}
 			router.push(DASHBOARD_PATH);
 		} catch (error) {
+			if (error instanceof RateLimitedError) {
+				setFormError(rateLimitMessage(error));
+				return;
+			}
 			if (error instanceof ApiError && error.status === 401) {
 				setFormError('Invalid email or password.');
 				return;

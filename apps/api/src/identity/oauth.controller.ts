@@ -38,6 +38,7 @@ import {applySessionCookies} from './session-cookies.js';
 
 export const OAUTH_COMPLETE_PATH = '/login/oauth/complete';
 export const OAUTH_FAILED_PATH = '/login?reason=oauth_failed';
+export const OAUTH_RATE_LIMITED_PATH = '/login?reason=rate_limited';
 
 function single(value: unknown): string | undefined {
 	return typeof value === 'string' && value.length > 0 ? value : undefined;
@@ -133,11 +134,16 @@ export class OAuthController {
 	@Get(':provider/callback')
 	@Public()
 	@RateLimit(RATE_LIMIT_POLICIES.oauthCallback)
-	@UseFilters(new OAuthCallbackRateLimitFilter(() => `${webOrigin()}${OAUTH_FAILED_PATH}`))
+	@UseFilters(
+		new OAuthCallbackRateLimitFilter(
+			() => `${webOrigin()}${OAUTH_RATE_LIMITED_PATH}`,
+			() => `${webOrigin()}${OAUTH_FAILED_PATH}`,
+		),
+	)
 	@ApiOperation({
 		summary: 'Complete demo OIDC sign-in',
 		description:
-			'Consumes state, exchanges the code with the PKCE verifier, validates the ID token, maps to a provisioned user, and sets the same HttpOnly session cookies as password login. Any failure redirects to /login?reason=oauth_failed with no provider detail. Rate limiting also redirects there (with Retry-After) instead of returning the documented 429/503 JSON.',
+			'Consumes state, exchanges the code with the PKCE verifier, validates the ID token, maps to a provisioned user, and sets the same HttpOnly session cookies as password login. Any failure redirects to /login?reason=oauth_failed with no provider detail. Rate limiting redirects to /login?reason=rate_limited (with Retry-After) and an unavailable limiter to /login?reason=oauth_failed, instead of returning the documented 429/503 JSON.',
 	})
 	@ApiParam({name: 'provider', enum: ['google', 'fake']})
 	@ApiFoundResponse({description: 'Redirect to the web OAuth complete page or the generic failure page.'})

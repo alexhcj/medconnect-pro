@@ -267,7 +267,7 @@ not the cookie model.
 Nest side shipped in [BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md); the
 login UI shipped in [FE-033](../tasks/frontend/FE-033-oauth-login-ux.md): `/login/oauth/complete`
 hydrates the client session from `GET /auth/session`, and `/login?reason=` renders
-`oauth_failed`, `unauthorized`, and `signed_out`. The `returnTo`
+`oauth_failed`, `unauthorized`, and `signed_out`, plus `rate_limited` (FE-034). The `returnTo`
 allowlist is `/dashboard` and paths under it. Decision: [ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md). This is a demo
 integration, not production OAuth or HIPAA identity.
 
@@ -301,7 +301,8 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
 - `POST /auth/mfa/verify`: 5 per 10 min per MFA session + IP.
 - `POST /auth/refresh`: 30 per 5 min per IP.
 - `GET /auth/oauth/:provider/start`, `/callback`, and Fake `authorize`: 20 per 5 min per IP. A
-  throttled callback redirects to `/login?reason=oauth_failed` (with `Retry-After`) instead of JSON.
+  throttled callback redirects to `/login?reason=rate_limited` (with `Retry-After`) instead of JSON;
+  an unavailable limiter store redirects to `/login?reason=oauth_failed` (FE-034).
 - Session user (fail open): `POST /telehealth/sessions/:id/media-token` 30 per 5 min,
   `GET /patients/:id/documents/:documentId/content` 60 per 5 min, `POST /billing/payments` 10 per
   5 min.

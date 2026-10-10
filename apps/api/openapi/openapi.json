@@ -4191,7 +4191,7 @@
     },
     "/auth/oauth/{provider}/callback": {
       "get": {
-        "description": "Consumes state, exchanges the code with the PKCE verifier, validates the ID token, maps to a provisioned user, and sets the same HttpOnly session cookies as password login. Any failure redirects to /login?reason=oauth_failed with no provider detail. Rate limiting also redirects there (with Retry-After) instead of returning the documented 429/503 JSON.",
+        "description": "Consumes state, exchanges the code with the PKCE verifier, validates the ID token, maps to a provisioned user, and sets the same HttpOnly session cookies as password login. Any failure redirects to /login?reason=oauth_failed with no provider detail. Rate limiting redirects to /login?reason=rate_limited (with Retry-After) and an unavailable limiter to /login?reason=oauth_failed, instead of returning the documented 429/503 JSON.",
         "operationId": "OAuthController_callback",
         "parameters": [
           {

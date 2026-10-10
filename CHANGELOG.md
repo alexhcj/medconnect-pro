@@ -6,6 +6,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.80.0] - 2026-10-10
+
+### Added
+
+- FE-034: 429 `RATE_LIMITED` responses map to a typed web `RateLimitedError` with
+  `details.retryAfterSeconds`. `/login` and the mock MFA form announce "Too many attempts. Try
+  again in N seconds." (generic "Try again later." without retry seconds) in the existing alert.
+- `/login?reason=rate_limited` banner, plus a mock-mode trigger (`rate.limited@example.test`) for
+  demos and Playwright.
+
+### Changed
+
+- Breaking (redirect contract): a throttled `GET /auth/oauth/:provider/callback` now redirects to
+  `/login?reason=rate_limited` (with `Retry-After`) instead of `/login?reason=oauth_failed`. A
+  limiter-store outage still lands on `oauth_failed` (ADR-015 amendment).
+
+### Fixed
+
+- The web query client no longer retries 401, 403, or 429 responses. A rate-limited login or MFA
+  attempt was being resent once automatically, spending extra rate-limit budget. Handled 429s are
+  no longer logged as mutation errors.
+
 ## [0.79.1] - 2026-10-10
 
 ### Security

@@ -16,6 +16,15 @@ describe('sessionMockAPI', () => {
 		expect(readMockSession()).toBeNull();
 	});
 
+	it('rate-limits the demo trigger email with retry seconds', async () => {
+		await expect(sessionMockAPI.login('Rate.Limited@example.test', 'anything-123')).rejects.toMatchObject({
+			status: 429,
+			code: 'RATE_LIMITED',
+			retryAfterSeconds: 60,
+		});
+		expect(readMockSession()).toBeNull();
+	});
+
 	it('establishes a PRACTICE_ADMIN session for the demo account', async () => {
 		const demo = fixtureDemoUsers[0];
 		const result = await sessionMockAPI.login(demo.email, demo.password);

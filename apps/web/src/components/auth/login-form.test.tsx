@@ -5,6 +5,7 @@ import {LoginForm} from '@/components/auth/login-form';
 import {clearMockSession, readMockSession} from '@/lib/api/mocks/mock-session-store';
 import {sessionMockAPI} from '@/lib/api/mocks/session-mock';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
+import {RateLimitedError} from '@/lib/api/http';
 
 const push = vi.fn();
 let searchParams = new URLSearchParams();
@@ -49,6 +50,7 @@ describe('LoginForm', () => {
 
 	it.each([
 		['oauth_failed', 'alert', /couldn't sign you in with that provider/i],
+		['rate_limited', 'alert', /too many attempts\. try again later\./i],
 		['unauthorized', 'status', /your session ended/i],
 		['signed_out', 'status', /you have signed out/i],
 	])('announces reason=%s', (reason, role, message) => {
@@ -89,6 +91,24 @@ describe('LoginForm', () => {
 
 		expect(await screen.findByRole('alert')).toHaveTextContent(/invalid email or password/i);
 		expect(readMockSession()).toBeNull();
+		expect(push).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		[45, /too many attempts\. try again in 45 seconds\./i],
+		[undefined, /too many attempts\. try again later\./i],
+	])('announces rate limiting (retry %s) without echoing input', async (retryAfterSeconds, message) => {
+		const user = userEvent.setup();
+		vi.spyOn(sessionMockAPI, 'login').mockRejectedValue(new RateLimitedError(retryAfterSeconds));
+		renderLogin();
+
+		await user.type(screen.getByLabelText('Email'), 'someone@example.test');
+		await user.type(screen.getByLabelText('Password'), 'whatever-pass');
+		await user.click(screen.getByRole('button', {name: 'Sign in'}));
+
+		const alert = await screen.findByRole('alert');
+		expect(alert).toHaveTextContent(message);
+		expect(alert).not.toHaveTextContent('someone@example.test');
 		expect(push).not.toHaveBeenCalled();
 	});
 

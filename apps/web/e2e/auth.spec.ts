@@ -22,6 +22,24 @@ test.describe('Mock authentication', () => {
 		await expect(page).toHaveURL(/\/login/);
 	});
 
+	test('announces a rate-limited sign-in with retry seconds', async ({page}) => {
+		await page.goto('/login');
+		await page.getByLabel('Email').fill('rate.limited@example.test');
+		await page.getByLabel('Password').fill('any-password');
+		await page.getByRole('button', {name: 'Sign in'}).click();
+		await expect(
+			page.getByRole('alert').filter({hasText: 'Too many attempts. Try again in 60 seconds.'}),
+		).toBeVisible();
+		await expect(page).toHaveURL(/\/login/);
+	});
+
+	test('shows the rate-limited OAuth landing reason', async ({page}) => {
+		await page.goto('/login?reason=rate_limited');
+		await expect(
+			page.getByRole('alert').filter({hasText: 'Too many attempts. Try again later.'}),
+		).toBeVisible();
+	});
+
 	test('signs out back to login', async ({page}) => {
 		await signInAsPracticeAdmin(page);
 		await page.getByRole('button', {name: 'Sign out'}).click();

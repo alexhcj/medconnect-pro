@@ -2,7 +2,7 @@ import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {MfaChallengeForm} from '@/components/auth/mfa-challenge-form';
-import {ApiError} from '@/lib/api/http';
+import {ApiError, RateLimitedError} from '@/lib/api/http';
 import {sessionMockAPI} from '@/lib/api/mocks/session-mock';
 import {clearMockSession, readMockSession} from '@/lib/api/mocks/mock-session-store';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
@@ -64,6 +64,23 @@ describe('MfaChallengeForm', () => {
 
 		expect(await screen.findByRole('alert')).toHaveTextContent(/verification failed/i);
 		expect(readMockSession()).toBeNull();
+		expect(onVerified).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		[30, /too many attempts\. try again in 30 seconds\./i],
+		[undefined, /too many attempts\. try again later\./i],
+	])('announces rate limiting (retry %s)', async (retryAfterSeconds, message) => {
+		const user = userEvent.setup();
+		vi.spyOn(sessionMockAPI, 'verifyMfa').mockRejectedValue(new RateLimitedError(retryAfterSeconds));
+		renderChallenge();
+
+		await user.type(screen.getByLabelText('Verification code'), '000000');
+		await user.click(screen.getByRole('button', {name: 'Verify'}));
+
+		const alert = await screen.findByRole('alert');
+		expect(alert).toHaveTextContent(message);
+		expect(alert).not.toHaveTextContent(/mfa\.nurse|opaque-mfa/);
 		expect(onVerified).not.toHaveBeenCalled();
 	});
 

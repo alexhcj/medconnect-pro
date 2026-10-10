@@ -24,6 +24,7 @@ export function safeReturnTo(value: string | null): string {
 
 export const LOGIN_REASON_MESSAGES = {
 	oauth_failed: "We couldn't sign you in with that provider. Try again or use email.",
+	rate_limited: 'Too many attempts. Try again later.',
 	unauthorized: 'Your session ended. Sign in again.',
 	signed_out: 'You have signed out.',
 } as const;

@@ -8,7 +8,7 @@ import {
 	SessionInfo,
 	VerifyMfaInput,
 } from '@/types/auth/session';
-import {ApiError} from '@/lib/api/http';
+import {ApiError, RateLimitedError} from '@/lib/api/http';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 import {
 	clearMockSession,
@@ -20,6 +20,8 @@ import {mockDelay, mockLog, shouldSimulateError} from '@/lib/api/mocks/runtime';
 
 const MOCK_SESSION_ID = 'sess_mock_123456789';
 const MOCK_USER_ID = 'user_mock_987654321';
+export const MOCK_RATE_LIMITED_EMAIL = 'rate.limited@example.test';
+export const MOCK_RATE_LIMIT_RETRY_SECONDS = 60;
 
 function createMockSession(overrides: Partial<SessionInfo> = {}): SessionInfo {
 	const userRole = (overrides.userRole ?? 'PRACTICE_ADMIN') as Role;
@@ -66,6 +68,10 @@ async function withMock<T>(work: () => T, errorMessage: string): Promise<T> {
 export const sessionMockAPI = {
 	login: async (email: string, password: string): Promise<LoginOutcome> => {
 		await mockDelay();
+		if (email.trim().toLowerCase() === MOCK_RATE_LIMITED_EMAIL) {
+			mockLog('warn', 'Mock login rate limited');
+			throw new RateLimitedError(MOCK_RATE_LIMIT_RETRY_SECONDS);
+		}
 		const match = fixtureDemoUsers.find(
 			(user) => user.email.toLowerCase() === email.trim().toLowerCase() && user.password === password,
 		);

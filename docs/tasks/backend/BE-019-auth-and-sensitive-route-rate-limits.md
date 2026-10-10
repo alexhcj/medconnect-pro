@@ -92,7 +92,8 @@ request-scoped: Nest runs static global guards before request-scoped ones, so it
 before `AuthGuard` and session-user keys never resolved. The guard calls `RATE_LIMIT_AUDITOR`
 (`IdentityRateLimitAuditor`) on the first rejection in a window (`count === limit + 1`). It
 writes `auth.rate_limited` only for a resolvable practice user. Session-user routes also audit.
-A throttled OAuth callback redirects to `/login?reason=oauth_failed` with `Retry-After`
+A throttled OAuth callback redirects to `/login?reason=oauth_failed` (since FE-034:
+`/login?reason=rate_limited`) with `Retry-After`
 (`OAuthCallbackRateLimitFilter`). HTTP specs override `RATE_LIMIT_STORE` with a shared in-memory
 store that `vitest.setup.ts` resets before each test. Tests: `test/auth-rate-limit.http.spec.ts`
 and key unit tests in `src/rate-limit/rate-limit.spec.ts`. The OpenAPI check asserts 429 on every
