@@ -26,6 +26,13 @@ export function isWithinJoinWindow(startAt: Date, endAt: Date, now: Date = new D
 	return instant >= windowStart && instant <= windowEnd;
 }
 
-export function canCreateTelehealthSession(appointment: JoinableAppointment, now: Date = new Date()): boolean {
+export function isEligibleOpenTelehealthAppointment(
+	appointment: JoinableAppointment,
+	now: Date = new Date(),
+): boolean {
 	return isJoinableTelehealthAppointment(appointment) && !isPastGraceExpiry(appointment.endAt, now);
+}
+
+export function canCreateTelehealthSession(appointment: JoinableAppointment, now: Date = new Date()): boolean {
+	return isEligibleOpenTelehealthAppointment(appointment, now);
 }

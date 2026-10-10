@@ -510,6 +510,17 @@ describe('telehealth session HTTP', () => {
 		expect(receptionistMint.body.error.code).toBe('FORBIDDEN');
 
 		const providerToken = await login(provider.email);
+		const waitingMint = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/media-token`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(409);
+		expect(waitingMint.body.error.code).toBe('SESSION_NOT_JOINABLE');
+
+		await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/join`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(200);
+
 		const minted = await request(app.getHttpServer())
 			.post(`/telehealth/sessions/${created.body.id}/media-token`)
 			.set('Authorization', `Bearer ${providerToken}`)
@@ -617,6 +628,46 @@ describe('telehealth session HTTP', () => {
 			},
 		});
 		expect(deleteAudits.length).toBeGreaterThan(0);
+	});
+
+	it('lazy-ends a session when the appointment is cancelled after create', async () => {
+		const desk = await login(receptionist.email);
+		await cancelOpenAppointments(desk);
+		const appointment = await createAppointment(desk, {
+			start: isoFromNow(-3 * 60 * 1000),
+			end: isoFromNow(45 * 60 * 1000),
+		});
+		const created = await request(app.getHttpServer())
+			.post('/telehealth/sessions')
+			.set('Authorization', `Bearer ${desk}`)
+			.send({appointmentId: appointment.id})
+			.expect(201);
+		expect(created.body.state).toBe('waiting');
+
+		await request(app.getHttpServer())
+			.patch(`/appointments/${appointment.id}`)
+			.set('Authorization', `Bearer ${desk}`)
+			.send({state: 'cancelled'})
+			.expect(200);
+
+		const got = await request(app.getHttpServer())
+			.get(`/telehealth/sessions/${created.body.id}`)
+			.set('Authorization', `Bearer ${desk}`)
+			.expect(200);
+		expect(got.body.state).toBe('ended');
+
+		const providerToken = await login(provider.email);
+		const joinDenied = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/join`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(409);
+		expect(joinDenied.body.error.code).toBe('SESSION_NOT_JOINABLE');
+
+		const mintDenied = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/media-token`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(409);
+		expect(mintDenied.body.error.code).toBe('SESSION_NOT_JOINABLE');
 	});
 
 	it('denies create from a nurse and a patient user', async () => {

@@ -216,8 +216,9 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 	const joinSession = await dataSource.getRepository(TelehealthSession).save({
 		practiceId: practiceA.id,
 		appointmentId: joinAppointment.id,
-		state: 'waiting',
+		state: 'in_session',
 		waitingStartedAt: new Date(),
+		joinedAt: new Date(),
 		synthetic: true,
 	});
 	const foreignSession = await dataSource.getRepository(TelehealthSession).save({

@@ -1,5 +1,6 @@
 import {Body, Controller, Get, HttpCode, Param, Post} from '@nestjs/common';
 import {
+	ApiBadGatewayResponse,
 	ApiBody,
 	ApiConflictResponse,
 	ApiCreatedResponse,
@@ -37,6 +38,7 @@ export class TelehealthSessionController {
 
 	@Post()
 	@HttpCode(201)
+	@RateLimit(RATE_LIMIT_POLICIES.telehealthCreate)
 	@ApiOperation({
 		summary: 'Create an appointment-linked telehealth session',
 		description:
@@ -56,7 +58,7 @@ export class TelehealthSessionController {
 	@ApiOperation({
 		summary: 'Read one telehealth session',
 		description:
-			'Unknown ids, cross-tenant ids, and records outside the caller’s assignment or portal scope return the same not-found response. Past the appointment end plus 15 minutes, the session is lazily marked ended.',
+			'Unknown ids, cross-tenant ids, and records outside the caller’s assignment or portal scope return the same not-found response. Cancelled, completed, or past-grace appointments lazily mark the session ended.',
 	})
 	@ApiOkResponse({type: TelehealthSessionRdo})
 	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})
@@ -68,10 +70,11 @@ export class TelehealthSessionController {
 
 	@Post(':id/join')
 	@HttpCode(200)
+	@RateLimit(RATE_LIMIT_POLICIES.telehealthJoin)
 	@ApiOperation({
 		summary: 'Join a telehealth session',
 		description:
-			'Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists may create and end sessions but cannot join. Join is allowed from 15 minutes before the appointment start through 15 minutes after it ends. This does not mint a media token.',
+			'Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists may create and end sessions but cannot join. Join is allowed from 15 minutes before the appointment start through 15 minutes after it ends. Cancelled or completed appointments are not joinable. This does not mint a media token. Leave is a client/Daily action; there is no Nest leave route.',
 	})
 	@ApiOkResponse({type: TelehealthSessionRdo})
 	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})
@@ -88,11 +91,15 @@ export class TelehealthSessionController {
 	@ApiOperation({
 		summary: 'Mint a Daily meeting token for a telehealth session',
 		description:
-			'Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists cannot mint. Uses the same join window as POST .../join. Lazy-creates a private Daily room on first mint and reuses it afterward. This is media transport, not the application session. Join does not mint a token.',
+			'Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists cannot mint. Requires Nest state in_session (join first). Uses the same join window and appointment eligibility as POST .../join. Lazy-creates a private Daily room on first mint and reuses it afterward. This is media transport, not the application session. Daily failure returns 502 MEDIA_UNAVAILABLE.',
 	})
 	@ApiOkResponse({type: TelehealthMediaTokenRdo})
 	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})
 	@ApiConflictResponse({type: ErrorEnvelopeRdo})
+	@ApiBadGatewayResponse({
+		type: ErrorEnvelopeRdo,
+		description: 'MEDIA_UNAVAILABLE: Daily room or token minting failed.',
+	})
 	mediaToken(
 		@Param({schema: telehealthSessionIdParamsSchema}) params: TelehealthSessionIdParams,
 	): Promise<TelehealthMediaTokenRdo> {

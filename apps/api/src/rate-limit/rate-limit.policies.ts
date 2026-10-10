@@ -78,6 +78,8 @@ export const RATE_LIMIT_POLICIES = {
 	oauthStart: ipPolicy('auth.oauth.start', 20, 5 * MINUTE_MS),
 	oauthCallback: ipPolicy('auth.oauth.callback', 20, 5 * MINUTE_MS),
 	oauthFakeAuthorize: ipPolicy('auth.oauth.fake_authorize', 20, 5 * MINUTE_MS),
+	telehealthCreate: sessionUserPolicy('telehealth.create', 20, 5 * MINUTE_MS),
+	telehealthJoin: sessionUserPolicy('telehealth.join', 30, 5 * MINUTE_MS),
 	mediaToken: sessionUserPolicy('telehealth.media_token', 30, 5 * MINUTE_MS),
 	documentDownload: sessionUserPolicy('documents.download', 60, 5 * MINUTE_MS),
 	payment: sessionUserPolicy('billing.payment', 10, 5 * MINUTE_MS),

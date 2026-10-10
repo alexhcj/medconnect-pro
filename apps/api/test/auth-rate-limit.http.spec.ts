@@ -341,6 +341,17 @@ describe('auth and sensitive-route rate limits (HTTP)', () => {
 		const token = await login(providerEmail);
 		const routes: Array<{name: string; limit: number; send: () => request.Test}> = [
 			{
+				name: 'telehealth create',
+				limit: RATE_LIMIT_POLICIES.telehealthCreate.limit,
+				send: () =>
+					request(server()).post('/telehealth/sessions').send({appointmentId: randomUUID()}),
+			},
+			{
+				name: 'telehealth join',
+				limit: RATE_LIMIT_POLICIES.telehealthJoin.limit,
+				send: () => request(server()).post(`/telehealth/sessions/${randomUUID()}/join`),
+			},
+			{
 				name: 'media-token',
 				limit: RATE_LIMIT_POLICIES.mediaToken.limit,
 				send: () => request(server()).post(`/telehealth/sessions/${randomUUID()}/media-token`),

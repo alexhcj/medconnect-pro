@@ -103,6 +103,9 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/telehealth/sessions/{id}/media-token']?.post?.security).toEqual(
 			sessionSecurity,
 		);
+		expect(document.paths?.['/telehealth/sessions/{id}/media-token']?.post?.responses).toHaveProperty(
+			'502',
+		);
 		expect(document.paths?.['/telehealth/sessions/{id}/end']?.post?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/billing/invoices']?.get?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/billing/invoices']?.post?.security).toEqual(sessionSecurity);

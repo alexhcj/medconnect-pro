@@ -74,6 +74,15 @@ export class TelehealthSessionRepository {
 		await this.rows.save(row);
 		return (await this.getById(row.id)) ?? row;
 	}
+
+	async transitionWaitingToInSession(id: string, joinedAt: Date): Promise<TelehealthSession | undefined> {
+		const {practiceId} = this.tenant.require();
+		const result = await this.rows.update({id, practiceId, state: 'waiting'}, {state: 'in_session', joinedAt});
+		if (!result.affected) {
+			return undefined;
+		}
+		return this.getById(id);
+	}
 }
 
 export class TelehealthSessionUniqueConstraintError extends Error {

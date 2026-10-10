@@ -2661,6 +2661,24 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2679,7 +2697,7 @@
     },
     "/telehealth/sessions/{id}": {
       "get": {
-        "description": "Unknown ids, cross-tenant ids, and records outside the caller’s assignment or portal scope return the same not-found response. Past the appointment end plus 15 minutes, the session is lazily marked ended.",
+        "description": "Unknown ids, cross-tenant ids, and records outside the caller’s assignment or portal scope return the same not-found response. Cancelled, completed, or past-grace appointments lazily mark the session ended.",
         "operationId": "TelehealthSessionController_get",
         "parameters": [
           {
@@ -2751,7 +2769,7 @@
     },
     "/telehealth/sessions/{id}/join": {
       "post": {
-        "description": "Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists may create and end sessions but cannot join. Join is allowed from 15 minutes before the appointment start through 15 minutes after it ends. This does not mint a media token.",
+        "description": "Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists may create and end sessions but cannot join. Join is allowed from 15 minutes before the appointment start through 15 minutes after it ends. Cancelled or completed appointments are not joinable. This does not mint a media token. Leave is a client/Daily action; there is no Nest leave route.",
         "operationId": "TelehealthSessionController_join",
         "parameters": [
           {
@@ -2815,6 +2833,24 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2833,7 +2869,7 @@
     },
     "/telehealth/sessions/{id}/media-token": {
       "post": {
-        "description": "Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists cannot mint. Uses the same join window as POST .../join. Lazy-creates a private Daily room on first mint and reuses it afterward. This is media transport, not the application session. Join does not mint a token.",
+        "description": "Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Receptionists cannot mint. Requires Nest state in_session (join first). Uses the same join window and appointment eligibility as POST .../join. Lazy-creates a private Daily room on first mint and reuses it afterward. This is media transport, not the application session. Daily failure returns 502 MEDIA_UNAVAILABLE.",
         "operationId": "TelehealthSessionController_mediaToken",
         "parameters": [
           {
@@ -2912,6 +2948,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "MEDIA_UNAVAILABLE: Daily room or token minting failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -5410,6 +5456,61 @@
           "synthetic"
         ]
       },
+      "RateLimitedDetails": {
+        "type": "object",
+        "properties": {
+          "retryAfterSeconds": {
+            "type": "number",
+            "example": 120,
+            "minimum": 1,
+            "description": "Seconds until the window resets"
+          }
+        },
+        "required": [
+          "retryAfterSeconds"
+        ]
+      },
+      "RateLimitedErrorBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "RATE_LIMITED",
+            "enum": [
+              "RATE_LIMITED"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "example": "Too many requests. Try again later."
+          },
+          "details": {
+            "$ref": "#/components/schemas/RateLimitedDetails"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "details"
+        ]
+      },
+      "RateLimitedErrorEnvelope": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/RateLimitedErrorBody"
+          },
+          "correlationId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "00000000-0000-4000-8000-000000000001"
+          }
+        },
+        "required": [
+          "error",
+          "correlationId"
+        ]
+      },
       "TelehealthSession": {
         "type": "object",
         "properties": {
@@ -5502,61 +5603,6 @@
           "state",
           "waitingStartedAt",
           "synthetic"
-        ]
-      },
-      "RateLimitedDetails": {
-        "type": "object",
-        "properties": {
-          "retryAfterSeconds": {
-            "type": "number",
-            "example": 120,
-            "minimum": 1,
-            "description": "Seconds until the window resets"
-          }
-        },
-        "required": [
-          "retryAfterSeconds"
-        ]
-      },
-      "RateLimitedErrorBody": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "example": "RATE_LIMITED",
-            "enum": [
-              "RATE_LIMITED"
-            ]
-          },
-          "message": {
-            "type": "string",
-            "example": "Too many requests. Try again later."
-          },
-          "details": {
-            "$ref": "#/components/schemas/RateLimitedDetails"
-          }
-        },
-        "required": [
-          "code",
-          "message",
-          "details"
-        ]
-      },
-      "RateLimitedErrorEnvelope": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "$ref": "#/components/schemas/RateLimitedErrorBody"
-          },
-          "correlationId": {
-            "type": "string",
-            "format": "uuid",
-            "example": "00000000-0000-4000-8000-000000000001"
-          }
-        },
-        "required": [
-          "error",
-          "correlationId"
         ]
       },
       "TelehealthMediaToken": {

@@ -29,7 +29,7 @@ import {
 } from './telehealth-session.repository.js';
 import {
 	canCreateTelehealthSession,
-	isPastGraceExpiry,
+	isEligibleOpenTelehealthAppointment,
 	isWithinJoinWindow,
 	TELEHEALTH_GRACE_MS,
 } from './telehealth-window.js';
@@ -55,7 +55,7 @@ export class TelehealthSessionService {
 		const appointment = await this.loadAppointmentForCreate(input.appointmentId);
 		const existing = await this.sessions.getByAppointmentId(appointment.id);
 		if (existing) {
-			const current = await this.applyGraceExpiry(existing, appointment);
+			const current = await this.applyEligibilityExpiry(existing, appointment);
 			if (current.state === 'ended') {
 				throw new SessionAlreadyEndedError();
 			}
@@ -77,7 +77,7 @@ export class TelehealthSessionService {
 				if (!raced) {
 					throw new TelehealthSessionNotFoundError();
 				}
-				const current = await this.applyGraceExpiry(raced, appointment);
+				const current = await this.applyEligibilityExpiry(raced, appointment);
 				if (current.state === 'ended') {
 					throw new SessionAlreadyEndedError();
 				}
@@ -105,9 +105,15 @@ export class TelehealthSessionService {
 			return toSessionRdo(session, appointment);
 		}
 
-		session.state = 'in_session';
-		session.joinedAt = new Date();
-		const saved = await this.sessions.save(session);
+		const joinedAt = new Date();
+		const saved = await this.sessions.transitionWaitingToInSession(session.id, joinedAt);
+		if (!saved) {
+			const raced = await this.sessions.getById(session.id);
+			if (!raced || raced.state === 'ended') {
+				throw new SessionNotJoinableError();
+			}
+			return toSessionRdo(raced, appointment);
+		}
 		await this.recordAudit('telehealth_session.joined', saved.id);
 		return toSessionRdo(saved, appointment);
 	}
@@ -115,7 +121,7 @@ export class TelehealthSessionService {
 	async mintMediaToken(id: string): Promise<TelehealthMediaTokenRdo> {
 		const {session, appointment} = await this.loadVisible(id);
 		await this.assertCanJoin(appointment);
-		if (session.state === 'ended') {
+		if (session.state !== 'in_session') {
 			throw new SessionNotJoinableError();
 		}
 		if (!isWithinJoinWindow(appointment.startAt, appointment.endAt)) {
@@ -195,7 +201,7 @@ export class TelehealthSessionService {
 				throw new TelehealthSessionNotFoundError();
 			}
 		}
-		const current = await this.applyGraceExpiry(session, appointment);
+		const current = await this.applyEligibilityExpiry(session, appointment);
 		return {session: current, appointment};
 	}
 
@@ -218,11 +224,11 @@ export class TelehealthSessionService {
 		}
 	}
 
-	private async applyGraceExpiry(
+	private async applyEligibilityExpiry(
 		session: TelehealthSession,
 		appointment: Appointment,
 	): Promise<TelehealthSession> {
-		if (session.state === 'ended' || !isPastGraceExpiry(appointment.endAt)) {
+		if (session.state === 'ended' || isEligibleOpenTelehealthAppointment(appointment)) {
 			return session;
 		}
 		return this.markEnded(session);

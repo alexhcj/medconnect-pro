@@ -96,6 +96,9 @@ function harness(role: PracticeRole, userId = actorId) {
 		getByAppointmentId: vi.fn().mockResolvedValue(undefined),
 		create: vi.fn().mockResolvedValue(sessionRow()),
 		save: vi.fn(async (row: TelehealthSession) => row),
+		transitionWaitingToInSession: vi.fn(async (_id: string, joinedAt: Date) =>
+			sessionRow({state: 'in_session', joinedAt}),
+		),
 	};
 	const audit = {
 		record: vi.fn().mockResolvedValue({}),
@@ -240,6 +243,7 @@ describe('TelehealthSessionService', () => {
 
 	it('mints a media token for visit participants, reuses the room, and omits the token from audit', async () => {
 		const provider = harness('PROVIDER', providerId);
+		provider.sessions.getById.mockResolvedValue(sessionRow({state: 'in_session', joinedAt: new Date()}));
 		const first = await provider.service.mintMediaToken(sessionId);
 		expect(first.roomUrl).toBe(`https://unconfigured.invalid/mcp-${sessionId}`);
 		expect(first.token).toBe(`fake-meeting-token-mcp-${sessionId}`);
@@ -255,7 +259,7 @@ describe('TelehealthSessionService', () => {
 		expect(JSON.stringify(provider.audit.record.mock.calls)).not.toMatch(/Quinn/);
 
 		provider.sessions.getById.mockResolvedValue(
-			sessionRow({dailyRoomName: `mcp-${sessionId}`}),
+			sessionRow({state: 'in_session', joinedAt: new Date(), dailyRoomName: `mcp-${sessionId}`}),
 		);
 		provider.sessions.save.mockClear();
 		const second = await provider.service.mintMediaToken(sessionId);
@@ -272,21 +276,61 @@ describe('TelehealthSessionService', () => {
 			TelehealthSessionNotFoundError,
 		);
 		nurse.patients.isAssigned.mockResolvedValue(true);
+		nurse.sessions.getById.mockResolvedValue(sessionRow({state: 'in_session', joinedAt: new Date()}));
 		await expect(nurse.service.mintMediaToken(sessionId)).resolves.toMatchObject({
 			roomUrl: first.roomUrl,
 		});
 	});
 
+	it('rejects media-token while the Nest session is still waiting', async () => {
+		const provider = harness('PROVIDER', providerId);
+		await expect(provider.service.mintMediaToken(sessionId)).rejects.toBeInstanceOf(
+			SessionNotJoinableError,
+		);
+		expect(provider.daily.mintMeetingToken).not.toHaveBeenCalled();
+	});
+
+	it('lazy-ends a session when the linked appointment is cancelled or completed', async () => {
+		const provider = harness('PROVIDER', providerId);
+		const cancelled = appointmentRow({state: 'cancelled'});
+		provider.sessions.getById.mockResolvedValue(sessionRow({appointment: cancelled}));
+		const got = await provider.service.get(sessionId);
+		expect(got.state).toBe('ended');
+		expect(provider.audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({action: 'telehealth_session.ended', resourceId: sessionId}),
+		);
+		await expect(provider.service.join(sessionId)).rejects.toBeInstanceOf(SessionNotJoinableError);
+		await expect(provider.service.mintMediaToken(sessionId)).rejects.toBeInstanceOf(
+			SessionNotJoinableError,
+		);
+		expect(provider.daily.mintMeetingToken).not.toHaveBeenCalled();
+	});
+
+	it('does not double-audit join when a concurrent join already moved the session', async () => {
+		const provider = harness('PROVIDER', providerId);
+		provider.sessions.transitionWaitingToInSession.mockImplementation(async () => undefined);
+		provider.sessions.getById
+			.mockResolvedValueOnce(sessionRow())
+			.mockResolvedValueOnce(sessionRow({state: 'in_session', joinedAt: new Date()}));
+		const joined = await provider.service.join(sessionId);
+		expect(joined.state).toBe('in_session');
+		expect(provider.audit.record).not.toHaveBeenCalledWith(
+			expect.objectContaining({action: 'telehealth_session.joined'}),
+		);
+	});
+
 	it('rejects media-token outside the join window and does not change session state', async () => {
 		const provider = harness('PROVIDER', providerId);
 		const future = appointmentRow(aroundNow(60 * 60 * 1000, 2 * 60 * 60 * 1000));
-		provider.sessions.getById.mockResolvedValue(sessionRow({appointment: future}));
+		provider.sessions.getById.mockResolvedValue(
+			sessionRow({state: 'in_session', joinedAt: new Date(), appointment: future}),
+		);
 		await expect(provider.service.mintMediaToken(sessionId)).rejects.toBeInstanceOf(
 			SessionNotJoinableError,
 		);
 		expect(provider.daily.mintMeetingToken).not.toHaveBeenCalled();
 		const got = await provider.service.get(sessionId);
-		expect(got.state).toBe('waiting');
+		expect(got.state).toBe('in_session');
 	});
 
 	it('ends the Nest session even when Daily room delete fails', async () => {

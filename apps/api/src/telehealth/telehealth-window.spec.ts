@@ -2,6 +2,7 @@ import {describe, expect, it} from 'vitest';
 import {
 	TELEHEALTH_GRACE_MS,
 	canCreateTelehealthSession,
+	isEligibleOpenTelehealthAppointment,
 	isJoinableTelehealthAppointment,
 	isPastGraceExpiry,
 	isWithinJoinWindow,
@@ -45,6 +46,34 @@ describe('telehealth window', () => {
 	it('expires grace after appointment end plus 15 minutes', () => {
 		expect(isPastGraceExpiry(end, new Date(end.getTime() + TELEHEALTH_GRACE_MS))).toBe(false);
 		expect(isPastGraceExpiry(end, new Date(end.getTime() + TELEHEALTH_GRACE_MS + 1))).toBe(true);
+	});
+
+	it('treats cancelled, completed, and past-grace visits as ineligible open sessions', () => {
+		const now = start;
+		expect(
+			isEligibleOpenTelehealthAppointment(
+				{type: 'telehealth', state: 'scheduled', endAt: end},
+				now,
+			),
+		).toBe(true);
+		expect(
+			isEligibleOpenTelehealthAppointment(
+				{type: 'telehealth', state: 'cancelled', endAt: end},
+				now,
+			),
+		).toBe(false);
+		expect(
+			isEligibleOpenTelehealthAppointment(
+				{type: 'telehealth', state: 'completed', endAt: end},
+				now,
+			),
+		).toBe(false);
+		expect(
+			isEligibleOpenTelehealthAppointment(
+				{type: 'telehealth', state: 'scheduled', endAt: end},
+				new Date(end.getTime() + TELEHEALTH_GRACE_MS + 1),
+			),
+		).toBe(false);
 	});
 
 	it('allows create only for joinable visits that have not passed grace', () => {
