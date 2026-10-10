@@ -26,7 +26,8 @@ is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
 EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity** is
 shipped and **closed** at 0.77.0 (SEC-006, DATA-003, BE-017, FE-033). **M15 — API Protection
-and Rate Limiting** is shipped: SEC-007, DATA-004, BE-018, BE-019, BE-020, and FE-034 (milestone close pending). Local product work does not wait on AWS. Not part of M8.
+and Rate Limiting** is shipped and **closed** at 0.80.0 (SEC-007, DATA-004, BE-018, BE-019,
+BE-020, FE-034). Local product work does not wait on AWS. Not part of M8.
 
 ## Actually complete
 
@@ -37,7 +38,8 @@ and Rate Limiting** is shipped: SEC-007, DATA-004, BE-018, BE-019, BE-020, and F
   appointments, telehealth session create/join/media-token/end plus Daily call-object media when
   `DAILY_API_KEY` is set (labeled unavailable otherwise; mock mode keeps placeholders), billing
   invoices, demo record-payment, labeled claims envelopes, admin users, role PATCH and assignment UI, admin audit, security-events HTTP and
-  viewer, dashboard overview cards, in-app notification inbox
+  viewer, dashboard overview cards, in-app notification inbox, demo API rate limiting (PostgreSQL
+  buckets, 429 `RATE_LIMITED`, `auth.rate_limited`) and API security headers
 - Local Vitest (web + API), Playwright mock + live, API HTTP/RLS/authz-matrix/OpenAPI contract tests
 - GitHub Actions quality gates on pull requests and `main` (INFRA-005)
 - Secrets classification, GitHub OIDC, and Secrets Manager containers (INFRA-006; apply is operator-run)
@@ -56,8 +58,9 @@ and Rate Limiting** is shipped: SEC-007, DATA-004, BE-018, BE-019, BE-020, and F
 
 Interviewer index for the remaining production and HIPAA-oriented gap:
 [docs/security/](../security/README.md) and
-[docs/compliance/](../compliance/hipaa-readiness.md). Cookie sessions, labeled mock MFA, and
-security-events HTTP/UI are shipped **demo** surfaces, not remaining unshipped work.
+[docs/compliance/](../compliance/hipaa-readiness.md). Cookie sessions, labeled mock MFA,
+security-events HTTP/UI, and demo API rate limiting are shipped **demo** surfaces, not remaining
+unshipped work.
 
 - Production OAuth 2.0 / OIDC + PKCE ([ADR-003](../decisions/ADR-003-authentication.md))
 - Socket.IO / application realtime; in-session chat, recording, and transcription
@@ -65,6 +68,7 @@ security-events HTTP/UI are shipped **demo** surfaces, not remaining unshipped w
 - Hosted AWS first-apply (INFRA-014; blocks INFRA-013; M9 paused)
 - `v1.0.0` production-release gate (INFRA-013; paused until INFRA-014)
 - Redis, custom KMS hierarchy
+- Production / WAF / edge rate limiting (demo Nest limits are M15, not this)
 - HIPAA certification
 
 ## Known non-defects

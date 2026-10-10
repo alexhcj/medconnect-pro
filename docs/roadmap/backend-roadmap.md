@@ -44,7 +44,7 @@ Domain order (not historical ship order). Join to demo milestones in the
     platform and `TRUST_PROXY` ([BE-018](../tasks/backend/BE-018-rate-limit-platform-and-client-ip.md))
     shipped; route policies ([BE-019](../tasks/backend/BE-019-auth-and-sensitive-route-rate-limits.md))
     and API security headers ([BE-020](../tasks/backend/BE-020-api-security-headers.md)) shipped.
-    PostgreSQL store; not Redis or WAF.
+    PostgreSQL store; not Redis or WAF. **Closed** at 0.80.0.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.
@@ -59,4 +59,6 @@ shipped ([BE-016](../tasks/backend/BE-016-telehealth-daily-media-token-http.md),
 [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)). **M13 — Billing / Payments UX**
 is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
-EDI 837, and invoice-create UI remain later. Local product work does not wait on AWS.
+EDI 837, and invoice-create UI remain later. **M14** is shipped and **closed** at 0.77.0.
+**M15 — API Protection and Rate Limiting** is shipped and **closed** at 0.80.0 (SEC-007,
+DATA-004, BE-018, BE-019, BE-020, FE-034). Local product work does not wait on AWS.

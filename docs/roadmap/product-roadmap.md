@@ -10,7 +10,9 @@ SEC-005). **M12 — Telehealth Media Maturity** is shipped
 [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)). **M13 — Billing / Payments UX**
 is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
-EDI 837, and invoice-create UI remain later. Local product work does not wait on AWS.
+EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity** is shipped and
+**closed** at 0.77.0. **M15 — API Protection and Rate Limiting** is shipped and **closed** at
+0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). Local product work does not wait on AWS.
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
 expansion is still unshipped.
@@ -30,8 +32,8 @@ Shipped as M0–M3 plus basic audit. Basic analytics are live Nest overview card
 
 ## Expansion
 
-Shipped as M4–M7 foundations except observability and remaining hardening (OAuth, rate limits,
-cloud).
+Shipped as M4–M7 foundations plus later demo hardening (M14 OAuth, M15 rate limits). Remaining:
+observability and cloud (M9).
 
 - EHR foundation;
 - telehealth foundation (M5 session shell; M12 Daily media is shipped and qualified);

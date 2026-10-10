@@ -6,7 +6,7 @@ area: identity-access
 marketing_path: /login
 status: partial
 claim: "Mock IdP sessions and labeled mock MFA. Not production OAuth or production MFA."
-related_tasks: [FE-010, BE-009, BE-014, SEC-001, FE-027, FE-028, SEC-006, DATA-003, BE-017, FE-033, BE-019]
+related_tasks: [FE-010, BE-009, BE-014, SEC-001, FE-027, FE-028, SEC-006, DATA-003, BE-017, FE-033, SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md
@@ -39,7 +39,7 @@ capabilities:
   - id: identity-access.auth-rate-limiting
     name: Demo auth and sensitive-route rate limiting
     status: shipped
-    demo: Nest limits login (per IP + email and per IP), MFA verify, refresh, OAuth start/callback, media-token, document download, and payments; 429 RATE_LIMITED with Retry-After; auth.rate_limited in security events. /login, mock MFA, and the OAuth landing announce "Too many attempts. Try again in N seconds." (FE-034). Not a WAF or production abuse protection
+    demo: Nest limits login (per IP + email, per IP, and account-wide failures), MFA verify, refresh, OAuth start/callback, media-token, document download, and payments; 429 RATE_LIMITED with Retry-After; auth.rate_limited in security events. /login and mock MFA announce "Too many attempts. Try again in N seconds."; the OAuth landing announces "Too many attempts. Try again later." (FE-034). Not a WAF or production abuse protection
     public: qualified
     planned_next: Redis / edge limits later
     related_tasks: [SEC-007, DATA-004, BE-018, BE-019, FE-034]
@@ -60,4 +60,4 @@ not a marketing `/sign-in` route.
 | `identity-access.mock-idp-sessions` | Sign in with mock identity | shipped | mock IdP sessions; Nest HttpOnly cookies | qualified |
 | `identity-access.mfa-challenge` | MFA challenge | shipped | labeled mock MFA on live `/login` | qualified |
 | `identity-access.oauth-oidc-pkce` | Demo OAuth 2.0 / OIDC + PKCE sign-in | shipped | Demo OIDC + PKCE (Google or Fake) on live `/login`; not a production IdP | qualified |
-| `identity-access.auth-rate-limiting` | Demo auth and sensitive-route rate limiting | shipped | Nest 429 `RATE_LIMITED` on login, MFA, refresh, OAuth, media-token, document download, payments; `auth.rate_limited` security event; accessible "too many attempts" message on login, MFA, and OAuth landing | qualified |
+| `identity-access.auth-rate-limiting` | Demo auth and sensitive-route rate limiting | shipped | Nest 429 `RATE_LIMITED` on login (including account-wide failures), MFA, refresh, OAuth, media-token, document download, payments; `auth.rate_limited` security event; "too many attempts" on login and MFA (with N seconds when known) and on the OAuth landing ("later") | qualified |

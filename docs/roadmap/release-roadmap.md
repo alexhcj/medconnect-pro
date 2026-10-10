@@ -26,7 +26,9 @@ through [FE-023](../tasks/frontend/FE-023-marketing-polish-and-product-visuals.m
 ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims
 submission / EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity** is
-shipped (SEC-006, DATA-003, BE-017, FE-033). Local product work does not wait on AWS. Resume M9 when the AWS account can be
+shipped (SEC-006, DATA-003, BE-017, FE-033). **M15 — API Protection and Rate Limiting** is
+shipped and **closed** at 0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). Local product
+work does not wait on AWS. Resume M9 when the AWS account can be
 configured. Preview/production hosting remains M9, not M8, M10, or M11.
 
 ## Demo milestones
@@ -115,7 +117,7 @@ Tasks: [SEC-006](../tasks/security/SEC-006-oidc-bff-contract-and-adr.md),
 [FE-033](../tasks/frontend/FE-033-oauth-login-ux.md) (shipped). Not NextAuth, JIT signup, rate
 limiting, production MFA, Redis, or AWS. Rate limiting is deferred to M15. **Closed** at 0.77.0.
 
-### M15 — API Protection and Rate Limiting (in progress)
+### M15 — API Protection and Rate Limiting (shipped)
 
 Opt-in per-route rate limiting on a PostgreSQL bucket store, trusted-proxy client IP
 (`TRUST_PROXY`), 429 `RATE_LIMITED` + `Retry-After`, `auth.rate_limited` security events, API
@@ -126,7 +128,7 @@ security headers with `no-store` on auth responses, and 429 UX on login/MFA/OAut
 [BE-019](../tasks/backend/BE-019-auth-and-sensitive-route-rate-limits.md) (shipped),
 [BE-020](../tasks/backend/BE-020-api-security-headers.md) (shipped),
 [FE-034](../tasks/frontend/FE-034-rate-limited-auth-ux.md) (shipped). Not Redis, WAF/CloudFront rules,
-permanent lockout, production MFA, a new IdP, or AWS.
+permanent lockout, production MFA, a new IdP, or AWS. **Closed** at 0.80.0.
 
 ## Milestone crosswalk
 
@@ -151,7 +153,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M12 Telehealth Media Maturity | BE-016, FE-030 (shipped) | Daily media token HTTP plus Daily call-object UI on the shipped session shell. Fake adapter when `DAILY_API_KEY` is unset. Not chat, recording, Socket.IO, Stripe, or AWS. |
 | M13 Billing / Payments UX | FE-031, FE-032 (shipped) | Enable Nest `POST /billing/payments` and `GET /billing/claims` in the UI. Demo adapter and labeled envelopes; not hosted Stripe, EDI 837, invoice-create UI, or AWS. **Closed** at 0.75.0. |
 | M14 OAuth / External Identity | SEC-006, DATA-003, BE-017, FE-033 (shipped) | Nest OIDC client + PKCE, `external_identities`, existing cookie session, OAuth login UX. Google + Fake adapter. Not NextAuth, rate limiting, production MFA, Redis, or AWS. **Closed** at 0.77.0. |
-| M15 API Protection and Rate Limiting | SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034 (shipped) | PostgreSQL limiter store, `TRUST_PROXY`, auth and sensitive-route policies, 429 envelope, `auth.rate_limited`, API security headers, 429 auth UX. Not Redis, WAF, production MFA, or AWS. |
+| M15 API Protection and Rate Limiting | SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034 (shipped) | PostgreSQL limiter store, `TRUST_PROXY`, auth and sensitive-route policies, 429 envelope, `auth.rate_limited`, API security headers, 429 auth UX. Not Redis, WAF, production MFA, or AWS. **Closed** at 0.80.0. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

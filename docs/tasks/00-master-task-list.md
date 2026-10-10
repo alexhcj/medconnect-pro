@@ -131,7 +131,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-017 — Nest OIDC client, mapping, and session issuance
 - FE-033 — OAuth login UX and session hydration
 
-## Product (M15)
+## Product (M15, closed at 0.80.0)
 
 - SEC-007 — Rate-limit, proxy-trust, and API-header contract (ADR-015)
 - DATA-004 — Rate-limit bucket persistence

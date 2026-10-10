@@ -12,16 +12,16 @@ rules, and session policy live in
 
 **Implemented (demo):** mock IdP email/password, opaque bearer sessions **and** Nest HttpOnly
 session cookies (`mcp_access` / `mcp_refresh`, optional `mcp_mfa`), refresh-token rotation,
-idle/absolute expiry, mock MFA challenge. See [ADR-003](../decisions/ADR-003-authentication.md)
-and [BE-014](../tasks/backend/BE-014-httponly-cookie-session-http.md). Live Next uses those
+idle/absolute expiry, mock MFA challenge, demo OIDC + PKCE (Google or Fake). See
+[ADR-003](../decisions/ADR-003-authentication.md),
+[ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md), and
+[BE-014](../tasks/backend/BE-014-httponly-cookie-session-http.md). Live Next uses those
 cookies (`credentials: 'include'`) and does not persist access or refresh tokens
 ([FE-027](../tasks/frontend/FE-027-live-cookie-session-client.md)).
 
 **Target, not implemented:**
 
-- OAuth 2.0
-- OpenID Connect
-- Authorization Code + PKCE
+- production OAuth / IdP (ADR-003)
 - production MFA/TOTP or WebAuthn
 - production cookie/BFF identity (NextAuth or an IdP-backed BFF)
 
@@ -91,8 +91,8 @@ Audit sensitive actions such as:
 
 ## API protection
 
-Planned in M15 per [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md); not
-implemented yet.
+**Implemented (demo)** in M15 per [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md).
+Not production DDoS protection, account lockout, or WAF.
 
 - Opt-in per-route fixed-window rate limits (custom guard + `@RateLimit` decorator) on a
   PostgreSQL `rate_limit_buckets` store. No Redis.
