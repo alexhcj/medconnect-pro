@@ -6,6 +6,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.81.0] - 2026-10-10
+
+### Added
+
+- BE-021 / FE-035 (M16 Live Telehealth): Nest re-checks appointment eligibility on get, join, and
+  media-token; mint requires `in_session`; create/join rate limits; OpenAPI documents 502
+  `MEDIA_UNAVAILABLE`.
+- Pre-join camera and microphone check on the waiting room. Leave call tears down Daily (or mock
+  placeholders) without ending the visit; End session still calls Nest `POST .../end` for roles
+  with `write:appointments`.
+
+### Changed
+
+- Breaking (telehealth mint): `POST /telehealth/sessions/:id/media-token` requires `in_session`.
+  Mint while `waiting` returns 409 `SESSION_NOT_JOINABLE`.
+- Ended, `SESSION_ENDED`, and `SESSION_NOT_JOINABLE` sessions show a terminal unavailable state
+  instead of reopening Join. Live lobby and appointment entry filter the 15-minute join window
+  (UX only; Nest remains authoritative).
+
 ## [0.80.0] - 2026-10-10
 
 ### Added

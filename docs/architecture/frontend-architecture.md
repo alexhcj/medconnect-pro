@@ -30,7 +30,7 @@ HTTP API
 
 - patient workflows;
 - appointment workflows;
-- telehealth workflows;
+- telehealth workflows (leave is client/Daily teardown; Nest `POST .../end` closes the visit);
 - billing workflows;
 - public marketing pages (M8; isolated from the dashboard shell). FE-017–FE-023 shipped.
 

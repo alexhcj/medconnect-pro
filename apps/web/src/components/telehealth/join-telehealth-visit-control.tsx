@@ -39,11 +39,11 @@ function LiveJoinTelehealthVisitButton({appointmentId}: {appointmentId: string})
 				type="button"
 				className={JOIN_CLASS}
 				disabled={create.isPending}
-				onClick={() =>
+				onClick={() => {
 					create.mutate(appointmentId, {
 						onSuccess: (session) => router.push(`/dashboard/telehealth/${session.id}`),
-					})
-				}
+					});
+				}}
 			>
 				Join visit
 			</button>

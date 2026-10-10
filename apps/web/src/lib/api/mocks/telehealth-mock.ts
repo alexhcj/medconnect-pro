@@ -57,18 +57,27 @@ export const telehealthMockAPI = {
 		if (!appointmentId) {
 			notFound();
 		}
+		const existing = sessions.get(sessionId);
+		if (existing?.state === 'ended') {
+			return existing;
+		}
 		const appointment = await joinableAppointment(appointmentId);
 		return currentOrWaiting(appointment);
 	},
 
 	joinSession: async (sessionId: string): Promise<TelehealthSession> => {
 		const session = await telehealthMockAPI.getSession(sessionId);
+		if (session.state === 'ended') {
+			throw new ApiError('A telehealth session for this appointment has already ended.', 409, {
+				code: 'SESSION_ENDED',
+			});
+		}
 		const next: TelehealthSession = {...session, state: 'in_session'};
 		sessions.set(session.id, next);
 		return next;
 	},
 
-	leaveSession: async (sessionId: string): Promise<TelehealthSession> => {
+	endSession: async (sessionId: string): Promise<TelehealthSession> => {
 		const appointmentId = appointmentIdFromSessionId(sessionId);
 		if (!appointmentId) {
 			notFound();

@@ -45,11 +45,11 @@ export function useJoinTelehealthSession() {
 	});
 }
 
-export function useLeaveTelehealthSession() {
+export function useEndTelehealthSession() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: (sessionId: string) => telehealthAPI.leaveSession(sessionId),
+		mutationFn: (sessionId: string) => telehealthAPI.endSession(sessionId),
 		onSuccess: (session) => {
 			queryClient.setQueryData(['telehealth', 'session', session.id], session);
 			queryClient.invalidateQueries({queryKey: ['telehealth', 'visits']});

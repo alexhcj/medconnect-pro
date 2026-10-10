@@ -9,8 +9,9 @@ import {
 } from '@/components/forms/appointment-form-schema';
 import {JoinTelehealthVisitControl} from '@/components/telehealth/join-telehealth-visit-control';
 import {canViewPatientProfile} from '@/lib/auth/patient-profile-access';
+import {isMockMode} from '@/lib/api/mocks/runtime';
 import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
-import {isJoinableTelehealthAppointment} from '@/lib/telehealth/joinable';
+import {isJoinableTelehealthAppointment, isWithinTelehealthJoinWindow} from '@/lib/telehealth/joinable';
 import {Appointment} from '@/types/medical/appointment';
 import type {Permission} from '@/types/auth/permissions';
 import type {Role} from '@/types/auth/roles';
@@ -39,7 +40,10 @@ export function AppointmentEventDialog({
 }: AppointmentEventDialogProps) {
 	const canOpenProfile = canViewPatientProfile(permissions);
 	const canJoinVisit =
-		!!appointment && canAccessTelehealth(userRole) && isJoinableTelehealthAppointment(appointment);
+		!!appointment &&
+		canAccessTelehealth(userRole) &&
+		isJoinableTelehealthAppointment(appointment) &&
+		(isMockMode() || isWithinTelehealthJoinWindow(appointment.start, appointment.end));
 
 	return (
 		<Dialog

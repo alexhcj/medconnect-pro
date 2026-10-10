@@ -215,7 +215,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			headingId: 'telehealth-hero-heading',
 			eyebrow: 'Telehealth · session shell',
 			heading: 'Appointment-linked virtual-visit workflow',
-			body: 'Create, join, and end a session shell. Live mode uses demo Daily call-object media when configured. Not production telehealth or HIPAA video.',
+			body: 'Create, join, leave the call, and end a session shell. Live mode uses demo Daily call-object media when configured. Not production telehealth or HIPAA video.',
 			...FEATURE_PAGE_HERO_CTAS,
 		},
 		capabilities: {

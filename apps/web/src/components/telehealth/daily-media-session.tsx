@@ -1,9 +1,10 @@
 'use client';
 
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {MediaConnectionStatus, MEDIA_CONNECTION_COPY} from '@/components/telehealth/media-connection-status';
 import {useDailyMediaSession} from '@/lib/hooks/use-daily-media-session';
+import {DAILY_MEDIA_FAILURE_COPY} from '@/lib/telehealth/media-failure';
 import {
 	localParticipantDisplayName,
 	mediaTileInitials,
@@ -122,17 +123,22 @@ export function DailyMediaSession({
 	session,
 	userRole,
 	onEnd,
+	onLeave,
 	isEnding,
 	endError,
+	canEnd = true,
 }: {
 	sessionId: string;
 	session: TelehealthSession;
 	userRole: Role | undefined;
 	onEnd: () => void;
+	onLeave?: () => void;
 	isEnding: boolean;
 	endError?: string;
+	canEnd?: boolean;
 }) {
 	const media = useDailyMediaSession({sessionId, enabled: true});
+	const [leftMedia, setLeftMedia] = useState(false);
 	const localName = localParticipantDisplayName(session, userRole);
 	const remoteFallback = remoteParticipantFallbackName(session, userRole);
 	const remoteName =
@@ -149,6 +155,37 @@ export function DailyMediaSession({
 		waiting: media.connectionState === 'waiting_for_participant',
 		screenShare: showingScreenShare,
 	});
+
+	if (leftMedia) {
+		return (
+			<div className="space-y-4">
+				<div className="rounded-lg border border-gray-200 bg-white p-4" role="status">
+					<p className="text-sm text-gray-700">You left the call. The visit is still open.</p>
+					<Button
+						type="button"
+						className="mt-3"
+						variant="outline"
+						onClick={() => {
+							setLeftMedia(false);
+							media.retry();
+						}}
+					>
+						Rejoin call
+					</Button>
+				</div>
+				{endError && (
+					<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
+						<p className="text-sm text-gray-700">{endError}</p>
+					</div>
+				)}
+				{canEnd && (
+					<Button type="button" variant="destructive" isLoading={isEnding} onClick={onEnd}>
+						End session
+					</Button>
+				)}
+			</div>
+		);
+	}
 
 	return (
 		<div className="space-y-4">
@@ -204,7 +241,9 @@ export function DailyMediaSession({
 			<p className="text-sm text-gray-600">{helperText(media)}</p>
 			{media.connectionState === 'failed' && (
 				<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
-					<p className="text-sm text-gray-700">Live media is currently unavailable.</p>
+					<p className="text-sm text-gray-700">
+						{DAILY_MEDIA_FAILURE_COPY[media.failureKind === 'none' ? 'generic' : media.failureKind]}
+					</p>
 					<Button type="button" className="mt-3" variant="outline" onClick={media.retry}>
 						Retry
 					</Button>
@@ -215,16 +254,32 @@ export function DailyMediaSession({
 					<p className="text-sm text-gray-700">{endError}</p>
 				</div>
 			)}
-			<Button
-				type="button"
-				variant="destructive"
-				isLoading={isEnding}
-				onClick={() => {
-					void media.leaveAndDestroy().finally(onEnd);
-				}}
-			>
-				End session
-			</Button>
+			<div className="flex flex-wrap gap-2">
+				<Button
+					type="button"
+					variant="outline"
+					onClick={() => {
+						void media.leaveAndDestroy().then(() => {
+							setLeftMedia(true);
+							onLeave?.();
+						});
+					}}
+				>
+					Leave call
+				</Button>
+				{canEnd && (
+					<Button
+						type="button"
+						variant="destructive"
+						isLoading={isEnding}
+						onClick={() => {
+							void media.leaveAndDestroy().finally(onEnd);
+						}}
+					>
+						End session
+					</Button>
+				)}
+			</div>
 		</div>
 	);
 }

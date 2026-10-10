@@ -4,7 +4,7 @@ import {isMockMode} from '@/lib/api/mocks/runtime';
 import {telehealthMockAPI} from '@/lib/api/mocks/telehealth-mock';
 import {nestApiBaseUrl} from '@/lib/api/nest-api';
 import {sessionFromRdo, type TelehealthSessionRdo} from '@/lib/api/telehealth-rdo';
-import {isJoinableTelehealthAppointment, sessionFromAppointment} from '@/lib/telehealth/joinable';
+import {isLiveJoinableTelehealthAppointment, sessionFromAppointment} from '@/lib/telehealth/joinable';
 import {TelehealthSession} from '@/types/medical/telehealth-session';
 
 export interface TelehealthMediaToken {
@@ -37,7 +37,7 @@ export const telehealthRealAPI = {
 	listJoinableVisits: async (): Promise<TelehealthSession[]> => {
 		const appointments = await medicalRealAPI.listAppointments();
 		return appointments
-			.filter(isJoinableTelehealthAppointment)
+			.filter((appointment) => isLiveJoinableTelehealthAppointment(appointment))
 			.map((appointment) => sessionFromAppointment(appointment, 'waiting'));
 	},
 
@@ -57,7 +57,7 @@ export const telehealthRealAPI = {
 		return sessionFromNest(`/${sessionId}/join`, {method: 'POST'});
 	},
 
-	leaveSession: async (sessionId: string): Promise<TelehealthSession> => {
+	endSession: async (sessionId: string): Promise<TelehealthSession> => {
 		return sessionFromNest(`/${sessionId}/end`, {method: 'POST'});
 	},
 

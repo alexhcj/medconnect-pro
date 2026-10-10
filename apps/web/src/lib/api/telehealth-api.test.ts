@@ -55,9 +55,12 @@ function jsonResponse(body: unknown, status = 200) {
 describe('telehealthRealAPI', () => {
 	afterEach(() => {
 		vi.unstubAllGlobals();
+		vi.useRealTimers();
 	});
 
 	it('lists joinable telehealth visits from the appointment API', async () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date('2026-10-16T16:00:00.000Z'));
 		vi.stubGlobal(
 			'fetch',
 			vi.fn().mockResolvedValue(jsonResponse({appointments: [telehealthAppointmentRdo, officeRdo], hasMore: false})),
@@ -113,7 +116,7 @@ describe('telehealthRealAPI', () => {
 
 		await expect(telehealthRealAPI.getSession(sessionId)).resolves.toMatchObject({id: sessionId});
 		await expect(telehealthRealAPI.joinSession(sessionId)).resolves.toMatchObject({state: 'in_session'});
-		await expect(telehealthRealAPI.leaveSession(sessionId)).resolves.toMatchObject({state: 'ended'});
+		await expect(telehealthRealAPI.endSession(sessionId)).resolves.toMatchObject({state: 'ended'});
 
 		expect(fetchMock).toHaveBeenCalledWith(
 			'http://localhost:3001/telehealth/sessions',
@@ -135,6 +138,17 @@ describe('telehealthRealAPI', () => {
 			expect.objectContaining({method: 'POST'}),
 		);
 		expect(JSON.stringify(fetchMock.mock.calls)).not.toContain('/leave');
+	});
+
+	it('omits telehealth appointments outside the join window', async () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date('2026-10-10T16:00:00.000Z'));
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(jsonResponse({appointments: [telehealthAppointmentRdo], hasMore: false})),
+		);
+
+		await expect(telehealthRealAPI.listJoinableVisits()).resolves.toEqual([]);
 	});
 
 	it('mints a media token without persisting it on the session', async () => {

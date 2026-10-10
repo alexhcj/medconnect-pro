@@ -1,8 +1,11 @@
-import {ApiError} from '@/lib/api/http';
+import {ApiError, RateLimitedError, rateLimitMessage} from '@/lib/api/http';
 
-const SURFACED_STATUSES = new Set([400, 409, 502]);
+const SURFACED_STATUSES = new Set([400, 409, 429, 502]);
 
 export function telehealthActionErrorMessage(error: unknown, fallback: string): string {
+	if (error instanceof RateLimitedError) {
+		return rateLimitMessage(error);
+	}
 	if (!(error instanceof ApiError) || !SURFACED_STATUSES.has(error.status)) {
 		return fallback;
 	}

@@ -10,7 +10,8 @@ import {
 import {JoinTelehealthVisitControl} from '@/components/telehealth/join-telehealth-visit-control';
 import {canWriteAppointments} from '@/lib/auth/appointment-access';
 import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
-import {isJoinableTelehealthAppointment} from '@/lib/telehealth/joinable';
+import {isMockMode} from '@/lib/api/mocks/runtime';
+import {isJoinableTelehealthAppointment, isWithinTelehealthJoinWindow} from '@/lib/telehealth/joinable';
 import {useAppointments} from '@/lib/hooks/use-medical';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {Appointment} from '@/types/medical/appointment';
@@ -91,9 +92,12 @@ const AppointmentList = () => {
 									<p className="text-sm text-gray-600">
 										{typeLabel(appointment.type)} · {stateLabel(appointment.state)}
 									</p>
-									{canJoinTelehealth && isJoinableTelehealthAppointment(appointment) && (
-										<JoinTelehealthVisitControl appointmentId={appointment.id} />
-									)}
+									{canJoinTelehealth &&
+										isJoinableTelehealthAppointment(appointment) &&
+										(isMockMode() ||
+											isWithinTelehealthJoinWindow(appointment.start, appointment.end)) && (
+											<JoinTelehealthVisitControl appointmentId={appointment.id} />
+										)}
 								</div>
 							</li>
 						))}

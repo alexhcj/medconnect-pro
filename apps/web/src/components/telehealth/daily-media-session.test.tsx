@@ -43,6 +43,7 @@ function media(overrides: Record<string, unknown> = {}) {
 		toggleMicrophone: vi.fn(),
 		toggleScreenShare: vi.fn(),
 		leaveAndDestroy: vi.fn().mockResolvedValue(undefined),
+		failureKind: 'none',
 		...overrides,
 	};
 }
@@ -161,6 +162,73 @@ describe('DailyMediaSession', () => {
 		await vi.waitFor(() => {
 			expect(onEnd).toHaveBeenCalledOnce();
 		});
+	});
+
+	it('leaves the call without ending the Nest visit', async () => {
+		const leaveAndDestroy = vi.fn().mockResolvedValue(undefined);
+		const onEnd = vi.fn();
+		useDailyMediaSession.mockReturnValue(media({leaveAndDestroy}));
+		const user = userEvent.setup();
+		render(
+			<DailyMediaSession
+				sessionId={session.id}
+				session={session}
+				userRole="PROVIDER"
+				onEnd={onEnd}
+				isEnding={false}
+			/>,
+		);
+
+		await user.click(screen.getByRole('button', {name: 'Leave call'}));
+		expect(leaveAndDestroy).toHaveBeenCalledOnce();
+		expect(onEnd).not.toHaveBeenCalled();
+		await vi.waitFor(() => {
+			expect(screen.getByText('You left the call. The visit is still open.')).toBeInTheDocument();
+		});
+		expect(screen.queryByRole('button', {name: 'Camera'})).not.toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'End session'})).toBeInTheDocument();
+	});
+
+	it('hides End session when the viewer cannot end the visit', () => {
+		useDailyMediaSession.mockReturnValue(media());
+		render(
+			<DailyMediaSession
+				sessionId={session.id}
+				session={session}
+				userRole="PATIENT"
+				onEnd={vi.fn()}
+				isEnding={false}
+				canEnd={false}
+			/>,
+		);
+
+		expect(screen.getByRole('button', {name: 'Leave call'})).toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'End session'})).not.toBeInTheDocument();
+	});
+
+	it('announces a permission failure separately from generic media unavailable', () => {
+		useDailyMediaSession.mockReturnValue(
+			media({
+				connectionState: 'failed',
+				failureKind: 'permission',
+				cameraOn: false,
+				microphoneOn: false,
+				controlsEnabled: false,
+			}),
+		);
+		render(
+			<DailyMediaSession
+				sessionId={session.id}
+				session={session}
+				userRole="PROVIDER"
+				onEnd={vi.fn()}
+				isEnding={false}
+			/>,
+		);
+
+		expect(screen.getByRole('alert')).toHaveTextContent(
+			'Camera or microphone access was denied. Allow access and retry.',
+		);
 	});
 
 	it('forwards camera, microphone, and screen share to Daily', async () => {

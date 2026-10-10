@@ -2,6 +2,8 @@ import {Appointment} from '@/types/medical/appointment';
 import {
 	appointmentIdFromSessionId,
 	isJoinableTelehealthAppointment,
+	isLiveJoinableTelehealthAppointment,
+	isWithinTelehealthJoinWindow,
 	sessionFromAppointment,
 	telehealthSessionId,
 	telehealthSessionPath,
@@ -31,6 +33,44 @@ describe('isJoinableTelehealthAppointment', () => {
 		expect(isJoinableTelehealthAppointment({...telehealth, type: 'office_visit'})).toBe(false);
 		expect(isJoinableTelehealthAppointment({...telehealth, state: 'cancelled'})).toBe(false);
 		expect(isJoinableTelehealthAppointment({...telehealth, state: 'completed'})).toBe(false);
+	});
+});
+
+describe('telehealth join window', () => {
+	const now = new Date('2026-10-16T16:00:00.000Z');
+
+	it('allows joining 15 minutes before start through 15 minutes after end', () => {
+		expect(isWithinTelehealthJoinWindow(telehealth.start, telehealth.end, now)).toBe(true);
+		expect(
+			isWithinTelehealthJoinWindow(
+				telehealth.start,
+				telehealth.end,
+				new Date('2026-10-16T15:45:00.000Z'),
+			),
+		).toBe(true);
+		expect(
+			isWithinTelehealthJoinWindow(
+				telehealth.start,
+				telehealth.end,
+				new Date('2026-10-16T16:45:00.000Z'),
+			),
+		).toBe(true);
+		expect(
+			isLiveJoinableTelehealthAppointment(telehealth, new Date('2026-10-16T16:00:00.000Z')),
+		).toBe(true);
+	});
+
+	it('rejects appointments outside the window', () => {
+		expect(
+			isWithinTelehealthJoinWindow(
+				telehealth.start,
+				telehealth.end,
+				new Date('2026-10-16T15:44:00.000Z'),
+			),
+		).toBe(false);
+		expect(
+			isLiveJoinableTelehealthAppointment(telehealth, new Date('2026-10-10T16:00:00.000Z')),
+		).toBe(false);
 	});
 });
 

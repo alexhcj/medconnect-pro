@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {ApiError} from '@/lib/api/http';
+import {ApiError, RateLimitedError} from '@/lib/api/http';
 import {telehealthActionErrorMessage} from '@/lib/telehealth/action-error';
 
 describe('telehealthActionErrorMessage', () => {
@@ -44,6 +44,12 @@ describe('telehealthActionErrorMessage', () => {
 				'Unable to start live media.',
 			),
 		).toBe('Live media is currently unavailable.');
+	});
+
+	it('surfaces rate-limit copy for 429', () => {
+		expect(telehealthActionErrorMessage(new RateLimitedError(12), 'Unable to join this session.')).toBe(
+			'Too many attempts. Try again in 12 seconds.',
+		);
 	});
 
 	it('keeps the fallback for other errors', () => {

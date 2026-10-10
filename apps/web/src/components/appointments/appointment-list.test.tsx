@@ -120,6 +120,24 @@ describe('AppointmentList', () => {
 		);
 	});
 
+	it('hides join visit for live telehealth outside the join window', () => {
+		vi.mocked(isMockMode).mockReturnValue(false);
+		const telehealthAppointment: Appointment = {
+			...sampleAppointment,
+			id: 'demo-appointment-002',
+			start: '2020-01-01T14:00:00.000Z',
+			end: '2020-01-01T15:00:00.000Z',
+			type: 'telehealth',
+			state: 'confirmed',
+			patientName: 'Taylor Bennett',
+			providerName: 'Dr. Casey Walsh',
+		};
+		mockAppointments({data: [telehealthAppointment]});
+		render(<AppointmentList />);
+
+		expect(screen.queryByRole('link', {name: 'Join visit'})).not.toBeInTheDocument();
+	});
+
 	it('hides join visit for a receptionist', () => {
 		useSessionStatus.mockReturnValue({
 			session: {permissions: DEFAULT_ROLE_PERMISSIONS.RECEPTIONIST, userRole: 'RECEPTIONIST'},

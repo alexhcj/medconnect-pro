@@ -31,23 +31,27 @@ describe('telehealthMockAPI', () => {
 		});
 	});
 
-	it('joins then leaves a session', async () => {
+	it('joins then ends a session', async () => {
 		const waiting = await telehealthMockAPI.getSession('session-demo-appointment-002');
 		expect(waiting.state).toBe('waiting');
 
 		const joined = await telehealthMockAPI.joinSession('session-demo-appointment-002');
 		expect(joined.state).toBe('in_session');
 
-		const left = await telehealthMockAPI.leaveSession('session-demo-appointment-002');
-		expect(left.state).toBe('ended');
+		const ended = await telehealthMockAPI.endSession('session-demo-appointment-002');
+		expect(ended.state).toBe('ended');
 	});
 
-	it('returns a waiting session again after leave', async () => {
+	it('keeps an ended session ended on get and rejects rejoin', async () => {
 		await telehealthMockAPI.joinSession('session-demo-appointment-002');
-		await telehealthMockAPI.leaveSession('session-demo-appointment-002');
+		await telehealthMockAPI.endSession('session-demo-appointment-002');
 
 		const next = await telehealthMockAPI.getSession('session-demo-appointment-002');
-		expect(next.state).toBe('waiting');
+		expect(next.state).toBe('ended');
+		await expect(telehealthMockAPI.joinSession('session-demo-appointment-002')).rejects.toMatchObject({
+			status: 409,
+			code: 'SESSION_ENDED',
+		});
 	});
 
 	it('rejects unknown, office-visit, and cancelled session ids', async () => {

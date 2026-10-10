@@ -220,6 +220,7 @@ describe('useDailyMediaSession', () => {
 		await waitFor(() => {
 			expect(result.current.connectionState).toBe('failed');
 		});
+		expect(result.current.failureKind).toBe('media_unavailable');
 		expect(createDailyCallObject).not.toHaveBeenCalled();
 	});
 

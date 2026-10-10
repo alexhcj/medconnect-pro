@@ -2,9 +2,9 @@
 
 import {useCallback, useEffect, useRef, useState} from 'react';
 import type {DailyCall, DailyEventObjectNetworkConnectionEvent, DailyParticipant} from '@daily-co/daily-js';
-import {ApiError} from '@/lib/api/http';
 import {telehealthRealAPI} from '@/lib/api/telehealth-api';
 import {createDailyCallObject} from '@/lib/telehealth/daily-call-factory';
+import {classifyDailyMediaFailure, type DailyMediaFailureKind} from '@/lib/telehealth/media-failure';
 import {isUnconfiguredDailyRoomUrl} from '@/lib/telehealth/unconfigured-daily';
 
 export const DAILY_MEDIA_CONNECTION_STATES = [
@@ -89,6 +89,7 @@ export function useDailyMediaSession({sessionId, enabled}: {sessionId: string; e
 	const [remoteVideoTrack, setRemoteVideoTrack] = useState<MediaStreamTrack | null>(null);
 	const [screenShareTrack, setScreenShareTrack] = useState<MediaStreamTrack | null>(null);
 	const [remoteParticipantName, setRemoteParticipantName] = useState<string | null>(null);
+	const [failureKind, setFailureKind] = useState<DailyMediaFailureKind>('none');
 
 	const callRef = useRef<DailyCall | null>(null);
 	const tokenRef = useRef<string | null>(null);
@@ -123,6 +124,7 @@ export function useDailyMediaSession({sessionId, enabled}: {sessionId: string; e
 		cancelledRef.current = false;
 		reconnectingRef.current = false;
 		setConnectionState('joining');
+		setFailureKind('none');
 		setCameraOn(false);
 		setMicrophoneOn(false);
 		setScreenShareOn(false);
@@ -161,8 +163,9 @@ export function useDailyMediaSession({sessionId, enabled}: {sessionId: string; e
 			}
 		};
 
-		const onError = () => {
+		const onError = (event: unknown) => {
 			if (!cancelledRef.current) {
+				setFailureKind(classifyDailyMediaFailure(event));
 				setConnectionState('failed');
 			}
 		};
@@ -173,7 +176,8 @@ export function useDailyMediaSession({sessionId, enabled}: {sessionId: string; e
 				if (cancelledRef.current) {
 					return;
 				}
-				if (isUnconfiguredDailyRoomUrl(minted.roomUrl)) {
+				const unconfigured = isUnconfiguredDailyRoomUrl(minted.roomUrl);
+				if (unconfigured) {
 					setConnectionState('not_configured');
 					return;
 				}
@@ -202,10 +206,7 @@ export function useDailyMediaSession({sessionId, enabled}: {sessionId: string; e
 				if (cancelledRef.current) {
 					return;
 				}
-				if (error instanceof ApiError && error.status === 502) {
-					setConnectionState('failed');
-					return;
-				}
+				setFailureKind(classifyDailyMediaFailure(error));
 				setConnectionState('failed');
 			}
 		})();
@@ -275,6 +276,7 @@ export function useDailyMediaSession({sessionId, enabled}: {sessionId: string; e
 		remoteVideoTrack,
 		screenShareTrack,
 		remoteParticipantName,
+		failureKind,
 		controlsEnabled,
 		retry,
 		toggleCamera,

@@ -13,3 +13,15 @@ export function canAccessTelehealth(role: Role | undefined): boolean {
 	}
 	return TELEHEALTH_NAV.roles.includes(role);
 }
+
+/** UX-only. Nest `write:appointments` remains authoritative for POST .../end. */
+const END_VISIT_ROLES: ReadonlySet<Role> = new Set([
+	'SUPER_ADMIN',
+	'PRACTICE_ADMIN',
+	'PROVIDER',
+	'RECEPTIONIST',
+]);
+
+export function canEndTelehealthVisit(role: Role | undefined): boolean {
+	return !!role && END_VISIT_ROLES.has(role);
+}

@@ -53,7 +53,7 @@ export const MARKETING_HOME_WORKFLOW = {
 		},
 		{
 			title: 'Schedule and join a session shell',
-			description: 'Appointments plus telehealth create/join/end. Demo Daily media when configured.',
+			description: 'Appointments plus telehealth create/join/leave/end. Demo Daily media when configured.',
 		},
 		{
 			title: 'Review invoices and audit',
