@@ -49,6 +49,8 @@ blobs.
 - `GET /ready` — readiness `{ "status": "ready" }` (unauthenticated; HTTP 503 when PostgreSQL is down)
 - `POST /auth/login`, `POST /auth/refresh`, `POST /auth/mfa/verify` — mock IdP stand-in (unauthenticated)
 - `POST /auth/logout`, `POST /auth/logout-all` — revoke sessions (cookie or `Authorization: Bearer`)
+- `GET /auth/sessions` — caller’s issued sessions (`sessionId`, timestamps, `isCurrent`; no IP or user-agent)
+- `POST /auth/sessions/:id/revoke` — revoke another of the caller’s sessions, or the current one (same as logout)
 - `GET /api/docs-json` — generated OpenAPI document
 - `GET /api/docs` — optional Swagger UI (off when `SWAGGER_UI_ENABLED=false` or by default in production)
 

@@ -13,6 +13,7 @@ import {
 	MembershipUnresolvedError,
 	MfaInvalidError,
 	SessionInvalidError,
+	SessionNotFoundError,
 } from './auth.errors.js';
 import type {Clock} from './clock.js';
 import {CLOCK} from './clock.js';
@@ -43,6 +44,13 @@ export type LoginResult = ({kind: 'tokens'} & TokenPair) | {
 export type AuthenticatedSession = {
 	session: AuthSession;
 	membership: PracticeMembership;
+};
+
+export type SessionInventoryItem = {
+	sessionId: string;
+	createdAt: string;
+	lastActivityAt: string;
+	isCurrent: boolean;
 };
 
 type AuditScope = {
@@ -235,6 +243,32 @@ export class AuthService {
 			return;
 		}
 		await this.recordAuth('auth.logout', sessionId, {
+			practiceId: membership.practiceId,
+			actorUserId: session.userId,
+		});
+	}
+
+	async listOwnSessions(userId: string, currentSessionId: string): Promise<SessionInventoryItem[]> {
+		const rows = await this.sessions.listIssuedForUser(userId);
+		return rows.map((row) => ({
+			sessionId: row.id,
+			createdAt: row.createdAt.toISOString(),
+			lastActivityAt: row.lastActivityAt.toISOString(),
+			isCurrent: row.id === currentSessionId,
+		}));
+	}
+
+	async revokeOther(userId: string, sessionId: string): Promise<void> {
+		const session = await this.sessions.findById(sessionId);
+		if (!session || session.userId !== userId || session.revokedAt || !session.accessTokenHash) {
+			throw new SessionNotFoundError();
+		}
+		await this.sessions.revoke(sessionId, this.clock.now());
+		const membership = await this.memberships.getById(session.membershipId);
+		if (!membership) {
+			return;
+		}
+		await this.recordAuth('auth.session.revoked', sessionId, {
 			practiceId: membership.practiceId,
 			actorUserId: session.userId,
 		});

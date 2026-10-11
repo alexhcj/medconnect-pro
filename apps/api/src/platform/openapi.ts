@@ -118,6 +118,8 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 	assertUnauthenticated(document, '/auth/mfa/verify', 'post');
 	assertCookieOrBearer(document, '/auth/logout', 'post');
 	assertCookieOrBearer(document, '/auth/logout-all', 'post');
+	assertCookieOrBearer(document, '/auth/sessions', 'get');
+	assertCookieOrBearer(document, '/auth/sessions/{id}/revoke', 'post');
 	assertCookieOrBearer(document, '/patients', 'get');
 	assertCookieOrBearer(document, '/patients', 'post');
 	assertCookieOrBearer(document, '/patients/{id}', 'get');
@@ -154,6 +156,8 @@ export function validateOpenApiDocument(document: OpenAPIObject): void {
 		['/telehealth/sessions/{id}/media-token', 'post'],
 		['/patients/{id}/documents/{documentId}/content', 'get'],
 		['/billing/payments', 'post'],
+		['/auth/sessions', 'get'],
+		['/auth/sessions/{id}/revoke', 'post'],
 	] as const) {
 		assertRateLimited(document, path, method);
 	}

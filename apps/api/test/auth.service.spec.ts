@@ -3,7 +3,13 @@ import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest';
 import {DataSource, In} from 'typeorm';
 import type {AuditEventRepository} from '../src/audit/audit-event.repository.js';
 import {AuthService, type LoginResult, type TokenPair} from '../src/identity/auth.service.js';
-import {InvalidCredentialsError, MembershipUnresolvedError, MfaInvalidError, SessionInvalidError} from '../src/identity/auth.errors.js';
+import {
+	InvalidCredentialsError,
+	MembershipUnresolvedError,
+	MfaInvalidError,
+	SessionInvalidError,
+	SessionNotFoundError,
+} from '../src/identity/auth.errors.js';
 import type {Clock} from '../src/identity/clock.js';
 import type {MockIdpAccount} from '../src/identity/mock-idp.js';
 import {IdentityMembershipLookup} from '../src/identity/membership-lookup.js';
@@ -250,6 +256,62 @@ describe('AuthService', () => {
 		const tokens = expectTokens(await service.login({email: singleUser.email, password}));
 		now = new Date(now.getTime() + IDLE_TTL_MS);
 		await expect(service.refresh(tokens.refreshToken)).rejects.toBeInstanceOf(SessionInvalidError);
+	});
+
+	it('lists issued sessions and revokes another without ending the current one', async () => {
+		now = new Date('2026-03-01T16:30:00.000Z');
+		await service.logoutAll(singleUser.id);
+		await service.logoutAll(mfaUser.id);
+		audit.record.mockClear();
+		const first = expectTokens(await service.login({email: singleUser.email, password}));
+		now = new Date(now.getTime() + 1_000);
+		const second = expectTokens(await service.login({email: singleUser.email, password}));
+		const current = await service.authenticate(first.accessToken);
+		const listed = await service.listOwnSessions(singleUser.id, current.session.id);
+		expect(listed).toHaveLength(2);
+		expect(listed.filter((item) => item.isCurrent)).toEqual([
+			expect.objectContaining({sessionId: current.session.id, isCurrent: true}),
+		]);
+		expect(listed.every((item) => !('ipAddress' in item) && !('accessToken' in item))).toBe(true);
+		expect(listed[0]?.createdAt < (listed[1]?.createdAt ?? '')).toBe(true);
+		expect(audit.record.mock.calls.some((call) => call[0]?.action === 'auth.session.listed')).toBe(false);
+
+		const challenge = await service.login({email: mfaUser.email, password});
+		expect(challenge.kind).toBe('mfa');
+		expect(await service.listOwnSessions(mfaUser.id, current.session.id)).toEqual([]);
+
+		const other = listed.find((item) => !item.isCurrent);
+		if (!other) {
+			throw new Error('expected a second session');
+		}
+		audit.record.mockClear();
+		await service.revokeOther(singleUser.id, other.sessionId);
+		await expect(service.authenticate(second.accessToken)).rejects.toBeInstanceOf(SessionInvalidError);
+		await expect(service.authenticate(first.accessToken)).resolves.toMatchObject({
+			session: {id: current.session.id},
+		});
+		expect(audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: 'auth.session.revoked',
+				resourceType: 'session',
+				resourceId: other.sessionId,
+			}),
+			expect.objectContaining({practiceId: practiceA.id, actorUserId: singleUser.id}),
+		);
+		expect(JSON.stringify(audit.record.mock.calls)).not.toMatch(/ipAddress|userAgent|accessToken|refreshToken/);
+
+		await expect(service.revokeOther(singleUser.id, other.sessionId)).rejects.toBeInstanceOf(
+			SessionNotFoundError,
+		);
+		await expect(service.revokeOther(multiUser.id, current.session.id)).rejects.toBeInstanceOf(
+			SessionNotFoundError,
+		);
+		await expect(service.revokeOther(singleUser.id, randomUUID())).rejects.toBeInstanceOf(
+			SessionNotFoundError,
+		);
+		await expect(service.authenticate(first.accessToken)).resolves.toMatchObject({
+			session: {id: current.session.id},
+		});
 	});
 
 	it('revokes every session for the user on logout-all', async () => {

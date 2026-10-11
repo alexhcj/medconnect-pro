@@ -90,6 +90,24 @@ export class AuthSessionInfoRdo {
 	expiresIn!: number;
 }
 
+@ApiSchema({name: 'SessionInventoryItem'})
+export class SessionInventoryItemRdo {
+	@ApiProperty({format: 'uuid'})
+	sessionId!: string;
+
+	@ApiProperty({example: '2026-03-01T12:00:00.000Z'})
+	createdAt!: string;
+
+	@ApiProperty({example: '2026-03-01T12:05:00.000Z'})
+	lastActivityAt!: string;
+
+	@ApiProperty({
+		example: false,
+		description: 'True only for the session that authenticated this request.',
+	})
+	isCurrent!: boolean;
+}
+
 @ApiSchema({name: 'MfaChallenge'})
 export class MfaChallengeRdo {
 	@ApiProperty({enum: [true], example: true})

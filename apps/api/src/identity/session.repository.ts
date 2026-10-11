@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {IsNull, Repository} from 'typeorm';
+import {IsNull, Not, Repository} from 'typeorm';
 import {AuthSession} from '../persistence/entities/auth-session.entity.js';
 
 export type NewAuthSession = {
@@ -36,6 +36,18 @@ export class SessionRepository {
 	async findById(id: string): Promise<AuthSession | undefined> {
 		const row = await this.rows.findOne({where: {id}});
 		return row ?? undefined;
+	}
+
+	/** Issued, non-revoked sessions. Pending MFA rows have no access token and are omitted. */
+	async listIssuedForUser(userId: string): Promise<AuthSession[]> {
+		return this.rows.find({
+			where: {
+				userId,
+				revokedAt: IsNull(),
+				accessTokenHash: Not(IsNull()),
+			},
+			order: {createdAt: 'ASC', id: 'ASC'},
+		});
 	}
 
 	async findByAccessHash(hash: string): Promise<AuthSession | undefined> {

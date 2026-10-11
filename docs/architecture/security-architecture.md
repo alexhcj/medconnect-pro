@@ -95,7 +95,7 @@ Audit sensitive actions such as:
   must not appear in the audit row;
 - billing changes;
 - notification preference updates (no title or body in the audit row);
-- administrative security changes, including `auth.session.revoked` when session inventory ships
+- administrative security changes, including `auth.session.revoked` for selective session revoke
   ([BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md); no tokens and no IP).
 
 ## API protection
@@ -107,7 +107,7 @@ Not production DDoS protection, account lockout, or WAF.
   PostgreSQL `rate_limit_buckets` store. No Redis. M16 adds session-user fail-open limits on
   telehealth create (20 / 5 min) and join (30 / 5 min); media-token stays 30 / 5 min. M17 policy
   adds session-user fail-open limits on `GET /auth/sessions` (60 / 5 min) and
-  `POST /auth/sessions/:id/revoke` (30 / 5 min). Those two routes are not enforced until BE-023.
+  `POST /auth/sessions/:id/revoke` (30 / 5 min). BE-023 enforces both; store failure stays fail open.
 - Client IP from `TRUST_PROXY` hop count (default `0`, `X-Forwarded-For` ignored).
 - HMAC-hashed keys; no raw IP, email, or token stored or logged.
 - 429 `RATE_LIMITED` + `Retry-After`; auth routes fail closed with 503 `RATE_LIMIT_UNAVAILABLE`.

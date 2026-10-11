@@ -32,14 +32,14 @@ refresh, logout, and login until an IdP exists:
 - `POST /auth/refresh` — body `refreshToken` or `mcp_refresh` cookie
 - `POST /auth/logout` — cookie or Bearer
 - `POST /auth/logout-all` — cookie or Bearer
-- `GET /auth/sessions` — cookie or Bearer. Caller’s non-revoked sessions only. Fields and the
+- `GET /auth/sessions` — cookie or Bearer. Caller’s non-revoked issued sessions only. Fields and the
   ban on IP, location, and raw user-agent are in
-  [identity-and-access.md](identity-and-access.md). Specified for
-  [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md); generated OpenAPI gains
-  this path when that task runs `npm run openapi:generate`.
+  [identity-and-access.md](identity-and-access.md). Implemented by
+  [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md); generated OpenAPI includes
+  this path.
 - `POST /auth/sessions/:id/revoke` — cookie or Bearer. Revoke another of the caller’s sessions
   without ending the current one; revoking the current session equals logout. Same CSRF rule as
-  logout for cookie mutations. Same field rules as the list. OpenAPI lands with BE-023.
+  logout for cookie mutations. Same field rules as the list. OpenAPI includes this path.
 - `POST /auth/mfa/verify` — body `mfaToken` or `mcp_mfa` cookie
 
 Demo OIDC routes ([BE-017](../tasks/backend/BE-017-oidc-client-and-session-issuance.md),

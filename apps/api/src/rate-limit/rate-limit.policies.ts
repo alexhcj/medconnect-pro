@@ -83,4 +83,6 @@ export const RATE_LIMIT_POLICIES = {
 	mediaToken: sessionUserPolicy('telehealth.media_token', 30, 5 * MINUTE_MS),
 	documentDownload: sessionUserPolicy('documents.download', 60, 5 * MINUTE_MS),
 	payment: sessionUserPolicy('billing.payment', 10, 5 * MINUTE_MS),
+	sessionList: sessionUserPolicy('auth.sessions.list', 60, 5 * MINUTE_MS),
+	sessionRevoke: sessionUserPolicy('auth.sessions.revoke', 30, 5 * MINUTE_MS),
 } satisfies Record<string, RateLimitPolicy>;

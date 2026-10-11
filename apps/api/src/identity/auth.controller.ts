@@ -1,9 +1,10 @@
-import {Body, Controller, Get, HttpCode, Post, Req, Res} from '@nestjs/common';
+import {Body, Controller, Get, HttpCode, Param, Post, Req, Res} from '@nestjs/common';
 import {
 	ApiBody,
 	ApiExtraModels,
 	ApiForbiddenResponse,
 	ApiNoContentResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
@@ -18,8 +19,8 @@ import {RATE_LIMIT_POLICIES} from '../rate-limit/rate-limit.policies.js';
 import {SessionInvalidError} from './auth.errors.js';
 import {ApiSessionAuth, Public} from './auth.decorators.js';
 import type {RequestAuth} from './auth.guard.js';
-import {AuthSessionInfoRdo, LoginRequestRdo, MfaChallengeRdo, MfaVerifyRequestRdo, RefreshRequestRdo, TokenPairRdo} from './auth.rdo.js';
-import {loginSchema, mfaVerifySchema, refreshSchema, type LoginBody, type MfaVerifyBody, type RefreshBody} from './auth.schema.js';
+import {AuthSessionInfoRdo, LoginRequestRdo, MfaChallengeRdo, MfaVerifyRequestRdo, RefreshRequestRdo, SessionInventoryItemRdo, TokenPairRdo} from './auth.rdo.js';
+import {loginSchema, mfaVerifySchema, refreshSchema, sessionIdParamsSchema, type LoginBody, type MfaVerifyBody, type RefreshBody, type SessionIdParams} from './auth.schema.js';
 import {AuthService} from './auth.service.js';
 import {assertCookieMutationCsrf} from './csrf.js';
 import {
@@ -159,6 +160,51 @@ export class AuthController {
 			throw new SessionInvalidError();
 		}
 		return this.auth.describeSession(request.authSessionId);
+	}
+
+	@Get('sessions')
+	@ApiSessionAuth()
+	@RateLimit(RATE_LIMIT_POLICIES.sessionList)
+	@ApiOperation({
+		summary: 'List the caller’s sessions',
+		description:
+			'Non-revoked issued sessions for the authenticated user only. Fields are session id, timestamps, and whether the row is the current session. Never includes IP, location, raw user-agent, or tokens.',
+	})
+	@ApiOkResponse({type: SessionInventoryItemRdo, isArray: true})
+	@ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
+	async sessions(@Req() request: Request & RequestAuth): Promise<SessionInventoryItemRdo[]> {
+		if (!request.authUserId || !request.authSessionId) {
+			throw new SessionInvalidError();
+		}
+		return this.auth.listOwnSessions(request.authUserId, request.authSessionId);
+	}
+
+	@Post('sessions/:id/revoke')
+	@HttpCode(204)
+	@ApiSessionAuth()
+	@RateLimit(RATE_LIMIT_POLICIES.sessionRevoke)
+	@ApiOperation({
+		summary: 'Revoke one of the caller’s sessions',
+		description:
+			'Revokes another of the caller’s sessions and leaves the current cookies in place. Revoking the current session clears cookies, the same as logout. Unknown and other-user ids return the same not-found response.',
+	})
+	@ApiNoContentResponse({description: 'Session revoked.'})
+	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})
+	@ApiUnauthorizedResponse({type: ErrorEnvelopeRdo})
+	async revokeSession(
+		@Param({schema: sessionIdParamsSchema}) params: SessionIdParams,
+		@Req() request: Request & RequestAuth,
+		@Res({passthrough: true}) response: Response,
+	): Promise<void> {
+		if (!request.authUserId || !request.authSessionId) {
+			throw new SessionInvalidError();
+		}
+		if (params.id === request.authSessionId) {
+			await this.auth.logout(request.authSessionId);
+			clearSessionCookies(response, resolveAppEnv());
+			return;
+		}
+		await this.auth.revokeOther(request.authUserId, params.id);
 	}
 
 	@Post('logout')

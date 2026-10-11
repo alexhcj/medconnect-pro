@@ -336,8 +336,8 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
   `POST /telehealth/sessions/:id/media-token` 30 per 5 min,
   `GET /patients/:id/documents/:documentId/content` 60 per 5 min, `POST /billing/payments` 10 per
   5 min, `GET /auth/sessions` 60 per 5 min, `POST /auth/sessions/:id/revoke` 30 per 5 min.
-  The two session-inventory limits are M17 policy in ADR-015. BE-023 applies them. They are not
-  enforced until that task ships.
+  The two session-inventory limits are M17 policy in ADR-015. BE-023 enforces them. Store failure
+  on those routes fails open.
 - Exceeded: HTTP 429 `RATE_LIMITED` with `details.retryAfterSeconds` and `Retry-After`. Limiter
   store unavailable: HTTP 503 `RATE_LIMIT_UNAVAILABLE` (auth routes fail closed).
 - Client IP follows `TRUST_PROXY`. Keys are HMAC-hashed; raw IPs, emails, and tokens are never
@@ -356,15 +356,18 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
 - **Concurrent sessions:** detectable; the user may terminate other sessions without ending the
   current one. The default **mock** fixture is a single current session so dashboard E2E is not
   blocked by a concurrent-session dialog. Extra-session fixtures belong in dedicated tests.
-  Live list HTTP is [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md). Until
-  that ships, live `checkConcurrentSessions` stays empty. Do not add an activity keep-alive.
+  Live list HTTP is [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md). Live
+  `checkConcurrentSessions` stays empty until
+  [FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md). Do not add an activity
+  keep-alive.
   Idle timeout stays 15 minutes. Extension cannot pass the absolute cap.
 
 ### Session inventory (BE-023)
 
-Specified here; not implemented until BE-023. Catalog
+Implemented by [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md). Catalog
 `identity-access.concurrent-sessions` stays `planned` until
-[FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md).
+[FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md). The shipped list omits
+device class; timestamps and `isCurrent` are the response.
 
 - `GET /auth/sessions` — cookie or Bearer. Non-revoked sessions for the caller only.
 - `POST /auth/sessions/:id/revoke` — cookie or Bearer. Cookie mutations use the same CSRF rule as

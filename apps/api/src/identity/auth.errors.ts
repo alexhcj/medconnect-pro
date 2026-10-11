@@ -12,6 +12,13 @@ export class SessionInvalidError extends Error {
 	}
 }
 
+export class SessionNotFoundError extends Error {
+	constructor() {
+		super('Resource not found');
+		this.name = 'SessionNotFoundError';
+	}
+}
+
 export class CsrfInvalidError extends Error {
 	constructor() {
 		super('CSRF validation failed');

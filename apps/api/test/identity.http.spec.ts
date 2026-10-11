@@ -346,7 +346,148 @@ describe('identity HTTP', () => {
 			.set('Authorization', `Bearer ${second.accessToken}`)
 			.expect(401);
 	});
+
+	it('lists two live sessions and revokes the other without ending the current one', async () => {
+		const wipe = await login(admin.email);
+		await request(app.getHttpServer())
+			.post('/auth/logout-all')
+			.set('Authorization', `Bearer ${wipe.accessToken}`)
+			.expect(204);
+
+		const first = await login(admin.email);
+		const second = await login(admin.email);
+		const before = await revokedSessionAudits(admin.id);
+		const listed = await request(app.getHttpServer())
+			.get('/auth/sessions')
+			.set('Authorization', `Bearer ${first.accessToken}`)
+			.expect(200);
+		expect(listed.headers['cache-control']).toBe('no-store');
+		const sessions = listed.body as SessionRow[];
+		expect(sessions).toHaveLength(2);
+		expect(sessions.filter((row) => row.isCurrent)).toHaveLength(1);
+		for (const row of sessions) {
+			expect(Object.keys(row).sort()).toEqual([
+				'createdAt',
+				'isCurrent',
+				'lastActivityAt',
+				'sessionId',
+			]);
+		}
+		expect(JSON.stringify(sessions)).not.toMatch(/ipAddress|location|userAgent|accessToken|refreshToken/);
+		expect(await revokedSessionAudits(admin.id)).toBe(before);
+
+		const other = sessions.find((row) => !row.isCurrent);
+		const current = sessions.find((row) => row.isCurrent);
+		if (!other || !current) {
+			throw new Error('expected one current session and one other session');
+		}
+		const revoked = await request(app.getHttpServer())
+			.post(`/auth/sessions/${other.sessionId}/revoke`)
+			.set('Authorization', `Bearer ${first.accessToken}`)
+			.expect(204);
+		expect(setCookieHeaders(revoked)).toHaveLength(0);
+		await request(app.getHttpServer())
+			.get('/__test/authz')
+			.set('Authorization', `Bearer ${first.accessToken}`)
+			.expect(200);
+		await request(app.getHttpServer())
+			.get('/__test/authz')
+			.set('Authorization', `Bearer ${second.accessToken}`)
+			.expect(401);
+		expect(await revokedSessionAudits(admin.id)).toBe(before + 1);
+		const audit = await dataSource.getRepository(AuditEvent).findOneByOrFail({
+			actorUserId: admin.id,
+			action: 'auth.session.revoked',
+			resourceId: other.sessionId,
+		});
+		expect(audit.resourceType).toBe('session');
+		expect(JSON.stringify(audit)).not.toMatch(/ipAddress|userAgent|accessToken|refreshToken/);
+
+		const again = await request(app.getHttpServer())
+			.post(`/auth/sessions/${other.sessionId}/revoke`)
+			.set('Authorization', `Bearer ${first.accessToken}`)
+			.expect(404);
+		expect(again.body.error).toEqual({code: 'NOT_FOUND', message: 'Resource not found'});
+		expect(current.sessionId).toEqual(expect.any(String));
+	});
+
+	it('keeps current cookies when revoking another session and clears them for the current session', async () => {
+		const wipe = await login(nurse.email);
+		await request(app.getHttpServer())
+			.post('/auth/logout-all')
+			.set('Authorization', `Bearer ${wipe.accessToken}`)
+			.expect(204);
+
+		const agent = request.agent(app.getHttpServer());
+		await agent.post('/auth/login').send({email: nurse.email, password}).expect(200);
+		await login(nurse.email);
+		const listed = await agent.get('/auth/sessions').expect(200);
+		const sessions = listed.body as SessionRow[];
+		const other = sessions.find((row) => !row.isCurrent);
+		const current = sessions.find((row) => row.isCurrent);
+		if (!other || !current) {
+			throw new Error('expected one current session and one other session');
+		}
+
+		const blocked = await agent.post(`/auth/sessions/${other.sessionId}/revoke`).expect(403);
+		expect(blocked.body.error.code).toBe('FORBIDDEN');
+		await agent.get('/__test/authz').expect(200);
+
+		const revoked = await agent.post(`/auth/sessions/${other.sessionId}/revoke`).send({}).expect(204);
+		expect(setCookieHeaders(revoked)).toHaveLength(0);
+		await agent.get('/__test/authz').expect(200);
+
+		const loggedOut = await agent.post(`/auth/sessions/${current.sessionId}/revoke`).send({}).expect(204);
+		expectClearedSessionCookies(loggedOut);
+		await agent.get('/__test/authz').expect(401);
+	});
+
+	it('returns the same not-found envelope for another user’s session and an unknown id', async () => {
+		const owner = await login(admin.email);
+		const stranger = await login(nurse.email);
+		const listed = await request(app.getHttpServer())
+			.get('/auth/sessions')
+			.set('Authorization', `Bearer ${owner.accessToken}`)
+			.expect(200);
+		const owned = (listed.body as SessionRow[]).find((row) => row.isCurrent);
+		if (!owned) {
+			throw new Error('expected the owner session');
+		}
+		const hidden = await request(app.getHttpServer())
+			.post(`/auth/sessions/${owned.sessionId}/revoke`)
+			.set('Authorization', `Bearer ${stranger.accessToken}`)
+			.expect(404);
+		const unknown = await request(app.getHttpServer())
+			.post(`/auth/sessions/${randomUUID()}/revoke`)
+			.set('Authorization', `Bearer ${stranger.accessToken}`)
+			.expect(404);
+		expect(hidden.body.error).toEqual(unknown.body.error);
+		expect(hidden.body.error).toEqual({code: 'NOT_FOUND', message: 'Resource not found'});
+		await request(app.getHttpServer())
+			.get('/__test/authz')
+			.set('Authorization', `Bearer ${owner.accessToken}`)
+			.expect(200);
+
+		const malformed = await request(app.getHttpServer())
+			.post('/auth/sessions/not-a-uuid/revoke')
+			.set('Authorization', `Bearer ${stranger.accessToken}`)
+			.expect(400);
+		expect(malformed.body.error.code).toBe('VALIDATION_ERROR');
+	});
+
+	async function revokedSessionAudits(actorUserId: string): Promise<number> {
+		return dataSource.getRepository(AuditEvent).count({
+			where: {actorUserId, action: 'auth.session.revoked'},
+		});
+	}
 });
+
+type SessionRow = {
+	sessionId: string;
+	createdAt: string;
+	lastActivityAt: string;
+	isCurrent: boolean;
+};
 
 function setCookieHeaders(response: {headers: Record<string, unknown>}): string[] {
 	const header = response.headers['set-cookie'];

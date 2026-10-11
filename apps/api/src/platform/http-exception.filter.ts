@@ -14,6 +14,7 @@ import {
 	MfaInvalidError,
 	PermissionDeniedError,
 	SessionInvalidError,
+	SessionNotFoundError,
 } from '../identity/auth.errors.js';
 import {InvalidProviderAssignmentError, PatientNotFoundError} from '../patient/patient.errors.js';
 import {DocumentFileInvalidError, DocumentNotFoundError} from '../documents/document.errors.js';
@@ -148,7 +149,8 @@ export class EnvelopeExceptionFilter implements ExceptionFilter {
 			exception instanceof InvoiceNotFoundError ||
 			exception instanceof DocumentNotFoundError ||
 			exception instanceof NotificationNotFoundError ||
-			exception instanceof PracticeUserNotFoundError
+			exception instanceof PracticeUserNotFoundError ||
+			exception instanceof SessionNotFoundError
 		) {
 			return this.authError(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Resource not found');
 		}

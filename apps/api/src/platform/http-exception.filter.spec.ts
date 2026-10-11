@@ -1,6 +1,6 @@
 import {BadRequestException, HttpStatus, InternalServerErrorException} from '@nestjs/common';
 import {describe, expect, it} from 'vitest';
-import {InvalidCredentialsError, PermissionDeniedError} from '../identity/auth.errors.js';
+import {InvalidCredentialsError, PermissionDeniedError, SessionNotFoundError} from '../identity/auth.errors.js';
 import {InvoiceAlreadyPaidError} from '../billing/billing.errors.js';
 import {AppointmentConflictError} from '../scheduling/appointment.errors.js';
 import {
@@ -176,6 +176,17 @@ describe('EnvelopeExceptionFilter', () => {
 	it('maps unknown practice users to the same not-found envelope', () => {
 		const {host, getResult} = createHost('cid-practice-user');
 		filter.catch(new PracticeUserNotFoundError(), host);
+		const result = getResult();
+		expect(result.statusCode).toBe(HttpStatus.NOT_FOUND);
+		expect(result.body.error).toEqual({
+			code: 'NOT_FOUND',
+			message: 'Resource not found',
+		});
+	});
+
+	it('maps an unknown session to the same not-found envelope', () => {
+		const {host, getResult} = createHost('cid-session');
+		filter.catch(new SessionNotFoundError(), host);
 		const result = getResult();
 		expect(result.statusCode).toBe(HttpStatus.NOT_FOUND);
 		expect(result.body.error).toEqual({

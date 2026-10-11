@@ -58,6 +58,25 @@ describe('RATE_LIMIT_POLICIES keys', () => {
 		req.authUserId = 'user-1';
 		expect(RATE_LIMIT_POLICIES.payment.key(req)).toBe('user-1');
 	});
+
+	it('fails open on session inventory and keys those limits by authUserId', () => {
+		const req = fakeRequest({});
+		expect(RATE_LIMIT_POLICIES.sessionList).toMatchObject({
+			name: 'auth.sessions.list',
+			limit: 60,
+			failure: 'open',
+		});
+		expect(RATE_LIMIT_POLICIES.sessionRevoke).toMatchObject({
+			name: 'auth.sessions.revoke',
+			limit: 30,
+			failure: 'open',
+		});
+		expect(RATE_LIMIT_POLICIES.sessionList.key(req)).toBeUndefined();
+		expect(RATE_LIMIT_POLICIES.sessionRevoke.key(req)).toBeUndefined();
+		req.authUserId = 'user-1';
+		expect(RATE_LIMIT_POLICIES.sessionList.key(req)).toBe('user-1');
+		expect(RATE_LIMIT_POLICIES.sessionRevoke.key(req)).toBe('user-1');
+	});
 });
 
 describe('InMemoryRateLimitStore', () => {

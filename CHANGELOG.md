@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.83.0] - 2026-10-11
+
+### Added
+
+- BE-023 (M17): `GET /auth/sessions` lists the caller’s issued sessions (`sessionId`, timestamps,
+  `isCurrent`) and `POST /auth/sessions/:id/revoke` ends another session without signing out the
+  current one. Responses omit IP, location, and user-agent. Revoking the current session clears
+  cookies. Unknown and other-user ids return the same `NOT_FOUND`. Selective revoke writes
+  `auth.session.revoked`. List and revoke use fail-open session-user rate limits.
+
 ## [0.82.0] - 2026-10-11
 
 ### Added

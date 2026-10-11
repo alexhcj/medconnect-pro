@@ -46,7 +46,7 @@ capabilities:
   - id: identity-access.concurrent-sessions
     name: Concurrent session review
     status: planned
-    demo: Nest session inventory and selective revoke (BE-023) plus live dialog (FE-036) are M17; live checkConcurrentSessions is empty until those ship. Not a session-policy editor or IP/geo oracle
+    demo: Nest session inventory and selective revoke shipped (BE-023). The live dialog is still FE-036, so live checkConcurrentSessions stays empty. Not a session-policy editor or IP/geo oracle
     public: qualified
     related_tasks: [SEC-009, BE-023, FE-036]
 ---
@@ -67,4 +67,4 @@ not a marketing `/sign-in` route.
 | `identity-access.mfa-challenge` | MFA challenge | shipped | labeled mock MFA on live `/login` | qualified |
 | `identity-access.oauth-oidc-pkce` | Demo OAuth 2.0 / OIDC + PKCE sign-in | shipped | Demo OIDC + PKCE (Google or Fake) on live `/login`; not a production IdP | qualified |
 | `identity-access.auth-rate-limiting` | Demo auth and sensitive-route rate limiting | shipped | Nest 429 `RATE_LIMITED` on login (including account-wide failures), MFA, refresh, OAuth, telehealth create/join/media-token, document download, payments; `auth.rate_limited` security event; "too many attempts" on login and MFA (with N seconds when known) and on the OAuth landing ("later") | qualified |
-| `identity-access.concurrent-sessions` | Concurrent session review | planned | M17 Nest list/revoke plus live dialog; not a session-policy editor | qualified |
+| `identity-access.concurrent-sessions` | Concurrent session review | planned | Nest list/revoke shipped (BE-023); live dialog is FE-036; not a session-policy editor | qualified |

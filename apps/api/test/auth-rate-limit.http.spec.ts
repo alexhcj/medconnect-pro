@@ -380,6 +380,53 @@ describe('auth and sensitive-route rate limits (HTTP)', () => {
 		}
 	});
 
+	it('returns 429 on session list and revoke past the limit', async () => {
+		const token = await login(adminEmail);
+		const listLimit = RATE_LIMIT_POLICIES.sessionList.limit;
+		for (let i = 0; i < listLimit; i += 1) {
+			await request(server())
+				.get('/auth/sessions')
+				.set('Authorization', `Bearer ${token}`)
+				.expect(200);
+		}
+		const listed = await request(server())
+			.get('/auth/sessions')
+			.set('Authorization', `Bearer ${token}`)
+			.expect(429);
+		expect(listed.body.error).toMatchObject({
+			code: 'RATE_LIMITED',
+			details: {retryAfterSeconds: expect.any(Number)},
+		});
+		expect(listed.headers['retry-after']).toBe(String(listed.body.error.details.retryAfterSeconds));
+
+		const revokeLimit = RATE_LIMIT_POLICIES.sessionRevoke.limit;
+		for (let i = 0; i < revokeLimit; i += 1) {
+			const res = await request(server())
+				.post(`/auth/sessions/${randomUUID()}/revoke`)
+				.set('Authorization', `Bearer ${token}`);
+			expect(res.status).not.toBe(429);
+		}
+		const revoked = await request(server())
+			.post(`/auth/sessions/${randomUUID()}/revoke`)
+			.set('Authorization', `Bearer ${token}`)
+			.expect(429);
+		expect(revoked.body.error).toMatchObject({
+			code: 'RATE_LIMITED',
+			details: {retryAfterSeconds: expect.any(Number)},
+		});
+		expect(revoked.headers['retry-after']).toBe(String(revoked.body.error.details.retryAfterSeconds));
+	});
+
+	it('fails open when the session-list limiter store is down', async () => {
+		const token = await login(providerEmail);
+		vi.spyOn(testRateLimitStore, 'increment').mockRejectedValue(new Error('store down'));
+		const res = await request(server())
+			.get('/auth/sessions')
+			.set('Authorization', `Bearer ${token}`)
+			.expect(200);
+		expect(Array.isArray(res.body)).toBe(true);
+	});
+
 	it('audits auth.rate_limited once per window for a known user, with no email, IP, or token', async () => {
 		const before = await rateLimitedEvents();
 		const ip = '203.0.113.40';

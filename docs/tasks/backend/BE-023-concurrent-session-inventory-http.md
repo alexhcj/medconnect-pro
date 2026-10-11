@@ -3,7 +3,7 @@ id: BE-023
 type: task
 area: backend
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [SEC-009, BE-014]
@@ -20,7 +20,7 @@ related_docs:
     BE-014-httponly-cookie-session-http.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -85,13 +85,13 @@ Implements / extends planned `identity-access.concurrent-sessions` (HTTP). Catal
 
 ## Acceptance Criteria
 
-- [ ] Two live sessions for one user → list length 2 with exactly one `isCurrent`
-- [ ] Other-user or unknown session id on get/revoke → 404 with no existence oracle
-- [ ] Revoke other keeps current cookies; revoke current clears cookies (logout)
-- [ ] `logout-all` still revokes every session and clears cookies
-- [ ] RDO has no `ipAddress`, location, or raw user-agent
-- [ ] 429 uses existing `RATE_LIMITED` envelope; limiter failure fail-open
-- [ ] OpenAPI includes both routes; identity HTTP tests cover the cases above
+- [x] Two live sessions for one user → list length 2 with exactly one `isCurrent`
+- [x] Other-user or unknown session id on get/revoke → 404 with no existence oracle
+- [x] Revoke other keeps current cookies; revoke current clears cookies (logout)
+- [x] `logout-all` still revokes every session and clears cookies
+- [x] RDO has no `ipAddress`, location, or raw user-agent
+- [x] 429 uses existing `RATE_LIMITED` envelope; limiter failure fail-open
+- [x] OpenAPI includes both routes; identity HTTP tests cover the cases above
 
 ## Dependencies
 
@@ -119,3 +119,12 @@ Reuse `auth_sessions` and [`AuthService`](../../../apps/api/src/identity/auth.se
 logout helpers. Do not return token hashes.
 
 Writing this spec is not a version bump.
+
+## Completion
+
+Shipped in 0.83.0 (MINOR). `GET /auth/sessions` lists the caller’s issued, non-revoked sessions
+(`sessionId`, timestamps, `isCurrent`; no IP, location, or user-agent). `POST /auth/sessions/:id/revoke`
+ends another of those sessions without clearing the current cookies. Revoking the current session
+clears cookies, the same as logout. Unknown, other-user, and already-revoked ids return the same
+`NOT_FOUND`. Selective revoke audits `auth.session.revoked`. List calls are not audited. Session-user
+rate limits fail open. Live dialog wiring remains FE-036; the capability stays `planned`.

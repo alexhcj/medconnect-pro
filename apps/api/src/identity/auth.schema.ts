@@ -23,3 +23,9 @@ export const mfaVerifySchema = z.object({
 });
 
 export type MfaVerifyBody = z.infer<typeof mfaVerifySchema>;
+
+export const sessionIdParamsSchema = z.object({
+	id: z.uuid(),
+});
+
+export type SessionIdParams = z.infer<typeof sessionIdParamsSchema>;

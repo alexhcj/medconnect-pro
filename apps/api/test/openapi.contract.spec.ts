@@ -70,6 +70,10 @@ describe('OpenAPI contract', () => {
 		expect(document.paths?.['/auth/logout']?.post?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/auth/logout-all']?.post?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/auth/session']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/auth/sessions']?.get?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/auth/sessions']?.get?.responses).toHaveProperty('429');
+		expect(document.paths?.['/auth/sessions/{id}/revoke']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/auth/sessions/{id}/revoke']?.post?.responses).toHaveProperty('429');
 		expect(document.paths?.['/auth/oauth/{provider}/start']?.get?.security).toBeUndefined();
 		expect(document.paths?.['/auth/oauth/{provider}/callback']?.get?.security).toBeUndefined();
 		expect(document.paths).not.toHaveProperty('/auth/oauth/fake/authorize');
