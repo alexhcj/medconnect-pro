@@ -116,6 +116,51 @@ async function readJson(response: Response): Promise<unknown> {
 	return response.json().catch(() => ({}));
 }
 
+function deviceLabel(deviceClass: unknown, isCurrent: boolean): string {
+	if (deviceClass === 'desktop') {
+		return 'Desktop';
+	}
+	if (deviceClass === 'mobile') {
+		return 'Mobile';
+	}
+	if (deviceClass === 'unknown') {
+		return 'Unknown device';
+	}
+	return isCurrent ? 'This session' : 'Other session';
+}
+
+function epochMillis(value: unknown): number {
+	if (typeof value !== 'string') {
+		return 0;
+	}
+	const parsed = Date.parse(value);
+	return Number.isFinite(parsed) ? parsed : 0;
+}
+
+/** Maps a Nest session-inventory row. Drops IP, location, and user-agent if present. */
+function mapInventoryItem(value: unknown): ConcurrentSessionInfo | undefined {
+	if (!value || typeof value !== 'object') {
+		return undefined;
+	}
+	const body = value as {
+		sessionId?: unknown;
+		isCurrent?: unknown;
+		deviceClass?: unknown;
+		createdAt?: unknown;
+		lastActivityAt?: unknown;
+	};
+	if (typeof body.sessionId !== 'string' || body.sessionId.length === 0 || typeof body.isCurrent !== 'boolean') {
+		return undefined;
+	}
+	return {
+		sessionId: body.sessionId,
+		device: deviceLabel(body.deviceClass, body.isCurrent),
+		loginTime: epochMillis(body.createdAt),
+		lastActivity: epochMillis(body.lastActivityAt),
+		isCurrentSession: body.isCurrent,
+	};
+}
+
 function persistSession(email: string, expiresIn: number): SessionInfo {
 	const session = sessionForKnownDemo(email, expiresIn);
 	writeLiveSession(session);
@@ -204,10 +249,25 @@ export const sessionRealAPI = {
 	},
 
 	checkConcurrentSessions: async (): Promise<ConcurrentSessionInfo[]> => {
-		return [];
+		const body = await apiFetch<unknown>(`${nestApiBaseUrl()}/auth/sessions`);
+		if (!Array.isArray(body)) {
+			throw new ApiError('Unable to load sessions', 502);
+		}
+		return body.flatMap((item) => {
+			const mapped = mapInventoryItem(item);
+			return mapped ? [mapped] : [];
+		});
 	},
 
-	terminateSessions: async (_sessionIds: string[]): Promise<void> => {
+	terminateSessions: async (sessionIds: string[]): Promise<void> => {
+		for (const sessionId of sessionIds) {
+			await apiFetch<void>(`${nestApiBaseUrl()}/auth/sessions/${encodeURIComponent(sessionId)}/revoke`, {
+				method: 'POST',
+			});
+		}
+	},
+
+	logoutEverywhere: async (): Promise<void> => {
 		try {
 			await apiFetch<void>(`${nestApiBaseUrl()}/auth/logout-all`, {method: 'POST'});
 		} catch (error) {

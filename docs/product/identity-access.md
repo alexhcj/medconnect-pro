@@ -45,8 +45,8 @@ capabilities:
     related_tasks: [SEC-007, DATA-004, BE-018, BE-019, FE-034]
   - id: identity-access.concurrent-sessions
     name: Concurrent session review
-    status: planned
-    demo: Nest session inventory and selective revoke shipped (BE-023). The live dialog is still FE-036, so live checkConcurrentSessions stays empty. Not a session-policy editor or IP/geo oracle
+    status: shipped
+    demo: Live dialog lists Nest sessions and revokes other sessions without signing out. Live rows omit IP, location, and browser. Mock fixtures may show labeled demo location and IP. Not a session-policy editor, IP/geo oracle, or production session manager
     public: qualified
     related_tasks: [SEC-009, BE-023, FE-036]
 ---
@@ -55,8 +55,9 @@ capabilities:
 
 Mock IdP HTTP sessions for the demo. Nest issues HttpOnly cookies and still returns opaque bearer
 JSON for machine clients. Live Next uses those cookies and does not persist access or refresh
-tokens. Public copy may describe mock identity, labeled mock MFA, and demo OIDC + PKCE sign-in
-(Google or Fake). It must not describe production OAuth, a production IdP, or production MFA.
+tokens. Public copy may describe mock identity, labeled mock MFA, demo OIDC + PKCE sign-in
+(Google or Fake), and demo concurrent-session review. It must not describe production OAuth, a
+production IdP, production MFA, or a production session manager.
 
 Demo entry is existing `/login` ([FE-010](../tasks/frontend/FE-010-mock-authentication-ui.md)),
 not a marketing `/sign-in` route.
@@ -67,4 +68,4 @@ not a marketing `/sign-in` route.
 | `identity-access.mfa-challenge` | MFA challenge | shipped | labeled mock MFA on live `/login` | qualified |
 | `identity-access.oauth-oidc-pkce` | Demo OAuth 2.0 / OIDC + PKCE sign-in | shipped | Demo OIDC + PKCE (Google or Fake) on live `/login`; not a production IdP | qualified |
 | `identity-access.auth-rate-limiting` | Demo auth and sensitive-route rate limiting | shipped | Nest 429 `RATE_LIMITED` on login (including account-wide failures), MFA, refresh, OAuth, telehealth create/join/media-token, document download, payments; `auth.rate_limited` security event; "too many attempts" on login and MFA (with N seconds when known) and on the OAuth landing ("later") | qualified |
-| `identity-access.concurrent-sessions` | Concurrent session review | planned | Nest list/revoke shipped (BE-023); live dialog is FE-036; not a session-policy editor | qualified |
+| `identity-access.concurrent-sessions` | Concurrent session review | shipped | Live dialog lists and revokes other Nest sessions; live rows omit IP and location; mock location and IP stay labeled demo data; not a session-policy editor or production session manager | qualified |

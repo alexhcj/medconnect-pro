@@ -3,13 +3,18 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Dialog, DialogPanel, DialogTitle, Transition, TransitionChild} from '@headlessui/react';
 import {Monitor, Smartphone, TriangleAlert} from 'lucide-react';
-import {useConcurrentSessions, useTerminateSessions} from '@/lib/hooks/use-session';
+import {useConcurrentSessions, useLogoutEverywhere, useTerminateSessions} from '@/lib/hooks/use-session';
 import {useUISelectors} from '@/lib/stores/ui-store';
 import {loginUrl} from '@/lib/auth/paths';
+
+function terminateLabel(device: string, lastActive: string | null): string {
+	return lastActive ? `Terminate ${device}, last active ${lastActive}` : `Terminate ${device}`;
+}
 
 export function ConcurrentSessionDialog() {
 	const {data: sessions = [], isLoading} = useConcurrentSessions();
 	const terminateSessions = useTerminateSessions();
+	const logoutEverywhere = useLogoutEverywhere();
 	const {addNotification} = useUISelectors.useNotificationActions();
 	const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
 	const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +50,7 @@ export function ConcurrentSessionDialog() {
 				title: 'Sessions Terminated',
 				message: `${selectedSessions.length} session(s) terminated successfully.`,
 			});
-		} catch (error) {
+		} catch {
 			addNotification({
 				type: 'error',
 				title: 'Termination Failed',
@@ -71,7 +76,7 @@ export function ConcurrentSessionDialog() {
 				title: 'Other Sessions Terminated',
 				message: 'All other sessions have been terminated. You can continue working here.',
 			});
-		} catch (error) {
+		} catch {
 			addNotification({
 				type: 'error',
 				title: 'Termination Failed',
@@ -88,9 +93,9 @@ export function ConcurrentSessionDialog() {
 		});
 
 		try {
-			await terminateSessions.mutateAsync(sessions.map((session) => session.sessionId));
+			await logoutEverywhere.mutateAsync();
 		} catch {
-			// Nest still clears cookies on success; local metadata is cleared in finally.
+			// Local metadata is cleared even when logout-all fails.
 		}
 		window.location.href = loginUrl('concurrent');
 	};
@@ -111,6 +116,9 @@ export function ConcurrentSessionDialog() {
 	};
 
 	const formatLastActivity = (timestamp: number) => {
+		if (!Number.isFinite(timestamp) || timestamp <= 0) {
+			return null;
+		}
 		const now = Date.now();
 		const diff = now - timestamp;
 		const minutes = Math.floor(diff / (60 * 1000));
@@ -169,12 +177,13 @@ export function ConcurrentSessionDialog() {
 
 								<div className="mb-6">
 									<p className="text-sm text-gray-600 mb-4">
-										We detected that you&apos;re logged in from multiple locations. For security reasons,
-										please review these sessions and terminate any that you don&apos;t recognize.
+										You&apos;re signed in on more than one session. Review them and end any you don&apos;t recognize.
 									</p>
 
 									<div className="space-y-3 max-h-64 overflow-y-auto">
-										{sessions.map((session) => (
+										{sessions.map((session) => {
+											const lastActive = formatLastActivity(session.lastActivity);
+											return (
 											<div
 												key={session.sessionId}
 												className={`p-3 rounded-lg border transition-colors ${
@@ -204,17 +213,27 @@ export function ConcurrentSessionDialog() {
 																)}
 															</div>
 
-															<p className="text-xs text-gray-500 mt-1">
-																{session.browser} • {session.location}
-															</p>
+															{session.browser || session.location || session.ipAddress ? (
+																<p className="text-xs font-medium text-gray-500 mt-1">Demo data</p>
+															) : null}
 
-															<p className="text-xs text-gray-500">
-																Last active: {formatLastActivity(session.lastActivity)}
-															</p>
+															{session.browser || session.location ? (
+																<p className="text-xs text-gray-500 mt-1">
+																	{[session.browser, session.location].filter(Boolean).join(' • ')}
+																</p>
+															) : null}
 
-															<p className="text-xs text-gray-400">
-																IP: {session.ipAddress}
-															</p>
+															{lastActive ? (
+																<p className="text-xs text-gray-500">
+																	Last active: {lastActive}
+																</p>
+															) : null}
+
+															{session.ipAddress ? (
+																<p className="text-xs text-gray-400">
+																	IP: {session.ipAddress}
+																</p>
+															) : null}
 														</div>
 													</div>
 
@@ -224,6 +243,7 @@ export function ConcurrentSessionDialog() {
 																type="checkbox"
 																checked={selectedSessions.includes(session.sessionId)}
 																onChange={() => toggleSession(session.sessionId)}
+																aria-label={terminateLabel(session.device, lastActive)}
 																className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
 															/>
 															<span className="ml-2 text-xs text-gray-600">Terminate</span>
@@ -231,7 +251,8 @@ export function ConcurrentSessionDialog() {
 													)}
 												</div>
 											</div>
-										))}
+											);
+										})}
 									</div>
 								</div>
 
@@ -246,12 +267,12 @@ export function ConcurrentSessionDialog() {
 								</div>
 
 								<div className="flex flex-col space-y-3">
-									<div className="flex space-x-3">
+									<div className="flex flex-col gap-3 sm:flex-row">
 										<button
 											type="button"
 											className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
 											onClick={handleContinueHere}
-											disabled={terminateSessions.isPending}
+											disabled={terminateSessions.isPending || logoutEverywhere.isPending}
 										>
 											Continue Here Only
 										</button>
@@ -259,12 +280,12 @@ export function ConcurrentSessionDialog() {
 										<button
 											type="button"
 											className={`flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors ${
-												selectedSessions.length === 0 || terminateSessions.isPending
+												selectedSessions.length === 0 || terminateSessions.isPending || logoutEverywhere.isPending
 													? 'bg-gray-400 cursor-not-allowed'
 													: 'bg-red-600 hover:bg-red-700'
 											}`}
 											onClick={handleTerminateSessions}
-											disabled={selectedSessions.length === 0 || terminateSessions.isPending}
+											disabled={selectedSessions.length === 0 || terminateSessions.isPending || logoutEverywhere.isPending}
 										>
 											{terminateSessions.isPending ? (
 												<>
@@ -287,6 +308,7 @@ export function ConcurrentSessionDialog() {
 										type="button"
 										className="w-full inline-flex justify-center items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
 										onClick={handleLogoutEverywhere}
+										disabled={logoutEverywhere.isPending || terminateSessions.isPending}
 									>
 										Log Out Everywhere
 									</button>

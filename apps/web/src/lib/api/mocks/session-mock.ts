@@ -149,6 +149,12 @@ export const sessionMockAPI = {
 			mockLog('info', 'Terminated sessions', sessionIds);
 		}, 'Mock: Failed to terminate sessions'),
 
+	logoutEverywhere: async (): Promise<void> => {
+		await mockDelay();
+		clearMockSession();
+		mockLog('info', 'Mock logout everywhere');
+	},
+
 	sendActivity: async (activities: ActivityEvent[]): Promise<void> => {
 		await mockDelay(200);
 		activities.forEach((activity) => {

@@ -357,17 +357,21 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
   current one. The default **mock** fixture is a single current session so dashboard E2E is not
   blocked by a concurrent-session dialog. Extra-session fixtures belong in dedicated tests.
   Live list HTTP is [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md). Live
-  `checkConcurrentSessions` stays empty until
-  [FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md). Do not add an activity
+  `checkConcurrentSessions` calls `GET /auth/sessions` and maps `sessionId`, timestamps, and
+  `isCurrent` (optional device class). It does not invent IP, location, or browser strings.
+  Terminating other sessions calls `POST /auth/sessions/:id/revoke` and keeps the current live
+  session. Logout everywhere calls `POST /auth/logout-all`
+  ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md)). Do not add an activity
   keep-alive.
   Idle timeout stays 15 minutes. Extension cannot pass the absolute cap.
 
 ### Session inventory (BE-023)
 
-Implemented by [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md). Catalog
-`identity-access.concurrent-sessions` stays `planned` until
-[FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md). The shipped list omits
-device class; timestamps and `isCurrent` are the response.
+Implemented by [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md). The live
+dialog is [FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md). Catalog
+`identity-access.concurrent-sessions` is `shipped` and `public: qualified`: review and revoke
+other sessions, with no IP or location in live mode, and not a production session manager. The
+shipped list omits device class; timestamps and `isCurrent` are the response.
 
 - `GET /auth/sessions` — cookie or Bearer. Non-revoked sessions for the caller only.
 - `POST /auth/sessions/:id/revoke` — cookie or Bearer. Cookie mutations use the same CSRF rule as

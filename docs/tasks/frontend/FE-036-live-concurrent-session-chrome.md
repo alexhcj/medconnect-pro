@@ -3,7 +3,7 @@ id: FE-036
 type: task
 area: frontend
 feature: identity-access
-status: pending
+status: implemented
 priority: medium
 estimate: 2
 dependencies: [BE-023, FE-027, FE-010]
@@ -28,7 +28,7 @@ design:
   frame: ""
   status: not_required
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -96,13 +96,13 @@ session management or HIPAA.
 
 ## Acceptance Criteria
 
-- [ ] Live dialog opens when Nest returns more than one session
-- [ ] “Continue here” / terminate-other does not sign the current user out
-- [ ] Logout-everywhere still calls `POST /auth/logout-all`
-- [ ] Live UI does not show fake IP or location
-- [ ] Mock single-session default still avoids blocking dashboard E2E
-- [ ] Vitest covers mapping and terminate vs logout-all
-- [ ] Catalog + capability matrix updated; claims stay qualified
+- [x] Live dialog opens when Nest returns more than one session
+- [x] “Continue here” / terminate-other does not sign the current user out
+- [x] Logout-everywhere still calls `POST /auth/logout-all`
+- [x] Live UI does not show fake IP or location
+- [x] Mock single-session default still avoids blocking dashboard E2E
+- [x] Vitest covers mapping and terminate vs logout-all
+- [x] Catalog + capability matrix updated; claims stay qualified
 
 ## Dependencies
 
@@ -128,3 +128,12 @@ session management or HIPAA.
 Suggested order: after BE-023. Reuse `useConcurrentSessions` / `useTerminateSessions`.
 
 Writing this spec is not a version bump.
+
+## Completion
+
+Shipped in 0.84.0 (MINOR). Live `checkConcurrentSessions` maps `GET /auth/sessions` without IP,
+location, or browser strings. Revoking other sessions calls `POST /auth/sessions/:id/revoke` and
+keeps the current live session. Logout everywhere still calls `POST /auth/logout-all`. The mock
+default remains one labeled demo session. Catalog `identity-access.concurrent-sessions` is
+`shipped` and `public: qualified`. The identity module stays `partial`. Not a production session
+manager.

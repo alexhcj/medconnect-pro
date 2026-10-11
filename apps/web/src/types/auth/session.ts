@@ -33,13 +33,14 @@ export type VerifyMfaInput = {
 
 export interface ConcurrentSessionInfo {
 	sessionId: string;
-	location: string;
 	device: string;
-	browser: string;
-	ipAddress: string;
 	loginTime: number;
 	lastActivity: number;
 	isCurrentSession: boolean;
+	/** Present only on labeled mock fixtures. Live inventory never sets these. */
+	location?: string;
+	browser?: string;
+	ipAddress?: string;
 }
 
 export interface ExtendSessionResponse {

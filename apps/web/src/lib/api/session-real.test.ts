@@ -1,5 +1,5 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {ApiError} from '@/lib/api/http';
+import {ApiError, CSRF_HEADER_NAME} from '@/lib/api/http';
 import {clearLiveSession, readLiveSession} from '@/lib/api/live-session-store';
 import {MOCK_TOKEN_STORAGE_KEY} from '@/lib/api/mocks/mock-session-store';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
@@ -33,6 +33,7 @@ function expectCredentialed(init: RequestInit | undefined) {
 describe('sessionRealAPI', () => {
 	afterEach(() => {
 		clearLiveSession();
+		document.cookie = 'mcp_csrf=; max-age=0; path=/';
 		vi.unstubAllGlobals();
 	});
 
@@ -192,7 +193,6 @@ describe('sessionRealAPI', () => {
 			}),
 		);
 
-		await expect(sessionRealAPI.checkConcurrentSessions()).resolves.toEqual([]);
 		await sessionRealAPI.sendActivity([]);
 		expect(fetch).toHaveBeenCalledTimes(1);
 	});
@@ -260,7 +260,101 @@ describe('sessionRealAPI', () => {
 		expect(readLiveSession()).toBeNull();
 	});
 
-	it('terminates live sessions through Nest logout-all', async () => {
+	it('maps Nest session inventory without IP, location, or browser', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(
+				jsonResponse(200, [
+					{
+						sessionId: '11111111-1111-4111-8111-111111111111',
+						createdAt: '2026-10-11T08:00:00.000Z',
+						lastActivityAt: '2026-10-11T09:00:00.000Z',
+						isCurrent: true,
+						ipAddress: '203.0.113.10',
+						location: 'Amsterdam',
+						userAgent: 'Mozilla/5.0',
+					},
+					{
+						sessionId: '22222222-2222-4222-8222-222222222222',
+						createdAt: '2026-10-10T08:00:00.000Z',
+						lastActivityAt: 'not-a-date',
+						isCurrent: false,
+						deviceClass: 'mobile',
+					},
+				]),
+			),
+		);
+
+		const sessions = await sessionRealAPI.checkConcurrentSessions();
+		expect(sessions).toEqual([
+			{
+				sessionId: '11111111-1111-4111-8111-111111111111',
+				device: 'This session',
+				loginTime: Date.parse('2026-10-11T08:00:00.000Z'),
+				lastActivity: Date.parse('2026-10-11T09:00:00.000Z'),
+				isCurrentSession: true,
+			},
+			{
+				sessionId: '22222222-2222-4222-8222-222222222222',
+				device: 'Mobile',
+				loginTime: Date.parse('2026-10-10T08:00:00.000Z'),
+				lastActivity: 0,
+				isCurrentSession: false,
+			},
+		]);
+		expect(JSON.stringify(sessions)).not.toMatch(/203\.0\.113\.10|Amsterdam|Mozilla/);
+		expect(fetch).toHaveBeenCalledWith(
+			'http://localhost:3001/auth/sessions',
+			expect.objectContaining({credentials: 'include'}),
+		);
+		const stored = Object.keys(window.localStorage).map((key) => window.localStorage.getItem(key) ?? '');
+		expect(stored.join('')).not.toMatch(/token/i);
+	});
+
+	it('revokes other sessions without clearing the current live session', async () => {
+		document.cookie = 'mcp_csrf=hosted-csrf';
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValueOnce(jsonResponse(200, tokenPair('opaque-access', 'opaque-refresh'))),
+		);
+		await sessionRealAPI.login(demo.email, demo.password);
+		const fetchMock = vi.fn().mockResolvedValue({ok: true, status: 204});
+		vi.stubGlobal('fetch', fetchMock);
+
+		await sessionRealAPI.terminateSessions(['other-session', 'third session']);
+		expect(readLiveSession()?.userId).toBe(demo.userId);
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+		expect(fetchMock).toHaveBeenNthCalledWith(
+			1,
+			'http://localhost:3001/auth/sessions/other-session/revoke',
+			expect.objectContaining({method: 'POST', credentials: 'include'}),
+		);
+		expect(fetchMock).toHaveBeenNthCalledWith(
+			2,
+			'http://localhost:3001/auth/sessions/third%20session/revoke',
+			expect.objectContaining({method: 'POST', credentials: 'include'}),
+		);
+		const firstInit = fetchMock.mock.calls[0]?.[1] as RequestInit;
+		expect(new Headers(firstInit.headers).get(CSRF_HEADER_NAME)).toBe('hosted-csrf');
+		expect(fetchMock.mock.calls.map((call) => call[0])).not.toContain('http://localhost:3001/auth/logout-all');
+	});
+
+	it('leaves live session metadata in place when revoke fails', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValueOnce(jsonResponse(200, tokenPair('opaque-access', 'opaque-refresh'))),
+		);
+		await sessionRealAPI.login(demo.email, demo.password);
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(jsonResponse(404, {error: {code: 'NOT_FOUND', message: 'Not found'}})),
+		);
+
+		await expect(sessionRealAPI.terminateSessions(['missing-session'])).rejects.toBeInstanceOf(ApiError);
+		expect(readLiveSession()?.userId).toBe(demo.userId);
+	});
+
+	it('logs out everywhere through Nest logout-all and clears local metadata', async () => {
 		vi.stubGlobal(
 			'fetch',
 			vi.fn().mockResolvedValueOnce(jsonResponse(200, tokenPair('opaque-access', 'opaque-refresh'))),
@@ -271,11 +365,10 @@ describe('sessionRealAPI', () => {
 			vi.fn().mockResolvedValue({
 				ok: true,
 				status: 204,
-				json: async () => ({}),
 			}),
 		);
 
-		await sessionRealAPI.terminateSessions(['other-session']);
+		await sessionRealAPI.logoutEverywhere();
 		expect(readLiveSession()).toBeNull();
 		expect(fetch).toHaveBeenCalledWith(
 			'http://localhost:3001/auth/logout-all',

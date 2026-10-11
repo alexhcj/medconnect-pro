@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.84.0] - 2026-10-11
+
+### Added
+
+- FE-036 (M17): the concurrent-session dialog lists live Nest sessions and can end other sessions
+  without signing out. Logout everywhere still calls `POST /auth/logout-all`. Live rows omit IP,
+  location, and browser. Mock location and IP stay labeled demo data. Not a production session
+  manager.
+
 ## [0.83.0] - 2026-10-11
 
 ### Added

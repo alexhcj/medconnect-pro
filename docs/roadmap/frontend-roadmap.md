@@ -80,7 +80,7 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
   EDI 837, and invoice-create UI remain later. **M16 — Live Telehealth** is shipped at 0.81.0
   ([FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md)). Chat, recording, and Socket.IO
   remain later. **M17 — Security and Compliance Maturity** is in progress
-  ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md)). Local product work does
+  ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md) shipped; QA-005 pending). Local product work does
   not wait on AWS.
 
 ## Slice 11 — Application security and session hardening (M11)
@@ -127,6 +127,6 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 ## Slice 17 — Security and compliance maturity (M17)
 
 - Live concurrent-session chrome ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md);
-  pending; depends on [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md);
+  shipped; depends on [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md);
   design not required, reuses the existing dialog). Not a session-policy editor, idle keep-alive,
   or production session manager.

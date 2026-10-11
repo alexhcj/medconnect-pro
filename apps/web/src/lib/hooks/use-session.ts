@@ -108,6 +108,15 @@ export function useTerminateSessions() {
 	});
 }
 
+export function useLogoutEverywhere() {
+	return useMutation({
+		mutationFn: sessionAPI.logoutEverywhere,
+		onSettled: () => {
+			queryClient.removeQueries({queryKey: ['session']});
+		},
+	});
+}
+
 export function useSendActivity() {
 	return useMutation({
 		mutationFn: sessionAPI.sendActivity,
