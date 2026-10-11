@@ -52,6 +52,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-033 — OAuth login UX and session hydration
 - FE-034 — Rate-limited auth UX
 - FE-035 — Clinical live-visit UX on the session shell
+- FE-036 — Live concurrent-session chrome
 
 ## Backend
 
@@ -77,6 +78,8 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-019 — Auth and sensitive-route rate-limit policies
 - BE-020 — API security headers and no-store auth responses
 - BE-021 — Telehealth eligibility and lifecycle hardening
+- BE-022 — Clinical record read audit
+- BE-023 — Concurrent session inventory HTTP
 
 ## Security
 
@@ -87,12 +90,14 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - SEC-006 — OIDC BFF contract and ADR-014
 - SEC-007 — Rate-limit, proxy-trust, and API-header contract (ADR-015)
 - SEC-008 — Live telehealth workflow and access contract
+- SEC-009 — M17 security findings, ADR-016, and contract reconciliation
 
 ## QA
 
 - QA-002 — Patient vertical-slice tests
 - QA-003 — Appointment workflow tests
 - QA-004 — Authorization/tenant isolation tests
+- QA-005 — Authorization and tenant regression expansion
 
 ## Deployment (M9)
 
@@ -153,8 +158,16 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-020 — API security headers and no-store auth responses
 - FE-034 — Rate-limited auth UX
 
-## Product (M16)
+## Product (M16, shipped at 0.81.0)
 
 - SEC-008 — Live telehealth workflow and access contract
 - BE-021 — Telehealth eligibility and lifecycle hardening
 - FE-035 — Clinical live-visit UX on the session shell
+
+## Product (M17)
+
+- SEC-009 — M17 security findings, ADR-016, and contract reconciliation
+- BE-022 — Clinical record read audit
+- BE-023 — Concurrent session inventory HTTP
+- FE-036 — Live concurrent-session chrome
+- QA-005 — Authorization and tenant regression expansion

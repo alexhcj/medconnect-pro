@@ -12,8 +12,9 @@ is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
 EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity** is shipped and
 **closed** at 0.77.0. **M15 — API Protection and Rate Limiting** is shipped and **closed** at
-0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). **M16 — Live Telehealth** is in
-progress (SEC-008, BE-021, FE-035). Chat, recording, and Socket.IO remain later. Local product
+0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). **M16 — Live Telehealth** is shipped
+at 0.81.0 (SEC-008, BE-021, FE-035). Chat, recording, and Socket.IO remain later. **M17 — Security
+and Compliance Maturity** is in progress (SEC-009, BE-022, BE-023, FE-036, QA-005). Local product
 work does not wait on AWS.
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
@@ -39,19 +40,21 @@ observability and cloud (M9).
 
 - EHR foundation;
 - telehealth foundation (M5 session shell; M12 Daily media is shipped and qualified; M16 live
-  visit workflow in progress);
+  visit workflow shipped);
 - billing foundation (invoices, demo record-payment, labeled claims envelopes);
 - administration (users + audit viewer + role assignment UI with tenant/grant limits);
-- security hardening (partial: RBAC, RLS, document ACL, audit);
+- security hardening (partial: RBAC, RLS, document ACL, audit; M17 in progress);
 - observability (deferred with M9 deploy/preview).
 
 ## Maturity
 
-M12 Daily media is shipped (qualified). **M16** hardens the live visit workflow (eligibility,
-leave versus end, pre-join). Remaining after M16 is chat, recording, and Socket.IO.
+M12 Daily media is shipped (qualified). **M16** live visit workflow is shipped (eligibility,
+leave versus end, pre-join). Remaining telehealth after M16 is chat, recording, and Socket.IO.
+**M17** is application-level security and compliance maturity (audit, session inventory,
+authorization regression).
 
 - EHR integrations;
-- telehealth maturity (M16 live workflow; then chat, recording, Socket.IO);
+- telehealth maturity (M16 live workflow shipped; then chat, recording, Socket.IO);
 - revenue cycle;
 - reliability;
 - performance;

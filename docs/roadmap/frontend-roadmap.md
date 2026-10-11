@@ -77,9 +77,11 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
   [FE-030](../tasks/frontend/FE-030-daily-media-session-shell.md)). **M13 — Billing / Payments UX**
   is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
   [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
-  EDI 837, and invoice-create UI remain later. **M16 — Live Telehealth** is in progress
-  ([FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md)). Local product work does not wait
-  on AWS.
+  EDI 837, and invoice-create UI remain later. **M16 — Live Telehealth** is shipped at 0.81.0
+  ([FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md)). Chat, recording, and Socket.IO
+  remain later. **M17 — Security and Compliance Maturity** is in progress
+  ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md)). Local product work does
+  not wait on AWS.
 
 ## Slice 11 — Application security and session hardening (M11)
 
@@ -120,4 +122,11 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - Clinical live-visit UX ([FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md); shipped;
   depends on [BE-021](../tasks/backend/BE-021-telehealth-eligibility-and-lifecycle.md); design
   approved). Pre-join device check, leave versus end, ended/ineligible states. Not chat,
-  recording, or Socket.IO.
+  recording, or Socket.IO. **Shipped** at 0.81.0.
+
+## Slice 17 — Security and compliance maturity (M17)
+
+- Live concurrent-session chrome ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md);
+  pending; depends on [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md);
+  design not required, reuses the existing dialog). Not a session-policy editor, idle keep-alive,
+  or production session manager.
