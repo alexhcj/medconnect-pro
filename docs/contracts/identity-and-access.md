@@ -244,7 +244,7 @@ After a successful authorized list, emit one tenant-scoped audit row:
 Resource type and id are the **patient**. The row is actor, tenant, action, resource, and
 correlation only. No PHI, patient name, clinical text, vitals values, or tokens. Denied and
 not-found lists do not emit these actions. Patient-list and billing GET audit are deferred.
-Implementation is [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md). Existing
+Implemented by [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md). Existing
 clinical creates stay `history.created`, `condition.created`, `vital.created`, and
 `medication.created`.
 

@@ -312,6 +312,67 @@ describe('clinical HTTP', () => {
 		expect(createdAudit?.resourceType).toBe('history');
 		expect(JSON.stringify(audits)).not.toContain('Blood pressure stable');
 		expect(JSON.stringify(audits)).not.toContain('Lisinopril');
+
+		const listedActions = ['history.listed', 'condition.listed', 'vital.listed', 'medication.listed'] as const;
+		const listedAudits = await dataSource.getRepository(AuditEvent).find({
+			where: listedActions.map((action) => ({
+				practiceId: practiceA.id,
+				resourceId: patient.id,
+				actorUserId: provider.id,
+				action,
+			})),
+		});
+		expect(listedAudits).toHaveLength(listedActions.length);
+		for (const action of listedActions) {
+			expect(listedAudits.filter((event) => event.action === action)).toHaveLength(1);
+		}
+		expect(listedAudits.every((event) => event.resourceType === 'patient')).toBe(true);
+		const serializedListed = JSON.stringify(listedAudits);
+		expect(serializedListed).not.toContain('Avery');
+		expect(serializedListed).not.toContain('Hypertension');
+		expect(serializedListed).not.toContain('Lisinopril');
+		expect(serializedListed).not.toContain('Blood pressure');
+		expect(serializedListed).not.toContain(token);
+
+		const providerAuditDenied = await request(app.getHttpServer())
+			.get('/admin/audit-events')
+			.query({action: 'history.listed'})
+			.set('Authorization', `Bearer ${token}`)
+			.expect(403);
+		expect(providerAuditDenied.body.error.code).toBe('FORBIDDEN');
+
+		const adminToken = await login(practiceAdmin.email);
+		for (const action of listedActions) {
+			const adminListed = await request(app.getHttpServer())
+				.get('/admin/audit-events')
+				.query({action})
+				.set('Authorization', `Bearer ${adminToken}`)
+				.expect(200);
+			const events = adminListed.body.events as Array<{
+				action: string;
+				resourceType: string;
+				resourceId: string;
+				practiceId: string;
+				actorUserId: string;
+			}>;
+			expect(
+				events.some(
+					(event) =>
+						event.action === action &&
+						event.resourceType === 'patient' &&
+						event.resourceId === patient.id &&
+						event.practiceId === practiceA.id &&
+						event.actorUserId === provider.id,
+				),
+			).toBe(true);
+			const serialized = JSON.stringify(events);
+			expect(serialized).not.toContain('Avery');
+			expect(serialized).not.toContain('Hypertension');
+			expect(serialized).not.toContain('Lisinopril');
+			expect(serialized).not.toContain('Blood pressure');
+			expect(serialized).not.toContain(token);
+			expect(serialized).not.toContain(adminToken);
+		}
 	});
 
 	it('lets an assigned nurse write vitals and forbids medical records', async () => {
@@ -358,6 +419,14 @@ describe('clinical HTTP', () => {
 			.set('Authorization', `Bearer ${token}`)
 			.send(medicationBody())
 			.expect(403);
+
+		const deniedLists = await dataSource.getRepository(AuditEvent).find({
+			where: ['history.listed', 'condition.listed', 'medication.listed'].map((action) => ({
+				actorUserId: nurse.id,
+				action,
+			})),
+		});
+		expect(deniedLists).toHaveLength(0);
 	});
 
 	it('hides unassigned patients from a nurse', async () => {
@@ -368,6 +437,10 @@ describe('clinical HTTP', () => {
 			.expect(404);
 		expect(missing.body.error).toMatchObject({code: 'NOT_FOUND', message: 'Resource not found'});
 		expect(JSON.stringify(missing.body)).not.toContain(`ZephyrEhr${suffix}`);
+		const hiddenAudits = await dataSource.getRepository(AuditEvent).find({
+			where: {resourceId: unassignedPatient.id, action: 'vital.listed'},
+		});
+		expect(hiddenAudits).toHaveLength(0);
 	});
 
 	it('denies clinical access to a receptionist and practice admin', async () => {
@@ -384,6 +457,12 @@ describe('clinical HTTP', () => {
 				.send(vitalBody())
 				.expect(403);
 			expect(postDenied.body.error.code).toBe('FORBIDDEN');
+		}
+		for (const actor of [receptionist, practiceAdmin]) {
+			const listed = await dataSource.getRepository(AuditEvent).find({
+				where: {actorUserId: actor.id, action: 'history.listed'},
+			});
+			expect(listed).toHaveLength(0);
 		}
 	});
 
@@ -417,6 +496,19 @@ describe('clinical HTTP', () => {
 			.expect(404);
 		expect(other.body.error.code).toBe('NOT_FOUND');
 		expect(JSON.stringify(other.body)).not.toContain(`ZephyrEhr${suffix}`);
+
+		const ownAudits = await dataSource.getRepository(AuditEvent).find({
+			where: {actorUserId: portalUser.id, action: 'history.listed', resourceId: patient.id},
+		});
+		expect(ownAudits).toHaveLength(1);
+		expect(ownAudits[0]?.resourceType).toBe('patient');
+		expect(JSON.stringify(ownAudits)).not.toContain('Portal-visible');
+		expect(JSON.stringify(ownAudits)).not.toContain(token);
+
+		const otherAudits = await dataSource.getRepository(AuditEvent).find({
+			where: {actorUserId: portalUser.id, action: 'history.listed', resourceId: unassignedPatient.id},
+		});
+		expect(otherAudits).toHaveLength(0);
 	});
 
 	it('hides a cross-tenant patient and rejects a client practice id', async () => {

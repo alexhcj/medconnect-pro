@@ -57,8 +57,7 @@ billing invoice create and payment records, document list/upload/download, and n
 preference updates write rows. Clinical list reads (`history.listed`, `condition.listed`,
 `vital.listed`, `medication.listed`; resource is the patient; no PHI) are specified by
 [SEC-009](../tasks/security/SEC-009-m17-security-findings-and-contract-reconciliation.md) and
-written by [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md); they are not emitted
-until that task ships. Restricted HTTP list is
+written by [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md). Restricted HTTP list is
 [SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,
 `admin:practice`). Practice user directory HTTP is
 [BE-010](../tasks/backend/BE-010-practice-user-directory-api.md) (`GET /admin/users`,

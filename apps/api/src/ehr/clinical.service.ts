@@ -56,6 +56,7 @@ export class ClinicalService {
 		await this.assertVisiblePatient(patientId);
 		this.assertCanRead('history');
 		const rows = await this.history.listByPatient(patientId);
+		await this.recordAudit('history.listed', 'patient', patientId);
 		return {history: rows.map(toHistoryRdo)};
 	}
 
@@ -80,6 +81,7 @@ export class ClinicalService {
 		await this.assertVisiblePatient(patientId);
 		this.assertCanRead('conditions');
 		const rows = await this.conditions.listByPatient(patientId);
+		await this.recordAudit('condition.listed', 'patient', patientId);
 		return {conditions: rows.map(toConditionRdo)};
 	}
 
@@ -102,6 +104,7 @@ export class ClinicalService {
 		await this.assertVisiblePatient(patientId);
 		this.assertCanRead('vitals');
 		const rows = await this.vitals.listByPatient(patientId);
+		await this.recordAudit('vital.listed', 'patient', patientId);
 		return {vitals: rows.map(toVitalRdo)};
 	}
 
@@ -129,6 +132,7 @@ export class ClinicalService {
 		await this.assertVisiblePatient(patientId);
 		this.assertCanRead('medications');
 		const rows = await this.medications.listByPatient(patientId);
+		await this.recordAudit('medication.listed', 'patient', patientId);
 		return {medications: rows.map(toMedicationRdo)};
 	}
 

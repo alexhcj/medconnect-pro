@@ -222,4 +222,64 @@ describe('ClinicalService', () => {
 			/Hypertension|Blood pressure/,
 		);
 	});
+
+	it('emits one patient-scoped listed audit per successful list and omits clinical text', async () => {
+		const provider = harness('PROVIDER');
+		await provider.service.listHistory(patientId);
+		await provider.service.listConditions(patientId);
+		await provider.service.listVitals(patientId);
+		await provider.service.listMedications(patientId);
+
+		for (const action of ['history.listed', 'condition.listed', 'vital.listed', 'medication.listed']) {
+			expect(provider.audit.record).toHaveBeenCalledWith(
+				expect.objectContaining({
+					action,
+					resourceType: 'patient',
+					resourceId: patientId,
+					correlationId: 'cid-clinical',
+				}),
+			);
+		}
+		expect(provider.audit.record).toHaveBeenCalledTimes(4);
+		expect(JSON.stringify(provider.audit.record.mock.calls)).not.toMatch(
+			/Hypertension|Blood pressure|Lisinopril|128/,
+		);
+	});
+
+	it('records one listed audit when the history collection is empty', async () => {
+		const provider = harness('PROVIDER');
+		provider.history.listByPatient.mockResolvedValue([]);
+		const listed = await provider.service.listHistory(patientId);
+		expect(listed.history).toHaveLength(0);
+		expect(provider.audit.record).toHaveBeenCalledTimes(1);
+		expect(provider.audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: 'history.listed',
+				resourceType: 'patient',
+				resourceId: patientId,
+			}),
+		);
+	});
+
+	it('does not emit a listed audit when the list is denied or the patient is hidden', async () => {
+		const receptionist = harness('RECEPTIONIST');
+		await expect(receptionist.service.listHistory(patientId)).rejects.toBeInstanceOf(
+			PermissionDeniedError,
+		);
+		await expect(receptionist.service.listVitals(patientId)).rejects.toBeInstanceOf(
+			PermissionDeniedError,
+		);
+		expect(receptionist.audit.record).not.toHaveBeenCalled();
+
+		const nurse = harness('NURSE');
+		await expect(nurse.service.listVitals(patientId)).rejects.toBeInstanceOf(PatientNotFoundError);
+		nurse.patients.isAssigned.mockResolvedValue(true);
+		await expect(nurse.service.listHistory(patientId)).rejects.toBeInstanceOf(PermissionDeniedError);
+		expect(nurse.audit.record).not.toHaveBeenCalled();
+
+		const portal = harness('PATIENT');
+		portal.patients.getById.mockResolvedValue(patientRow({portalUserId: otherId}));
+		await expect(portal.service.listHistory(patientId)).rejects.toBeInstanceOf(PatientNotFoundError);
+		expect(portal.audit.record).not.toHaveBeenCalled();
+	});
 });

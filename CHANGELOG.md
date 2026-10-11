@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.82.0] - 2026-10-11
+
+### Added
+
+- BE-022 (M17): successful `GET /patients/:id/history|conditions|vitals|medications` each write one
+  tenant-scoped audit row (`history.listed`, `condition.listed`, `vital.listed`,
+  `medication.listed`). The resource is the patient. Rows omit names, clinical text, vitals, and
+  tokens. Denied and not-found lists do not emit those actions.
+
 ## [0.81.2] - 2026-10-10
 
 ### Fixed

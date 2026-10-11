@@ -85,8 +85,8 @@ Audit sensitive actions such as:
 - denied access;
 - patient record access, including successful clinical list reads (`history.listed`,
   `condition.listed`, `vital.listed`, `medication.listed`; resource is the patient; no PHI or
-  payload — specified in the identity contract; [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md)
-  emits them when that task ships);
+  payload — specified in the identity contract and emitted by
+  [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md));
 - clinical changes;
 - document access;
 - appointment changes;

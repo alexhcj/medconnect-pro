@@ -3,7 +3,7 @@ id: BE-022
 type: task
 area: backend
 feature: audit
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [SEC-009, SEC-003, BE-005]
@@ -19,7 +19,7 @@ related_docs:
     BE-005-clinical-record-api.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -80,12 +80,12 @@ Do not recreate the audit schema, viewer, or clinical HTTP.
 
 ## Acceptance Criteria
 
-- [ ] Each of `GET /patients/:id/history|conditions|vitals|medications` writes one tenant-scoped
+- [x] Each of `GET /patients/:id/history|conditions|vitals|medications` writes one tenant-scoped
       audit row with the specified action and patient resource id
-- [ ] Audit JSON contains no patient name, clinical text, or tokens
-- [ ] Unauthorized / not-found lists do not emit the listed action
-- [ ] `GET /admin/audit-events` includes the new actions for `admin:practice`
-- [ ] Existing clinical create audits and SEC-003 tests still pass
+- [x] Audit JSON contains no patient name, clinical text, or tokens
+- [x] Unauthorized / not-found lists do not emit the listed action
+- [x] `GET /admin/audit-events` includes the new actions for `admin:practice`
+- [x] Existing clinical create audits and SEC-003 tests still pass
 
 ## Dependencies
 
@@ -108,3 +108,9 @@ Do not recreate the audit schema, viewer, or clinical HTTP.
 Reuse `recordAudit` already used by clinical creates. Do not add a payload column.
 
 Writing this spec is not a version bump.
+
+## Completion
+
+Shipped in 0.82.0 (MINOR). Each successful clinical list GET writes one `*.listed` audit row with
+resource type `patient` and the patient id. Denied and not-found lists do not. `GET /admin/audit-events`
+returns the new actions for `admin:practice`. Clinical create audits are unchanged.

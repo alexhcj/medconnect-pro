@@ -32,7 +32,7 @@ capabilities:
     status: shipped
     demo: audit events with a viewer in administration
     public: yes
-    related_tasks: [SEC-003, FE-016]
+    related_tasks: [SEC-003, FE-016, BE-022]
   - id: security.document-acl
     name: Document access control
     status: shipped
