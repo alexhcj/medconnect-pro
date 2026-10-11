@@ -7,7 +7,8 @@ invent a parallel vocabulary.
 This is a demonstration contract. It is not a HIPAA certification claim.
 
 Related decisions: [ADR-002](../decisions/ADR-002-tenant-isolation.md),
-[ADR-003](../decisions/ADR-003-authentication.md). Architecture summary:
+[ADR-003](../decisions/ADR-003-authentication.md),
+[ADR-016](../decisions/ADR-016-super-admin-session-tenant-scope.md). Architecture summary:
 [security-architecture.md](../architecture/security-architecture.md). Historical role×resource
 notes used as input (not canonical):
 [archive boundary matrix](../archive/technical-implementation-tasks-v0.md).
@@ -33,15 +34,17 @@ permission system.
 
 | Role | Tenant scope | Patient scope | Clinical | Billing | Admin |
 | --- | --- | --- | --- | --- | --- |
-| `SUPER_ADMIN` | All practices | All permitted | All permitted | All | Global |
+| `SUPER_ADMIN` | Session practice | Permitted in that practice | Permitted in that practice | Session practice | Session practice |
 | `PRACTICE_ADMIN` | Own practice | Own practice | Administrative / explicitly granted | Own practice | Full practice |
-| `PROVIDER` | Own practice | Assigned or otherwise authorized in-practice | Full authorized clinical | Relevant to care | Limited |
+| `PROVIDER` | Own practice | Assigned or otherwise authorized in-practice | Full authorized clinical | Practice invoice/claims list | Limited |
 | `NURSE` | Own practice | Assigned | Vitals and other permitted clinical | Limited | Limited |
 | `RECEPTIONIST` | Own practice | Demographics / administrative | None by default | Appointment and billing admin | Limited |
 | `PATIENT` | Own relationship | Self | Own portal records | Own payments | Self |
 
-`SUPER_ADMIN` may act across practices. That breadth is still derived from authenticated identity
-on the server. A client-supplied “global” flag or tenant id must never grant it.
+`SUPER_ADMIN` HTTP is scoped to the session membership practice
+([ADR-016](../decisions/ADR-016-super-admin-session-tenant-scope.md)). A client-supplied “global”
+flag or tenant id must never widen that scope. Holding `admin:global` is not a cross-practice
+bypass.
 
 ## Permissions
 
@@ -86,8 +89,10 @@ runtime editor in this task.
 Clinical writes for that role require an explicit extra grant.
 
 `PATIENT` billing permissions apply only to the patient’s own invoices and payments (resource
-check). `PROVIDER` `read:billing` is limited to billing relevant to authorized care. `NURSE`
-`read:billing` is limited (for example visit-context amounts), not practice revenue administration.
+check). `PROVIDER` `read:billing` on practice invoice list/get and claims list is practice-wide
+revenue administration, not a care-team resource check. `PROVIDER` does not create invoices or
+record payments on this surface. `NURSE` `read:billing` is limited (for example visit-context
+amounts), not practice revenue administration, and `NURSE` is denied this API.
 
 ## Tenant resolution
 
@@ -100,8 +105,10 @@ Ordered rules:
 2. Load memberships (user ↔ practice ↔ role) from server-side identity data, not from the request
    body, query, headers, or hidden fields.
 3. Resolve `practice_id` into request context:
-   - `SUPER_ADMIN`: may select or operate across practices; the set of allowed practices comes from
-     identity, not from a client-supplied id.
+   - `SUPER_ADMIN`: the practice bound to the session membership, same as other staff
+     ([ADR-016](../decisions/ADR-016-super-admin-session-tenant-scope.md)). Login may bind one
+     membership the caller already holds. A client `practiceId` on later resource HTTP does not
+     select another practice.
    - Practice-scoped staff (`PRACTICE_ADMIN`, `PROVIDER`, `NURSE`, `RECEPTIONIST`): the practice
      bound to the session membership.
    - `PATIENT`: the practice(s) of the patient’s own relationship; no staff tenant switch.
@@ -126,8 +133,8 @@ authentication is not production identity infrastructure ([ADR-003](../decisions
 Evaluate in order. Deny if any step fails. Unknown resource ids and cross-tenant ids deny without
 confirming whether the id exists (no resource oracle).
 
-1. **Tenant.** Record `practice_id` must match the server-resolved scope (`SUPER_ADMIN` may match
-   any practice they are allowed to operate on).
+1. **Tenant.** Record `practice_id` must match the server-resolved session practice, including
+   `SUPER_ADMIN` ([ADR-016](../decisions/ADR-016-super-admin-session-tenant-scope.md)).
 2. **Role.** Actor must hold an allowed role for the operation’s domain.
 3. **Permission.** Actor must hold a catalog permission that covers the operation.
 4. **Ownership or assignment.** Examples: provider/nurse assigned to the patient; receptionist
@@ -225,6 +232,22 @@ Clinical fields must not leak to `read:demographics`-only actors.
 QA coverage for the full role × resource matrix is
 [QA-004](../tasks/qa/QA-004-authorization-and-tenant-tests.md).
 
+### Clinical list reads
+
+After a successful authorized list, emit one tenant-scoped audit row:
+
+- `history.listed` for `GET /patients/:id/history`
+- `condition.listed` for `GET /patients/:id/conditions`
+- `vital.listed` for `GET /patients/:id/vitals`
+- `medication.listed` for `GET /patients/:id/medications`
+
+Resource type and id are the **patient**. The row is actor, tenant, action, resource, and
+correlation only. No PHI, patient name, clinical text, vitals values, or tokens. Denied and
+not-found lists do not emit these actions. Patient-list and billing GET audit are deferred.
+Implementation is [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md). Existing
+clinical creates stay `history.created`, `condition.created`, `vital.created`, and
+`medication.created`.
+
 ## Session rules
 
 Auth **session** (this document) is not a telehealth visit session
@@ -312,7 +335,9 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
   `POST /telehealth/sessions/:id/join` 30 per 5 min,
   `POST /telehealth/sessions/:id/media-token` 30 per 5 min,
   `GET /patients/:id/documents/:documentId/content` 60 per 5 min, `POST /billing/payments` 10 per
-  5 min.
+  5 min, `GET /auth/sessions` 60 per 5 min, `POST /auth/sessions/:id/revoke` 30 per 5 min.
+  The two session-inventory limits are M17 policy in ADR-015. BE-023 applies them. They are not
+  enforced until that task ships.
 - Exceeded: HTTP 429 `RATE_LIMITED` with `details.retryAfterSeconds` and `Retry-After`. Limiter
   store unavailable: HTTP 503 `RATE_LIMIT_UNAVAILABLE` (auth routes fail closed).
 - Client IP follows `TRUST_PROXY`. Keys are HMAC-hashed; raw IPs, emails, and tokens are never
@@ -328,9 +353,33 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
   client.
 - **Absolute cap:** 24 hours from session start (matches the current mock session length). Idle
   extension cannot pass this cap.
-- **Concurrent sessions:** detectable; the user may terminate other sessions. The default **mock**
-  fixture is a single current session so dashboard E2E is not blocked by a concurrent-session
-  dialog. Extra-session fixtures belong in dedicated tests.
+- **Concurrent sessions:** detectable; the user may terminate other sessions without ending the
+  current one. The default **mock** fixture is a single current session so dashboard E2E is not
+  blocked by a concurrent-session dialog. Extra-session fixtures belong in dedicated tests.
+  Live list HTTP is [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md). Until
+  that ships, live `checkConcurrentSessions` stays empty. Do not add an activity keep-alive.
+  Idle timeout stays 15 minutes. Extension cannot pass the absolute cap.
+
+### Session inventory (BE-023)
+
+Specified here; not implemented until BE-023. Catalog
+`identity-access.concurrent-sessions` stays `planned` until
+[FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md).
+
+- `GET /auth/sessions` — cookie or Bearer. Non-revoked sessions for the caller only.
+- `POST /auth/sessions/:id/revoke` — cookie or Bearer. Cookie mutations use the same CSRF rule as
+  logout.
+- Response fields: `sessionId`, `createdAt`, `lastActivityAt`, `isCurrent`, and an optional coarse
+  device class (`desktop` | `mobile` | `unknown`). Never return `ipAddress`, location, or a raw
+  user-agent string. Do not persist raw IP or user-agent for display. Timestamps plus `isCurrent`
+  are enough if device class is omitted.
+- Revoking another of the caller’s sessions keeps the current cookies. Revoking the current
+  session equals logout (clear cookies). Unknown and other-user ids return the same `NOT_FOUND`
+  (no existence oracle).
+- Keep `POST /auth/logout` and `POST /auth/logout-all`.
+- Audit `auth.session.revoked` with no tokens and no IP. Do not audit every list call.
+- Rate limits: session-user, fail open, per
+  [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md).
 
 ### Mock mode
 

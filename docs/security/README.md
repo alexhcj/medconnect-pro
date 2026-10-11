@@ -15,10 +15,11 @@ IdP with demo cookies and labeled mock MFA. It is **not** production OAuth 2.0 /
 
 ## Compliance gap
 
-- [hipaa-readiness.md](../compliance/hipaa-readiness.md) — implemented patterns vs not certified.
+- [hipaa-readiness.md](../compliance/hipaa-readiness.md) — implemented patterns vs not certified,
+  plus the demo retention policy (synthetic data, seed reset, no RTBF, no patient DELETE).
 - [production-requirements.md](../compliance/production-requirements.md) — remaining production
   list (production IdP, hosted MFA, production/edge rate limits, BAAs/policies, monitoring,
-  M9 hosting). Demo Nest rate limits are M15, not this remaining list.
+  M9 hosting) and the same deferred-risk list. Demo Nest rate limits are M15, not this remaining list.
 
 ## Canonical sources (do not duplicate here)
 

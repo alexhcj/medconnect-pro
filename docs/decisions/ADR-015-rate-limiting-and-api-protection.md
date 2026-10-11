@@ -91,6 +91,8 @@ emails and IP-only keys produce no practice row. No IP, email, or key hash is st
 | `POST /telehealth/sessions/:id/media-token`                           | 30    | 5 min  | session user                 | fail open     |
 | `GET /patients/:id/documents/:documentId/content` (document download) | 60    | 5 min  | session user                 | fail open     |
 | `POST /billing/payments`                                              | 10    | 5 min  | session user                 | fail open     |
+| `GET /auth/sessions`                                                  | 60    | 5 min  | session user                 | fail open     |
+| `POST /auth/sessions/:id/revoke`                                      | 30    | 5 min  | session user                 | fail open     |
 
 
 All three `POST /auth/login` policies apply; the first to exceed rejects. Limits are code
@@ -137,6 +139,17 @@ M16 adds fail-open session-user limits on `POST /telehealth/sessions` (20 / 5 mi
 are credential-adjacent (they gate session initialization and visit join) but are not auth
 routes, so store failure remains fail open. Limits are code constants in BE-021 / BE-019 policy
 table and may be tuned there without a new ADR.
+
+### Amendment (SEC-009, 2026-10-11): session inventory
+
+M17 adds fail-open session-user limits on `GET /auth/sessions` (60 / 5 min) and
+`POST /auth/sessions/:id/revoke` (30 / 5 min). These routes are specified in
+[identity-and-access.md](../contracts/identity-and-access.md) and implemented by
+[BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md). They are not auth routes,
+so store failure remains fail open. The list and revoke responses must not return IP, location, or
+a raw user-agent; the rate-limit key is the HMAC of the session user, same as other session-user
+rows. Limits are code constants BE-023 adds to the policy table and may be tuned there without a
+new ADR. This amendment does not replace the limiter.
 
 ### Amendment (FE-034, 2026-10-10): OAuth callback landing reason
 

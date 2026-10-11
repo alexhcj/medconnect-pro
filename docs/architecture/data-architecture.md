@@ -28,10 +28,14 @@ Practice
 Tenant-owned rows persist `practice_id` (FK to `practices`, `ON DELETE RESTRICT`) with tenant-aware
 indexes. The NestJS API stores this in PostgreSQL via TypeORM migrations
 ([ADR-010](../decisions/ADR-010-postgresql-typeorm.md)). Repositories filter by server-resolved
-tenant context; they must not trust client-supplied `practice_id`.
+tenant context, including `SUPER_ADMIN`
+([ADR-016](../decisions/ADR-016-super-admin-session-tenant-scope.md)); they must not trust
+client-supplied `practice_id`.
 
 The current persistence slice includes `practices`, `users` (synthetic identity keys, no passwords),
-`practice_memberships`, `auth_sessions` (opaque mock session hashes, not passwords),
+`practice_memberships`, `auth_sessions` (opaque mock session hashes, not passwords; no IP,
+location, or raw user-agent stored for display; session inventory is the caller’s own rows —
+[BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md)),
 `external_identities` (unique `(provider, subject)` links to `users`, one per provider per user),
 `oauth_flow_states` (one-time OIDC state hash, nonce, PKCE verifier, `return_to`), `patients`
 (demographics, assigned provider, and optional portal user), `patient_assignments` for
@@ -50,7 +54,11 @@ tenant, action, resource type/id, correlation; no payload), and `rate_limit_buck
 IP or email; [DATA-004](../tasks/backend/DATA-004-rate-limit-bucket-persistence.md)). Authentication, authenticated denials, patient
 access/mutations, appointment mutations, clinical creates, telehealth session create/join/media-token/end,
 billing invoice create and payment records, document list/upload/download, and notification
-preference updates write rows. Restricted HTTP list is
+preference updates write rows. Clinical list reads (`history.listed`, `condition.listed`,
+`vital.listed`, `medication.listed`; resource is the patient; no PHI) are specified by
+[SEC-009](../tasks/security/SEC-009-m17-security-findings-and-contract-reconciliation.md) and
+written by [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md); they are not emitted
+until that task ships. Restricted HTTP list is
 [SEC-003](../tasks/security/SEC-003-audit-event-model.md) (`GET /admin/audit-events`,
 `admin:practice`). Practice user directory HTTP is
 [BE-010](../tasks/backend/BE-010-practice-user-directory-api.md) (`GET /admin/users`,
@@ -94,7 +102,9 @@ Sensitive data requires:
 
 - authorization;
 - auditability;
-- retention policy;
+- retention policy (demo: synthetic data only, removal by seed reset, no RTBF HTTP, and no
+  `DELETE /patients/{id}` — [hipaa-readiness.md](../compliance/hipaa-readiness.md) and
+  [production-requirements.md](../compliance/production-requirements.md));
 - deletion/archival rules where appropriate;
 - backup/restore strategy.
 

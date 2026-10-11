@@ -3,11 +3,11 @@ id: SEC-009
 type: task
 area: security
 feature: security
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [SEC-008, BE-021, FE-035]
-related_adrs: [ADR-002-tenant-isolation.md, ADR-003-authentication.md, ADR-015-rate-limiting-and-api-protection.md]
+related_adrs: [ADR-002-tenant-isolation.md, ADR-003-authentication.md, ADR-015-rate-limiting-and-api-protection.md, ADR-016-super-admin-session-tenant-scope.md]
 related_docs:
   [
     ../../architecture/security-architecture.md,
@@ -22,7 +22,7 @@ related_docs:
     ../../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -108,14 +108,14 @@ M17 is **Security and Compliance Maturity**. Implementation tasks are
 
 ## Acceptance Criteria
 
-- [ ] ADR-016 accepted with alternatives (implement cross-practice switcher now; leave the
+- [x] ADR-016 accepted with alternatives (implement cross-practice switcher now; leave the
       identity-contract “all practices” sentence unmodified) and consequences
-- [ ] Identity, API, security, and data-architecture docs match shipped HTTP plus M17 intent
-- [ ] Clinical read-audit action names and no-PHI rule are specified
-- [ ] Concurrent-session list/revoke contract specified without IP/geo
-- [ ] ADR-015 policy table includes additive session-inventory fail-open rows
-- [ ] Demo retention policy and deferred-risk list are recorded
-- [ ] No application code changed; no secrets or PHI in docs
+- [x] Identity, API, security, and data-architecture docs match shipped HTTP plus M17 intent
+- [x] Clinical read-audit action names and no-PHI rule are specified
+- [x] Concurrent-session list/revoke contract specified without IP/geo
+- [x] ADR-015 policy table includes additive session-inventory fail-open rows
+- [x] Demo retention policy and deferred-risk list are recorded
+- [x] No application code changed; no secrets or PHI in docs
 
 ## Dependencies
 
@@ -140,3 +140,14 @@ Writing this spec is not a version bump. Shipping the docs is not a version bump
 
 Suggested order: ADR-016, identity contract, ADR-015 additive rows, api-endpoints, architecture
 and compliance pages, capability `planned` row if not already present from M17 planning.
+
+## Completion
+
+Shipped as docs only. ADR-016 keeps `SUPER_ADMIN` on the session membership practice. The identity
+contract, API index, security architecture, and data architecture match that HTTP plus the M17
+clinical list-audit names and session inventory contract (no IP, location, or raw user-agent).
+ADR-015 adds fail-open session-user rows for `GET /auth/sessions` (60 / 5 min) and
+`POST /auth/sessions/:id/revoke` (30 / 5 min). Demo retention is synthetic data and seed reset,
+with no RTBF HTTP and no patient DELETE. Deferred risks are listed in the compliance pages.
+`identity-access.concurrent-sessions` stays `planned`. `security.hipaa-certification` stays
+`out_of_scope`. No version bump (ADR-007). No `apps/` change.

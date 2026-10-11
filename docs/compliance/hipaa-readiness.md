@@ -26,6 +26,28 @@ Engineering patterns in the repository. They are not a certification claim.
 Synthetic data only ([ADR-005](../decisions/ADR-005-synthetic-demo-data.md)). Never introduce real
 PHI.
 
+## Demo retention
+
+This is not a covered-entity retention schedule and not a HIPAA compliance claim.
+
+- All persisted rows are synthetic demo data.
+- Demo removal is a seed reset. There is no right-to-be-forgotten HTTP API.
+- There is no `DELETE /patients/{id}`. Generated OpenAPI forbids that route.
+
+## Deferred (not this demo)
+
+Recorded so later work does not treat them as silent gaps. M17 does not implement them:
+
+- OAuth unlink
+- Zod `.strict()` on write schemas that are still plain objects (patient, clinical, appointment,
+  auth, telehealth, documents). Billing, notifications, and role assignment are already strict.
+- Role-assignment rate limit
+- Payment idempotency
+- CI SAST
+- Patient-list and billing GET audit
+- Playwright role matrix (authorization regression stays Nest HTTP)
+- Idle keep-alive (do not add one; idle timeout stays 15 minutes)
+
 ## Not certified / not in this demo
 
 - HIPAA certification, compliance attestation, or suitability for real patient data

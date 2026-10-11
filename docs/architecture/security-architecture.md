@@ -73,6 +73,9 @@ Use:
 - cross-tenant authorization tests.
 
 Resolution order and `SUPER_ADMIN` vs practice vs patient rules are in the identity contract.
+Demo HTTP, including `SUPER_ADMIN`, is scoped to the session membership practice
+([ADR-016](../decisions/ADR-016-super-admin-session-tenant-scope.md)). A client `practiceId` does
+not widen that scope. Missing cross-practice reads are the demo boundary, not an IDOR.
 
 ## Audit
 
@@ -80,7 +83,10 @@ Audit sensitive actions such as:
 
 - authentication events;
 - denied access;
-- patient record access;
+- patient record access, including successful clinical list reads (`history.listed`,
+  `condition.listed`, `vital.listed`, `medication.listed`; resource is the patient; no PHI or
+  payload — specified in the identity contract; [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md)
+  emits them when that task ships);
 - clinical changes;
 - document access;
 - appointment changes;
@@ -89,7 +95,8 @@ Audit sensitive actions such as:
   must not appear in the audit row;
 - billing changes;
 - notification preference updates (no title or body in the audit row);
-- administrative security changes.
+- administrative security changes, including `auth.session.revoked` when session inventory ships
+  ([BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md); no tokens and no IP).
 
 ## API protection
 
@@ -98,7 +105,9 @@ Not production DDoS protection, account lockout, or WAF.
 
 - Opt-in per-route fixed-window rate limits (custom guard + `@RateLimit` decorator) on a
   PostgreSQL `rate_limit_buckets` store. No Redis. M16 adds session-user fail-open limits on
-  telehealth create (20 / 5 min) and join (30 / 5 min); media-token stays 30 / 5 min.
+  telehealth create (20 / 5 min) and join (30 / 5 min); media-token stays 30 / 5 min. M17 policy
+  adds session-user fail-open limits on `GET /auth/sessions` (60 / 5 min) and
+  `POST /auth/sessions/:id/revoke` (30 / 5 min). Those two routes are not enforced until BE-023.
 - Client IP from `TRUST_PROXY` hop count (default `0`, `X-Forwarded-For` ignored).
 - HMAC-hashed keys; no raw IP, email, or token stored or logged.
 - 429 `RATE_LIMITED` + `Retry-After`; auth routes fail closed with 503 `RATE_LIMIT_UNAVAILABLE`.

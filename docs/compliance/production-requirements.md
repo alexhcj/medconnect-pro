@@ -24,3 +24,23 @@ catalog. Non-security product gaps (live video, hosted payments) stay on
 | Redis / custom KMS hierarchy | Intentionally incomplete on the post-MVP baseline. |
 
 Public claims: [capability-matrix.md](../marketing/capability-matrix.md).
+
+## Demo retention
+
+Same policy as [hipaa-readiness.md](hipaa-readiness.md). Synthetic data only. Demo removal is a
+seed reset. No right-to-be-forgotten HTTP API. No `DELETE /patients/{id}` (OpenAPI forbids it).
+This is not a covered-entity retention schedule.
+
+## Deferred (not this demo)
+
+M17 records these and does not implement them:
+
+- OAuth unlink
+- Zod `.strict()` on write schemas that are still plain objects (patient, clinical, appointment,
+  auth, telehealth, documents). Billing, notifications, and role assignment are already strict.
+- Role-assignment rate limit
+- Payment idempotency
+- CI SAST
+- Patient-list and billing GET audit
+- Playwright role matrix (authorization regression stays Nest HTTP)
+- Idle keep-alive (do not add one; idle timeout stays 15 minutes)
