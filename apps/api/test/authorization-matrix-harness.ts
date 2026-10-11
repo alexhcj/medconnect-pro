@@ -39,10 +39,12 @@ export const MATRIX_PASSWORD = 'Synthetic-Pass-1';
 
 export type MatrixActor =
 	| 'provider'
+	| 'otherProvider'
 	| 'nurse'
 	| 'receptionist'
 	| 'patient'
 	| 'practiceAdmin'
+	| 'superAdmin'
 	| 'outsider';
 
 export type MatrixActorRecord = {
@@ -69,6 +71,7 @@ export type AuthorizationMatrixHarness = {
 	invoiceId: string;
 	foreignInvoiceId: string;
 	joinSessionId: string;
+	endedMintSessionId: string;
 	createSessionAppointmentId: string;
 	foreignSessionId: string;
 	login: (email: string) => Promise<string>;
@@ -87,7 +90,9 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		practiceAdmin: `matrix.admin.${suffix}@synthetic.example`,
 		receptionist: `matrix.receptionist.${suffix}@synthetic.example`,
 		provider: `matrix.provider.${suffix}@synthetic.example`,
+		otherProvider: `matrix.other-provider.${suffix}@synthetic.example`,
 		nurse: `matrix.nurse.${suffix}@synthetic.example`,
+		superAdmin: `matrix.super.${suffix}@synthetic.example`,
 		patient: `matrix.portal.${suffix}@synthetic.example`,
 		outsider: `matrix.outsider.${suffix}@synthetic.example`,
 	};
@@ -95,7 +100,9 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		{email: emails.practiceAdmin, password: MATRIX_PASSWORD, role: 'PRACTICE_ADMIN'},
 		{email: emails.receptionist, password: MATRIX_PASSWORD, role: 'RECEPTIONIST'},
 		{email: emails.provider, password: MATRIX_PASSWORD, role: 'PROVIDER'},
+		{email: emails.otherProvider, password: MATRIX_PASSWORD, role: 'PROVIDER'},
 		{email: emails.nurse, password: MATRIX_PASSWORD, role: 'NURSE'},
+		{email: emails.superAdmin, password: MATRIX_PASSWORD, role: 'SUPER_ADMIN'},
 		{email: emails.patient, password: MATRIX_PASSWORD, role: 'PATIENT'},
 		{email: emails.outsider, password: MATRIX_PASSWORD, role: 'PROVIDER'},
 	];
@@ -121,14 +128,18 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 	const practiceAdmin = await dataSource.getRepository(User).save({email: emails.practiceAdmin});
 	const receptionist = await dataSource.getRepository(User).save({email: emails.receptionist});
 	const provider = await dataSource.getRepository(User).save({email: emails.provider});
+	const otherProvider = await dataSource.getRepository(User).save({email: emails.otherProvider});
 	const nurse = await dataSource.getRepository(User).save({email: emails.nurse});
+	const superAdmin = await dataSource.getRepository(User).save({email: emails.superAdmin});
 	const portalUser = await dataSource.getRepository(User).save({email: emails.patient});
 	const outsider = await dataSource.getRepository(User).save({email: emails.outsider});
 	await dataSource.getRepository(PracticeMembership).save([
 		{practiceId: practiceA.id, userId: practiceAdmin.id, role: 'PRACTICE_ADMIN'},
 		{practiceId: practiceA.id, userId: receptionist.id, role: 'RECEPTIONIST'},
 		{practiceId: practiceA.id, userId: provider.id, role: 'PROVIDER'},
+		{practiceId: practiceA.id, userId: otherProvider.id, role: 'PROVIDER'},
 		{practiceId: practiceA.id, userId: nurse.id, role: 'NURSE'},
+		{practiceId: practiceA.id, userId: superAdmin.id, role: 'SUPER_ADMIN'},
 		{practiceId: practiceA.id, userId: portalUser.id, role: 'PATIENT'},
 		{practiceId: practiceB.id, userId: outsider.id, role: 'PROVIDER'},
 	]);
@@ -221,6 +232,28 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		joinedAt: new Date(),
 		synthetic: true,
 	});
+	// Ends when the join appointment starts so the provider exclusion constraint allows both.
+	// The slot is still inside the 15-minute join grace.
+	const endedMintStart = new Date(joinStart.getTime() - 15 * 60 * 1000);
+	const endedMintAppointment = await dataSource.getRepository(Appointment).save({
+		practiceId: practiceA.id,
+		patientId: assignedPatient.id,
+		providerUserId: provider.id,
+		startAt: endedMintStart,
+		endAt: joinStart,
+		type: 'telehealth',
+		state: 'scheduled',
+		notes: null,
+		synthetic: true,
+	});
+	const endedMintSession = await dataSource.getRepository(TelehealthSession).save({
+		practiceId: practiceA.id,
+		appointmentId: endedMintAppointment.id,
+		state: 'in_session',
+		waitingStartedAt: new Date(),
+		joinedAt: new Date(),
+		synthetic: true,
+	});
 	const foreignSession = await dataSource.getRepository(TelehealthSession).save({
 		practiceId: practiceB.id,
 		appointmentId: foreignAppointment.id,
@@ -266,7 +299,9 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		practiceAdmin: {id: practiceAdmin.id, email: practiceAdmin.email, role: 'PRACTICE_ADMIN'},
 		receptionist: {id: receptionist.id, email: receptionist.email, role: 'RECEPTIONIST'},
 		provider: {id: provider.id, email: provider.email, role: 'PROVIDER'},
+		otherProvider: {id: otherProvider.id, email: otherProvider.email, role: 'PROVIDER'},
 		nurse: {id: nurse.id, email: nurse.email, role: 'NURSE'},
+		superAdmin: {id: superAdmin.id, email: superAdmin.email, role: 'SUPER_ADMIN'},
 		patient: {id: portalUser.id, email: portalUser.email, role: 'PATIENT'},
 		outsider: {id: outsider.id, email: outsider.email, role: 'PROVIDER'},
 	};
@@ -327,6 +362,7 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 				const practiceIds = [practiceA.id, practiceB.id];
 				const userIds = Object.values(actors).map((actor) => actor.id);
 				await dataSource.getRepository(AuditEvent).delete({practiceId: In(practiceIds)});
+				await dataSource.getRepository(AuditEvent).delete({actorUserId: In(userIds)});
 				await dataSource.getRepository(AuthSession).delete({userId: In(userIds)});
 				await dataSource.getRepository(ExternalIdentity).delete({userId: In(userIds)});
 				await dataSource.getRepository(Payment).delete({practiceId: In(practiceIds)});
@@ -344,6 +380,7 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 				await dataSource.getRepository(PatientAssignment).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(Patient).delete({practiceId: In(practiceIds)});
 				await dataSource.getRepository(PracticeMembership).delete({practiceId: In(practiceIds)});
+				await dataSource.getRepository(AuditEvent).delete({actorUserId: In(userIds)});
 				await dataSource.getRepository(User).delete({id: In(userIds)});
 				await dataSource.getRepository(Practice).delete({id: In(practiceIds)});
 			}
@@ -374,6 +411,7 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		invoiceId: assignedInvoice.id,
 		foreignInvoiceId: foreignInvoice.id,
 		joinSessionId: joinSession.id,
+		endedMintSessionId: endedMintSession.id,
 		createSessionAppointmentId: createSessionAppointment.id,
 		foreignSessionId: foreignSession.id,
 		login,

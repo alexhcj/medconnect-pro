@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.84.1] - 2026-10-11
+
+### Changed
+
+- QA-005 (M17): the HTTP authorization matrix covers session-tenant SUPER_ADMIN allow and
+  foreign-practice deny, same-practice other-provider telehealth join and mint denial, mint after
+  end (`409` `SESSION_NOT_JOINABLE`), cross-practice payment POST `404`, and receptionist clinical
+  history GET `403`. No API or UX contract change.
+
 ## [0.84.0] - 2026-10-11
 
 ### Added

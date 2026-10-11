@@ -1,7 +1,11 @@
 import {randomUUID} from 'node:crypto';
 import request from 'supertest';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
-import {canCreateInvoice, resolveBillingReadScope} from '../src/billing/billing-access.js';
+import {
+	canCreateInvoice,
+	canRecordPayment,
+	resolveBillingReadScope,
+} from '../src/billing/billing-access.js';
 import {syntheticPdfBytes} from '../src/documents/document-file.js';
 import {canReadDocuments, canUploadDocuments} from '../src/documents/document-access.js';
 import {
@@ -44,7 +48,12 @@ type MatrixCase = {
 	path: (harness: AuthorizationMatrixHarness) => string;
 	body?: (harness: AuthorizationMatrixHarness) => Record<string, unknown>;
 	attachPdf?: boolean;
+	before?: (
+		harness: AuthorizationMatrixHarness,
+		tokens: Record<MatrixActor, string>,
+	) => Promise<void>;
 	expectedStatus: (harness: AuthorizationMatrixHarness) => number;
+	expectedErrorCode?: string;
 	leak?: 'practiceB';
 };
 
@@ -138,6 +147,13 @@ function invoiceGetStatus(role: PracticeRole, target: 'assigned' | 'foreign'): n
 
 function invoiceListStatus(role: PracticeRole): number {
 	return resolveBillingReadScope(role) === 'denied' ? 403 : 200;
+}
+
+function foreignPaymentStatus(role: PracticeRole): number {
+	if (!canRecordPayment(role)) {
+		return 403;
+	}
+	return 404;
 }
 
 function joinStatus(harness: AuthorizationMatrixHarness, actor: MatrixActor): number {
@@ -450,6 +466,92 @@ function buildCases(): MatrixCase[] {
 			expectedStatus: () => 403,
 			leak: 'practiceB',
 		},
+		{
+			name: 'superAdmin GET assigned patient',
+			actor: 'superAdmin',
+			method: 'get',
+			path: (harness) => `/patients/${harness.assignedPatientId}`,
+			expectedStatus: (harness) => patientGetStatus(harness.actors.superAdmin.role, 'assigned'),
+		},
+		{
+			name: 'superAdmin GET foreign patient',
+			actor: 'superAdmin',
+			method: 'get',
+			path: (harness) => `/patients/${harness.foreignPatientId}`,
+			expectedStatus: (harness) => patientGetStatus(harness.actors.superAdmin.role, 'foreign'),
+		},
+		{
+			name: 'superAdmin GET assigned invoice',
+			actor: 'superAdmin',
+			method: 'get',
+			path: (harness) => `/billing/invoices/${harness.invoiceId}`,
+			expectedStatus: (harness) => invoiceGetStatus(harness.actors.superAdmin.role, 'assigned'),
+		},
+		{
+			name: 'superAdmin GET foreign invoice',
+			actor: 'superAdmin',
+			method: 'get',
+			path: (harness) => `/billing/invoices/${harness.foreignInvoiceId}`,
+			expectedStatus: (harness) => invoiceGetStatus(harness.actors.superAdmin.role, 'foreign'),
+		},
+		{
+			name: 'superAdmin GET in-session telehealth session',
+			actor: 'superAdmin',
+			method: 'get',
+			path: (harness) => `/telehealth/sessions/${harness.joinSessionId}`,
+			expectedStatus: (harness) => appointmentGetStatus(harness.actors.superAdmin.role, 'assigned'),
+		},
+		{
+			name: 'superAdmin GET foreign telehealth session',
+			actor: 'superAdmin',
+			method: 'get',
+			path: (harness) => `/telehealth/sessions/${harness.foreignSessionId}`,
+			expectedStatus: (harness) => appointmentGetStatus(harness.actors.superAdmin.role, 'foreign'),
+		},
+		{
+			name: 'otherProvider POST telehealth join',
+			actor: 'otherProvider',
+			method: 'post',
+			path: (harness) => `/telehealth/sessions/${harness.joinSessionId}/join`,
+			expectedStatus: (harness) => joinStatus(harness, 'otherProvider'),
+		},
+		{
+			name: 'otherProvider POST telehealth media-token',
+			actor: 'otherProvider',
+			method: 'post',
+			path: (harness) => `/telehealth/sessions/${harness.joinSessionId}/media-token`,
+			expectedStatus: (harness) => joinStatus(harness, 'otherProvider'),
+		},
+		{
+			name: 'provider POST media-token after session end',
+			actor: 'provider',
+			method: 'post',
+			path: (harness) => `/telehealth/sessions/${harness.endedMintSessionId}/media-token`,
+			before: async (harness, tokens) => {
+				await request(harness.app.getHttpServer())
+					.post(`/telehealth/sessions/${harness.endedMintSessionId}/end`)
+					.set('Authorization', `Bearer ${tokens.receptionist}`)
+					.expect(200);
+			},
+			expectedStatus: () => 409,
+			expectedErrorCode: 'SESSION_NOT_JOINABLE',
+		},
+		{
+			name: 'receptionist POST foreign payment',
+			actor: 'receptionist',
+			method: 'post',
+			path: () => '/billing/payments',
+			body: (harness) => ({invoiceId: harness.foreignInvoiceId, method: 'stripe'}),
+			expectedStatus: (harness) => foreignPaymentStatus(harness.actors.receptionist.role),
+		},
+		{
+			name: 'receptionist GET assigned history',
+			actor: 'receptionist',
+			method: 'get',
+			path: (harness) => `/patients/${harness.assignedPatientId}/history`,
+			expectedStatus: (harness) =>
+				clinicalStatus(harness.actors.receptionist.role, 'history', 'read', 'assigned'),
+		},
 	);
 	return cases;
 }
@@ -465,6 +567,8 @@ describe('authorization matrix HTTP', () => {
 			receptionist: await harness.login(harness.actors.receptionist.email),
 			patient: await harness.login(harness.actors.patient.email),
 			practiceAdmin: await harness.login(harness.actors.practiceAdmin.email),
+			superAdmin: await harness.login(harness.actors.superAdmin.email),
+			otherProvider: await harness.login(harness.actors.otherProvider.email),
 			outsider: await harness.oauthLogin(harness.actors.outsider.email),
 		};
 	});
@@ -474,6 +578,9 @@ describe('authorization matrix HTTP', () => {
 	});
 
 	it.each(cases)('$name', async (testCase) => {
+		if (testCase.before) {
+			await testCase.before(harness, tokens);
+		}
 		const expected = testCase.expectedStatus(harness);
 		const req = request(harness.app.getHttpServer())
 			[testCase.method](testCase.path(harness))
@@ -486,6 +593,9 @@ describe('authorization matrix HTTP', () => {
 		const response = await req.expect(expected);
 		if (expected === 403) {
 			expect(response.body.error.code).toBe('FORBIDDEN');
+		}
+		if (testCase.expectedErrorCode) {
+			expect(response.body.error.code).toBe(testCase.expectedErrorCode);
 		}
 		const raw = JSON.stringify(response.body);
 		if (expected === 404) {

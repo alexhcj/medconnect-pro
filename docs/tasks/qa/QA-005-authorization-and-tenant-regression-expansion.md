@@ -3,7 +3,7 @@ id: QA-005
 type: task
 area: qa
 feature: security
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [SEC-009, QA-004]
@@ -16,7 +16,7 @@ related_docs:
     QA-004-authorization-and-tenant-tests.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -79,12 +79,12 @@ Keep existing domain HTTP specs. Browser checks remain UX only.
 
 ## Acceptance Criteria
 
-- [ ] SUPER_ADMIN session-tenant allow/deny cases are in the HTTP matrix
-- [ ] Same-practice other-provider telehealth join and mint are denied in the matrix
-- [ ] Nest end then mint is 409 in the matrix
-- [ ] Cross-practice payment POST is 404 in the matrix
-- [ ] Receptionist clinical history GET is 403 in the matrix
-- [ ] QA-004 cases still pass; `npm run test:api` with Compose Postgres
+- [x] SUPER_ADMIN session-tenant allow/deny cases are in the HTTP matrix
+- [x] Same-practice other-provider telehealth join and mint are denied in the matrix
+- [x] Nest end then mint is 409 in the matrix
+- [x] Cross-practice payment POST is 404 in the matrix
+- [x] Receptionist clinical history GET is 403 in the matrix
+- [x] QA-004 cases still pass; `npm run test:api` with Compose Postgres
 
 ## Dependencies
 
@@ -108,3 +108,19 @@ Reuse the two-tenant harness. Add seed/setup only when the current fixtures cann
 “other provider in the same practice.”
 
 Writing this spec is not a version bump.
+
+## Completion
+
+- Implementation: No product surface change. Expected allow/deny status comes from existing access
+  helpers and ADR-016. The HTTP matrix now includes session-tenant SUPER_ADMIN reads, foreign
+  patient/invoice/session deny, same-practice other-provider join and mint deny, receptionist end
+  then provider mint (`409` `SESSION_NOT_JOINABLE`), receptionist cross-practice payment POST
+  (`404`), and receptionist clinical history GET (`403`).
+- Tests: `apps/api/test/authorization-matrix-harness.ts` and
+  `apps/api/test/authorization-matrix.http.spec.ts`. `npm run test:api` with Compose Postgres
+  (72 files, 585 tests). Existing domain HTTP specs stay in place.
+- PR:
+- Notes: Version 0.84.0 → 0.84.1 (PATCH). Test coverage only; no API or UX contract change.
+  The end-then-mint appointment sits in the adjacent slot before the shared join appointment so
+  the provider exclusion constraint allows both, and that slot is still inside the join grace.
+  Playwright role matrix and cross-practice SUPER_ADMIN stay out of scope. M17 is not closed.
