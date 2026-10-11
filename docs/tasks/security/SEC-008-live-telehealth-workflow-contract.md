@@ -27,8 +27,8 @@ validation:
   accessibility: false
   tests_required: false
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: 1e06ce80-76e3-4681-9f0a-b29c01b131ca
+  identifier: MEDCONNECT-100
 ---
 
 # SEC-008 — Live telehealth workflow and access contract

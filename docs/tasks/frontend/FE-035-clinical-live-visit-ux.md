@@ -35,8 +35,8 @@ validation:
   accessibility: true
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: d699216f-03dd-4a07-a9c2-b1aea461d480
+  identifier: MEDCONNECT-102
 ---
 
 # FE-035 — Clinical live-visit UX on the session shell

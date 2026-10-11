@@ -28,8 +28,8 @@ validation:
   accessibility: false
   tests_required: true
 plane:
-  work_item_id: null
-  identifier: null
+  work_item_id: b5d07e7e-297b-442f-8a71-9409c4295ba6
+  identifier: MEDCONNECT-101
 ---
 
 # BE-021 — Telehealth eligibility and lifecycle hardening
