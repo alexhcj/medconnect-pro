@@ -79,7 +79,7 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
   [FE-032](../tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims submission /
   EDI 837, and invoice-create UI remain later. **M16 — Live Telehealth** is shipped at 0.81.0
   ([FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md)). Chat, recording, and Socket.IO
-  remain later. **M17 — Security and Compliance Maturity** is shipped
+  remain later. **M17 — Security and Compliance Maturity** is shipped and **closed** at 0.84.1
   ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md),
   [QA-005](../tasks/qa/QA-005-authorization-and-tenant-regression-expansion.md)). Local product work does
   not wait on AWS.
@@ -130,4 +130,4 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
 - Live concurrent-session chrome ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md);
   shipped; depends on [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md);
   design not required, reuses the existing dialog). Not a session-policy editor, idle keep-alive,
-  or production session manager.
+  or production session manager. **Closed** at 0.84.1.

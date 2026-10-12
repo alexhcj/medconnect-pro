@@ -123,4 +123,4 @@ Writing this spec is not a version bump.
 - Notes: Version 0.84.0 → 0.84.1 (PATCH). Test coverage only; no API or UX contract change.
   The end-then-mint appointment sits in the adjacent slot before the shared join appointment so
   the provider exclusion constraint allows both, and that slot is still inside the join grace.
-  Playwright role matrix and cross-practice SUPER_ADMIN stay out of scope. M17 is not closed.
+  Playwright role matrix and cross-practice SUPER_ADMIN stay out of scope. M17 is closed at 0.84.1.

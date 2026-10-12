@@ -31,7 +31,7 @@ shipped and **closed** at 0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-
 Telehealth** is shipped at 0.81.0 ([SEC-008](../tasks/security/SEC-008-live-telehealth-workflow-contract.md),
 [BE-021](../tasks/backend/BE-021-telehealth-eligibility-and-lifecycle.md),
 [FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md)). Chat, recording, and Socket.IO
-remain later. **M17 — Security and Compliance Maturity** is shipped
+remain later. **M17 — Security and Compliance Maturity** is shipped and **closed** at 0.84.1
 ([SEC-009](../tasks/security/SEC-009-m17-security-findings-and-contract-reconciliation.md),
 [BE-022](../tasks/backend/BE-022-clinical-record-read-audit.md),
 [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md),
@@ -148,7 +148,7 @@ device guidance. Tasks: [SEC-008](../tasks/security/SEC-008-live-telehealth-work
 [FE-035](../tasks/frontend/FE-035-clinical-live-visit-ux.md). Not chat, recording, transcription,
 Socket.IO, Nest `/leave`, a session list API, or AWS. **Shipped** at 0.81.0.
 
-### M17 — Security and Compliance Maturity (shipped)
+### M17 — Security and Compliance Maturity (shipped and closed)
 
 Application-level security and privacy hardening on shipped auth, audit, and session surfaces:
 contract reconciliation (ADR-016), clinical read audit, live concurrent-session inventory, and
@@ -157,7 +157,7 @@ authorization-matrix expansion. [SEC-009](../tasks/security/SEC-009-m17-security
 [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md),
 [FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md), and
 [QA-005](../tasks/qa/QA-005-authorization-and-tenant-regression-expansion.md)
-are shipped. **Shipped** at 0.84.1. Not AWS, HIPAA
+are shipped. **Shipped** and **closed** at 0.84.1. Not AWS, HIPAA
 certification, production MFA, Redis/WAF, OAuth unlink, patient DELETE, chat/recording, or hosted
 Stripe.
 
@@ -186,7 +186,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M14 OAuth / External Identity | SEC-006, DATA-003, BE-017, FE-033 (shipped) | Nest OIDC client + PKCE, `external_identities`, existing cookie session, OAuth login UX. Google + Fake adapter. Not NextAuth, rate limiting, production MFA, Redis, or AWS. **Closed** at 0.77.0. |
 | M15 API Protection and Rate Limiting | SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034 (shipped) | PostgreSQL limiter store, `TRUST_PROXY`, auth and sensitive-route policies, 429 envelope, `auth.rate_limited`, API security headers, 429 auth UX. Not Redis, WAF, production MFA, or AWS. **Closed** at 0.80.0. |
 | M16 Live Telehealth | SEC-008, BE-021, FE-035 (shipped) | Eligibility on join/mint, join-before-mint, leave versus end (client/Daily leave; Nest end), 502 `MEDIA_UNAVAILABLE`, create/join rate limits, pre-join device UX. Not chat, recording, Socket.IO, or AWS. **Shipped** at 0.81.0. |
-| M17 Security and Compliance Maturity | SEC-009, BE-022, BE-023, FE-036, QA-005 (shipped) | ADR-016 session-tenant SUPER_ADMIN, clinical read audit, live concurrent-session inventory, authz-matrix expansion. Not AWS, HIPAA certification, production MFA, Redis/WAF, or patient DELETE. |
+| M17 Security and Compliance Maturity | SEC-009, BE-022, BE-023, FE-036, QA-005 (shipped) | ADR-016 session-tenant SUPER_ADMIN, clinical read audit, live concurrent-session inventory, authz-matrix expansion. Not AWS, HIPAA certification, production MFA, Redis/WAF, or patient DELETE. **Closed** at 0.84.1. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

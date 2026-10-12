@@ -164,7 +164,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-021 — Telehealth eligibility and lifecycle hardening
 - FE-035 — Clinical live-visit UX on the session shell
 
-## Product (M17)
+## Product (M17, closed at 0.84.1)
 
 - SEC-009 — M17 security findings, ADR-016, and contract reconciliation
 - BE-022 — Clinical record read audit

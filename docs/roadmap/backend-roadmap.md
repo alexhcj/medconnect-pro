@@ -60,7 +60,7 @@ Domain order (not historical ship order). Join to demo milestones in the
     authz-matrix expansion ([QA-005](../tasks/qa/QA-005-authorization-and-tenant-regression-expansion.md),
     shipped).
     Frontend is [FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md) (shipped). Not AWS, HIPAA
-    certification, Redis, or WAF.
+    certification, Redis, or WAF. **Closed** at 0.84.1.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.
@@ -78,5 +78,5 @@ is shipped ([FE-031](../tasks/frontend/FE-031-record-demo-payment.md),
 EDI 837, and invoice-create UI remain later. **M14** is shipped and **closed** at 0.77.0.
 **M15 — API Protection and Rate Limiting** is shipped and **closed** at 0.80.0 (SEC-007,
 DATA-004, BE-018, BE-019, BE-020, FE-034). **M16 — Live Telehealth** is shipped at 0.81.0 (SEC-008,
-BE-021, FE-035). **M17 — Security and Compliance Maturity** is shipped (SEC-009, BE-022, BE-023, FE-036,
+BE-021, FE-035). **M17 — Security and Compliance Maturity** is shipped and **closed** at 0.84.1 (SEC-009, BE-022, BE-023, FE-036,
 QA-005). Local product work does not wait on AWS.
