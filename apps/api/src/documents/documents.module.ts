@@ -28,12 +28,12 @@ import {S3DocumentObjectStore} from './s3-document-object-store.js';
 		{
 			provide: DOCUMENT_OBJECT_STORE,
 			useFactory: (config: ConfigService<Env, true>) => {
-				const appEnv = config.get('APP_ENV', {infer: true});
-				if (appEnv === 'preview' || appEnv === 'production') {
+				const driver = config.get('DOCUMENT_STORAGE_DRIVER', {infer: true});
+				if (driver === 's3') {
 					const bucket = config.get('DOCUMENT_S3_BUCKET', {infer: true});
 					if (!bucket) {
 						throw new Error(
-							'DOCUMENT_S3_BUCKET is required when APP_ENV is preview or production',
+							'DOCUMENT_S3_BUCKET is required when DOCUMENT_STORAGE_DRIVER is s3',
 						);
 					}
 					return new S3DocumentObjectStore(bucket, new S3Client({}));

@@ -16,6 +16,8 @@ Limiting** is shipped and **closed** at 0.80.0 (SEC-007, DATA-004, BE-018, BE-01
 FE-034; ADR-015). **M16 — Live Telehealth** is shipped at 0.81.0 (SEC-008, BE-021, FE-035). Chat,
 recording, and Socket.IO remain later. **M17 — Security and Compliance Maturity** is shipped
 and **closed** at 0.84.1 (SEC-009, BE-022, BE-023, FE-036, QA-005). Local product work does not wait on AWS.
+[INFRA-015](docs/tasks/infrastructure/INFRA-015-render-public-demo.md) is an interim Render public
+demo and does not close M9.
 
 Frontend application: `apps/web`.
 Backend application: `apps/api` (NestJS 12 platform; OpenAPI via `npm run openapi:generate`).

@@ -39,7 +39,7 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `NEXT_PUBLIC_MOCK_DELAY` | web | Local mock timing only. |
 | `NEXT_PUBLIC_MOCK_ERROR_RATE` | web | Local mock faults only. |
 | `NEXT_PUBLIC_MOCK_LOG_LEVEL` | web | Local mock logging only. |
-| `NEXT_PUBLIC_API_BASE_URL` | web | Environment-specific API origin. Public by design, not a secret. |
+| `NEXT_PUBLIC_API_BASE_URL` | web | Environment-specific API origin, or a same-origin path such as `/mcp-api`. Public by design, not a secret. |
 
 ### Environment-specific (not secret)
 
@@ -49,9 +49,12 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `NODE_ENV` | api, web | Preview and production keep `production`. |
 | `PORT` | api | Default `3001`. |
 | `SWAGGER_UI_ENABLED` | api | Optional. Defaults off when `NODE_ENV=production`. Production should set `false`. |
-| `DOCUMENT_STORAGE_DIR` | api | Local filesystem adapter (`APP_ENV=local`). |
-| `DOCUMENT_S3_BUCKET` | api | Hosted object-store bucket. Required when `APP_ENV` is preview or production. Not a secret; access is the ECS task role. |
-| `API_BASE_URL` | web | Server-only BFF proxy origin. Same classification as `NEXT_PUBLIC_API_BASE_URL`. |
+| `DOCUMENT_STORAGE_DIR` | api | Filesystem directory for the `local` document driver. |
+| `DOCUMENT_STORAGE_DRIVER` | api | `local` or `s3`. Default `local` when `APP_ENV=local`, and `s3` when preview or production. Render sets `local`. AWS leaves this unset so the default stays `s3`. |
+| `DOCUMENT_S3_BUCKET` | api | Required when the driver is `s3`. Not a secret; AWS access is the ECS task role. |
+| `PUBLIC_API_PREFIX` | api | Optional single path segment (`/mcp-api`). Empty keeps cookie paths `/` and `/auth`. When set, access, refresh, and MFA cookie paths are prefixed. The CSRF cookie stays on `/` so pages can read it. |
+| `SEED_ON_DEPLOY` | api | Render pre-deploy only. `true` runs `seed:mock-identity` after migrate. Set `false` after the first synthetic seed. |
+| `API_BASE_URL` | web | Server-only upstream for the `/mcp-api` proxy, and the Amplify server origin. Same classification as `NEXT_PUBLIC_API_BASE_URL`. |
 | `WEB_ORIGIN` | api | Single CORS origin. Local default `http://localhost:3000`. |
 | `WEB_ORIGINS` | api | Comma-separated CORS allowlist. Unioned with `WEB_ORIGIN`. Preview may include `https://*.amplifyapp.com`. Production must be exact origins only. |
 | `OIDC_PROVIDER` | api | Optional (BE-017). `google` or `fake`. Google is selected when issuer, client ID, secret, and redirect URI are all set. Fake is never selected when hosted. |
@@ -59,14 +62,15 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `OIDC_CLIENT_ID` | api | Public client identifier; validated against ID token `aud`. |
 | `OIDC_REDIRECT_URI` | api | Exact registered callback URL per environment (e.g. `http://localhost:3001/auth/oauth/google/callback`). |
 | `OIDC_DEMO_EMAIL` | api | Optional. With `APP_ENV=local`, `seed:mock-identity` provisions this email as a practice admin so a real Google account can link, and the Fake adapter uses it as its default sign-in email. Ignored by the seed when hosted. |
-| `TRUST_PROXY` | api | Implemented (BE-018, [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). Integer hop count; anything else fails env validation at boot. Default `0`: `X-Forwarded-For` is ignored and the socket address is the client IP. `N > 0` sets Express `trust proxy` to `N`. Must equal the real number of trusted proxies; a higher value lets clients spoof their IP and pick their own rate-limit key. Hosted value is unverified until INFRA-014. |
+| `TRUST_PROXY` | api | Implemented (BE-018, [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). Integer hop count; anything else fails env validation at boot. Default `0`: `X-Forwarded-For` is ignored and the socket address is the client IP. `N > 0` sets Express `trust proxy` to `N`. Must equal the real number of trusted proxies; a higher value lets clients spoof their IP and pick their own rate-limit key. Render uses `1`. The AWS value is unverified until INFRA-014. |
 
 ### Secret
 
 | Variable | App | Notes |
 | --- | --- | --- |
-| `DATABASE_URL` | api | Runtime Nest role (`medconnect_app`). Subject to RLS. |
+| `DATABASE_URL` | api | Runtime Nest role (`medconnect_app`). Subject to RLS. On Render, `scripts/infra/start-api.mjs` derives this from `DATABASE_ADMIN_URL` and `APP_ROLE_PASSWORD` when it is unset. |
 | `DATABASE_ADMIN_URL` | api | Table owner for migrations and seed. |
+| `APP_ROLE_PASSWORD` | api | Password for `medconnect_app`. Used by the Render pre-deploy and start scripts. Nest does not read it. AWS injects `DATABASE_URL` directly and does not need this variable. |
 | `DAILY_API_KEY` | api | Daily REST key for media-token minting. Unset selects the Fake adapter. Never `NEXT_PUBLIC_*`. Not in the current Secrets Manager JSON (hosted injection is M9, paused). |
 | `OIDC_CLIENT_SECRET` | api | Optional (BE-017, [ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md)). Confidential OIDC client secret. Unset selects the Fake OIDC adapter (`APP_ENV=local` / tests only); hosted without it, OAuth start returns 503 `OAUTH_UNAVAILABLE`. Never `NEXT_PUBLIC_*`. Hosted Secrets Manager injection is M9 / later. |
 | `RATE_LIMIT_KEY_SECRET` | api | Implemented (BE-018, [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). HMAC-SHA-256 key for rate-limit bucket keys so raw IPs and emails are never stored. Application-internal, not a third-party secret. Minimum 32 characters. Required when hosted (boot fails without it); local and tests fall back to a fixed development default. Never `NEXT_PUBLIC_*`. Hosted Secrets Manager / ECS injection is M9 (paused). |
@@ -197,3 +201,10 @@ a hardcoded `*.amplifyapp.com` on the production API (that pattern would also ma
 | `apps/web/.env.example` | Local web (mock-first) |
 | `apps/web/.env.preview.example` | Preview web placeholders |
 | `apps/web/.env.production.example` | Production web placeholders |
+| `apps/api/.env.render.example` | Render API placeholders |
+| `apps/web/.env.render.example` | Render web placeholders |
+
+Render wiring, free-tier limits, and the upgrade path:
+[deploy-render.md](../workflows/deploy-render.md) and
+[ADR-017](../decisions/ADR-017-interim-render-demo.md). The hosted retrieval section above remains
+the AWS path.

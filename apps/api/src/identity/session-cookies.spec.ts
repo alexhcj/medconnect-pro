@@ -90,6 +90,14 @@ describe('resolveSessionCookieOptions', () => {
 		expect(resolveSessionCookieOptions('production').csrf.secure).toBe(true);
 		expect(resolveSessionCookieOptions('production').csrf.sameSite).toBe('none');
 	});
+
+	it('prefixes access, refresh, and MFA paths and leaves the CSRF path readable', () => {
+		const hosted = resolveSessionCookieOptions('preview', '/mcp-api');
+		expect(hosted.access.path).toBe('/mcp-api');
+		expect(hosted.refresh.path).toBe('/mcp-api/auth');
+		expect(hosted.mfa.path).toBe('/mcp-api/auth');
+		expect(hosted.csrf.path).toBe('/');
+	});
 });
 
 describe('parseCookieHeader', () => {
@@ -146,6 +154,17 @@ describe('applyMfaCookie and clearSessionCookies', () => {
 		]);
 		expect(response.cleared.find((cookie) => cookie.name === ACCESS_COOKIE_NAME)?.options.path).toBe(
 			ACCESS_COOKIE_PATH,
+		);
+	});
+
+	it('clears prefixed session cookies and the site-wide CSRF cookie', () => {
+		const response = mockResponse();
+		clearSessionCookies(response as never, 'preview', '/mcp-api');
+		expect(response.cleared.find((cookie) => cookie.name === REFRESH_COOKIE_NAME)?.options.path).toBe(
+			'/mcp-api/auth',
+		);
+		expect(response.cleared.find((cookie) => cookie.name === CSRF_COOKIE_NAME)?.options.path).toBe(
+			'/',
 		);
 	});
 });

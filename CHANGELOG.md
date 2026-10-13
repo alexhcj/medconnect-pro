@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.85.0] - 2026-10-13
+
+### Added
+
+- INFRA-015: interim Render public demo. Preview can use `DOCUMENT_STORAGE_DRIVER=local`
+  without S3. The browser can call `/mcp-api` on the web origin, with `PUBLIC_API_PREFIX`
+  applied to access, refresh, and MFA cookies. Render pre-deploy derives the `medconnect_app`
+  URL and can seed synthetic data. AWS Amplify, ECS, and Terraform are unchanged. This does
+  not close M9.
+
 ## [0.84.1] - 2026-10-11
 
 ### Changed

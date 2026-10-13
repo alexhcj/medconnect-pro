@@ -42,6 +42,16 @@ connection remain required
 ([INFRA-014](../tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)).
 Do not pull AWS work into M10.
 
+## Interim public demo (Render)
+
+[ADR-017](../decisions/ADR-017-interim-render-demo.md) hosts the synthetic demo on Render while M9
+stays paused. The Blueprint is [render.yaml](../../render.yaml): free Next.js and Nest web
+services in Oregon, and one Free Postgres 18 database. The browser calls `/mcp-api` on the web
+origin. The API uses `APP_ENV=preview`, `DOCUMENT_STORAGE_DRIVER=local`, and
+`TRUST_PROXY=1`. Runtime `DATABASE_URL` is derived for `medconnect_app`. This does not close M9
+and does not change the AWS target below. Operator steps:
+[deploy-render.md](../workflows/deploy-render.md).
+
 ## Target
 
 AWS.

@@ -55,3 +55,6 @@ microservices).
   `APP_ENV` is `preview` or `production`
   ([INFRA-004](../tasks/infrastructure/INFRA-004-environment-separation-and-configuration-contract.md)).
 - Secret retrieval, RDS, ECS, Amplify, and CI deploy jobs remain INFRA-005–INFRA-011.
+- An interim Render public demo may use `APP_ENV=preview` with its own database
+  ([ADR-017](ADR-017-interim-render-demo.md)). That demo does not replace this AWS topology
+  and does not close M9.

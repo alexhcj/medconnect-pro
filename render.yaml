@@ -1,0 +1,73 @@
+# Interim public demo (INFRA-015, ADR-017). Free web services and one Free Postgres.
+# Upgrade Postgres before the 30-day expiry. Do not put real secrets in this file.
+# AWS Terraform and Amplify stay in place. See docs/workflows/deploy-render.md.
+
+databases:
+  - name: medconnect-postgres
+    plan: free
+    region: oregon
+    databaseName: medconnect
+    user: medconnect
+    postgresMajorVersion: "18"
+
+services:
+  - type: web
+    name: medconnect-api
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build:api
+    startCommand: node scripts/infra/start-api.mjs
+    preDeployCommand: node scripts/infra/render-predeploy.mjs
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: APP_ENV
+        value: preview
+      - key: NODE_ENV
+        value: production
+      - key: DOCUMENT_STORAGE_DRIVER
+        value: local
+      - key: PUBLIC_API_PREFIX
+        value: /mcp-api
+      - key: TRUST_PROXY
+        value: "1"
+      - key: SWAGGER_UI_ENABLED
+        value: "false"
+      - key: SEED_ON_DEPLOY
+        value: "true"
+      - key: APP_ROLE_PASSWORD
+        generateValue: true
+      - key: RATE_LIMIT_KEY_SECRET
+        generateValue: true
+      - key: DATABASE_ADMIN_URL
+        fromDatabase:
+          name: medconnect-postgres
+          property: connectionString
+      - key: WEB_ORIGIN
+        fromService:
+          type: web
+          name: medconnect-web
+          envVarKey: RENDER_EXTERNAL_URL
+
+  - type: web
+    name: medconnect-web
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build:production
+    startCommand: npm run start
+    healthCheckPath: /login
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NEXT_PUBLIC_USE_MOCKS
+        value: "false"
+      - key: NEXT_PUBLIC_API_BASE_URL
+        value: /mcp-api
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: medconnect-api
+          envVarKey: RENDER_EXTERNAL_URL

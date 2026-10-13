@@ -1,7 +1,8 @@
 # Deploy runbook (secrets, remote state, demo databases, ECS, and Amplify)
 
 Operator steps for the Terraform root in [infra/terraform/](../../infra/terraform/) and Amplify
-Hosting for `apps/web`. Catalog:
+Hosting for `apps/web`. The interim Render public demo is a separate runbook:
+[deploy-render.md](deploy-render.md). It does not replace this AWS path. Catalog:
 [environment-configuration.md](../contracts/environment-configuration.md).
 ECS/Fargate: [INFRA-008](../tasks/infrastructure/INFRA-008-nestjs-api-container-and-ecs-fargate.md).
 Amplify: [INFRA-009](../tasks/infrastructure/INFRA-009-aws-amplify-hosting-for-nextjs.md).

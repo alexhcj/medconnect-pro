@@ -39,6 +39,9 @@ remain later. **M17 — Security and Compliance Maturity** is shipped and **clos
 [QA-005](../tasks/qa/QA-005-authorization-and-tenant-regression-expansion.md)). Local product work
 does not wait on AWS. Resume M9 when the AWS account can be configured. Preview/production hosting
 remains M9, not M8, M10, or M11.
+[INFRA-015](../tasks/infrastructure/INFRA-015-render-public-demo.md) is an interim Render public
+demo (free web services and Free Postgres). It does not close M9, INFRA-014, or INFRA-013, and it
+does not replace the AWS topology.
 
 ## Demo milestones
 
@@ -178,7 +181,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M6 Billing | FE-008, BE-007, FE-015 | Frontend billing mocks may start after FE-010. Billing API waits on BE-009. FE-015 connects the shipped dashboard to that API. |
 | M7 Administration | FE-009, FE-016, BE-010, SEC-002, SEC-004, QA-004, BE-008 as needed | User directory HTTP plus admin UI on Nest. Isolation hardening and authorization matrix remain. BE-008 is the notifications domain, not admin UI. **Closed** at 0.44.0. |
 | M8 Marketing website and visual language | FE-017–FE-023 (shipped) | Public marketing site and shared visual language. Deploy/preview is M9. **Closed** at 0.51.1. |
-| M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. |
+| M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. INFRA-015 is an interim Render demo and is not part of this AWS close. |
 | M10 Product Analytics, Notifications & Role Administration | DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026 (shipped) | Live overview API and UI, notification producers + UI, role PATCH + UI. Bounded seed, Nest overview API, live dashboard cards, appointment producers, in-app notification center, and role assignment HTTP/UI shipped. No Redis, OAuth, Daily, Stripe, or AWS. |
 | M11 Application Security & Session Hardening | BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005 (shipped) | Nest HttpOnly cookies, live cookie client, mock MFA UI, security-events HTTP/UI, production-gap docs. Not OAuth, production MFA, rate limiting, Redis, or AWS. |
 | M12 Telehealth Media Maturity | BE-016, FE-030 (shipped) | Daily media token HTTP plus Daily call-object UI on the shipped session shell. Fake adapter when `DAILY_API_KEY` is unset. Not chat, recording, Socket.IO, Stripe, or AWS. |

@@ -39,9 +39,10 @@ implementation tasks, roadmaps and development workflows.
   npm workspace layout, [ADR-010](decisions/ADR-010-postgresql-typeorm.md) for PostgreSQL and
   TypeORM, [ADR-011](decisions/ADR-011-figma-canonical-visual-source.md) for Figma as the
   canonical visual source, [ADR-012](decisions/ADR-012-deployment-topology.md) for Amplify +
-  ECS topology and local / preview / production, and
+  ECS topology and local / preview / production,
   [ADR-016](decisions/ADR-016-super-admin-session-tenant-scope.md) for session-membership
-  `SUPER_ADMIN` scope.
+  `SUPER_ADMIN` scope, and
+  [ADR-017](decisions/ADR-017-interim-render-demo.md) for the interim Render public demo.
 - `workflows/` — repeatable engineering processes, including [versioning](workflows/versioning.md),
   [frontend testing](workflows/frontend-testing.md),
   [API contract / Postman / OpenAPI](workflows/api-contract-workflow.md), and

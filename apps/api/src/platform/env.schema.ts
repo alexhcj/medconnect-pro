@@ -30,6 +30,19 @@ const emptyToUndefined = (value: unknown) => (value === '' ? undefined : value);
 
 const optionalString = z.preprocess(emptyToUndefined, z.string().min(1).optional());
 
+/** Single path segment such as `/mcp-api`. Empty means the historical cookie paths. */
+export const PUBLIC_API_PREFIX_PATTERN = /^\/[A-Za-z0-9_-]+$/;
+
+export function resolveDocumentStorageDriver(
+	appEnv: 'local' | 'preview' | 'production',
+	configured: 'local' | 's3' | undefined,
+): 'local' | 's3' {
+	if (configured) {
+		return configured;
+	}
+	return appEnv === 'local' ? 'local' : 's3';
+}
+
 /** Local/test only; hosted environments must set RATE_LIMIT_KEY_SECRET. */
 export const DEV_RATE_LIMIT_KEY_SECRET = 'medconnect-local-rate-limit-key-secret-not-for-hosted';
 
@@ -105,6 +118,17 @@ export const envSchema = z
 			}
 			return value;
 		}, z.string().min(1).optional()),
+		DOCUMENT_STORAGE_DRIVER: z.preprocess(
+			emptyToUndefined,
+			z.enum(['local', 's3']).optional(),
+		),
+		PUBLIC_API_PREFIX: z.preprocess(
+			emptyToUndefined,
+			z
+				.string()
+				.regex(PUBLIC_API_PREFIX_PATTERN, 'PUBLIC_API_PREFIX must be a single URL path segment')
+				.optional(),
+		),
 		DAILY_API_KEY: optionalString,
 		OIDC_PROVIDER: z.preprocess(emptyToUndefined, z.enum(['google', 'fake']).optional()),
 		OIDC_ISSUER: z.preprocess(emptyToUndefined, z.url().optional()),
@@ -119,6 +143,14 @@ export const envSchema = z
 		),
 	})
 	.superRefine((env, ctx) => {
+		const driver = resolveDocumentStorageDriver(env.APP_ENV, env.DOCUMENT_STORAGE_DRIVER);
+		if (driver === 's3' && !env.DOCUMENT_S3_BUCKET) {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['DOCUMENT_S3_BUCKET'],
+				message: 'DOCUMENT_S3_BUCKET is required when DOCUMENT_STORAGE_DRIVER is s3',
+			});
+		}
 		if (env.APP_ENV !== 'preview' && env.APP_ENV !== 'production') {
 			return;
 		}
@@ -164,13 +196,6 @@ export const envSchema = z
 				message: 'RATE_LIMIT_KEY_SECRET is required when APP_ENV is preview or production',
 			});
 		}
-		if (!env.DOCUMENT_S3_BUCKET) {
-			ctx.addIssue({
-				code: 'custom',
-				path: ['DOCUMENT_S3_BUCKET'],
-				message: 'DOCUMENT_S3_BUCKET is required when APP_ENV is preview or production',
-			});
-		}
 		if (env.APP_ENV === 'production') {
 			const corsRejection = productionCorsRejection(
 				splitOriginEntries(env.WEB_ORIGIN, env.WEB_ORIGINS),
@@ -189,6 +214,11 @@ export const envSchema = z
 		DATABASE_URL: env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
 		DATABASE_ADMIN_URL: env.DATABASE_ADMIN_URL ?? DEFAULT_DATABASE_ADMIN_URL,
 		RATE_LIMIT_KEY_SECRET: env.RATE_LIMIT_KEY_SECRET ?? DEV_RATE_LIMIT_KEY_SECRET,
+		DOCUMENT_STORAGE_DRIVER: resolveDocumentStorageDriver(
+			env.APP_ENV,
+			env.DOCUMENT_STORAGE_DRIVER,
+		),
+		PUBLIC_API_PREFIX: env.PUBLIC_API_PREFIX ?? '',
 	}));
 
 export function readTrustProxy(raw: string | undefined): number {

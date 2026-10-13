@@ -73,6 +73,8 @@ describe('envSchema', () => {
 		expect(parsed.data.DATABASE_URL).toBe(DEFAULT_DATABASE_URL);
 		expect(parsed.data.DATABASE_ADMIN_URL).toBe(DEFAULT_DATABASE_ADMIN_URL);
 		expect(parsed.data.DAILY_API_KEY).toBeUndefined();
+		expect(parsed.data.DOCUMENT_STORAGE_DRIVER).toBe('local');
+		expect(parsed.data.PUBLIC_API_PREFIX).toBe('');
 	});
 
 	it('treats an empty DAILY_API_KEY as unset and does not require it when hosted', () => {
@@ -171,6 +173,8 @@ describe('envSchema', () => {
 		expect(parsed.data.DATABASE_URL).toBe(hostedRuntimeUrl);
 		expect(parsed.data.DATABASE_ADMIN_URL).toBe(hostedAdminUrl);
 		expect(parsed.data.DOCUMENT_S3_BUCKET).toBe(hostedDocumentBucket);
+		expect(parsed.data.DOCUMENT_STORAGE_DRIVER).toBe('s3');
+		expect(parsed.data.PUBLIC_API_PREFIX).toBe('');
 	});
 
 	it('accepts production with valid hosted URLs', () => {
@@ -194,7 +198,7 @@ describe('envSchema', () => {
 		expect(parsed.data.DATABASE_URL).toBe(productionRuntime);
 	});
 
-	it('refuses hosted boot when DOCUMENT_S3_BUCKET is missing', () => {
+	it('refuses hosted boot when the s3 driver has no bucket', () => {
 		const parsed = envSchema.safeParse({
 			APP_ENV: 'preview',
 			NODE_ENV: 'production',
@@ -203,8 +207,30 @@ describe('envSchema', () => {
 		});
 		expect(parsed.success).toBe(false);
 		expect(issueMessages(parsed)).toContain(
-			'DOCUMENT_S3_BUCKET is required when APP_ENV is preview or production',
+			'DOCUMENT_S3_BUCKET is required when DOCUMENT_STORAGE_DRIVER is s3',
 		);
+	});
+
+	it('accepts hosted local document storage without an S3 bucket', () => {
+		const parsed = envSchema.safeParse(
+			hostedEnv({
+				DOCUMENT_STORAGE_DRIVER: 'local',
+				DOCUMENT_S3_BUCKET: '',
+				PUBLIC_API_PREFIX: '/mcp-api',
+			}),
+		);
+		expect(parsed.success).toBe(true);
+		if (!parsed.success) {
+			return;
+		}
+		expect(parsed.data.DOCUMENT_STORAGE_DRIVER).toBe('local');
+		expect(parsed.data.DOCUMENT_S3_BUCKET).toBeUndefined();
+		expect(parsed.data.PUBLIC_API_PREFIX).toBe('/mcp-api');
+	});
+
+	it('rejects a public API prefix that is not one path segment', () => {
+		const parsed = envSchema.safeParse({PUBLIC_API_PREFIX: '/mcp/api'});
+		expect(issueMessages(parsed)).toContain('PUBLIC_API_PREFIX must be a single URL path segment');
 	});
 
 	it('refuses hosted boot when runtime and owner URLs are identical', () => {
