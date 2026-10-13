@@ -13,7 +13,7 @@ or `RATE_LIMIT_KEY_SECRET`.
 
 ## What the Blueprint creates
 
-[render.yaml](../../render.yaml), region Oregon:
+[render.yaml](../../render.yaml), region Frankfurt:
 
 | Service | Plan | Role |
 | --- | --- | --- |
@@ -34,7 +34,7 @@ or production environment.
 ## First apply
 
 1. In the Render dashboard, create a Blueprint from this repository. Do not paste secrets into Git.
-2. Confirm the three resources are in Oregon. The API reaches Postgres on the internal URL
+2. Confirm the three resources are in Frankfurt. The API reaches Postgres on the internal URL
    (`fromDatabase` `connectionString`).
 3. The first sync sets `SEED_ON_DEPLOY=true`. Pre-deploy runs `ensure:app-role`, then
    `npm run migration:run`, then `npm run seed:mock-identity`.
