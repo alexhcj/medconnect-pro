@@ -17,8 +17,9 @@ services:
     plan: free
     region: frankfurt
     buildCommand: npm ci && npm run build:api
+    # Free web services reject preDeployCommand. start-api.mjs creates the role,
+    # migrates, and seeds before listen.
     startCommand: node scripts/infra/start-api.mjs
-    preDeployCommand: node scripts/infra/render-predeploy.mjs
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION

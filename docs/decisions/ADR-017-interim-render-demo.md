@@ -24,8 +24,9 @@ M9.
 - **Documents:** `DOCUMENT_STORAGE_DRIVER=local` on Render. Unset driver still means `s3` when
   `APP_ENV` is preview or production, so AWS continues to require `DOCUMENT_S3_BUCKET`.
 - **Runtime role:** `scripts/infra/start-api.mjs` derives `DATABASE_URL` for `medconnect_app`
-  from `DATABASE_ADMIN_URL` and `APP_ROLE_PASSWORD`. Pre-deploy runs `ensure:app-role` before
-  migrations. If `CREATE ROLE` fails, the deploy stops. The API must not use the owner URL.
+  from `DATABASE_ADMIN_URL` and `APP_ROLE_PASSWORD`, then creates that role and migrates before
+  Nest listens. Free web services cannot use a pre-deploy command. If `CREATE ROLE` fails, the
+  process exits. The API must not use the owner URL.
 - **Proxy hops:** `TRUST_PROXY=1` for Render’s edge. The proxy replaces `X-Forwarded-For` with
   the last address Render reported to the web service.
 

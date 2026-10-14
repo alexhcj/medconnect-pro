@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.85.1] - 2026-10-14
+
+### Fixed
+
+- INFRA-015: free Render web services reject a pre-deploy command. The API start command now
+  creates `medconnect_app`, applies the already-built migrations, and seeds only when
+  `SEED_ON_DEPLOY=true`, then listens. If `CREATE ROLE` fails, the deploy fails.
+
 ## [0.85.0] - 2026-10-13
 
 ### Added

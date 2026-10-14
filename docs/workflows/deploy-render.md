@@ -36,17 +36,17 @@ or production environment.
 1. In the Render dashboard, create a Blueprint from this repository. Do not paste secrets into Git.
 2. Confirm the three resources are in Frankfurt. The API reaches Postgres on the internal URL
    (`fromDatabase` `connectionString`).
-3. The first sync sets `SEED_ON_DEPLOY=true`. Pre-deploy runs `ensure:app-role`, then
-   `npm run migration:run`, then `npm run seed:mock-identity`.
-4. If `CREATE ROLE medconnect_app` fails, stop. Do not point `DATABASE_URL` at the database owner.
-   The owner bypasses row-level security.
+3. The first sync sets `SEED_ON_DEPLOY=true`. Free web services reject a pre-deploy command, so
+   `scripts/infra/start-api.mjs` runs before Nest listens: derive `DATABASE_URL`, `ensure:app-role`,
+   migrate the already-built `dist`, then `seed:mock-identity`. It does not run `nest build` again
+   and it does not print the URL or the password.
+4. If `CREATE ROLE medconnect_app` fails, the process exits and the deploy fails. Do not point
+   `DATABASE_URL` at the database owner. The owner bypasses row-level security.
 5. If `WEB_ORIGIN` or `API_BASE_URL` is empty on the first sync, sync the Blueprint once more so
    the service URLs are filled. `NEXT_PUBLIC_API_BASE_URL` is the path `/mcp-api` and does not
    depend on those URLs.
-6. Free services cannot run one-off jobs. Seed stays in pre-deploy, gated by `SEED_ON_DEPLOY`.
-
-`scripts/infra/start-api.mjs` derives `DATABASE_URL` as `medconnect_app` when that variable is
-unset. It does not print the URL or the password.
+6. Free services cannot run one-off jobs. Seed stays in the start command, gated by
+   `SEED_ON_DEPLOY`. `/health` stays down until that command finishes.
 
 ## Smoke
 
@@ -61,8 +61,8 @@ After the first deploy is live:
 - Change one synthetic record (mark a notification read, or record a demo payment) and confirm it
   succeeds.
 - Upload a document in that same session and download it. The file is gone after the free API
-  service sleeps, restarts, or redeploys. Seeded document bytes written during pre-deploy are not
-  on the service disk.
+  service sleeps, restarts, or redeploys. Seeded document bytes written during start are not
+  on the service disk after the next spin-down.
 - In the API logs, confirm the client address is the browser address you expect. `TRUST_PROXY=1`
   matches one Render hop. The proxy sends only the last `X-Forwarded-For` address that Render
   reported to the web service. If every user shares the web service address, the hop count is
@@ -78,7 +78,7 @@ In-app notifications do not send email.
 
 ## After the first seed
 
-Set `SEED_ON_DEPLOY=false` on `medconnect-api` and redeploy. Later pre-deploys migrate only.
+Set `SEED_ON_DEPLOY=false` on `medconnect-api` and redeploy. Later starts migrate only.
 Seed remains find-or-create; leaving the flag true refreshes the live telehealth appointment
 window and can overwrite interviewer edits to seeded rows.
 

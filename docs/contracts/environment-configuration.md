@@ -53,7 +53,7 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `DOCUMENT_STORAGE_DRIVER` | api | `local` or `s3`. Default `local` when `APP_ENV=local`, and `s3` when preview or production. Render sets `local`. AWS leaves this unset so the default stays `s3`. |
 | `DOCUMENT_S3_BUCKET` | api | Required when the driver is `s3`. Not a secret; AWS access is the ECS task role. |
 | `PUBLIC_API_PREFIX` | api | Optional single path segment (`/mcp-api`). Empty keeps cookie paths `/` and `/auth`. When set, access, refresh, and MFA cookie paths are prefixed. The CSRF cookie stays on `/` so pages can read it. |
-| `SEED_ON_DEPLOY` | api | Render pre-deploy only. `true` runs `seed:mock-identity` after migrate. Set `false` after the first synthetic seed. |
+| `SEED_ON_DEPLOY` | api | Render start only. `true` runs `seed:mock-identity` after migrate, before Nest listens. Set `false` after the first synthetic seed. |
 | `API_BASE_URL` | web | Server-only upstream for the `/mcp-api` proxy, and the Amplify server origin. Same classification as `NEXT_PUBLIC_API_BASE_URL`. |
 | `WEB_ORIGIN` | api | Single CORS origin. Local default `http://localhost:3000`. |
 | `WEB_ORIGINS` | api | Comma-separated CORS allowlist. Unioned with `WEB_ORIGIN`. Preview may include `https://*.amplifyapp.com`. Production must be exact origins only. |
@@ -70,7 +70,7 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | --- | --- | --- |
 | `DATABASE_URL` | api | Runtime Nest role (`medconnect_app`). Subject to RLS. On Render, `scripts/infra/start-api.mjs` derives this from `DATABASE_ADMIN_URL` and `APP_ROLE_PASSWORD` when it is unset. |
 | `DATABASE_ADMIN_URL` | api | Table owner for migrations and seed. |
-| `APP_ROLE_PASSWORD` | api | Password for `medconnect_app`. Used by the Render pre-deploy and start scripts. Nest does not read it. AWS injects `DATABASE_URL` directly and does not need this variable. |
+| `APP_ROLE_PASSWORD` | api | Password for `medconnect_app`. Used by the Render start script. Nest does not read it. AWS injects `DATABASE_URL` directly and does not need this variable. |
 | `DAILY_API_KEY` | api | Daily REST key for media-token minting. Unset selects the Fake adapter. Never `NEXT_PUBLIC_*`. Not in the current Secrets Manager JSON (hosted injection is M9, paused). |
 | `OIDC_CLIENT_SECRET` | api | Optional (BE-017, [ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md)). Confidential OIDC client secret. Unset selects the Fake OIDC adapter (`APP_ENV=local` / tests only); hosted without it, OAuth start returns 503 `OAUTH_UNAVAILABLE`. Never `NEXT_PUBLIC_*`. Hosted Secrets Manager injection is M9 / later. |
 | `RATE_LIMIT_KEY_SECRET` | api | Implemented (BE-018, [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). HMAC-SHA-256 key for rate-limit bucket keys so raw IPs and emails are never stored. Application-internal, not a third-party secret. Minimum 32 characters. Required when hosted (boot fails without it); local and tests fall back to a fixed development default. Never `NEXT_PUBLIC_*`. Hosted Secrets Manager / ECS injection is M9 (paused). |
