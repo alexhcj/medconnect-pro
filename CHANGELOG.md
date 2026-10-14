@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.85.2] - 2026-10-14
+
+### Fixed
+
+- INFRA-015: the Render API build installs devDependencies. `NODE_ENV=production` was making
+  `npm ci` skip `@nestjs/cli`, so `nest build` failed with `nest: not found`.
+
 ## [0.85.1] - 2026-10-14
 
 ### Fixed

@@ -31,6 +31,11 @@ before changing a plan.
 `APP_ENV=preview` on Render is this demo. It must not share a database with a future AWS preview
 or production environment.
 
+The API service sets `NODE_ENV=production`, and Render exposes that during the build. `npm ci`
+then skips devDependencies, including `@nestjs/cli`. The Blueprint build command is
+`npm ci --include=dev && npm run build:api` so `nest build` can run. The start command still
+launches `dist/main.js` and does not need the CLI.
+
 ## First apply
 
 1. In the Render dashboard, create a Blueprint from this repository. Do not paste secrets into Git.

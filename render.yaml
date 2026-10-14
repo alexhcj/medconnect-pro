@@ -16,7 +16,9 @@ services:
     runtime: node
     plan: free
     region: frankfurt
-    buildCommand: npm ci && npm run build:api
+    # NODE_ENV=production is set on this service, so npm ci would skip devDependencies
+    # and `nest` would be missing. The CLI is only needed to compile.
+    buildCommand: npm ci --include=dev && npm run build:api
     # Free web services reject preDeployCommand. start-api.mjs creates the role,
     # migrates, and seeds before listen.
     startCommand: node scripts/infra/start-api.mjs
