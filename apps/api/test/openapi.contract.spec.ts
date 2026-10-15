@@ -124,7 +124,7 @@ describe('OpenAPI contract', () => {
 		expect(document.paths).not.toHaveProperty('/providers');
 		expect(document.paths).not.toHaveProperty('/__test/validate');
 		expect(document.paths).not.toHaveProperty('/__test/authz');
-		expect(JSON.stringify(document)).not.toMatch(/Demo-Admin-1|Demo-Mfa-1|135790/);
+		expect(JSON.stringify(document)).not.toMatch(/Demo-Admin-1|Demo-Mfa-1|Demo-Patient-1|135790/);
 		expect(JSON.stringify(document)).not.toMatch(/eyJ[A-Za-z0-9_-]+\.|sk_live|BEGIN PRIVATE KEY/);
 		const committed = loadCommittedSpec();
 		expect(document.paths).toEqual(committed.paths);

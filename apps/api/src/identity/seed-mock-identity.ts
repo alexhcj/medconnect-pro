@@ -53,6 +53,12 @@ export const PROVIDER_EMAIL = 'jordan.ellis@synthetic.example';
  */
 export const LIVE_DEMO_MFA_NURSE_ID = '33333333-3333-4333-8333-333333333333';
 export const MFA_NURSE_EMAIL = 'mfa.nurse@example.test';
+/**
+ * Stable synthetic patient for the interview demo (DATA-005).
+ * Must match `userId` in `docs/mocks/demo-users.json`.
+ */
+export const LIVE_DEMO_PATIENT_ID = '77777777-7777-4777-8777-777777777777';
+export const PATIENT_EMAIL = 'avery.quinn@synthetic.example';
 const LIVE_TELEHEALTH_NOTES = 'Live demo telehealth visit';
 const ANNUAL_FOLLOW_UP_NOTES = 'Annual follow-up';
 
@@ -64,7 +70,7 @@ const SEEDED_PATIENTS: readonly SeededPatientDemographics[] = [
 		gender: 'female',
 		status: 'active',
 		phone: '555-0100',
-		email: 'avery.quinn@synthetic.example',
+		email: PATIENT_EMAIL,
 		street: '100 Demo Street',
 		city: 'Harborview',
 		state: 'WA',
@@ -289,13 +295,38 @@ export async function seedMockIdentity(): Promise<void> {
 			});
 		}
 
+		let patientUser = await users.findOne({where: {id: LIVE_DEMO_PATIENT_ID}});
+		if (!patientUser) {
+			patientUser = await users.findOne({where: {email: PATIENT_EMAIL}});
+		}
+		if (!patientUser) {
+			patientUser = await users.save({id: LIVE_DEMO_PATIENT_ID, email: PATIENT_EMAIL});
+		}
+		const patientMembership = await memberships.findOne({
+			where: {practiceId: practice.id, userId: patientUser.id},
+		});
+		if (!patientMembership) {
+			await memberships.save({
+				practiceId: practice.id,
+				userId: patientUser.id,
+				role: 'PATIENT',
+			});
+		}
+
 		for (const demographics of [...SEEDED_PATIENTS, ...EXTRA_SEEDED_PATIENTS]) {
 			await upsertPatient(patients, practice.id, provider.id, demographics);
 		}
 
 		const seededPatient = await patients.findOne({
-			where: {practiceId: practice.id, email: SEEDED_PATIENTS[0].email},
+			where: {practiceId: practice.id, email: PATIENT_EMAIL},
 		});
+		if (seededPatient && seededPatient.portalUserId == null) {
+			const portalHolder = await patients.findOne({where: {portalUserId: patientUser.id}});
+			if (!portalHolder) {
+				seededPatient.portalUserId = patientUser.id;
+				await patients.save(seededPatient);
+			}
+		}
 		const now = new Date();
 		const telehealthStart = new Date(now.getTime() - 15 * 60 * 1000);
 		const telehealthEnd = new Date(now.getTime() + 4 * 60 * 60 * 1000);
@@ -605,7 +636,7 @@ export async function seedMockIdentity(): Promise<void> {
 		}
 
 		Logger.log(
-			`Seeded synthetic practice admin, provider ${provider.id}, MFA nurse ${mfaNurse.id} assigned to Avery Quinn, demo patients, appointments, an in-window telehealth visit, clinical rows, a document, invoices, and inbox rows`,
+			`Seeded synthetic practice admin, provider ${provider.id}, MFA nurse ${mfaNurse.id} assigned to Avery Quinn, patient ${patientUser.id} linked through portalUserId, demo patients, appointments, an in-window telehealth visit, clinical rows, a document, invoices, and inbox rows`,
 			'MockIdentity',
 		);
 	} finally {

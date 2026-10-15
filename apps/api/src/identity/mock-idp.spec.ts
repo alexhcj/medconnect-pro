@@ -14,7 +14,7 @@ describe('mock IdP fixture', () => {
 		'../../../../docs/mocks/demo-users.json',
 	);
 	const demo = JSON.parse(readFileSync(demoUsersPath, 'utf8')) as {
-		users: {email: string; password: string; role: string}[];
+		users: {email: string; password: string; role: string; userId: string}[];
 	};
 	const admin = defaultMockIdpAccounts.find((account) => account.email === demo.users[0]?.email);
 
@@ -71,5 +71,49 @@ describe('mock IdP fixture', () => {
 		expect(matchMockIdpAccount(defaultMockIdpAccounts, provider?.email ?? '', provider?.password ?? '')).toBe(
 			provider,
 		);
+	});
+
+	it('accepts the synthetic patient password without MFA', () => {
+		const patient = defaultMockIdpAccounts.find(
+			(account) => account.email === 'avery.quinn@synthetic.example',
+		);
+		expect(patient).toMatchObject({
+			password: 'Demo-Patient-1',
+			role: 'PATIENT',
+		});
+		expect(patient?.mfaRequired).toBeUndefined();
+		expect(patient?.mfaCode).toBeUndefined();
+		expect(
+			matchMockIdpAccount(defaultMockIdpAccounts, 'AVERY.QUINN@synthetic.example', 'Demo-Patient-1'),
+		).toBe(patient);
+		const fixture = demo.users.find((user) => user.email === 'avery.quinn@synthetic.example');
+		expect(fixture).toMatchObject({
+			email: 'avery.quinn@synthetic.example',
+			password: 'Demo-Patient-1',
+			role: 'PATIENT',
+			userId: '77777777-7777-4777-8777-777777777777',
+		});
+	});
+
+	it('leaves practice admin, provider, and MFA nurse fixtures unchanged', () => {
+		expect(defaultMockIdpAccounts.filter((account) => account.role !== 'PATIENT')).toEqual([
+			{
+				email: 'practice.admin@example.test',
+				password: 'Demo-Admin-1',
+				role: 'PRACTICE_ADMIN',
+			},
+			{
+				email: 'jordan.ellis@synthetic.example',
+				password: 'Demo-Provider-1',
+				role: 'PROVIDER',
+			},
+			{
+				email: 'mfa.nurse@example.test',
+				password: 'Demo-Mfa-1',
+				role: 'NURSE',
+				mfaRequired: true,
+				mfaCode: '135790',
+			},
+		]);
 	});
 });

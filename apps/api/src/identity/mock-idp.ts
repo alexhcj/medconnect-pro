@@ -33,6 +33,11 @@ export const defaultMockIdpAccounts: readonly MockIdpAccount[] = [
 		mfaRequired: true,
 		mfaCode: '135790',
 	},
+	{
+		email: 'avery.quinn@synthetic.example',
+		password: 'Demo-Patient-1',
+		role: 'PATIENT',
+	},
 ];
 
 export function findMockIdpAccountByEmail(

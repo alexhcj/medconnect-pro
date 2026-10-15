@@ -62,7 +62,7 @@ Domain order (not historical ship order). Join to demo milestones in the
     Frontend is [FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md) (shipped). Not AWS, HIPAA
     certification, Redis, or WAF. **Closed** at 0.84.1.
 21. Interview demo readiness (M18, pending): synthetic patient portal account
-    ([DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md)) and open-session
+    ([DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md), shipped) and open-session
     lookup ([BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md)). Not a session
     list, not Google credentials, and not a reopen of M17.
 
@@ -84,8 +84,8 @@ EDI 837, and invoice-create UI remain later. **M14** is shipped and **closed** a
 DATA-004, BE-018, BE-019, BE-020, FE-034). **M16 — Live Telehealth** is shipped at 0.81.0 (SEC-008,
 BE-021, FE-035). **M17 — Security and Compliance Maturity** is shipped and **closed** at 0.84.1 (SEC-009, BE-022, BE-023, FE-036,
 QA-005). **M18 — Interview Demo Readiness** is the next milestone and is **pending**
-([QA-006](../tasks/qa/QA-006-live-demo-smoke.md) (shipped),
-[DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md),
+([QA-006](../tasks/qa/QA-006-live-demo-smoke.md),
+[DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md) (shipped),
 [BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md),
 [FE-037](../tasks/frontend/FE-037-demo-account-panel.md),
 [FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md),

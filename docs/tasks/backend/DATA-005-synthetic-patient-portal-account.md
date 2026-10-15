@@ -3,7 +3,7 @@ id: DATA-005
 type: task
 area: backend
 feature: demo-data
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [DATA-002, BE-009]
@@ -18,7 +18,7 @@ related_docs:
     BE-009-identity-and-access-http.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -68,13 +68,13 @@ Telehealth, and Billing for that role. There is no password column on `users`.
 
 ## Acceptance criteria
 
-- [ ] Mock IdP accepts `avery.quinn@synthetic.example` / `Demo-Patient-1` and does not require MFA
-- [ ] Seed links that user to Avery Quinn through `portalUserId` and a Harbor `PATIENT` membership
-- [ ] A second seed run does not create a second user or membership
-- [ ] Own-scope patient reads return Avery Quinn and do not return other patients
-- [ ] Practice admin, provider, and MFA nurse fixtures are unchanged
-- [ ] `docs/mocks/demo-users.json` lists the patient account
-- [ ] OpenAPI does not contain `Demo-Patient-1`
+- [x] Mock IdP accepts `avery.quinn@synthetic.example` / `Demo-Patient-1` and does not require MFA
+- [x] Seed links that user to Avery Quinn through `portalUserId` and a Harbor `PATIENT` membership
+- [x] A second seed run does not create a second user or membership
+- [x] Own-scope patient reads return Avery Quinn and do not return other patients
+- [x] Practice admin, provider, and MFA nurse fixtures are unchanged
+- [x] `docs/mocks/demo-users.json` lists the patient account
+- [x] OpenAPI does not contain `Demo-Patient-1`
 
 ## Dependencies
 
@@ -101,7 +101,7 @@ for DATA-005 only.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Mock IdP account `avery.quinn@synthetic.example` / `Demo-Patient-1` (`PATIENT`, no MFA). `seedMockIdentity` find-or-creates user `77777777-7777-4777-8777-777777777777`, a Harbor `PATIENT` membership, and sets Avery Quinn `portalUserId` only when it is null.
+- Tests: `apps/api/src/identity/mock-idp.spec.ts`; `apps/api/test/seed-mock-identity.spec.ts` (idempotent link, staff roles, login without MFA, own-scope list); `apps/api/test/openapi.contract.spec.ts` rejects `Demo-Patient-1`.
 - PR:
-- Notes: Not started.
+- Notes: Version 0.86.1 → 0.87.0 (MINOR, new demo sign-in). Login panel copy stays FE-037. Telehealth lookup stays BE-024.

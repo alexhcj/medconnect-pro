@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.87.0] - 2026-10-15
+
+### Added
+
+- DATA-005: one synthetic patient can sign in as Avery Quinn (`PATIENT`, no MFA). The Harbor
+  seed links that user through `portalUserId`. The login panel still lists only the existing
+  staff hints until FE-037.
+
 ## [0.86.1] - 2026-10-15
 
 ### Fixed

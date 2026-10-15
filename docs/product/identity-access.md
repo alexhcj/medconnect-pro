@@ -52,10 +52,9 @@ capabilities:
     related_tasks: [SEC-009, BE-023, FE-036]
   - id: identity-access.patient-demo-sign-in
     name: Patient demo sign-in
-    status: planned
-    demo: not in the demo
+    status: shipped
+    demo: one synthetic PATIENT linked to Avery Quinn through portalUserId; mock IdP sign-in with no MFA. The login panel does not list this account until FE-037.
     public: no
-    planned_next: one synthetic PATIENT linked to Avery Quinn
     related_tasks: [DATA-005]
   - id: identity-access.demo-account-panel
     name: Demo account panel
@@ -72,9 +71,9 @@ Mock IdP HTTP sessions for the demo. Nest issues HttpOnly cookies and still retu
 JSON for machine clients. Live Next uses those cookies and does not persist access or refresh
 tokens. Public copy may describe mock identity, labeled mock MFA, demo OIDC + PKCE sign-in
 (Google or Fake) where that adapter is actually configured, and demo concurrent-session review.
-The public Render demo does not complete Google or Fake sign-in. Patient demo sign-in and the
-demo account panel are planned (M18) and are not in the demo yet. Do not describe production
-OAuth, a production IdP, production MFA, or a production session manager.
+The public Render demo does not complete Google or Fake sign-in. One synthetic patient can sign
+in with no MFA. The demo account panel is planned (M18) and is not in the demo yet. Do not
+describe production OAuth, a production IdP, production MFA, or a production session manager.
 
 Demo entry is existing `/login` ([FE-010](../tasks/frontend/FE-010-mock-authentication-ui.md)),
 not a marketing `/sign-in` route.
@@ -86,5 +85,5 @@ not a marketing `/sign-in` route.
 | `identity-access.oauth-oidc-pkce` | Demo OAuth 2.0 / OIDC + PKCE sign-in | shipped | Demo OIDC + PKCE (Google or Fake) on live `/login`; not a production IdP | qualified |
 | `identity-access.auth-rate-limiting` | Demo auth and sensitive-route rate limiting | shipped | Nest 429 `RATE_LIMITED` on login (including account-wide failures), MFA, refresh, OAuth, telehealth create/join/media-token, document download, payments; `auth.rate_limited` security event; "too many attempts" on login and MFA (with N seconds when known) and on the OAuth landing ("later") | qualified |
 | `identity-access.concurrent-sessions` | Concurrent session review | shipped | Live dialog lists and revokes other Nest sessions; live rows omit IP and location; mock location and IP stay labeled demo data; not a session-policy editor or production session manager | qualified |
-| `identity-access.patient-demo-sign-in` | Patient demo sign-in | planned | not in the demo | no |
+| `identity-access.patient-demo-sign-in` | Patient demo sign-in | shipped | one synthetic PATIENT linked to Avery Quinn; no MFA | no |
 | `identity-access.demo-account-panel` | Demo account panel | planned | not in the demo | no |

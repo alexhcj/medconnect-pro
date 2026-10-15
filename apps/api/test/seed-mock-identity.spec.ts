@@ -1,13 +1,24 @@
+import type {INestApplication} from '@nestjs/common';
+import {Test} from '@nestjs/testing';
+import request from 'supertest';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {DataSource} from 'typeorm';
+import {AppModule} from '../src/app.module.js';
 import {
 	DEMO_EMAIL,
 	LIVE_DEMO_MFA_NURSE_ID,
+	LIVE_DEMO_PATIENT_ID,
+	LIVE_DEMO_PROVIDER_ID,
 	MFA_NURSE_EMAIL,
+	PATIENT_EMAIL,
 	PRACTICE_NAME,
 	PROVIDER_EMAIL,
 	seedMockIdentity,
 } from '../src/identity/seed-mock-identity.js';
+import {configureApp} from '../src/platform/configure-app.js';
+import {AuthSession} from '../src/persistence/entities/auth-session.entity.js';
+import {RATE_LIMIT_STORE} from '../src/rate-limit/rate-limit-store.js';
+import {testRateLimitStore} from './rate-limit-test-store.js';
 import {utcDateKey} from '../src/identity/seed-mock-identity-corpus.js';
 import {Appointment} from '../src/persistence/entities/appointment.entity.js';
 import {Invoice} from '../src/persistence/entities/invoice.entity.js';
@@ -122,6 +133,34 @@ describe('seed:mock-identity bounded corpus', () => {
 			where: {practiceId: practice!.id, email: 'avery.quinn@synthetic.example'},
 		});
 		expect(avery).toBeTruthy();
+		const patientUser = await dataSource.getRepository(User).findOne({
+			where: {email: PATIENT_EMAIL},
+		});
+		expect(patientUser).toBeTruthy();
+		expect(patientUser!.id).toBe(LIVE_DEMO_PATIENT_ID);
+		const patientMemberships = await dataSource.getRepository(PracticeMembership).find({
+			where: {practiceId: practice!.id, userId: patientUser!.id},
+		});
+		expect(patientMemberships).toHaveLength(1);
+		expect(patientMemberships[0]?.role).toBe('PATIENT');
+		expect(avery!.portalUserId).toBe(patientUser!.id);
+		const linked = await dataSource.getRepository(Patient).find({
+			where: {practiceId: practice!.id, portalUserId: patientUser!.id},
+		});
+		expect(linked.map((row) => row.email)).toEqual([PATIENT_EMAIL]);
+		const admin = await dataSource.getRepository(User).findOne({where: {email: DEMO_EMAIL}});
+		const provider = await dataSource.getRepository(User).findOne({where: {email: PROVIDER_EMAIL}});
+		expect(admin).toBeTruthy();
+		expect(provider).toBeTruthy();
+		const adminMembership = await dataSource.getRepository(PracticeMembership).findOne({
+			where: {practiceId: practice!.id, userId: admin!.id},
+		});
+		expect(adminMembership?.role).toBe('PRACTICE_ADMIN');
+		expect(provider!.id).toBe(LIVE_DEMO_PROVIDER_ID);
+		const providerMembership = await dataSource.getRepository(PracticeMembership).findOne({
+			where: {practiceId: practice!.id, userId: provider!.id},
+		});
+		expect(providerMembership?.role).toBe('PROVIDER');
 		const nurseAssignment = await dataSource.getRepository(PatientAssignment).findOne({
 			where: {patientId: avery!.id, userId: mfaNurse!.id},
 		});
@@ -142,5 +181,98 @@ describe('seed:mock-identity bounded corpus', () => {
 		expect(second.adminInboxCount).toBe(first.adminInboxCount);
 		expect(second.providerInboxCount).toBe(first.providerInboxCount);
 		expect(second.patientEmails).toEqual(first.patientEmails);
+
+		const patientUsers = await dataSource.getRepository(User).find({
+			where: {email: PATIENT_EMAIL},
+		});
+		expect(patientUsers).toHaveLength(1);
+		expect(patientUsers[0]?.id).toBe(LIVE_DEMO_PATIENT_ID);
+		const membershipsAfter = await dataSource.getRepository(PracticeMembership).find({
+			where: {practiceId: practice!.id, userId: LIVE_DEMO_PATIENT_ID},
+		});
+		expect(membershipsAfter).toHaveLength(1);
+		expect(membershipsAfter[0]?.role).toBe('PATIENT');
+		const averyAfter = await dataSource.getRepository(Patient).findOne({
+			where: {practiceId: practice!.id, email: PATIENT_EMAIL},
+		});
+		expect(averyAfter?.portalUserId).toBe(LIVE_DEMO_PATIENT_ID);
+		const adminAfter = await dataSource.getRepository(PracticeMembership).findOne({
+			where: {practiceId: practice!.id, userId: admin!.id},
+		});
+		expect(adminAfter?.role).toBe('PRACTICE_ADMIN');
+		const providerAfter = await dataSource.getRepository(PracticeMembership).findOne({
+			where: {practiceId: practice!.id, userId: provider!.id},
+		});
+		expect(providerAfter?.role).toBe('PROVIDER');
+		const nurseAfter = await dataSource.getRepository(PracticeMembership).findOne({
+			where: {practiceId: practice!.id, userId: mfaNurse!.id},
+		});
+		expect(nurseAfter?.role).toBe('NURSE');
+	});
+});
+
+describe('seeded patient portal login', {timeout: 60_000}, () => {
+	let app: INestApplication;
+	let dataSource: DataSource;
+
+	beforeAll(async () => {
+		await seedMockIdentity();
+		const moduleRef = await Test.createTestingModule({
+			imports: [AppModule],
+		})
+			.overrideProvider(RATE_LIMIT_STORE)
+			.useValue(testRateLimitStore)
+			.compile();
+		dataSource = await createAdminDataSource();
+		app = moduleRef.createNestApplication();
+		configureApp(app);
+		await app.init();
+	});
+
+	afterAll(async () => {
+		if (dataSource?.isInitialized) {
+			await dataSource.getRepository(AuthSession).delete({userId: LIVE_DEMO_PATIENT_ID});
+		}
+		await app?.close();
+		if (dataSource?.isInitialized) {
+			await dataSource.destroy();
+		}
+	});
+
+	it('signs in without MFA and lists only Avery Quinn', async () => {
+		const login = await request(app.getHttpServer())
+			.post('/auth/login')
+			.send({email: PATIENT_EMAIL, password: 'Demo-Patient-1'})
+			.expect(200);
+		expect(login.body.mfaRequired).toBeUndefined();
+		expect(typeof login.body.accessToken).toBe('string');
+		expect(login.body.accessToken.length).toBeGreaterThan(0);
+
+		const listed = await request(app.getHttpServer())
+			.get('/patients')
+			.set('Authorization', `Bearer ${login.body.accessToken as string}`)
+			.expect(200);
+		expect(listed.body.patients).toEqual([
+			expect.objectContaining({
+				email: PATIENT_EMAIL,
+				firstName: 'Avery',
+				lastName: 'Quinn',
+			}),
+		]);
+
+		const practice = await dataSource.getRepository(Practice).findOne({
+			where: {name: PRACTICE_NAME},
+		});
+		expect(practice).toBeTruthy();
+		const blake = await dataSource.getRepository(Patient).findOne({
+			where: {practiceId: practice!.id, email: 'blake.chen@synthetic.example'},
+		});
+		expect(blake).toBeTruthy();
+		const denied = await request(app.getHttpServer())
+			.get(`/patients/${blake!.id}`)
+			.set('Authorization', `Bearer ${login.body.accessToken as string}`)
+			.expect(404);
+		expect(JSON.stringify(denied.body)).not.toContain('blake.chen@synthetic.example');
+		expect(JSON.stringify(denied.body)).not.toContain('Blake');
 	});
 });
