@@ -38,14 +38,14 @@ remain later. **M17 — Security and Compliance Maturity** is shipped and **clos
 [FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md), and
 [QA-005](../tasks/qa/QA-005-authorization-and-tenant-regression-expansion.md)). **M18 — Interview
 Demo Readiness** is the next milestone and is **pending**
-([QA-006](../tasks/qa/QA-006-live-demo-smoke.md),
+([QA-006](../tasks/qa/QA-006-live-demo-smoke.md) (shipped),
 [DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md),
 [BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md),
 [FE-037](../tasks/frontend/FE-037-demo-account-panel.md),
 [FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md),
 [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md),
 [INFRA-017](../tasks/infrastructure/INFRA-017-demo-presentation-pack.md),
-[QA-007](../tasks/qa/QA-007-m18-close-audit.md)). It does not reopen M17 and does not close M9.
+[QA-007](../tasks/qa/QA-007-m18-close-audit.md) (pending)). It does not reopen M17 and does not close M9.
 Render PR previews, real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and
 Redis stay deferred. Local product work does not wait on AWS. Resume M9 when the AWS account can
 be configured. Preview/production hosting remains M9, not M8, M10, M11, or M18.
@@ -178,7 +178,7 @@ Stripe.
 
 Make the existing Render demo reliable for an interviewer. Not a redesign, not a second host, and
 not a reopen of M9 or M17. Tasks:
-[QA-006](../tasks/qa/QA-006-live-demo-smoke.md) (live smoke),
+[QA-006](../tasks/qa/QA-006-live-demo-smoke.md) (live smoke, shipped),
 [DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md) (one synthetic patient
 login linked to Avery Quinn),
 [BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md) (open-session lookup, not a
@@ -219,7 +219,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M15 API Protection and Rate Limiting | SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034 (shipped) | PostgreSQL limiter store, `TRUST_PROXY`, auth and sensitive-route policies, 429 envelope, `auth.rate_limited`, API security headers, 429 auth UX. Not Redis, WAF, production MFA, or AWS. **Closed** at 0.80.0. |
 | M16 Live Telehealth | SEC-008, BE-021, FE-035 (shipped) | Eligibility on join/mint, join-before-mint, leave versus end (client/Daily leave; Nest end), 502 `MEDIA_UNAVAILABLE`, create/join rate limits, pre-join device UX. Not chat, recording, Socket.IO, or AWS. **Shipped** at 0.81.0. |
 | M17 Security and Compliance Maturity | SEC-009, BE-022, BE-023, FE-036, QA-005 (shipped) | ADR-016 session-tenant SUPER_ADMIN, clinical read audit, live concurrent-session inventory, authz-matrix expansion. Not AWS, HIPAA certification, production MFA, Redis/WAF, or patient DELETE. **Closed** at 0.84.1. |
-| M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (pending) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
+| M18 Interview Demo Readiness | QA-006 (shipped), DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (pending) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

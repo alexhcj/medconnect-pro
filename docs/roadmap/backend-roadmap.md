@@ -84,13 +84,13 @@ EDI 837, and invoice-create UI remain later. **M14** is shipped and **closed** a
 DATA-004, BE-018, BE-019, BE-020, FE-034). **M16 — Live Telehealth** is shipped at 0.81.0 (SEC-008,
 BE-021, FE-035). **M17 — Security and Compliance Maturity** is shipped and **closed** at 0.84.1 (SEC-009, BE-022, BE-023, FE-036,
 QA-005). **M18 — Interview Demo Readiness** is the next milestone and is **pending**
-([QA-006](../tasks/qa/QA-006-live-demo-smoke.md),
+([QA-006](../tasks/qa/QA-006-live-demo-smoke.md) (shipped),
 [DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md),
 [BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md),
 [FE-037](../tasks/frontend/FE-037-demo-account-panel.md),
 [FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md),
 [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md),
 [INFRA-017](../tasks/infrastructure/INFRA-017-demo-presentation-pack.md),
-[QA-007](../tasks/qa/QA-007-m18-close-audit.md)). It does not reopen M17 or close M9. Render PR
+[QA-007](../tasks/qa/QA-007-m18-close-audit.md) (pending)). It does not reopen M17 or close M9. Render PR
 previews, real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and Redis
 stay deferred. Local product work does not wait on AWS.
