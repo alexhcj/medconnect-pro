@@ -99,7 +99,6 @@ services:
   - type: web
     name: medconnect-marketing
     runtime: static
-    region: frankfurt
     branch: main
     buildCommand: npm ci && npm run build:marketing
     staticPublishPath: apps/marketing/out

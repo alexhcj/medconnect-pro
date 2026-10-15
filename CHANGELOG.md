@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.86.1] - 2026-10-15
+
+### Fixed
+
+- INFRA-016: the marketing static site no longer sets `region`. Render rejects that field on a
+  static site, so the Blueprint could not sync.
+
 ## [0.86.0] - 2026-10-14
 
 ### Added

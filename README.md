@@ -144,7 +144,7 @@ hosted on AWS.
 
 ## Development status
 
-Application version **0.86.0**. Snapshot:
+Application version **0.86.1**. Snapshot:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md).
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).

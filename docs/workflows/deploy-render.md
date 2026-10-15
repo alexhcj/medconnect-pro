@@ -49,7 +49,7 @@ launches `dist/main.js` and does not need the CLI.
 1. In the Render dashboard, create a Blueprint from this repository. Do not paste secrets into Git.
 2. Confirm the API, application, and Postgres are in Frankfurt. The API reaches Postgres on the
    internal URL (`fromDatabase` `connectionString`). The static site is published from
-   `apps/marketing/out`.
+   `apps/marketing/out` and has no `region`; Render rejects that field on a static site.
 3. The committed Blueprint sets `SEED_ON_DEPLOY=false` so a later sync does not re-seed. On a
    brand-new database, set `SEED_ON_DEPLOY=true` for one deploy, then set it back to `false`.
    Free web services reject a pre-deploy command, so `scripts/infra/start-api.mjs` runs before
