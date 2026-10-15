@@ -36,9 +36,9 @@ proposal and the appointments module.
 
 ## Sign in
 
-Sign-in is **not** a marketing route. Visitors enter through `/login` in the `(auth)` group
-([FE-010](../tasks/frontend/FE-010-mock-authentication-ui.md)). `/demo` and homepage CTAs use
-`LOGIN_PATH` (`/login`). Do not add `/sign-in`.
+Sign-in is **not** a marketing route. Visitors enter the application at `/login`
+([FE-010](../tasks/frontend/FE-010-mock-authentication-ui.md)). Marketing CTAs use the absolute
+application login URL. Do not add `/sign-in`.
 
 ## Outside marketing chrome
 
@@ -48,7 +48,7 @@ claim HIPAA. Rewriting them is not an M8 marketing task.
 ## Next.js mapping
 
 ```text
-apps/web/src/app/(marketing)/
+apps/marketing/src/app/(marketing)/
   page.tsx                         # /
   platform/page.tsx                # /platform
   platform/patient-management/
@@ -62,11 +62,15 @@ apps/web/src/app/(marketing)/
   demo/page.tsx
 ```
 
-`(auth)/` continues to own `/login`. `(dashboard)/` continues to own the authenticated app.
-Marketing components live in `apps/web/src/components/marketing/`. Shared primitives stay in
-`apps/web/src/components/ui/`.
+`apps/web` `(auth)/` continues to own `/login`. `(dashboard)/` continues to own the authenticated
+app. The application root redirects to `/login`. Marketing components live in
+`apps/marketing/src/components/marketing/`. Shared color tokens stay in
+`apps/web/src/styles/tokens.css`.
 
 ## Deploy
 
-Hosted deployment and preview environments are **M9**. They are not implied by this
-sitemap.
+The public pages deploy as a Render static site
+([ADR-018](../decisions/ADR-018-render-marketing-static-site.md)). The authenticated application
+is a separate web service. Sign-in stays `/login` on that application, not on the marketing host.
+`/privacy-policy` and `/terms-of-service` stay on the application. AWS preview and production
+hosting remain M9 and are not closed by this site.

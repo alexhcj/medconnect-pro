@@ -71,7 +71,9 @@ origin directly, so a CSRF cookie set on another host could not be read by the l
 
 ## Completion
 
-- Implemented in the repository at 0.85.0. Render services were not provisioned.
+- Implemented in the repository at 0.85.0. Render services were provisioned after that note, on
+  2026-10-14. [INFRA-016](INFRA-016-render-marketing-static-site.md) splits marketing onto its own
+  static site and does not close M9.
 - First-deploy checks that remain operator work: `CREATE ROLE` on the Render owner, a real client
   IP with `TRUST_PROXY=1`, free-instance hour burn, Next.js memory on 512 MB, and browser storage
   of the proxied `Set-Cookie`.

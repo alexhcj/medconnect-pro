@@ -62,27 +62,24 @@ Do not put server data into Zustand simply to duplicate TanStack Query.
 
 ## Public vs authenticated
 
-Marketing routes must not inherit the dashboard shell or session gate. `(auth)` and `(dashboard)`
-stay isolated from the public `(marketing)` group ([FE-017](../tasks/frontend/FE-017-marketing-website-foundation.md)).
+The public marketing site is `apps/marketing`, a static Next.js export. It does not inherit the
+dashboard shell or session gate. The authenticated application in `apps/web` owns `/login` and
+`/dashboard`. `/` on the application redirects to `/login`. Sign-in links on the marketing site
+are absolute URLs on the application origin
+([ADR-018](../decisions/ADR-018-render-marketing-static-site.md)).
 
 Implemented App Router groups in `apps/web/src/app`:
 
 ```text
-(marketing)/          # public; MarketingShell; no session gate
-  page.tsx            # /
-  platform/page.tsx   # /platform
-  platform/*/page.tsx # feature pages (FE-021)
-  security/page.tsx   # /security
-  about/page.tsx      # /about
-  demo/page.tsx       # /demo → existing /login (mock IdP)
+page.tsx              # / redirects to /login
 (auth)/               # /login, /register, /email-verification
 (dashboard)/          # DashboardAuthGate + DashboardShell
 ```
 
-Marketing chrome lives in `apps/web/src/components/marketing/` (`MarketingShell`, header, footer,
-mobile nav, page container, section composition, and `FeaturePageLayout` for `/platform/*`). It reuses
-`components/ui` primitives and shared tokens, not the dashboard shell. `/demo` links to
-`LOGIN_PATH` (`/login`); it does not add a second identity stack.
+Marketing pages live in `apps/marketing/src/app/(marketing)/` (`/`, `/platform`, `/platform/*`,
+`/security`, `/about`, `/demo`). Chrome lives in `apps/marketing/src/components/marketing/`. It
+copies the button and card primitives it needs and imports `apps/web/src/styles/tokens.css`.
+`/privacy-policy` and `/terms-of-service` stay on the application.
 
 Copy must follow [docs/product/](../product/README.md) and
 [capability-matrix.md](../marketing/capability-matrix.md). Do not claim HIPAA

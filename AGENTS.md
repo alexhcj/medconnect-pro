@@ -18,8 +18,11 @@ recording, and Socket.IO remain later. **M17 — Security and Compliance Maturit
 and **closed** at 0.84.1 (SEC-009, BE-022, BE-023, FE-036, QA-005). Local product work does not wait on AWS.
 [INFRA-015](docs/tasks/infrastructure/INFRA-015-render-public-demo.md) is an interim Render public
 demo and does not close M9.
+[INFRA-016](docs/tasks/infrastructure/INFRA-016-render-marketing-static-site.md) publishes marketing
+as a static site on that demo and does not close M9.
 
 Frontend application: `apps/web`.
+Marketing site: `apps/marketing` (static export).
 Backend application: `apps/api` (NestJS 12 platform; OpenAPI via `npm run openapi:generate`).
 
 Process files (do not inline these prompts into rules):

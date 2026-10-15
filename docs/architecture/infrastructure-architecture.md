@@ -44,12 +44,13 @@ Do not pull AWS work into M10.
 
 ## Interim public demo (Render)
 
-[ADR-017](../decisions/ADR-017-interim-render-demo.md) hosts the synthetic demo on Render while M9
-stays paused. The Blueprint is [render.yaml](../../render.yaml): free Next.js and Nest web
-services in Frankfurt, and one Free Postgres 18 database. The browser calls `/mcp-api` on the web
-origin. The API uses `APP_ENV=preview`, `DOCUMENT_STORAGE_DRIVER=local`, and
-`TRUST_PROXY=1`. Runtime `DATABASE_URL` is derived for `medconnect_app`. This does not close M9
-and does not change the AWS target below. Operator steps:
+[ADR-017](../decisions/ADR-017-interim-render-demo.md) and
+[ADR-018](../decisions/ADR-018-render-marketing-static-site.md) host the synthetic demo on Render
+while M9 stays paused. The Blueprint is [render.yaml](../../render.yaml): a free Next.js
+application, a static marketing site, a free Nest API, all in Frankfurt, and one Free Postgres 18
+database. The browser calls `/mcp-api` on the application origin. The API uses `APP_ENV=preview`,
+`DOCUMENT_STORAGE_DRIVER=local`, and `TRUST_PROXY=1`. Runtime `DATABASE_URL` is derived for
+`medconnect_app`. This does not close M9 and does not change the AWS target below. Operator steps:
 [deploy-render.md](../workflows/deploy-render.md).
 
 ## Target

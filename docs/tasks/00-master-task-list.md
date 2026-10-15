@@ -113,6 +113,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - INFRA-014 — AWS account setup and hosted first-apply
 - INFRA-013 — v1.0.0 production release readiness
 - INFRA-015 — Interim Render public demo (does not close M9)
+- INFRA-016 — Render marketing static site (does not close M9)
 
 ## Product (M10)
 

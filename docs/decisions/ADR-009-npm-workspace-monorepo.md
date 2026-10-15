@@ -35,3 +35,6 @@ package exists.
 - Canonical demo version remains the **root** `package.json` version ([ADR-007](ADR-007-semantic-versioning.md)).
 - NestJS was added later under `apps/api` without another repository restructure, as this decision
   required. `packages/` remains unused until a concrete cross-app reuse need exists.
+- `apps/marketing` is a later static Next.js workspace for the public site
+  ([ADR-018](ADR-018-render-marketing-static-site.md)). It is not a shared package. It imports
+  color tokens from `apps/web` and copies the two UI primitives it renders.

@@ -13,7 +13,7 @@ Hosted secret retrieval (this catalog’s retrieval section, [INFRA-006](../task
 | `APP_ENV` | `NODE_ENV` | Frontend | API | Database |
 | --- | --- | --- | --- | --- |
 | `local` | `development` (tests: `test`) | localhost | localhost | Compose `medconnect` |
-| `preview` | `production` | Amplify PR/branch preview | shared preview ECS | preview/demo RDS |
+| `preview` | `production` | Amplify PR/branch preview, or the interim Render application | shared preview ECS, or the Render API | preview/demo RDS, or the Render Postgres database |
 | `production` | `production` | Amplify `main` | production ECS | production/demo RDS |
 
 Isolation:
@@ -40,6 +40,8 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `NEXT_PUBLIC_MOCK_ERROR_RATE` | web | Local mock faults only. |
 | `NEXT_PUBLIC_MOCK_LOG_LEVEL` | web | Local mock logging only. |
 | `NEXT_PUBLIC_API_BASE_URL` | web | Environment-specific API origin, or a same-origin path such as `/mcp-api`. Public by design, not a secret. |
+| `NEXT_PUBLIC_SITE_URL` | marketing | Public origin of the static marketing site. Build-time only. Not a secret. |
+| `NEXT_PUBLIC_APP_ORIGIN` | marketing | Public origin of the authenticated application. Sign-in links use it. Build-time only. Not a secret. |
 
 ### Environment-specific (not secret)
 
@@ -55,8 +57,8 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `PUBLIC_API_PREFIX` | api | Optional single path segment (`/mcp-api`). Empty keeps cookie paths `/` and `/auth`. When set, access, refresh, and MFA cookie paths are prefixed. The CSRF cookie stays on `/` so pages can read it. |
 | `SEED_ON_DEPLOY` | api | Render start only. `true` runs `seed:mock-identity` after migrate, before Nest listens. Set `false` after the first synthetic seed. |
 | `API_BASE_URL` | web | Server-only upstream for the `/mcp-api` proxy, and the Amplify server origin. Same classification as `NEXT_PUBLIC_API_BASE_URL`. |
-| `WEB_ORIGIN` | api | Single CORS origin. Local default `http://localhost:3000`. |
-| `WEB_ORIGINS` | api | Comma-separated CORS allowlist. Unioned with `WEB_ORIGIN`. Preview may include `https://*.amplifyapp.com`. Production must be exact origins only. |
+| `WEB_ORIGIN` | api | Single CORS origin and the OAuth return origin. Local default `http://localhost:3000`. On Render this is `https://medconnectpro.app`, not the marketing origin. |
+| `WEB_ORIGINS` | api | Comma-separated CORS allowlist. Unioned with `WEB_ORIGIN`. Preview may include `https://*.amplifyapp.com`. Production must be exact origins only. Render may include the application service’s `onrender.com` URL until that name is disabled. Do not add the marketing origin. |
 | `OIDC_PROVIDER` | api | Optional (BE-017). `google` or `fake`. Google is selected when issuer, client ID, secret, and redirect URI are all set. Fake is never selected when hosted. |
 | `OIDC_ISSUER` | api | Provider issuer URL (e.g. `https://accounts.google.com`); validated against ID token `iss`. |
 | `OIDC_CLIENT_ID` | api | Public client identifier; validated against ID token `aud`. |
@@ -203,8 +205,11 @@ a hardcoded `*.amplifyapp.com` on the production API (that pattern would also ma
 | `apps/web/.env.production.example` | Production web placeholders |
 | `apps/api/.env.render.example` | Render API placeholders |
 | `apps/web/.env.render.example` | Render web placeholders |
+| `apps/marketing/.env.example` | Local marketing site and application origins |
+| `apps/marketing/.env.render.example` | Render marketing placeholders |
 
 Render wiring, free-tier limits, and the upgrade path:
-[deploy-render.md](../workflows/deploy-render.md) and
-[ADR-017](../decisions/ADR-017-interim-render-demo.md). The hosted retrieval section above remains
-the AWS path.
+[deploy-render.md](../workflows/deploy-render.md),
+[ADR-017](../decisions/ADR-017-interim-render-demo.md), and
+[ADR-018](../decisions/ADR-018-render-marketing-static-site.md). The hosted retrieval section
+above remains the AWS path.

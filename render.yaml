@@ -1,4 +1,5 @@
-# Interim public demo (INFRA-015, ADR-017). Free web services and one Free Postgres.
+# Interim public demo (INFRA-015, INFRA-016, ADR-017, ADR-018).
+# Free web services, one static site, and one Free Postgres.
 # Upgrade Postgres before the 30-day expiry. Do not put real secrets in this file.
 # AWS Terraform and Amplify stay in place. See docs/workflows/deploy-render.md.
 
@@ -16,6 +17,7 @@ services:
     runtime: node
     plan: free
     region: frankfurt
+    branch: main
     # NODE_ENV=production is set on this service, so npm ci would skip devDependencies
     # and `nest` would be missing. The CLI is only needed to compile.
     buildCommand: npm ci --include=dev && npm run build:api
@@ -23,6 +25,14 @@ services:
     # migrates, and seeds before listen.
     startCommand: node scripts/infra/start-api.mjs
     healthCheckPath: /health
+    buildFilter:
+      paths:
+        - apps/api/**
+        - scripts/infra/**
+        - package.json
+        - package-lock.json
+    domains:
+      - api.medconnectpro.app
     envVars:
       - key: NODE_VERSION
         value: "24"
@@ -39,7 +49,7 @@ services:
       - key: SWAGGER_UI_ENABLED
         value: "false"
       - key: SEED_ON_DEPLOY
-        value: "true"
+        value: "false"
       - key: APP_ROLE_PASSWORD
         generateValue: true
       - key: RATE_LIMIT_KEY_SECRET
@@ -49,6 +59,8 @@ services:
           name: medconnect-postgres
           property: connectionString
       - key: WEB_ORIGIN
+        value: https://medconnectpro.app
+      - key: WEB_ORIGINS
         fromService:
           type: web
           name: medconnect-web
@@ -59,9 +71,18 @@ services:
     runtime: node
     plan: free
     region: frankfurt
+    branch: main
     buildCommand: npm ci && npm run build:production
     startCommand: npm run start
     healthCheckPath: /login
+    buildFilter:
+      paths:
+        - apps/web/**
+        - package.json
+        - package-lock.json
+    domains:
+      - medconnectpro.app
+      - www.medconnectpro.app
     envVars:
       - key: NODE_VERSION
         value: "24"
@@ -74,3 +95,26 @@ services:
           type: web
           name: medconnect-api
           envVarKey: RENDER_EXTERNAL_URL
+
+  - type: web
+    name: medconnect-marketing
+    runtime: static
+    region: frankfurt
+    branch: main
+    buildCommand: npm ci && npm run build:marketing
+    staticPublishPath: apps/marketing/out
+    buildFilter:
+      paths:
+        - apps/marketing/**
+        - apps/web/src/styles/tokens.css
+        - package.json
+        - package-lock.json
+    domains:
+      - marketing.medconnectpro.app
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://marketing.medconnectpro.app
+      - key: NEXT_PUBLIC_APP_ORIGIN
+        value: https://medconnectpro.app

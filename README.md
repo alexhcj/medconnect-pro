@@ -117,30 +117,34 @@ ADRs: [`docs/decisions/`](./docs/decisions/).
 
 ## Architecture
 
-Implemented local / CI path. Marketing and dashboard share the Next.js app; Nest owns
-authorization and data.
+Implemented local / CI path. The public site is `apps/marketing`. The authenticated application
+is `apps/web`. Nest owns authorization and data.
 
 ```mermaid
 flowchart LR
-  Marketing["Next.js marketing"]
-  Web["Next.js dashboard"]
+  Marketing["Static marketing site"]
+  Web["Next.js application"]
   Api["NestJS API"]
   Pg["PostgreSQL plus RLS"]
   Ci["GitHub Actions CI"]
-  Marketing --> Web
+  Marketing -->|"Sign-in link"| Web
   Web --> Api
   Api --> Pg
+  Ci --> Marketing
   Ci --> Web
   Ci --> Api
 ```
 
 Amplify Hosting and ECS/Fargate exist as infrastructure-as-code for a later operator apply
 ([INFRA-014](./docs/tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)).
-They are not a live public deployment.
+They are not the live public demo. The interim public demo is Render
+([ADR-017](./docs/decisions/ADR-017-interim-render-demo.md),
+[ADR-018](./docs/decisions/ADR-018-render-marketing-static-site.md)). Do not describe the demo as
+hosted on AWS.
 
 ## Development status
 
-Application version **0.72.0**. Snapshot:
+Application version **0.86.0**. Snapshot:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md).
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).

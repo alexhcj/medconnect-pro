@@ -89,6 +89,11 @@ jobs:
         run: npm run test:api
       - name: Build web (production)
         run: npm run build:production
+      - name: Build marketing (static)
+        env:
+          NEXT_PUBLIC_SITE_URL: https://marketing.medconnectpro.app
+          NEXT_PUBLIC_APP_ORIGIN: https://medconnectpro.app
+        run: npm run build:marketing
       - name: Build api
         run: npm run build:api
       - name: Audit production dependencies

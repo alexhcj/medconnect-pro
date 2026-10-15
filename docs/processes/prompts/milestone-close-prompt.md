@@ -21,7 +21,7 @@ does not produce an implementation plan. When authoring gap task specs, follow
 
 ---
 
-Audit milestone close for [MILESTONE-ID].
+Audit milestone close for M17.
 
 Before proposing work:
 

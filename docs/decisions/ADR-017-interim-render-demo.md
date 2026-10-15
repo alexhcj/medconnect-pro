@@ -10,7 +10,9 @@ While [ADR-012](ADR-012-deployment-topology.md) AWS hosting is paused, the synth
 may run on Render. This does not replace Amplify, ECS, RDS, or Terraform, and it does not close
 M9.
 
-- **Web:** one Render web service for `apps/web`, native Node 24.
+- **Web:** one Render web service for `apps/web`, native Node 24. The authenticated application
+  owns the apex hostname. [ADR-018](ADR-018-render-marketing-static-site.md) moves the public
+  marketing pages to a separate static site.
 - **API:** one Render web service for `apps/api`, native Node 24. The existing API image remains
   the ECS artifact.
 - **Database:** one Render Postgres 18 database, separate from local Compose and from any future
@@ -48,3 +50,6 @@ on `onrender.com`, which is a public suffix.
   returns 503. Telehealth uses the Fake adapter.
 - The demo is not a HIPAA-compliant or production system
   ([ADR-005](ADR-005-synthetic-demo-data.md)).
+- [ADR-018](ADR-018-render-marketing-static-site.md) supersedes the single web-service shape for
+  public marketing pages. The API proxy, `APP_ENV=preview`, database isolation, and AWS target in
+  this decision stay in force.

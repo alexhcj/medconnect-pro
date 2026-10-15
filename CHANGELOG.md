@@ -6,6 +6,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.86.0] - 2026-10-14
+
+### Added
+
+- INFRA-016: the public marketing site is its own static export (`apps/marketing`). Sign-in
+  links and canonical URLs come from public build-time origins. Render can publish it beside
+  the existing app and API. This does not close M9.
+
+### Changed
+
+- The Next.js application root redirects to sign-in. Marketing routes are no longer served
+  from `apps/web`. `/mcp-api` and host-only session cookies are unchanged.
+- The Render Blueprint adds the static site, custom domains, and `WEB_ORIGIN` for
+  `https://medconnectpro.app`. The temporary `onrender.com` app URL stays on `WEB_ORIGINS`
+  until that name is turned off.
+
 ## [0.85.2] - 2026-10-14
 
 ### Fixed
