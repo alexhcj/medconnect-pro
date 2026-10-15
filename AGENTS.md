@@ -15,7 +15,11 @@ invoice-create UI remain later. **M14 — OAuth / External Identity** is shipped
 Limiting** is shipped and **closed** at 0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020,
 FE-034; ADR-015). **M16 — Live Telehealth** is shipped at 0.81.0 (SEC-008, BE-021, FE-035). Chat,
 recording, and Socket.IO remain later. **M17 — Security and Compliance Maturity** is shipped
-and **closed** at 0.84.1 (SEC-009, BE-022, BE-023, FE-036, QA-005). Local product work does not wait on AWS.
+and **closed** at 0.84.1 (SEC-009, BE-022, BE-023, FE-036, QA-005). **M18 — Interview Demo
+Readiness** is the next milestone and is **pending** (QA-006, DATA-005, BE-024, FE-037, FE-038,
+FE-039, INFRA-017, QA-007). It does not reopen M17 or close M9. Render PR previews, real Google
+OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and Redis stay deferred. Local
+product work does not wait on AWS.
 [INFRA-015](docs/tasks/infrastructure/INFRA-015-render-public-demo.md) is an interim Render public
 demo and does not close M9.
 [INFRA-016](docs/tasks/infrastructure/INFRA-016-render-marketing-static-site.md) publishes marketing

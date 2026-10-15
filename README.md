@@ -160,9 +160,14 @@ Application version **0.86.1**. Snapshot:
   [FE-030](./docs/tasks/frontend/FE-030-daily-media-session-shell.md)). **M13 — Billing / Payments UX**
   is shipped ([FE-031](./docs/tasks/frontend/FE-031-record-demo-payment.md),
   [FE-032](./docs/tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims
-  submission / EDI 837, and invoice-create UI remain later. Local product work does not wait on AWS.
+  submission / EDI 837, and invoice-create UI remain later.
+- **M14–M17 shipped** (OAuth/OIDC demo, API rate limiting, live telehealth workflow, and security
+  maturity through QA-005). **M18 — Interview Demo Readiness** is next and **pending** (QA-006,
+  DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007). It does not close M9.
+  Local product work does not wait on AWS.
 
-Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, in-session
+Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, Render PR
+previews, in-session
 chat/recording, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
 
 ## Deployment / demo

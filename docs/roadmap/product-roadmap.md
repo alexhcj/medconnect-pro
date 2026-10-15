@@ -15,7 +15,10 @@ EDI 837, and invoice-create UI remain later. **M14 — OAuth / External Identity
 0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020, FE-034). **M16 — Live Telehealth** is shipped
 at 0.81.0 (SEC-008, BE-021, FE-035). Chat, recording, and Socket.IO remain later. **M17 — Security
 and Compliance Maturity** is shipped and **closed** at 0.84.1 (SEC-009, BE-022, BE-023, FE-036, QA-005). Local product
-work does not wait on AWS.
+work does not wait on AWS. **M18 — Interview Demo Readiness** is the next milestone and is
+**pending** (QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007). It does not
+reopen M17 or close M9. Render PR previews, real Google OAuth credentials, chat, recording,
+Socket.IO, hosted Stripe, and Redis stay deferred.
 
 The MVP / Expansion / Maturity lists remain storytelling stages. They are not a claim that
 expansion is still unshipped.
@@ -54,7 +57,8 @@ leave versus end, pre-join). Remaining telehealth after M16 is chat, recording, 
 authorization regression).
 
 - EHR integrations;
-- telehealth maturity (M16 live workflow shipped; then chat, recording, Socket.IO);
+- telehealth maturity (M16 live workflow shipped; M18 adds patient entry of an open visit, then
+  chat, recording, Socket.IO);
 - revenue cycle;
 - reliability;
 - performance;

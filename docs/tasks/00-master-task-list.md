@@ -53,6 +53,9 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-034 — Rate-limited auth UX
 - FE-035 — Clinical live-visit UX on the session shell
 - FE-036 — Live concurrent-session chrome
+- FE-037 — Demo account panel
+- FE-038 — Telehealth participant entry
+- FE-039 — Public demo OAuth unavailable
 
 ## Backend
 
@@ -80,6 +83,8 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-021 — Telehealth eligibility and lifecycle hardening
 - BE-022 — Clinical record read audit
 - BE-023 — Concurrent session inventory HTTP
+- DATA-005 — Synthetic patient portal account
+- BE-024 — Telehealth open-session lookup
 
 ## Security
 
@@ -98,6 +103,8 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - QA-003 — Appointment workflow tests
 - QA-004 — Authorization/tenant isolation tests
 - QA-005 — Authorization and tenant regression expansion
+- QA-006 — Live demo smoke
+- QA-007 — M18 close audit
 
 ## Deployment (M9)
 
@@ -114,6 +121,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - INFRA-013 — v1.0.0 production release readiness
 - INFRA-015 — Interim Render public demo (does not close M9)
 - INFRA-016 — Render marketing static site (does not close M9)
+- INFRA-017 — Demo presentation pack (M18; does not close M9)
 
 ## Product (M10)
 
@@ -173,3 +181,16 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - BE-023 — Concurrent session inventory HTTP
 - FE-036 — Live concurrent-session chrome
 - QA-005 — Authorization and tenant regression expansion
+
+## Product (M18, pending)
+
+Interview demo readiness on the existing Render host. Does not close M9 or reopen M17.
+
+- QA-006 — Live demo smoke
+- DATA-005 — Synthetic patient portal account
+- BE-024 — Telehealth open-session lookup
+- FE-037 — Demo account panel
+- FE-038 — Telehealth participant entry
+- FE-039 — Public demo OAuth unavailable
+- INFRA-017 — Demo presentation pack
+- QA-007 — M18 close audit

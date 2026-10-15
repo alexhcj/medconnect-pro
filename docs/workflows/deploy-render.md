@@ -110,8 +110,17 @@ After the first deploy is live:
   Starter is still 512 MB. It only removes spin-down.
 
 Google OAuth and live Daily video are unavailable until those secrets are set in the Render
-dashboard. Unset OAuth returns 503. Unset `DAILY_API_KEY` keeps the Fake telehealth adapter.
-In-app notifications do not send email. Render preview environments stay off.
+dashboard. Do not commit them. With no `OIDC_*` variables, the hosted adapter key is unavailable
+Google. The public login button currently requests Fake, and that start returns 400
+`VALIDATION_ERROR` / `Unknown OAuth provider`. A start for the unavailable Google key returns 503
+`OAUTH_UNAVAILABLE`. Fake OIDC stays local-only. Unset `DAILY_API_KEY` keeps the Fake telehealth
+adapter and the shell labels media unavailable. In-app notifications do not send email.
+
+[M18](../roadmap/release-roadmap.md) is pending interviewer readiness on this same host. It does
+not add services or domains. Until those tasks ship, there is no patient login, the lobby Join
+action is create-only, and the provider button is still shown. Render preview environments stay
+off through M18. Later previews, if any, follow INFRA-010: a frontend preview against one shared
+preview API and database, never this interviewer database.
 
 ## After the first seed
 
