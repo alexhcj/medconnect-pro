@@ -7,8 +7,7 @@ import {z} from 'zod';
 import {Button} from '@/components/ui/button';
 import {useVerifyMfa} from '@/lib/hooks/use-session';
 import {ApiError, RateLimitedError, rateLimitMessage} from '@/lib/api/http';
-
-const MOCK_MFA_CODE = '135790';
+import {DEMO_MFA_CODE} from '@/lib/auth/demo-accounts';
 
 const mfaCodeSchema = z.object({
 	code: z.string().regex(/^\d{6}$/, 'Enter the 6-digit demo code'),
@@ -105,7 +104,7 @@ export function MfaChallengeForm({
 				<div className="rounded-md border border-border bg-subtle p-3 text-xs text-foreground-secondary">
 					<p className="text-sm font-medium text-foreground">Demo verification code</p>
 					<p className="mt-1">
-						Code: <span className="font-mono">{MOCK_MFA_CODE}</span>
+						Code: <span className="font-mono">{DEMO_MFA_CODE}</span>
 					</p>
 					<p className="mt-1 text-foreground-muted">Theater only. Not a production secret.</p>
 				</div>

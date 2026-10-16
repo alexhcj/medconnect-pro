@@ -53,15 +53,14 @@ capabilities:
   - id: identity-access.patient-demo-sign-in
     name: Patient demo sign-in
     status: shipped
-    demo: one synthetic PATIENT linked to Avery Quinn through portalUserId; mock IdP sign-in with no MFA. The login panel does not list this account until FE-037.
+    demo: one synthetic PATIENT linked to Avery Quinn through portalUserId; mock IdP sign-in with no MFA. The demo account panel lists this account when the sign-in flag is on.
     public: no
     related_tasks: [DATA-005]
   - id: identity-access.demo-account-panel
     name: Demo account panel
-    status: planned
-    demo: not in the demo; login currently prints two accounts as plain text
+    status: shipped
+    demo: "Four synthetic accounts (practice admin, provider, MFA nurse, Avery Quinn) with role labels, copy actions, and the MFA nurse code, only when NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS is exactly true. Render sets the flag. Production leaves it unset."
     public: no
-    planned_next: demo-only panel with role labels, copy actions, and the MFA code
     related_tasks: [FE-037, DATA-005]
 ---
 
@@ -72,8 +71,10 @@ JSON for machine clients. Live Next uses those cookies and does not persist acce
 tokens. Public copy may describe mock identity, labeled mock MFA, demo OIDC + PKCE sign-in
 (Google or Fake) where that adapter is actually configured, and demo concurrent-session review.
 The public Render demo does not complete Google or Fake sign-in. One synthetic patient can sign
-in with no MFA. The demo account panel is planned (M18) and is not in the demo yet. Do not
-describe production OAuth, a production IdP, production MFA, or a production session manager.
+in with no MFA. When `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS` is exactly true, `/login` lists the four
+synthetic accounts. Render sets that flag. Production leaves it unset. Do not describe production
+OAuth, a production IdP, production MFA, or a production session manager. Do not publish the
+fixture passwords on the marketing site.
 
 Demo entry is existing `/login` ([FE-010](../tasks/frontend/FE-010-mock-authentication-ui.md)),
 not a marketing `/sign-in` route.
@@ -85,5 +86,5 @@ not a marketing `/sign-in` route.
 | `identity-access.oauth-oidc-pkce` | Demo OAuth 2.0 / OIDC + PKCE sign-in | shipped | Demo OIDC + PKCE (Google or Fake) on live `/login`; not a production IdP | qualified |
 | `identity-access.auth-rate-limiting` | Demo auth and sensitive-route rate limiting | shipped | Nest 429 `RATE_LIMITED` on login (including account-wide failures), MFA, refresh, OAuth, telehealth create/join/media-token, document download, payments; `auth.rate_limited` security event; "too many attempts" on login and MFA (with N seconds when known) and on the OAuth landing ("later") | qualified |
 | `identity-access.concurrent-sessions` | Concurrent session review | shipped | Live dialog lists and revokes other Nest sessions; live rows omit IP and location; mock location and IP stay labeled demo data; not a session-policy editor or production session manager | qualified |
-| `identity-access.patient-demo-sign-in` | Patient demo sign-in | shipped | one synthetic PATIENT linked to Avery Quinn; no MFA | no |
-| `identity-access.demo-account-panel` | Demo account panel | planned | not in the demo | no |
+| `identity-access.patient-demo-sign-in` | Patient demo sign-in | shipped | one synthetic PATIENT linked to Avery Quinn; no MFA; listed on the demo account panel when the sign-in flag is on | no |
+| `identity-access.demo-account-panel` | Demo account panel | shipped | four synthetic accounts on `/login` when the demo flag is exactly true; copy actions and the MFA nurse code; production leaves the flag unset | no |

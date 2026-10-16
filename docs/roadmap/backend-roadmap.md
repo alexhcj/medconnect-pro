@@ -87,7 +87,7 @@ QA-005). **M18 — Interview Demo Readiness** is the next milestone and is **pen
 ([QA-006](../tasks/qa/QA-006-live-demo-smoke.md),
 [DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md) (shipped),
 [BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md) (shipped),
-[FE-037](../tasks/frontend/FE-037-demo-account-panel.md),
+[FE-037](../tasks/frontend/FE-037-demo-account-panel.md) (shipped),
 [FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md),
 [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md),
 [INFRA-017](../tasks/infrastructure/INFRA-017-demo-presentation-pack.md),

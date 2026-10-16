@@ -1,4 +1,4 @@
-import {Body, Controller, Get, HttpCode, Param, Post} from '@nestjs/common';
+import {Body, Controller, Get, HttpCode, Param, Post, Query} from '@nestjs/common';
 import {
 	ApiBadGatewayResponse,
 	ApiBody,
@@ -21,8 +21,10 @@ import {
 	TelehealthSessionRdo,
 } from './telehealth-session.rdo.js';
 import {
+	telehealthOpenSessionQuerySchema,
 	telehealthSessionCreateSchema,
 	telehealthSessionIdParamsSchema,
+	type TelehealthOpenSessionQuery,
 	type TelehealthSessionCreateBody,
 	type TelehealthSessionIdParams,
 } from './telehealth-session.schema.js';
@@ -52,6 +54,20 @@ export class TelehealthSessionController {
 		@Body({schema: telehealthSessionCreateSchema}) body: TelehealthSessionCreateBody,
 	): Promise<TelehealthSessionRdo> {
 		return this.sessions.create(body);
+	}
+
+	@Get()
+	@ApiOperation({
+		summary: 'Resolve the open telehealth session for one appointment',
+		description:
+			'Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Returns the same session object as get when a non-ended session exists. Missing, ended-only, cross-tenant, and out-of-scope appointments use the same not-found response. This does not create a session and does not accept a client practice id. Tenant comes from the session.',
+	})
+	@ApiOkResponse({type: TelehealthSessionRdo})
+	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})
+	findOpen(
+		@Query({schema: telehealthOpenSessionQuerySchema}) query: TelehealthOpenSessionQuery,
+	): Promise<TelehealthSessionRdo> {
+		return this.sessions.findOpenByAppointment(query.appointmentId);
 	}
 
 	@Get(':id')

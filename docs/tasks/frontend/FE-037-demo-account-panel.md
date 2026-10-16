@@ -3,7 +3,7 @@ id: FE-037
 type: task
 area: frontend
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [DATA-005, FE-010, FE-028]
@@ -27,7 +27,7 @@ design:
   frame: "App / Login — FE-033 frames (182:2184); M18 demo-account delta approved with the milestone plan"
   status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -78,13 +78,13 @@ Design delta is approved on the existing FE-033 login frame: same card, no new F
 
 ## Acceptance criteria
 
-- [ ] With the flag unset, sign-in does not show emails or passwords
-- [ ] With the flag set, all four accounts from `demo-users.json` are visible with role labels
-- [ ] Copy email and copy password each move focus-safe text to the clipboard and announce success
-- [ ] The MFA code `135790` is visible as demo instructions, not as a second password field
-- [ ] Controls work by keyboard and expose accessible names
-- [ ] Narrow viewport keeps the panel inside the sign-in card without horizontal scroll
-- [ ] Render web env and local examples document the flag; production examples leave it unset
+- [x] With the flag unset, sign-in does not show emails or passwords
+- [x] With the flag set, all four accounts from `demo-users.json` are visible with role labels
+- [x] Copy email and copy password each move focus-safe text to the clipboard and announce success
+- [x] The MFA code `135790` is visible as demo instructions, not as a second password field
+- [x] Controls work by keyboard and expose accessible names
+- [x] Narrow viewport keeps the panel inside the sign-in card without horizontal scroll
+- [x] Render web env and local examples document the flag; production examples leave it unset
 
 ## Dependencies
 
@@ -109,7 +109,7 @@ Version bump when this ships is MINOR while `0.x` (new sign-in surface).
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Flag-gated panel on the existing sign-in card. Four live fixture accounts (practice admin, seeded provider, MFA nurse, Avery Quinn) with copy actions and the MFA nurse code. `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true` on Render and in local web examples. Preview and production examples leave it unset.
+- Tests: Vitest covers flag off/on, four rows, clipboard success and failure, keyboard names, and focus. Browser check of `/login` at desktop and 320px with the flag on, then with the flag unset.
 - PR:
-- Notes: Not started.
+- Notes: Version 0.88.0 → 0.89.0 (MINOR, new sign-in surface). OAuth hiding stays FE-039. Screenshots stay INFRA-017.

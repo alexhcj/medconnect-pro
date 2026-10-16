@@ -8,10 +8,11 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
 import Link from 'next/link';
 import {Button} from '@/components/ui/button';
+import {DemoAccountPanel} from '@/components/auth/demo-account-panel';
 import {MfaChallengeForm} from '@/components/auth/mfa-challenge-form';
 import {useLogin} from '@/lib/hooks/use-session';
+import {showDemoAccounts} from '@/lib/auth/demo-accounts';
 import {DASHBOARD_PATH} from '@/lib/auth/paths';
-import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 import {ApiError, RateLimitedError, rateLimitMessage} from '@/lib/api/http';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {OAuthProviderButton} from '@/components/auth/oauth-provider-button';
@@ -34,11 +35,6 @@ type MfaChallengeState = {
 	mfaToken: string;
 	expiresIn: number;
 };
-
-const demoAccounts = [
-	{title: 'Practice admin (one-step)', user: fixtureDemoUsers[0]},
-	{title: 'MFA nurse (mock MFA)', user: fixtureDemoUsers.find((user) => user.email === 'mfa.nurse@example.test')},
-].filter((account): account is {title: string; user: (typeof fixtureDemoUsers)[number]} => Boolean(account.user));
 
 function ReasonBanner({reason}: {reason: LoginReason}) {
 	const message = LOGIN_REASON_MESSAGES[reason];
@@ -140,22 +136,7 @@ export function LoginForm() {
 					<span className="h-px flex-1 bg-border" />
 				</div>
 
-				{demoAccounts.length > 0 && (
-					<div className="mt-4 space-y-3 rounded-md border border-border bg-subtle p-3 text-xs text-foreground-secondary">
-						<p className="text-sm font-medium text-foreground">Demo accounts</p>
-						{demoAccounts.map(({title, user}) => (
-							<div key={user.email} className="space-y-1">
-								<p className="text-sm font-medium text-foreground">{title}</p>
-								<p>
-									Email: <span className="font-mono">{user.email}</span>
-								</p>
-								<p>
-									Password: <span className="font-mono">{user.password}</span>
-								</p>
-							</div>
-						))}
-					</div>
-				)}
+				{showDemoAccounts() && <DemoAccountPanel />}
 
 				<form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
 					<div>

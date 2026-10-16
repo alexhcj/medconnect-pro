@@ -26,19 +26,62 @@ function renderLogin() {
 	);
 }
 
+const DEMO_FLAG = 'NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS';
+
+function setDemoFlag(value: string | undefined) {
+	if (value === undefined) {
+		delete process.env[DEMO_FLAG];
+		return;
+	}
+	process.env[DEMO_FLAG] = value;
+}
+
 describe('LoginForm', () => {
 	beforeEach(() => {
 		clearMockSession();
 		push.mockReset();
 		searchParams = new URLSearchParams();
 		vi.restoreAllMocks();
+		setDemoFlag(undefined);
 	});
 
-	it('labels the mock identity provider and lists the demo account', () => {
+	afterEach(() => {
+		setDemoFlag(undefined);
+	});
+
+	it('labels the mock identity provider without listing credentials', () => {
 		renderLogin();
 		expect(screen.getByRole('heading', {name: 'Sign in'})).toBeInTheDocument();
 		expect(screen.getByRole('note')).toHaveTextContent(/mock identity provider/i);
-		expect(screen.getByText(fixtureDemoUsers[0].email)).toBeInTheDocument();
+		expect(screen.queryByText('Demo accounts')).toBeNull();
+		expect(screen.queryByText(fixtureDemoUsers[0].email)).toBeNull();
+	});
+
+	it.each([undefined, 'false', '1', ''])('hides demo emails and passwords when the flag is %s', (value) => {
+		setDemoFlag(value);
+		renderLogin();
+		expect(screen.queryByText('Demo accounts')).toBeNull();
+		for (const user of fixtureDemoUsers) {
+			expect(screen.queryByText(user.email)).toBeNull();
+			expect(screen.queryByText(user.password)).toBeNull();
+		}
+	});
+
+	it('lists the four live demo accounts when the flag is true', () => {
+		setDemoFlag('true');
+		renderLogin();
+		expect(screen.getByText('Practice admin')).toBeInTheDocument();
+		expect(screen.getByText('Provider')).toBeInTheDocument();
+		expect(screen.getByText('MFA nurse')).toBeInTheDocument();
+		expect(screen.getByText('Patient')).toBeInTheDocument();
+		expect(screen.getByText('practice.admin@example.test')).toBeInTheDocument();
+		expect(screen.getByText('jordan.ellis@synthetic.example')).toBeInTheDocument();
+		expect(screen.getByText('mfa.nurse@example.test')).toBeInTheDocument();
+		expect(screen.getByText('avery.quinn@synthetic.example')).toBeInTheDocument();
+		expect(screen.queryByText('provider@example.test')).toBeNull();
+		expect(screen.queryByText('nurse@example.test')).toBeNull();
+		expect(screen.getByText(/MFA nurse code:/)).toHaveTextContent('135790');
+		expect(screen.getByLabelText('Password')).not.toHaveValue('135790');
 	});
 
 	it('labels the provider button unavailable in mock mode', () => {

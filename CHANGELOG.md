@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.89.0] - 2026-10-16
+
+### Added
+
+- FE-037: `/login` lists the four synthetic demo accounts, with role labels, copy actions, and
+  the MFA nurse code, only when `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS` is exactly `true`. Render and
+  local examples set the flag. Production examples leave it unset.
+
 ## [0.88.0] - 2026-10-16
 
 ### Added
