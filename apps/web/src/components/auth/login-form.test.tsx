@@ -4,8 +4,17 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {LoginForm} from '@/components/auth/login-form';
 import {clearMockSession, readMockSession} from '@/lib/api/mocks/mock-session-store';
 import {sessionMockAPI} from '@/lib/api/mocks/session-mock';
+import {isMockMode} from '@/lib/api/mocks/runtime';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 import {RateLimitedError} from '@/lib/api/http';
+
+vi.mock('@/lib/api/mocks/runtime', async (importOriginal) => {
+	const actual = await importOriginal<typeof import('@/lib/api/mocks/runtime')>();
+	return {
+		...actual,
+		isMockMode: vi.fn(() => true),
+	};
+});
 
 const push = vi.fn();
 let searchParams = new URLSearchParams();
@@ -27,13 +36,20 @@ function renderLogin() {
 }
 
 const DEMO_FLAG = 'NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS';
+const OAUTH_FLAG = 'NEXT_PUBLIC_OAUTH_ENABLED';
+const OAUTH_PROVIDER = 'NEXT_PUBLIC_OAUTH_PROVIDER';
+const OAUTH_UNAVAILABLE = 'Provider sign-in is not configured for this demo. Use a demo account.';
 
-function setDemoFlag(value: string | undefined) {
+function setEnv(name: string, value: string | undefined) {
 	if (value === undefined) {
-		delete process.env[DEMO_FLAG];
+		delete process.env[name];
 		return;
 	}
-	process.env[DEMO_FLAG] = value;
+	process.env[name] = value;
+}
+
+function setDemoFlag(value: string | undefined) {
+	setEnv(DEMO_FLAG, value);
 }
 
 describe('LoginForm', () => {
@@ -41,18 +57,23 @@ describe('LoginForm', () => {
 		clearMockSession();
 		push.mockReset();
 		searchParams = new URLSearchParams();
-		vi.restoreAllMocks();
+		vi.mocked(isMockMode).mockReturnValue(true);
 		setDemoFlag(undefined);
+		setEnv(OAUTH_FLAG, undefined);
+		setEnv(OAUTH_PROVIDER, undefined);
 	});
 
 	afterEach(() => {
 		setDemoFlag(undefined);
+		setEnv(OAUTH_FLAG, undefined);
+		setEnv(OAUTH_PROVIDER, undefined);
+		vi.restoreAllMocks();
 	});
 
 	it('labels the mock identity provider without listing credentials', () => {
 		renderLogin();
 		expect(screen.getByRole('heading', {name: 'Sign in'})).toBeInTheDocument();
-		expect(screen.getByRole('note')).toHaveTextContent(/mock identity provider/i);
+		expect(screen.getAllByRole('note').some((note) => /mock identity provider/i.test(note.textContent ?? ''))).toBe(true);
 		expect(screen.queryByText('Demo accounts')).toBeNull();
 		expect(screen.queryByText(fixtureDemoUsers[0].email)).toBeNull();
 	});
@@ -84,11 +105,49 @@ describe('LoginForm', () => {
 		expect(screen.getByLabelText('Password')).not.toHaveValue('135790');
 	});
 
-	it('labels the provider button unavailable in mock mode', () => {
+	it.each([undefined, 'false', '1', ''])(
+		'hides the provider button and start URLs when OAuth is %s',
+		(value) => {
+			setEnv(OAUTH_FLAG, value);
+			setEnv(OAUTH_PROVIDER, 'google');
+			const {container} = renderLogin();
+			const helper = screen.getByText(OAUTH_UNAVAILABLE);
+			expect(helper).toHaveAttribute('role', 'note');
+			expect(helper).not.toHaveAttribute('aria-hidden');
+			expect(screen.queryByRole('button', {name: /continue with/i})).toBeNull();
+			expect(container.innerHTML).not.toContain('/auth/oauth/fake/start');
+			expect(container.innerHTML).not.toContain('/auth/oauth/google/start');
+			expect(container.textContent).not.toContain('or sign in with email');
+		},
+	);
+
+	it('labels the provider button unavailable in mock mode when OAuth is enabled', () => {
+		setEnv(OAUTH_FLAG, 'true');
 		renderLogin();
-		const button = screen.getByRole('button', {name: /continue with/i});
+		const button = screen.getByRole('button', {name: /continue with fake provider/i});
 		expect(button).toBeDisabled();
 		expect(button).toHaveAccessibleDescription(/unavailable in mock mode/i);
+		expect(screen.queryByText(OAUTH_UNAVAILABLE)).toBeNull();
+		expect(document.body.textContent).toContain('or sign in with email');
+	});
+
+	it('starts local Fake OAuth when the flag is on and mocks are off', async () => {
+		const user = userEvent.setup();
+		setEnv(OAUTH_FLAG, 'true');
+		vi.mocked(isMockMode).mockReturnValue(false);
+		const assign = vi.fn();
+		Object.defineProperty(window, 'location', {
+			configurable: true,
+			value: {assign},
+		});
+		renderLogin();
+
+		await user.click(screen.getByRole('button', {name: /continue with fake provider/i}));
+
+		expect(assign).toHaveBeenCalledTimes(1);
+		const target = String(assign.mock.calls[0]?.[0]);
+		expect(target).toContain('/auth/oauth/fake/start');
+		expect(target).not.toContain('/auth/oauth/google/start');
 	});
 
 	it.each([

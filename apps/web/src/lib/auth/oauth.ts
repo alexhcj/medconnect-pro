@@ -8,6 +8,11 @@ export function configuredOAuthProvider(): OAuthProvider {
 	return process.env.NEXT_PUBLIC_OAUTH_PROVIDER?.trim() === 'google' ? 'google' : 'fake';
 }
 
+/** Exact `true` only. Any other value hides the provider button on the public demo. */
+export function oauthEnabled(): boolean {
+	return process.env.NEXT_PUBLIC_OAUTH_ENABLED === 'true';
+}
+
 export function oauthStartUrl(provider: OAuthProvider, returnTo: string = DASHBOARD_PATH): string {
 	const params = new URLSearchParams({returnTo});
 	return `${nestApiBaseUrl()}/auth/oauth/${provider}/start?${params.toString()}`;

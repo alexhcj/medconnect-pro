@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.91.0] - 2026-10-16
+
+### Changed
+
+- FE-039: public sign-in no longer offers the provider button unless `NEXT_PUBLIC_OAUTH_ENABLED`
+  is exactly `true`. Render, preview, and production leave the flag unset and show that provider
+  sign-in is not configured. Local Fake or Google sign-in still uses the existing button when
+  the flag is on.
+
 ## [0.90.0] - 2026-10-16
 
 ### Added

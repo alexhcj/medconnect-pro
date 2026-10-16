@@ -33,9 +33,9 @@ capabilities:
   - id: identity-access.oauth-oidc-pkce
     name: Demo OAuth 2.0 / OIDC + PKCE sign-in
     status: shipped
-    demo: Demo OIDC + PKCE (Google or Fake). Not a production IdP. Nest Authorization Code + PKCE issues the existing HttpOnly session; live /login provider button, /login/oauth/complete hydrates from GET /auth/session. The public Render demo currently offers Fake and the preview API rejects it.
+    demo: Demo OIDC + PKCE (Google or Fake). Not a production IdP. Nest Authorization Code + PKCE issues the existing HttpOnly session; the live /login provider button appears only when NEXT_PUBLIC_OAUTH_ENABLED is exactly true, and /login/oauth/complete hydrates from GET /auth/session. The public demo hides that button (unset on Render) and does not complete Google or Fake sign-in.
     public: qualified
-    planned_next: FE-039 hides the provider button on the public demo until OAuth is configured. Real Google credentials stay later.
+    planned_next: Real Google credentials stay later.
     related_tasks: [SEC-006, DATA-003, BE-017, FE-033, FE-039]
   - id: identity-access.auth-rate-limiting
     name: Demo auth and sensitive-route rate limiting
@@ -70,7 +70,7 @@ Mock IdP HTTP sessions for the demo. Nest issues HttpOnly cookies and still retu
 JSON for machine clients. Live Next uses those cookies and does not persist access or refresh
 tokens. Public copy may describe mock identity, labeled mock MFA, demo OIDC + PKCE sign-in
 (Google or Fake) where that adapter is actually configured, and demo concurrent-session review.
-The public Render demo does not complete Google or Fake sign-in. One synthetic patient can sign
+The public Render demo hides the provider button unless `NEXT_PUBLIC_OAUTH_ENABLED` is exactly true, and Render leaves that flag unset. It does not complete Google or Fake sign-in. One synthetic patient can sign
 in with no MFA. When `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS` is exactly true, `/login` lists the four
 synthetic accounts. Render sets that flag. Production leaves it unset. Do not describe production
 OAuth, a production IdP, production MFA, or a production session manager. Do not publish the
@@ -83,7 +83,7 @@ not a marketing `/sign-in` route.
 | --- | --- | --- | --- | --- |
 | `identity-access.mock-idp-sessions` | Sign in with mock identity | shipped | mock IdP sessions; Nest HttpOnly cookies | qualified |
 | `identity-access.mfa-challenge` | MFA challenge | shipped | labeled mock MFA on live `/login` | qualified |
-| `identity-access.oauth-oidc-pkce` | Demo OAuth 2.0 / OIDC + PKCE sign-in | shipped | Demo OIDC + PKCE (Google or Fake) on live `/login`; not a production IdP | qualified |
+| `identity-access.oauth-oidc-pkce` | Demo OAuth 2.0 / OIDC + PKCE sign-in | shipped | Demo OIDC + PKCE (Google or Fake) on live `/login` when `NEXT_PUBLIC_OAUTH_ENABLED` is exactly true; the public demo hides the button and does not complete Google or Fake sign-in; not a production IdP | qualified |
 | `identity-access.auth-rate-limiting` | Demo auth and sensitive-route rate limiting | shipped | Nest 429 `RATE_LIMITED` on login (including account-wide failures), MFA, refresh, OAuth, telehealth create/join/media-token, document download, payments; `auth.rate_limited` security event; "too many attempts" on login and MFA (with N seconds when known) and on the OAuth landing ("later") | qualified |
 | `identity-access.concurrent-sessions` | Concurrent session review | shipped | Live dialog lists and revokes other Nest sessions; live rows omit IP and location; mock location and IP stay labeled demo data; not a session-policy editor or production session manager | qualified |
 | `identity-access.patient-demo-sign-in` | Patient demo sign-in | shipped | one synthetic PATIENT linked to Avery Quinn; no MFA; listed on the demo account panel when the sign-in flag is on | no |

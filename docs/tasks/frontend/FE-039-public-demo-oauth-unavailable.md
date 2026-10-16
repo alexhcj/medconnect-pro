@@ -3,7 +3,7 @@ id: FE-039
 type: task
 area: frontend
 feature: identity-access
-status: pending
+status: complete
 priority: high
 estimate: 2
 dependencies: [FE-033]
@@ -26,7 +26,7 @@ design:
   frame: "App / Login — FE-033 frames (182:2184); M18 OAuth-unavailable delta approved with the milestone plan"
   status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -79,12 +79,12 @@ Design delta is approved on the FE-033 login frame. No new Figma file.
 
 ## Acceptance criteria
 
-- [ ] Default web build (`NEXT_PUBLIC_OAUTH_ENABLED` unset) shows the helper text and no provider button
-- [ ] That build does not navigate to `/auth/oauth/fake/start` or `/auth/oauth/google/start`
-- [ ] `NEXT_PUBLIC_OAUTH_ENABLED=true` still shows the existing provider button
-- [ ] Render Blueprint and env examples do not set the flag or any OIDC secret
-- [ ] Helper text is available to assistive technology, not only `aria-hidden`
-- [ ] Capability copy still does not say the public demo completes Google or Fake sign-in
+- [x] Default web build (`NEXT_PUBLIC_OAUTH_ENABLED` unset) shows the helper text and no provider button
+- [x] That build does not navigate to `/auth/oauth/fake/start` or `/auth/oauth/google/start`
+- [x] `NEXT_PUBLIC_OAUTH_ENABLED=true` still shows the existing provider button
+- [x] Render Blueprint and env examples do not set the flag or any OIDC secret
+- [x] Helper text is available to assistive technology, not only `aria-hidden`
+- [x] Capability copy still does not say the public demo completes Google or Fake sign-in
 
 ## Dependencies
 
@@ -110,7 +110,7 @@ button is no longer offered). Update product identity copy in the same change.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Provider button renders only when `NEXT_PUBLIC_OAUTH_ENABLED` is exactly `true`. Otherwise `/login` shows that provider sign-in is not configured and does not request `/auth/oauth/fake/start` or `/auth/oauth/google/start`.
+- Tests: Login form component tests cover flag off, flag on in mock mode, and a live Fake start when mocks are off. Live Playwright sets the flag.
 - PR:
-- Notes: Not started.
+- Notes: Version 0.90.0 → 0.91.0 (MINOR, public sign-in contract no longer offers the button). Restored the MFA nurse code line the 0.90.0 commit dropped from the demo account panel. Google credentials stay later.

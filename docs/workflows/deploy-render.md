@@ -111,15 +111,15 @@ After the first deploy is live:
 
 Google OAuth and live Daily video are unavailable until those secrets are set in the Render
 dashboard. Do not commit them. With no `OIDC_*` variables, the hosted adapter key is unavailable
-Google. The public login button currently requests Fake, and that start returns 400
-`VALIDATION_ERROR` / `Unknown OAuth provider`. A start for the unavailable Google key returns 503
+Google. The public login hides the provider button and does not call `/auth/oauth/fake/start`.
+A start for the unavailable Google key returns 503
 `OAUTH_UNAVAILABLE`. Fake OIDC stays local-only. Unset `DAILY_API_KEY` keeps the Fake telehealth
 adapter and the shell labels media unavailable. In-app notifications do not send email.
 
 [M18](../roadmap/release-roadmap.md) is pending interviewer readiness on this same host. It does
 not add services or domains. A portal patient can sign in, and Join visit opens an existing
-session for that patient or an assigned nurse. The public login still shows the provider button
-until FE-039. Render preview environments stay off through M18. Later previews, if any, follow
+session for that patient or an assigned nurse. The public login hides the provider button.
+Render preview environments stay off through M18. Later previews, if any, follow
 INFRA-010: a frontend preview against one shared preview API and database, never this interviewer
 database.
 

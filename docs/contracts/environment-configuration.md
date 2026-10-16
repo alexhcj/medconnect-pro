@@ -43,6 +43,7 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `NEXT_PUBLIC_SITE_URL` | marketing | Public origin of the static marketing site. Build-time only. Not a secret. |
 | `NEXT_PUBLIC_APP_ORIGIN` | marketing | Public origin of the authenticated application. Sign-in links use it. Build-time only. Not a secret. |
 | `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS` | web | Exact `true` shows the four synthetic sign-in accounts on `/login`. Any other value hides them. Passwords are the public fixtures in `docs/mocks/demo-users.json`, not a new secret. Render sets `true`. Hosted production and Amplify leave it unset. Build-time only. |
+| `NEXT_PUBLIC_OAUTH_ENABLED` | web | Exact `true` shows the existing provider button on `/login`. Any other value hides it and shows that provider sign-in is not configured. Render, Amplify preview, and production leave it unset. Local Fake or Google sign-in, and the live Playwright server, set `true`. Build-time only. Not a secret. |
 
 ### Environment-specific (not secret)
 

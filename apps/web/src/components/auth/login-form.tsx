@@ -19,6 +19,7 @@ import {OAuthProviderButton} from '@/components/auth/oauth-provider-button';
 import {
 	configuredOAuthProvider,
 	LOGIN_REASON_MESSAGES,
+	oauthEnabled,
 	parseLoginReason,
 	type LoginReason,
 } from '@/lib/auth/oauth';
@@ -126,15 +127,23 @@ export function LoginForm() {
 					production IdP. Email sign-in uses a mock identity provider.
 				</p>
 
-				<div className="mt-4">
-					<OAuthProviderButton provider={configuredOAuthProvider()} available={!isMockMode()} />
-				</div>
+				{oauthEnabled() ? (
+					<>
+						<div className="mt-4">
+							<OAuthProviderButton provider={configuredOAuthProvider()} available={!isMockMode()} />
+						</div>
 
-				<div className="mt-4 flex items-center gap-3" aria-hidden="true">
-					<span className="h-px flex-1 bg-border" />
-					<span className="text-xs text-foreground-muted">or sign in with email</span>
-					<span className="h-px flex-1 bg-border" />
-				</div>
+						<div className="mt-4 flex items-center gap-3" aria-hidden="true">
+							<span className="h-px flex-1 bg-border" />
+							<span className="text-xs text-foreground-muted">or sign in with email</span>
+							<span className="h-px flex-1 bg-border" />
+						</div>
+					</>
+				) : (
+					<p className="mt-4 text-sm text-foreground-secondary" role="note">
+						Provider sign-in is not configured for this demo. Use a demo account.
+					</p>
+				)}
 
 				{showDemoAccounts() && <DemoAccountPanel />}
 
