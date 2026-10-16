@@ -10,7 +10,7 @@ export const MARKETING_OG_IMAGE = {
 
 export const MARKETING_LOGIN_PREVIEW_IMAGE = {
 	src: '/marketing/login.png',
-	alt: 'Mock identity sign-in form with synthetic demo credentials',
+	alt: 'Sign-in with synthetic demo accounts',
 } as const;
 
 export const MARKETING_PRODUCT_SLIDES = [

@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined
 
 ### Changed
 
+- INFRA-017: the README, shared product screenshots, and GitHub About describe the interim Render demo. The sign-in panel shows the MFA nurse code. The verified deployed commit is `c6c79b7f8b9b84b31caa915d97a4a1c7281412f1`. See [docs/releases/render-demo-note.md](docs/releases/render-demo-note.md).
 - FE-039: public sign-in no longer offers the provider button unless `NEXT_PUBLIC_OAUTH_ENABLED`
   is exactly `true`. Render, preview, and production leave the flag unset and show that provider
   sign-in is not configured. Local Fake or Google sign-in still uses the existing button when

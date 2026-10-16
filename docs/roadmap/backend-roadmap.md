@@ -90,7 +90,7 @@ QA-005). **M18 — Interview Demo Readiness** is the next milestone and is **pen
 [FE-037](../tasks/frontend/FE-037-demo-account-panel.md) (shipped),
 [FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md) (shipped),
 [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md) (shipped),
-[INFRA-017](../tasks/infrastructure/INFRA-017-demo-presentation-pack.md),
+[INFRA-017](../tasks/infrastructure/INFRA-017-demo-presentation-pack.md) (shipped),
 [QA-007](../tasks/qa/QA-007-m18-close-audit.md) (pending)). It does not reopen M17 or close M9. Render PR
 previews, real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and Redis
 stay deferred. Local product work does not wait on AWS.

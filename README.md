@@ -24,19 +24,19 @@ Synthetic demo screens from the authenticated app. Not a production medical reco
 cards are live Nest aggregates in `dev:real` (fixture cards when mocks are on); telehealth is a session shell with demo Daily media when configured; identity is a labeled mock IdP.
 
 <p align="center">
-  <img src="./apps/web/public/marketing/patients.png" alt="Patients directory with synthetic demo records" width="100%">
+  <img src="./apps/marketing/public/marketing/patients.png" alt="Patients directory with synthetic demo records" width="100%">
 </p>
 
 <table>
   <tr>
     <td width="33%">
-      <img src="./apps/web/public/marketing/appointments.png" alt="Appointments calendar with synthetic demo visits" width="100%">
+      <img src="./apps/marketing/public/marketing/appointments.png" alt="Appointments calendar with synthetic demo visits" width="100%">
     </td>
     <td width="33%">
-      <img src="./apps/web/public/marketing/telehealth.png" alt="Telehealth lobby with a synthetic demo visit" width="100%">
+      <img src="./apps/marketing/public/marketing/telehealth.png" alt="Telehealth lobby with a synthetic demo visit" width="100%">
     </td>
     <td width="33%">
-      <img src="./apps/web/public/marketing/billing.png" alt="Billing invoice list with synthetic demo invoices" width="100%">
+      <img src="./apps/marketing/public/marketing/billing.png" alt="Billing invoice list with synthetic demo invoices" width="100%">
     </td>
   </tr>
 </table>
@@ -47,13 +47,13 @@ cards are live Nest aggregates in `dev:real` (fixture cards when mocks are on); 
 <table>
   <tr>
     <td width="33%">
-      <img src="./apps/web/public/marketing/login.png" alt="Mock identity sign-in form with synthetic demo credentials" width="100%">
+      <img src="./apps/marketing/public/marketing/login.png" alt="Sign-in with synthetic demo accounts" width="100%">
     </td>
     <td width="33%">
-      <img src="./apps/web/public/marketing/dashboard.png" alt="Dashboard overview with synthetic demo metrics" width="100%">
+      <img src="./apps/marketing/public/marketing/dashboard.png" alt="Dashboard overview with synthetic demo metrics" width="100%">
     </td>
     <td width="33%">
-      <img src="./apps/web/public/marketing/admin.png" alt="Administration user list with synthetic demo accounts" width="100%">
+      <img src="./apps/marketing/public/marketing/admin.png" alt="Administration user list with synthetic demo accounts" width="100%">
     </td>
   </tr>
 </table>
@@ -61,13 +61,12 @@ cards are live Nest aggregates in `dev:real` (fixture cards when mocks are on); 
 
 ## Key capabilities
 
-What you can demonstrate **today**. Statused catalog:
-[`docs/product/`](./docs/product/README.md). Public-claim ceiling:
-[`docs/marketing/capability-matrix.md`](./docs/marketing/capability-matrix.md).
+Statused catalog: [`docs/product/`](./docs/product/README.md).
+Public-claim ceiling: [`docs/marketing/capability-matrix.md`](./docs/marketing/capability-matrix.md).
 
 | Module | In the demo | Limit |
 | --- | --- | --- |
-| Identity | Mock IdP login, logout, Nest HttpOnly cookies, opaque bearer JSON for machine clients, and labeled mock MFA | Not production OAuth / OIDC or production MFA |
+| Identity | Mock IdP login, logout, Nest HttpOnly cookies, opaque bearer JSON for machine clients, and labeled mock MFA | Public demo does not configure provider sign-in. Not production OAuth or production MFA |
 | Patients | Directory, profiles, clinical lists, document list/download | Synthetic data only; no external EHR |
 | Scheduling | Calendar, appointments, provider availability | No waitlist or check-in / check-out |
 | Telehealth | Create, join, and end an appointment-linked session shell with demo Daily media when configured | Not production telehealth, HIPAA video, chat, or recording |
@@ -144,7 +143,7 @@ hosted on AWS.
 
 ## Development status
 
-Application version **0.87.0**. Snapshot:
+Application version **0.91.0**. Snapshot:
 [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md).
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).
@@ -163,7 +162,7 @@ Application version **0.87.0**. Snapshot:
   submission / EDI 837, and invoice-create UI remain later.
 - **M14–M17 shipped** (OAuth/OIDC demo, API rate limiting, live telehealth workflow, and security
   maturity through QA-005). **M18 — Interview Demo Readiness** is next and **pending** (QA-006,
-  DATA-005, BE-024, FE-037, FE-038, FE-039 shipped; INFRA-017, QA-007 pending). It does not close M9.
+  DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017 shipped; QA-007 pending). It does not close M9.
   Local product work does not wait on AWS.
 
 Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, Render PR
@@ -172,7 +171,34 @@ chat/recording, hosted payments and claims, Redis, and HIPAA certification (out 
 
 ## Deployment / demo
 
-The runnable demo is **local**. There is no public hosted URL.
+The interim public demo is on Render. Records are synthetic. This demo is **not** HIPAA certified.
+Hosted Amplify and ECS are coded for a later operator apply. They are not this public demo.
+
+- Application: [https://medconnectpro.app](https://medconnectpro.app)
+- Marketing site: [https://marketing.medconnectpro.app](https://marketing.medconnectpro.app)
+- API health: [https://api.medconnectpro.app/health](https://api.medconnectpro.app/health)
+
+### Demo accounts
+
+These are the existing synthetic fixtures. The MFA nurse code is `135790`.
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Practice admin | `practice.admin@example.test` | `Demo-Admin-1` |
+| Provider | `jordan.ellis@synthetic.example` | `Demo-Provider-1` |
+| MFA nurse | `mfa.nurse@example.test` | `Demo-Mfa-1` |
+| Patient | `avery.quinn@synthetic.example` | `Demo-Patient-1` |
+
+### Known limits
+
+- Free web services sleep after about 15 minutes without traffic. The first request can be slow.
+- The Free Postgres database expires on 2026-11-13.
+- Uploaded documents disappear when the free API service sleeps, restarts, or redeploys.
+- Daily video works only when the operator has set `DAILY_API_KEY`. Otherwise the session shell says media is unavailable.
+- Provider sign-in is not configured on the public demo. Email sign-in uses the mock identity provider.
+- All records are synthetic. This demo is not HIPAA certified.
+
+Local development stays available:
 
 - UX-only: `npm run dev:mocks`, then [http://localhost:3000](http://localhost:3000).
 - Live Nest: Compose PostgreSQL, migrations, `seed:mock-identity`, `dev:api`, `dev:real`.
@@ -211,10 +237,12 @@ Frontend role and nav checks are UX only. Server-side authorization and tenant i
 ## Security model
 
 The demo models healthcare-oriented engineering patterns. **Implemented:** mock IdP sessions, mock
-MFA challenge, RBAC and resource-level authorization, tenant isolation (including PostgreSQL RLS),
-audit logging, least-privilege database role, secrets outside source control.
+MFA challenge, demo OIDC + PKCE (Google or Fake) only when provider sign-in is enabled, RBAC and
+resource-level authorization, tenant isolation (including PostgreSQL RLS), audit logging,
+least-privilege database role, secrets outside source control. The public demo leaves provider
+sign-in unset and does not complete Google or Fake sign-in.
 
-**Target, not implemented:** OAuth 2.0 / OpenID Connect (Authorization Code + PKCE), production MFA,
+**Target, not implemented:** production OAuth and a production identity provider, production MFA,
 encryption at rest as an infrastructure property, TLS at the deployment edge.
 
 The frontend may use a **mock identity / session** for demonstration. Mock authentication is not
@@ -341,7 +369,7 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | [`docs/architecture/`](./docs/architecture/) | System structure |
 | [`docs/decisions/`](./docs/decisions/) | Architectural decision records |
 | [`docs/contracts/`](./docs/contracts/) | API, identity, and environment contracts |
-| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot; M9 paused; M10 shipped; M11 next |
+| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot; M9 paused; M10–M17 shipped; M18 pending |
 
 Process prompts, tasks, and remaining workflows are linked from
 [`docs/README.md`](./docs/README.md). Plane can mirror task metadata; Git remains canonical for

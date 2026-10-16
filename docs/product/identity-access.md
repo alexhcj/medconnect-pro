@@ -73,8 +73,7 @@ tokens. Public copy may describe mock identity, labeled mock MFA, demo OIDC + PK
 The public Render demo hides the provider button unless `NEXT_PUBLIC_OAUTH_ENABLED` is exactly true, and Render leaves that flag unset. It does not complete Google or Fake sign-in. One synthetic patient can sign
 in with no MFA. When `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS` is exactly true, `/login` lists the four
 synthetic accounts. Render sets that flag. Production leaves it unset. Do not describe production
-OAuth, a production IdP, production MFA, or a production session manager. Do not publish the
-fixture passwords on the marketing site.
+OAuth, a production IdP, production MFA, or a production session manager. Marketing prose does not list fixture passwords. The marketing demo-page screenshot may show the same synthetic sign-in panel as `/login`, including those passwords.
 
 Demo entry is existing `/login` ([FE-010](../tasks/frontend/FE-010-mock-authentication-ui.md)),
 not a marketing `/sign-in` route.

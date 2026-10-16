@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import {Button} from '@/components/ui/button';
-import {demoPanelAccounts} from '@/lib/auth/demo-accounts';
+import {DEMO_MFA_CODE, demoPanelAccounts} from '@/lib/auth/demo-accounts';
 
 type CopyKind = 'email' | 'password';
 
@@ -30,6 +30,9 @@ export function DemoAccountPanel() {
 			<div className="sr-only" aria-live="polite" aria-atomic="true">
 				{announcement}
 			</div>
+			<p>
+				MFA nurse code: <span className="font-mono">{DEMO_MFA_CODE}</span>
+			</p>
 			{accounts.map((account) => (
 				<div key={account.email} className="min-w-0 space-y-1">
 					<p className="text-sm font-medium text-foreground">{account.label}</p>

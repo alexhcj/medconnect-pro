@@ -3,7 +3,7 @@ id: INFRA-017
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: medium
 estimate: 3
 dependencies: [FE-037, FE-038, FE-039, INFRA-015, INFRA-016]
@@ -18,7 +18,7 @@ related_docs:
     ../../../README.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: true
@@ -71,13 +71,13 @@ After FE-037, FE-038, and FE-039:
 
 ## Acceptance criteria
 
-- [ ] README links `https://medconnectpro.app`, the marketing host, and API `/health`
-- [ ] README lists the four demo accounts, the MFA code, and the limits in Scope
-- [ ] README no longer says there is no public hosted URL
-- [ ] Screenshots match the current sign-in and app, and do not show development-only controls
-- [ ] GitHub About and topics match the README and do not claim HIPAA compliance or working OAuth
-- [ ] Changelog and a demo/pre-release note name the verified deployed commit
-- [ ] No secret, database URL, or real PHI is added
+- [x] README links `https://medconnectpro.app`, the marketing host, and API `/health`
+- [x] README lists the four demo accounts, the MFA code, and the limits in Scope
+- [x] README no longer says there is no public hosted URL
+- [x] Screenshots match the current sign-in and app, and do not show development-only controls
+- [x] GitHub About and topics match the README and do not claim HIPAA compliance or working OAuth
+- [x] Changelog and a demo/pre-release note name the verified deployed commit
+- [x] No secret, database URL, or real PHI is added
 
 ## Dependencies
 
@@ -104,7 +104,7 @@ features, one MINOR covers the release. Do not tag unless the user asks.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: README links the Render app, marketing host, and API health, lists the four synthetic accounts and MFA code `135790`, and states the free-tier limits. Shared screenshots in `apps/marketing/public/marketing/` were recaptured. The sign-in panel shows the MFA nurse code. Capability matrix and identity-access allow that screenshot on the marketing demo page and still forbid password lists in marketing prose. No version bump.
+- Tests: `tests_required` is false. Vitest covers the demo panel and login form. Screenshots were opened. Live checks on 2026-10-16: `/login` shows the four accounts and hides the provider button; marketing `/` returned 200; `GET /health` returned 200 `{"status":"ok"}`.
 - PR:
-- Notes: Not started.
+- Notes: Verified deployed commit `c6c79b7f8b9b84b31caa915d97a4a1c7281412f1` (0.91.0). `gh repo view` description: "Synthetic healthcare SaaS demonstration for interviews. Interim public demo. Not HIPAA certified. Provider sign-in is not configured on the public demo." Homepage: `https://medconnectpro.app`. Topics: demo, healthcare, nestjs, nextjs, postgresql, typescript. M18 stays pending until QA-007. No git tag.
