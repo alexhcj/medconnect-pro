@@ -117,10 +117,11 @@ Google. The public login button currently requests Fake, and that start returns 
 adapter and the shell labels media unavailable. In-app notifications do not send email.
 
 [M18](../roadmap/release-roadmap.md) is pending interviewer readiness on this same host. It does
-not add services or domains. Until those tasks ship, there is no patient login, the lobby Join
-action is create-only, and the provider button is still shown. Render preview environments stay
-off through M18. Later previews, if any, follow INFRA-010: a frontend preview against one shared
-preview API and database, never this interviewer database.
+not add services or domains. A portal patient can sign in, and Join visit opens an existing
+session for that patient or an assigned nurse. The public login still shows the provider button
+until FE-039. Render preview environments stay off through M18. Later previews, if any, follow
+INFRA-010: a frontend preview against one shared preview API and database, never this interviewer
+database.
 
 ## After the first seed
 
@@ -128,6 +129,11 @@ The committed flag is already `SEED_ON_DEPLOY=false`. If a one-off seed deploy s
 set it back to `false` and redeploy. Later starts migrate only. Seed remains find-or-create;
 leaving the flag true refreshes the live telehealth appointment window and can overwrite
 interviewer edits to seeded rows.
+
+For an interview, sign in as a provider and schedule a telehealth visit whose start and end
+include now. Do not set `SEED_ON_DEPLOY=true` for each interview. The seeded “Live demo
+telehealth visit” is only inside the join window for about four hours after seed. Reseeding
+refreshes that window and can overwrite interviewer edits.
 
 Then clear the Postgres inbound IP allow list so the database has no public listener
 (`render pg update medconnect-postgres --clear-ip-allow-list`, or the dashboard equivalent).

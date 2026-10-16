@@ -3,7 +3,7 @@ id: FE-038
 type: task
 area: frontend
 feature: telehealth
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [BE-024, DATA-005, FE-035]
@@ -29,7 +29,7 @@ design:
   frame: "App / Telehealth session — 04 Connected — tablet (167:5); M18 lobby entry delta approved with the milestone plan"
   status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -83,14 +83,14 @@ Design delta is approved on the existing FE-035 telehealth frames. No new Figma 
 
 ## Acceptance criteria
 
-- [ ] Provider or practice admin Join visit still creates or reuses the session and opens it
-- [ ] Patient and assigned nurse open the existing session id from lookup and can join from the waiting room
-- [ ] Patient and nurse see “not open yet” when the provider has not started, with no create request
-- [ ] Receptionist still cannot join
-- [ ] Ended and ineligible visits keep the current unavailable states
-- [ ] Daily media code is unchanged; unset `DAILY_API_KEY` still shows media unavailable
-- [ ] The Render runbook tells the interviewer to schedule an in-window telehealth visit and not to reseed
-- [ ] Component tests cover writer create versus participant lookup
+- [x] Provider or practice admin Join visit still creates or reuses the session and opens it
+- [x] Patient and assigned nurse open the existing session id from lookup and can join from the waiting room
+- [x] Patient and nurse see “not open yet” when the provider has not started, with no create request
+- [x] Receptionist still cannot join
+- [x] Ended and ineligible visits keep the current unavailable states
+- [x] Daily media code is unchanged; unset `DAILY_API_KEY` still shows media unavailable
+- [x] The Render runbook tells the interviewer to schedule an in-window telehealth visit and not to reseed
+- [x] Component tests cover writer create versus participant lookup
 
 ## Dependencies
 
@@ -116,7 +116,7 @@ is wrong: the patient journey is a new demo capability.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: Live Join visit still creates for roles with `write:appointments`. A portal patient or assigned nurse calls `GET /telehealth/sessions?appointmentId=` and opens that server id. Lookup 404 says the visit is not open yet and does not create a session. Mock mode still uses the derived session link. End visit and Daily media are unchanged.
+- Tests: Vitest for the GET client and for writer create versus participant lookup, including 404 without create. Browser check of provider create and patient lookup.
 - PR:
-- Notes: Not started.
+- Notes: Version 0.89.0 → 0.90.0 (MINOR, new patient and nurse join path). OAuth hiding stays FE-039. Two-browser close stays QA-007.

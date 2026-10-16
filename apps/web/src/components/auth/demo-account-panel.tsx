@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import {Button} from '@/components/ui/button';
-import {DEMO_MFA_CODE, demoPanelAccounts} from '@/lib/auth/demo-accounts';
+import {demoPanelAccounts} from '@/lib/auth/demo-accounts';
 
 type CopyKind = 'email' | 'password';
 
@@ -65,9 +65,6 @@ export function DemoAccountPanel() {
 					</div>
 				</div>
 			))}
-			<p>
-				MFA nurse code: <span className="font-mono">{DEMO_MFA_CODE}</span>
-			</p>
 		</div>
 	);
 }

@@ -49,6 +49,11 @@ export const telehealthRealAPI = {
 		});
 	},
 
+	findOpenSession: async (appointmentId: string): Promise<TelehealthSession> => {
+		const query = new URLSearchParams({appointmentId});
+		return sessionFromNest(`?${query.toString()}`);
+	},
+
 	getSession: async (sessionId: string): Promise<TelehealthSession> => {
 		return sessionFromNest(`/${sessionId}`);
 	},

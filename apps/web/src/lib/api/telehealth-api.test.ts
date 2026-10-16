@@ -140,6 +140,31 @@ describe('telehealthRealAPI', () => {
 		expect(JSON.stringify(fetchMock.mock.calls)).not.toContain('/leave');
 	});
 
+	it('resolves the open session with GET and does not create one', async () => {
+		const fetchMock = vi.fn().mockResolvedValue(jsonResponse(sessionRdo));
+		vi.stubGlobal('fetch', fetchMock);
+
+		const found = await telehealthRealAPI.findOpenSession(appointmentId);
+
+		expect(found).toEqual(
+			expect.objectContaining({
+				id: sessionId,
+				appointmentId,
+				providerName: 'Dr. Jordan Ellis',
+				state: 'waiting',
+			}),
+		);
+		expect(found).not.toHaveProperty('practiceId');
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(fetchMock).toHaveBeenCalledWith(
+			`http://localhost:3001/telehealth/sessions?appointmentId=${appointmentId}`,
+			expect.not.objectContaining({method: 'POST'}),
+		);
+		const init = fetchMock.mock.calls[0]?.[1] as RequestInit | undefined;
+		expect(init?.method ?? 'GET').toBe('GET');
+		expect(init?.body).toBeUndefined();
+	});
+
 	it('omits telehealth appointments outside the join window', async () => {
 		vi.useFakeTimers();
 		vi.setSystemTime(new Date('2026-10-10T16:00:00.000Z'));

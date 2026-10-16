@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {telehealthAPI} from '@/lib/api/telehealth-api';
+import {telehealthAPI, telehealthRealAPI} from '@/lib/api/telehealth-api';
 
 export function useJoinableTelehealthVisits(enabled = true) {
 	return useQuery({
@@ -26,6 +26,18 @@ export function useCreateTelehealthSession() {
 
 	return useMutation({
 		mutationFn: (appointmentId: string) => telehealthAPI.createSession(appointmentId),
+		onSuccess: (session) => {
+			queryClient.setQueryData(['telehealth', 'session', session.id], session);
+			queryClient.invalidateQueries({queryKey: ['telehealth', 'visits']});
+		},
+	});
+}
+
+export function useFindOpenTelehealthSession() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (appointmentId: string) => telehealthRealAPI.findOpenSession(appointmentId),
 		onSuccess: (session) => {
 			queryClient.setQueryData(['telehealth', 'session', session.id], session);
 			queryClient.invalidateQueries({queryKey: ['telehealth', 'visits']});

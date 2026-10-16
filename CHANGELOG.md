@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.90.0] - 2026-10-16
+
+### Added
+
+- FE-038: a portal patient or assigned nurse can open an existing telehealth visit from Join
+  visit. Writers still create the session. If the visit is not open yet, lookup does not create
+  one.
+
 ## [0.89.0] - 2026-10-16
 
 ### Added

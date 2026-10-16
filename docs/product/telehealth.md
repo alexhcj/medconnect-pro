@@ -17,7 +17,7 @@ capabilities:
     status: shipped
     demo: create, join, leave the call, and end a session shell from an in-window appointment
     public: qualified
-    planned_next: portal patient and assigned nurse can enter an open visit (M18); then in-session chat and recording
+    planned_next: in-session chat and recording
     related_tasks: [FE-007, FE-014, BE-006, BE-021, FE-035, BE-024, FE-038]
   - id: telehealth.waiting-room
     name: Waiting room
@@ -34,10 +34,10 @@ capabilities:
     related_tasks: [BE-016, FE-030, BE-021, FE-035]
   - id: telehealth.participant-entry
     name: Second participant enters an open visit
-    status: planned
-    demo: not in the demo; lobby Join visit calls create, which patients and nurses cannot do
-    public: no
-    planned_next: lookup of the open session, then the existing join
+    status: shipped
+    demo: portal patient or assigned nurse looks up the open session from Join visit, then uses the existing waiting room; writers still create; a missing session says the visit is not open yet
+    public: qualified
+    planned_next: chat, recording, transcription
     related_tasks: [BE-024, FE-038, DATA-005]
   - id: telehealth.chat-recording
     name: In-session chat, recording, and transcription
@@ -52,8 +52,8 @@ capabilities:
 Create, join, leave the call, and end an appointment-linked session shell. Live mode uses a Daily
 custom call object when the API has `DAILY_API_KEY`; otherwise the shell labels media unavailable.
 Leaving the call does not end the visit. Ended or ineligible sessions stay closed. Mock mode keeps
-placeholders. A second participant cannot enter from the lobby yet; that entry is planned
-(M18) and is not in the demo. Do not claim production telehealth, HIPAA-certified video, chat,
+placeholders. A portal patient or assigned nurse can open an existing visit from Join visit.
+Writers still create the session. Do not claim production telehealth, HIPAA-certified video, chat,
 or recording.
 
 | ID | Name | Status | Demo | Public |
@@ -61,5 +61,5 @@ or recording.
 | `telehealth.start-session` | Start a virtual visit from an appointment | shipped | create / join / leave / end shell | qualified |
 | `telehealth.waiting-room` | Waiting room | shipped | pre-join device check plus presence wait | qualified |
 | `telehealth.live-media` | Live video, camera, and screen sharing | shipped | Daily call object when configured; leave vs end | qualified |
-| `telehealth.participant-entry` | Second participant enters an open visit | planned | not in the demo | no |
+| `telehealth.participant-entry` | Second participant enters an open visit | shipped | lookup, then the existing waiting-room join | qualified |
 | `telehealth.chat-recording` | In-session chat, recording, and transcription | planned | not in the demo | no |

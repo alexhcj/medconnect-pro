@@ -84,7 +84,7 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
   [QA-005](../tasks/qa/QA-005-authorization-and-tenant-regression-expansion.md)). Local product work does
   not wait on AWS. **M18 — Interview Demo Readiness** is the next milestone and is **pending**
   ([FE-037](../tasks/frontend/FE-037-demo-account-panel.md) (shipped),
-  [FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md),
+  [FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md) (shipped),
   [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md); plus QA-006, DATA-005, BE-024 (shipped),
   INFRA-017, QA-007 (pending)). It does not reopen M17 or close M9. Render PR previews, real Google
   OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and Redis stay deferred.
@@ -144,7 +144,7 @@ Pending. Does not reopen M17.
 - Demo account panel ([FE-037](../tasks/frontend/FE-037-demo-account-panel.md); shipped; depends on
   [DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md)).
 - Participant entry from the telehealth lobby
-  ([FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md); depends on
+  ([FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md); shipped; depends on
   [BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md) (shipped)).
 - Hide unconfigured OAuth on the public demo
   ([FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md)).
