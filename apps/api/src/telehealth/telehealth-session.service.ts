@@ -92,6 +92,22 @@ export class TelehealthSessionService {
 		return toSessionRdo(session, appointment);
 	}
 
+	async findOpenByAppointment(appointmentId: string): Promise<TelehealthSessionRdo> {
+		const appointment = await this.appointments.getById(appointmentId);
+		if (!appointment || !(await this.isJoinParticipant(appointment))) {
+			throw new TelehealthSessionNotFoundError();
+		}
+		const existing = await this.sessions.getByAppointmentId(appointment.id);
+		if (!existing) {
+			throw new TelehealthSessionNotFoundError();
+		}
+		const current = await this.applyEligibilityExpiry(existing, appointment);
+		if (current.state === 'ended') {
+			throw new TelehealthSessionNotFoundError();
+		}
+		return toSessionRdo(current, appointment);
+	}
+
 	async join(id: string): Promise<TelehealthSessionRdo> {
 		const {session, appointment} = await this.loadVisible(id);
 		await this.assertCanJoin(appointment);
@@ -206,22 +222,23 @@ export class TelehealthSessionService {
 	}
 
 	private async assertCanJoin(appointment: Appointment): Promise<void> {
+		if (!(await this.isJoinParticipant(appointment))) {
+			throw new PermissionDeniedError();
+		}
+	}
+
+	private async isJoinParticipant(appointment: Appointment): Promise<boolean> {
 		const scope = this.tenant.require();
 		const isAssigned =
 			scope.role === 'NURSE'
 				? await this.patients.isAssigned(appointment.patientId, scope.actorUserId)
 				: false;
-		const portalUserId = appointment.patient?.portalUserId ?? null;
-		if (
-			!isVisitJoinParticipant({
-				actorUserId: scope.actorUserId,
-				providerUserId: appointment.providerUserId,
-				portalUserId,
-				isAssigned,
-			})
-		) {
-			throw new PermissionDeniedError();
-		}
+		return isVisitJoinParticipant({
+			actorUserId: scope.actorUserId,
+			providerUserId: appointment.providerUserId,
+			portalUserId: appointment.patient?.portalUserId ?? null,
+			isAssigned,
+		});
 	}
 
 	private async applyEligibilityExpiry(

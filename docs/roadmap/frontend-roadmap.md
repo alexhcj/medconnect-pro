@@ -85,8 +85,8 @@ Not closed with M0–M7. Owned by **M10**. Live mode renders Nest overview cards
   not wait on AWS. **M18 — Interview Demo Readiness** is the next milestone and is **pending**
   ([FE-037](../tasks/frontend/FE-037-demo-account-panel.md),
   [FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md),
-  [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md); plus QA-006, DATA-005 (shipped),
-  BE-024, INFRA-017, QA-007 (pending)). It does not reopen M17 or close M9. Render PR previews, real Google
+  [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md); plus QA-006, DATA-005, BE-024 (shipped),
+  INFRA-017, QA-007 (pending)). It does not reopen M17 or close M9. Render PR previews, real Google
   OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and Redis stay deferred.
 
 ## Slice 11 — Application security and session hardening (M11)
@@ -145,7 +145,7 @@ Pending. Does not reopen M17.
   [DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md)).
 - Participant entry from the telehealth lobby
   ([FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md); depends on
-  [BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md)).
+  [BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md) (shipped)).
 - Hide unconfigured OAuth on the public demo
   ([FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md)).
 - Not chat, recording, Socket.IO, or a second host.

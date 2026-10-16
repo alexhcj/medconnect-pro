@@ -102,6 +102,7 @@ describe('OpenAPI contract', () => {
 			sessionSecurity,
 		);
 		expect(document.paths?.['/telehealth/sessions']?.post?.security).toEqual(sessionSecurity);
+		expect(document.paths?.['/telehealth/sessions']?.get?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/telehealth/sessions/{id}']?.get?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/telehealth/sessions/{id}/join']?.post?.security).toEqual(sessionSecurity);
 		expect(document.paths?.['/telehealth/sessions/{id}/media-token']?.post?.security).toEqual(

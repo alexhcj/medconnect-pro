@@ -76,6 +76,10 @@ Resolution order and `SUPER_ADMIN` vs practice vs patient rules are in the ident
 Demo HTTP, including `SUPER_ADMIN`, is scoped to the session membership practice
 ([ADR-016](../decisions/ADR-016-super-admin-session-tenant-scope.md)). A client `practiceId` does
 not widen that scope. Missing cross-practice reads are the demo boundary, not an IDOR.
+Open telehealth session lookup (`GET /telehealth/sessions?appointmentId=`) is limited to the
+appointment provider, the portal patient, or an assigned nurse. Everyone else receives the same
+not-found as an unknown id. The route does not accept a client practice id, and it does not log
+or return a meeting token.
 
 ## Audit
 
@@ -91,8 +95,8 @@ Audit sensitive actions such as:
 - document access;
 - appointment changes;
 - telehealth session create, join, media-token mint, room delete, and end (including lazy-end
-  when the appointment is cancelled, completed, or past grace); meeting tokens and `DAILY_API_KEY`
-  must not appear in the audit row;
+  on get, join, mint, or a participant open-session lookup when the appointment is cancelled,
+  completed, or past grace); meeting tokens and `DAILY_API_KEY` must not appear in the audit row;
 - billing changes;
 - notification preference updates (no title or body in the audit row);
 - administrative security changes, including `auth.session.revoked` for selective session revoke

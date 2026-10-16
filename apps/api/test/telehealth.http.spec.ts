@@ -55,11 +55,13 @@ describe('telehealth session HTTP', () => {
 		const providerEmail = `th.provider.${suffix}@synthetic.example`;
 		const nurseEmail = `th.nurse.${suffix}@synthetic.example`;
 		const portalEmail = `th.portal.${suffix}@synthetic.example`;
+		const outsiderEmail = `th.outsider.${suffix}@synthetic.example`;
 		const catalog: MockIdpAccount[] = [
 			{email: receptionistEmail, password, role: 'RECEPTIONIST'},
 			{email: providerEmail, password, role: 'PROVIDER'},
 			{email: nurseEmail, password, role: 'NURSE'},
 			{email: portalEmail, password, role: 'PATIENT'},
+			{email: outsiderEmail, password, role: 'PROVIDER'},
 		];
 
 		const moduleRef = await Test.createTestingModule({
@@ -86,9 +88,7 @@ describe('telehealth session HTTP', () => {
 		provider = await dataSource.getRepository(User).save({email: providerEmail});
 		nurse = await dataSource.getRepository(User).save({email: nurseEmail});
 		portalUser = await dataSource.getRepository(User).save({email: portalEmail});
-		outsider = await dataSource.getRepository(User).save({
-			email: `th.outsider.${suffix}@synthetic.example`,
-		});
+		outsider = await dataSource.getRepository(User).save({email: outsiderEmail});
 		await dataSource.getRepository(PracticeMembership).save([
 			{practiceId: practiceA.id, userId: receptionist.id, role: 'RECEPTIONIST'},
 			{practiceId: practiceA.id, userId: provider.id, role: 'PROVIDER'},
@@ -693,5 +693,140 @@ describe('telehealth session HTTP', () => {
 			.send({appointmentId: appointment.id})
 			.expect(403);
 		expect(patientDenied.body.error.code).toBe('FORBIDDEN');
+	});
+
+	it('resolves the open session for participants and does not create one', async () => {
+		const desk = await login(receptionist.email);
+		await cancelOpenAppointments(desk);
+		const appointment = await createAppointment(desk);
+		const otherPatient = await dataSource.getRepository(Patient).save({
+			practiceId: practiceA.id,
+			...syntheticPatientColumns(provider.id, {
+				firstName: 'Riley',
+				lastName: `Other${suffix}`,
+				email: `riley.tele.${suffix}@synthetic.example`,
+			}),
+		});
+		const otherAppointment = await createAppointment(desk, {
+			patientId: otherPatient.id,
+			start: isoFromNow(8 * 60 * 60 * 1000),
+			end: isoFromNow(9 * 60 * 60 * 1000),
+		});
+
+		const patientToken = await login(portalUser.email);
+		const before = await dataSource.getRepository(TelehealthSession).count({
+			where: {appointmentId: appointment.id},
+		});
+		const missing = await request(app.getHttpServer())
+			.get('/telehealth/sessions')
+			.query({appointmentId: appointment.id})
+			.set('Authorization', `Bearer ${patientToken}`)
+			.expect(404);
+		expect(missing.body.error).toMatchObject({code: 'NOT_FOUND', message: 'Resource not found'});
+		const after = await dataSource.getRepository(TelehealthSession).count({
+			where: {appointmentId: appointment.id},
+		});
+		expect(before).toBe(0);
+		expect(after).toBe(0);
+
+		const patientCreate = await request(app.getHttpServer())
+			.post('/telehealth/sessions')
+			.set('Authorization', `Bearer ${patientToken}`)
+			.send({appointmentId: appointment.id})
+			.expect(403);
+		expect(patientCreate.body.error.code).toBe('FORBIDDEN');
+
+		const outsiderToken = await login(outsider.email);
+		for (const token of [desk, outsiderToken]) {
+			const hidden = await request(app.getHttpServer())
+				.get('/telehealth/sessions')
+				.query({appointmentId: appointment.id})
+				.set('Authorization', `Bearer ${token}`)
+				.expect(404);
+			expect(hidden.body.error.code).toBe('NOT_FOUND');
+			expect(hidden.body.error.code).not.toBe('FORBIDDEN');
+		}
+
+		const providerToken = await login(provider.email);
+		const created = await request(app.getHttpServer())
+			.post('/telehealth/sessions')
+			.set('Authorization', `Bearer ${providerToken}`)
+			.send({appointmentId: appointment.id})
+			.expect(201);
+
+		const providerLookup = await request(app.getHttpServer())
+			.get('/telehealth/sessions')
+			.query({appointmentId: appointment.id})
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(200);
+		expect(providerLookup.body.id).toBe(created.body.id);
+		expect(providerLookup.body.state).toBe('waiting');
+		expect(providerLookup.body.appointmentId).toBe(appointment.id);
+
+		const patientLookup = await request(app.getHttpServer())
+			.get('/telehealth/sessions')
+			.query({appointmentId: appointment.id})
+			.set('Authorization', `Bearer ${patientToken}`)
+			.expect(200);
+		expect(patientLookup.body.id).toBe(created.body.id);
+
+		const otherLookup = await request(app.getHttpServer())
+			.get('/telehealth/sessions')
+			.query({appointmentId: otherAppointment.id})
+			.set('Authorization', `Bearer ${patientToken}`)
+			.expect(404);
+		expect(otherLookup.body.error.code).toBe('NOT_FOUND');
+
+		for (const token of [desk, outsiderToken]) {
+			const hidden = await request(app.getHttpServer())
+				.get('/telehealth/sessions')
+				.query({appointmentId: appointment.id})
+				.set('Authorization', `Bearer ${token}`)
+				.expect(404);
+			expect(hidden.body.error.code).toBe('NOT_FOUND');
+		}
+
+		await dataSource.getRepository(PatientAssignment).delete({
+			patientId: patient.id,
+			userId: nurse.id,
+		});
+		const nurseToken = await login(nurse.email);
+		const unassigned = await request(app.getHttpServer())
+			.get('/telehealth/sessions')
+			.query({appointmentId: appointment.id})
+			.set('Authorization', `Bearer ${nurseToken}`)
+			.expect(404);
+		expect(unassigned.body.error.code).toBe('NOT_FOUND');
+
+		await dataSource.getRepository(PatientAssignment).save({
+			practiceId: practiceA.id,
+			patientId: patient.id,
+			userId: nurse.id,
+		});
+		const assigned = await request(app.getHttpServer())
+			.get('/telehealth/sessions')
+			.query({appointmentId: appointment.id})
+			.set('Authorization', `Bearer ${nurseToken}`)
+			.expect(200);
+		expect(assigned.body.id).toBe(created.body.id);
+
+		const ended = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/end`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(200);
+		expect(ended.body.state).toBe('ended');
+
+		const closed = await request(app.getHttpServer())
+			.get('/telehealth/sessions')
+			.query({appointmentId: appointment.id})
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(404);
+		expect(closed.body.error.code).toBe('NOT_FOUND');
+
+		const stillReadable = await request(app.getHttpServer())
+			.get(`/telehealth/sessions/${created.body.id}`)
+			.set('Authorization', `Bearer ${desk}`)
+			.expect(200);
+		expect(stillReadable.body.state).toBe('ended');
 	});
 });

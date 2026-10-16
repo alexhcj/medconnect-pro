@@ -202,6 +202,93 @@ describe('TelehealthSessionService', () => {
 		await expect(receptionist.service.join(sessionId)).rejects.toBeInstanceOf(PermissionDeniedError);
 	});
 
+	it('resolves the open session for the provider, portal patient, and assigned nurse', async () => {
+		const open = sessionRow();
+		const provider = harness('PROVIDER', providerId);
+		provider.sessions.getByAppointmentId.mockResolvedValue(open);
+		const found = await provider.service.findOpenByAppointment(appointmentId);
+		expect(found.id).toBe(sessionId);
+		expect(found.state).toBe('waiting');
+		expect(provider.sessions.create).not.toHaveBeenCalled();
+
+		const patient = harness('PATIENT', portalId);
+		patient.sessions.getByAppointmentId.mockResolvedValue(sessionRow({state: 'in_session'}));
+		await expect(patient.service.findOpenByAppointment(appointmentId)).resolves.toMatchObject({
+			id: sessionId,
+			state: 'in_session',
+		});
+
+		const nurse = harness('NURSE', nurseId);
+		await expect(nurse.service.findOpenByAppointment(appointmentId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+		expect(nurse.sessions.getByAppointmentId).not.toHaveBeenCalled();
+		expect(nurse.sessions.create).not.toHaveBeenCalled();
+
+		nurse.patients.isAssigned.mockResolvedValue(true);
+		nurse.sessions.getByAppointmentId.mockResolvedValue(open);
+		await expect(nurse.service.findOpenByAppointment(appointmentId)).resolves.toMatchObject({
+			id: sessionId,
+		});
+	});
+
+	it('hides open-session lookup from non-participants and ended rows', async () => {
+		const receptionist = harness('RECEPTIONIST');
+		receptionist.sessions.getByAppointmentId.mockResolvedValue(sessionRow());
+		await expect(receptionist.service.findOpenByAppointment(appointmentId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+		expect(receptionist.sessions.getByAppointmentId).not.toHaveBeenCalled();
+		expect(receptionist.sessions.create).not.toHaveBeenCalled();
+		expect(receptionist.sessions.save).not.toHaveBeenCalled();
+
+		const otherProvider = harness('PROVIDER');
+		await expect(otherProvider.service.findOpenByAppointment(appointmentId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+
+		const otherPatient = harness('PATIENT', otherId);
+		await expect(otherPatient.service.findOpenByAppointment(appointmentId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+
+		const missing = harness('PROVIDER', providerId);
+		missing.appointments.getById.mockResolvedValue(undefined);
+		await expect(missing.service.findOpenByAppointment(appointmentId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+		expect(missing.sessions.create).not.toHaveBeenCalled();
+
+		const ended = harness('PROVIDER', providerId);
+		ended.sessions.getByAppointmentId.mockResolvedValue(sessionRow({state: 'ended', endedAt: new Date()}));
+		await expect(ended.service.findOpenByAppointment(appointmentId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+		expect(ended.sessions.create).not.toHaveBeenCalled();
+		expect(ended.audit.record).not.toHaveBeenCalled();
+	});
+
+	it('lazy-ends an ineligible session on lookup for a participant only', async () => {
+		const provider = harness('PROVIDER', providerId);
+		const cancelled = appointmentRow({state: 'cancelled'});
+		provider.appointments.getById.mockResolvedValue(cancelled);
+		provider.sessions.getByAppointmentId.mockResolvedValue(sessionRow({appointment: cancelled}));
+		await expect(provider.service.findOpenByAppointment(appointmentId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+		expect(provider.audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({action: 'telehealth_session.ended', resourceId: sessionId}),
+		);
+
+		const receptionist = harness('RECEPTIONIST');
+		receptionist.appointments.getById.mockResolvedValue(cancelled);
+		await expect(receptionist.service.findOpenByAppointment(appointmentId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+		expect(receptionist.sessions.getByAppointmentId).not.toHaveBeenCalled();
+		expect(receptionist.audit.record).not.toHaveBeenCalled();
+	});
+
 	it('hides sessions from an unassigned nurse and another portal user', async () => {
 		const nurse = harness('NURSE', nurseId);
 		await expect(nurse.service.get(sessionId)).rejects.toBeInstanceOf(TelehealthSessionNotFoundError);

@@ -3,7 +3,7 @@ id: BE-024
 type: task
 area: backend
 feature: telehealth
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [BE-006, BE-021]
@@ -20,7 +20,7 @@ related_docs:
     ../security/SEC-008-live-telehealth-workflow-contract.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -71,14 +71,14 @@ get, or `404` when nothing open exists. Do not accept a client practice id.
 
 ## Acceptance criteria
 
-- [ ] Provider can resolve the open session after create
-- [ ] Portal patient can resolve that session and cannot resolve another patient’s appointment
-- [ ] Assigned nurse can resolve it; an unassigned nurse cannot
-- [ ] Receptionist and a stranger receive not-found, not a distinct forbidden oracle
-- [ ] Lookup does not create a session
-- [ ] `POST /telehealth/sessions` still requires `write:appointments`
-- [ ] Contract and generated OpenAPI describe the route
-- [ ] Existing join, mint, and end tests still pass
+- [x] Provider can resolve the open session after create
+- [x] Portal patient can resolve that session and cannot resolve another patient’s appointment
+- [x] Assigned nurse can resolve it; an unassigned nurse cannot
+- [x] Receptionist and a stranger receive not-found, not a distinct forbidden oracle
+- [x] Lookup does not create a session
+- [x] `POST /telehealth/sessions` still requires `write:appointments`
+- [x] Contract and generated OpenAPI describe the route
+- [x] Existing join, mint, and end tests still pass
 
 ## Dependencies
 
@@ -102,7 +102,7 @@ Version bump when this ships is MINOR while `0.x` (new API surface).
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `GET /telehealth/sessions?appointmentId=` returns the non-ended session to the appointment provider, portal patient, or assigned nurse. Missing, ended, cross-tenant, and non-participant appointments are 404 `NOT_FOUND`. Lookup does not create a session. Create still requires `write:appointments`.
+- Tests: `apps/api/src/telehealth/telehealth-session.service.spec.ts`; `apps/api/test/telehealth.http.spec.ts`; `apps/api/test/openapi.contract.spec.ts`.
 - PR:
-- Notes: Not started.
+- Notes: Version 0.87.0 → 0.88.0 (MINOR, new API surface). Lobby entry stays FE-038. `telehealth.participant-entry` stays planned.

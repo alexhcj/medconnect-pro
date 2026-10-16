@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.88.0] - 2026-10-16
+
+### Added
+
+- BE-024: a visit participant can resolve the one non-ended telehealth session for an appointment
+  with `GET /telehealth/sessions?appointmentId=`. Patients and nurses still cannot create a
+  session. Lobby entry stays FE-038.
+
 ## [0.87.0] - 2026-10-15
 
 ### Added

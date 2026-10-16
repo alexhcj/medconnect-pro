@@ -6,6 +6,12 @@ export const telehealthSessionCreateSchema = z.object({
 
 export type TelehealthSessionCreateBody = z.infer<typeof telehealthSessionCreateSchema>;
 
+export const telehealthOpenSessionQuerySchema = z.object({
+	appointmentId: z.uuid(),
+});
+
+export type TelehealthOpenSessionQuery = z.infer<typeof telehealthOpenSessionQuerySchema>;
+
 export const telehealthSessionIdParamsSchema = z.object({
 	id: z.uuid(),
 });

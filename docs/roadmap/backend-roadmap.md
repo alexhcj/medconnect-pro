@@ -63,7 +63,7 @@ Domain order (not historical ship order). Join to demo milestones in the
     certification, Redis, or WAF. **Closed** at 0.84.1.
 21. Interview demo readiness (M18, pending): synthetic patient portal account
     ([DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md), shipped) and open-session
-    lookup ([BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md)). Not a session
+    lookup ([BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md), shipped). Not a session
     list, not Google credentials, and not a reopen of M17.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
@@ -86,7 +86,7 @@ BE-021, FE-035). **M17 — Security and Compliance Maturity** is shipped and **c
 QA-005). **M18 — Interview Demo Readiness** is the next milestone and is **pending**
 ([QA-006](../tasks/qa/QA-006-live-demo-smoke.md),
 [DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md) (shipped),
-[BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md),
+[BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md) (shipped),
 [FE-037](../tasks/frontend/FE-037-demo-account-panel.md),
 [FE-038](../tasks/frontend/FE-038-telehealth-participant-entry.md),
 [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md),

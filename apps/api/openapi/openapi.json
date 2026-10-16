@@ -2693,6 +2693,76 @@
         "tags": [
           "telehealth"
         ]
+      },
+      "get": {
+        "description": "Visit participants only: the appointment provider, the portal patient, or an assigned nurse. Returns the same session object as get when a non-ended session exists. Missing, ended-only, cross-tenant, and out-of-scope appointments use the same not-found response. This does not create a session and does not accept a client practice id. Tenant comes from the session.",
+        "operationId": "TelehealthSessionController_findOpen",
+        "parameters": [
+          {
+            "name": "appointmentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelehealthSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Resolve the open telehealth session for one appointment",
+        "tags": [
+          "telehealth"
+        ]
       }
     },
     "/telehealth/sessions/{id}": {

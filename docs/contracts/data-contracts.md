@@ -77,7 +77,7 @@ tokens are never stored. Leave is a client/Daily action only; there is no Nest `
 
 Request concepts:
 
-- appointmentId (create only)
+- appointmentId (create body, and the open-session lookup query)
 
 Response concepts:
 
@@ -97,8 +97,8 @@ State machine:
 
 - `waiting` after create
 - `in_session` after an authorized participant joins
-- `ended` after `POST .../end`, or after the next get/join/mint lazily persists end when the
-  appointment is cancelled, completed, or past grace
+- `ended` after `POST .../end`, or after the next get/join/mint, or a participant open-session
+  lookup, lazily persists end when the appointment is cancelled, completed, or past grace
 
 Media-token does not change that state machine. Mint requires `state === 'in_session'`; minting
 from `waiting` returns 409 `SESSION_NOT_JOINABLE`. Token TTL is bounded by the join window
@@ -107,7 +107,11 @@ fails. Daily REST failure on mint returns 502 `MEDIA_UNAVAILABLE` without token 
 material.
 
 One session row per appointment. Creating again returns the existing non-ended session. Recreating
-after `ended` is rejected.
+after `ended` is rejected. `GET /telehealth/sessions?appointmentId=` returns that non-ended row to
+the appointment provider, the portal patient, or an assigned nurse. Missing, ended, cross-tenant,
+and non-participant appointments use the same not-found response. A participant lookup lazily
+persists `ended` when the appointment is no longer eligible, then returns not-found. A
+non-participant lookup does not change the row.
 
 ### Timeout and grace (demo policy)
 
@@ -118,7 +122,8 @@ a production SLA.
 - Create, get, join, and media-token require `type=telehealth` and appointment state `scheduled`
   or `confirmed`, and must not be past grace. Get/join/mint on an open session whose appointment
   is no longer eligible lazily persist `ended` (no worker) and reject further media.
-- After appointment end plus 15 minutes, the next GET/join/end/mint lazily persists `ended`.
+- After appointment end plus 15 minutes, the next GET/join/end/mint, or a participant open-session
+  lookup, lazily persists `ended`.
 - Join outside the window, mint before Nest join, or access after lazy-end returns a conflict
   (`SESSION_NOT_JOINABLE` or `SESSION_ENDED`). There is no background timeout job.
 

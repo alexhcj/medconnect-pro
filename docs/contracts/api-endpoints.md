@@ -118,8 +118,12 @@ and lazily end the session when the appointment is cancelled, completed, or past
 ([SEC-008](../tasks/security/SEC-008-live-telehealth-workflow-contract.md)). `POST .../end` closes
 the visit for all participants. Leave is a client/Daily teardown; there is no Nest
 `POST .../leave`. Daily mint failure is 502 `MEDIA_UNAVAILABLE`.
+`GET /telehealth/sessions?appointmentId=` returns the same session object as get for a visit
+participant when a non-ended session exists, or 404 when it does not. It does not create a
+session. `POST /telehealth/sessions` still requires `write:appointments`.
 
-- `POST /telehealth/sessions`
+- `POST /telehealth/sessions` — requires `write:appointments`
+- `GET /telehealth/sessions?appointmentId=` — open session for one appointment, or 404
 - `GET /telehealth/sessions/:id`
 - `POST /telehealth/sessions/:id/join`
 - `POST /telehealth/sessions/:id/media-token`
