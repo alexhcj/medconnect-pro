@@ -182,7 +182,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - FE-036 — Live concurrent-session chrome
 - QA-005 — Authorization and tenant regression expansion
 
-## Product (M18, pending)
+## Product (M18, closed at 0.91.0)
 
 Interview demo readiness on the existing Render host. Does not close M9 or reopen M17.
 

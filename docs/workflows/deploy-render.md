@@ -116,7 +116,7 @@ A start for the unavailable Google key returns 503
 `OAUTH_UNAVAILABLE`. Fake OIDC stays local-only. Unset `DAILY_API_KEY` keeps the Fake telehealth
 adapter and the shell labels media unavailable. In-app notifications do not send email.
 
-[M18](../roadmap/release-roadmap.md) is pending interviewer readiness on this same host. It does
+[M18](../roadmap/release-roadmap.md) is shipped interviewer readiness (closed at 0.91.0) on this same host. It does
 not add services or domains. A portal patient can sign in, and Join visit opens an existing
 session for that patient or an assigned nurse. The public login hides the provider button.
 Render preview environments stay off through M18. Later previews, if any, follow

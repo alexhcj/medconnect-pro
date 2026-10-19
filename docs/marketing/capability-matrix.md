@@ -29,7 +29,7 @@ Columns:
 | RBAC, tenant isolation, audit, document ACL | [security](../product/security.md) | Yes (demo patterns) | Yes, as implemented engineering patterns | — |
 | HIPAA certification | [security](../product/security.md) | No | Must not claim | Organizational compliance is out of this demo |
 | GitHub Actions CI | — | Yes (PR/`main` quality gates) | Not a hosted production | INFRA-005 |
-| Cloud deploy / preview | — | Partial (ECS API + Amplify Hosting + PR previews + production ECS workflow; operator apply/connect). Interim Render demo is INFRA-015 and INFRA-016 and is not AWS production. | Must not claim a hosted production or working public OAuth. The Render URL may be named as an interim synthetic demo. | M9 **PAUSED / BLOCKED** — AWS unavailable (INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). M18 interviewer readiness is pending and does not add Render PR previews. |
+| Cloud deploy / preview | — | Partial (ECS API + Amplify Hosting + PR previews + production ECS workflow; operator apply/connect). Interim Render demo is INFRA-015 and INFRA-016 and is not AWS production. | Must not claim a hosted production or working public OAuth. The Render URL may be named as an interim synthetic demo. | M9 **PAUSED / BLOCKED** — AWS unavailable (INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). M18 interviewer readiness is shipped (0.91.0) and does not add Render PR previews. |
 
 ## Copy examples
 

@@ -3,7 +3,7 @@
 Canonical documentation: `/docs`. Product capability catalog:
 [docs/product/](docs/product/README.md) (statused; not tasks).
 
-Current: M18 pending, QA-007 open; see [docs/roadmap/release-roadmap.md](docs/roadmap/release-roadmap.md).
+Current: M18 shipped and closed at 0.91.0 (QA-007 complete); M9 paused; see [docs/roadmap/release-roadmap.md](docs/roadmap/release-roadmap.md).
 
 Frontend application: `apps/web`.
 Marketing site: `apps/marketing` (static export).
