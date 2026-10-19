@@ -1,29 +1,9 @@
 <!-- Project agent notes. Next.js app-specific agent files live in apps/web. -->
 
 Canonical documentation: `/docs`. Product capability catalog:
-[docs/product/](docs/product/README.md) (statused; not tasks). Current demo position: M0–M8
-shipped (FE-017–FE-023)
-([docs/roadmap/post-mvp-baseline.md](docs/roadmap/post-mvp-baseline.md)). **M9 — Deployment /
-preview infrastructure** is **PAUSED / BLOCKED** — AWS account setup unavailable (close audit
-found no missing IDs; not closed; not cancelled; INFRA-004–INFRA-012 shipped; INFRA-014 pending,
-blocks INFRA-013; INFRA-013 paused). **M10** is shipped (DATA-002, BE-011, FE-024, BE-012,
-FE-025, BE-013, FE-026). **M11** is shipped (BE-014, FE-027, FE-028, BE-015, FE-029,
-SEC-005). **M12 — Telehealth Media Maturity** is shipped (BE-016, FE-030). **M13 — Billing /
-Payments UX** is shipped (FE-031, FE-032). Hosted Stripe/ACH, claims submission / EDI 837, and
-invoice-create UI remain later. **M14 — OAuth / External Identity** is shipped and
-**closed** at 0.77.0 (SEC-006, DATA-003, BE-017, FE-033). **M15 — API Protection and Rate
-Limiting** is shipped and **closed** at 0.80.0 (SEC-007, DATA-004, BE-018, BE-019, BE-020,
-FE-034; ADR-015). **M16 — Live Telehealth** is shipped at 0.81.0 (SEC-008, BE-021, FE-035). Chat,
-recording, and Socket.IO remain later. **M17 — Security and Compliance Maturity** is shipped
-and **closed** at 0.84.1 (SEC-009, BE-022, BE-023, FE-036, QA-005). **M18 — Interview Demo
-Readiness** is the next milestone and is **pending** (QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017 shipped;
-QA-007 pending). It does not reopen M17 or close M9. Render PR previews, real Google
-OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and Redis stay deferred. Local
-product work does not wait on AWS.
-[INFRA-015](docs/tasks/infrastructure/INFRA-015-render-public-demo.md) is an interim Render public
-demo and does not close M9.
-[INFRA-016](docs/tasks/infrastructure/INFRA-016-render-marketing-static-site.md) publishes marketing
-as a static site on that demo and does not close M9.
+[docs/product/](docs/product/README.md) (statused; not tasks).
+
+Current: M18 pending, QA-007 open; see [docs/roadmap/release-roadmap.md](docs/roadmap/release-roadmap.md).
 
 Frontend application: `apps/web`.
 Marketing site: `apps/marketing` (static export).

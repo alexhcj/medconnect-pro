@@ -78,3 +78,8 @@ terraform.rc
 backend.hcl
 !backend.hcl.example
 !**/*.hcl.example
+
+# Claude Code personal files (shared config in .claude/ IS committed)
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/worktrees/

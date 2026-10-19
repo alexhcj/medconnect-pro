@@ -1,0 +1,38 @@
+---
+paths:
+  - "apps/api/**/*.{ts,tsx,js}"
+---
+
+<!-- Ported from .cursor/rules/backend.mdc. Keep both in sync while Cursor is still used. -->
+
+# Backend
+
+The backend is a modular NestJS application.
+
+Use clear layers:
+
+controller → application/service → repository/integration → persistence/external service.
+
+Controllers should remain thin.
+
+DTOs validate external input.
+
+RDO/response DTOs define external output.
+
+Domain/application services contain business rules.
+
+Repositories isolate persistence concerns.
+
+Tenant enforcement belongs on the server and should be applied consistently.
+
+OpenAPI is generated from NestJS controllers and DTOs (`@nestjs/swagger`). Do not hand-edit
+`apps/api/openapi/openapi.json`. Do not maintain a second OpenAPI file for Postman or Swagger UI.
+
+Human-readable API design lives in `/docs/contracts/`. Postman consumes generated OpenAPI for
+exploration and testing. Swagger UI is an optional viewer of the same document.
+
+When an API changes, update DTOs/controllers, regenerate OpenAPI, re-import Postman, and update
+Markdown only if the domain index or conventions changed. Never commit secrets, tokens, or real
+patient data in OpenAPI examples or Postman environments.
+
+Do not create frontend-only assumptions about backend authorization.

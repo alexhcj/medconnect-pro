@@ -1,0 +1,40 @@
+---
+paths:
+  - "**/*.{spec,test}.{ts,tsx,mjs}"
+  - "apps/web/e2e/**"
+  - "apps/api/test/**"
+---
+
+<!-- Ported from .cursor/rules/testing.mdc. Keep both in sync while Cursor is still used. -->
+
+# Testing
+
+A portfolio-quality vertical slice should have the tests appropriate to its risk:
+
+- unit tests for domain logic and permission policies;
+- integration tests for persistence/integrations;
+- API/contract tests for critical endpoints;
+- authorization and tenant-isolation tests;
+- E2E tests for critical user workflows;
+- upload/security tests where applicable.
+
+Once NestJS OpenAPI exists, API/contract tests should assert against the generated specification
+and implemented routes—not against a separately authored Postman-only contract. See
+[docs/workflows/api-contract-workflow.md](../../docs/workflows/api-contract-workflow.md).
+
+Frontend runners (see [docs/workflows/frontend-testing.md](../../docs/workflows/frontend-testing.md)
+and [ADR-008](../../docs/decisions/ADR-008-frontend-testing-stack.md)):
+
+- **Vitest** + React Testing Library + jsdom for unit, hook, and component tests under `apps/web/src/`.
+- **Playwright Test** for critical browser workflows under `apps/web/e2e/`.
+- Do not add Jest. Do not run Playwright specs through Vitest or the reverse.
+
+At minimum for frontend-only work:
+
+- type-check;
+- lint;
+- relevant unit/component tests;
+- E2E tests for critical flows when the feature is user-facing.
+
+Never use real patient information in fixtures.
+Use deterministic synthetic data.

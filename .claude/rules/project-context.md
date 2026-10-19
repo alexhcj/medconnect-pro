@@ -1,0 +1,125 @@
+<!-- Ported from .cursor/rules/00-project-context.mdc. Keep both in sync while Cursor is still used. -->
+
+# MedConnect Pro — Project Context
+
+MedConnect Pro is a feature-rich healthcare SaaS demonstration application created for portfolio,
+technical interviews and potential-client presentations. It demonstrates production-oriented
+engineering patterns without claiming to be a deployed HIPAA-certified production system.
+
+## Primary goals
+
+- Demonstrate healthcare-oriented UX and workflows.
+- Demonstrate secure multi-tenant SaaS architecture.
+- Demonstrate RBAC and resource-level authorization.
+- Demonstrate vertical-slice development.
+- Demonstrate frontend/backend/API/data/infrastructure boundaries.
+- Demonstrate auditability, privacy-by-design and accessibility.
+- Keep the implementation realistic enough to discuss in technical interviews.
+
+## Repository layout
+
+npm workspaces:
+
+- `apps/web` — Next.js frontend
+- `apps/api` — NestJS 12 modular API (OpenAPI via `npm run openapi:generate`)
+- `packages/` — reserved for future shared packages
+- `/docs` — canonical documentation
+- `.claude/rules/` — Claude Code rules (ported from `.cursor/rules/`)
+
+## Current frontend
+
+- Next.js App Router
+- React + TypeScript
+- TanStack Query
+- React Hook Form + Zod
+- Tailwind CSS
+- Headless UI where accessible primitives are useful
+- Lucide React for icons
+- Recharts
+- React Big Calendar
+- Daily SDK for telehealth call-object media
+- Socket.IO client for planned application realtime features
+
+## Current backend
+
+- Node.js current LTS, NestJS 12, TypeScript
+- REST + OpenAPI
+- PostgreSQL (local Compose + TypeORM)
+- Mock IdP HTTP sessions (opaque bearer and HttpOnly cookies), RBAC, tenant isolation, audit events
+
+## Planned infrastructure (not initialized)
+
+- Redis
+- WebSockets / Socket.IO where justified
+
+GitHub Actions quality gates exist. Terraform in `infra/terraform/` covers secrets/OIDC
+(INFRA-006), VPC and preview/production demo RDS (INFRA-007), and ECS/Fargate plus document S3
+(INFRA-008). Amplify Hosting for Next.js is Git-connected (`amplify.yml`; INFRA-009) with
+PR previews against the shared preview API (INFRA-010). Production ECS migrate/deploy is
+`.github/workflows/production-deploy.yml` (INFRA-011). Operator apply, Amplify console connect,
+and the GitHub `production` environment remain required.
+
+## Domain boundaries
+
+- Identity & Access
+- Practice / Provider
+- Patient
+- Scheduling
+- EHR / Clinical Data
+- Telehealth
+- Billing
+- Notifications
+- Audit / Compliance
+
+Do not prematurely split these into independently deployed microservices.
+
+## Security model
+
+The application models healthcare-oriented engineering patterns.
+
+Implemented in the demo: mock IdP sessions, labeled mock MFA challenge in the live UI, RBAC,
+tenant isolation, resource-level authorization, audit logging, tenant-scoped security-events HTTP,
+least-privilege DB role, secrets outside source control.
+
+Target, not implemented: OAuth 2.0 / OpenID Connect (Authorization Code + PKCE), production MFA,
+encryption at rest as an infrastructure property, TLS at the deployment edge.
+
+The application uses synthetic demo data only. Never introduce real PHI.
+
+## Role model
+
+- SUPER_ADMIN
+- PRACTICE_ADMIN
+- PROVIDER
+- NURSE
+- RECEPTIONIST
+- PATIENT
+
+Authorization follows:
+
+Authentication → identity → tenant/practice → role → permission → resource ownership/assignment.
+
+## Source-of-truth hierarchy
+
+1. ADRs — why major architectural decisions exist.
+2. Product requirements — complete-product target (what/why, unstatused).
+3. Product capability registry (`docs/product/`) — statused user-facing catalog.
+4. Architecture documents — system structure and technical boundaries.
+5. Contracts — API/data boundaries.
+6. Task specifications — current implementation contracts.
+7. Roadmaps — sequencing and milestones.
+8. Source code — current implementation state.
+
+Public marketing claims must not exceed
+[capability-matrix.md](../../docs/marketing/capability-matrix.md), which is a claim view of
+the registry. Do not invent `TELE-001`-style IDs; capability IDs are `{module}.{slug}`.
+Do not Plane-sync the registry.
+
+If sources conflict, do not silently invent a compromise. Identify the conflict and propose the
+appropriate documentation/ADR change.
+
+## Important demo limitation
+
+"Healthcare-grade", "HIPAA-oriented", "HIPAA-like", and "security-focused" describe demonstrated
+engineering patterns. Do not claim the demo itself is HIPAA compliant, certified, or suitable for
+real patient data unless a separate formal assessment establishes that claim.

@@ -24,9 +24,9 @@ Canonical lifecycle: [feature-development.md](../../workflows/feature-developmen
 
 ---
 
-# Generate Implementation Plan for QA-005
+# Generate Implementation Plan for [TASK-ID]
 
-Generate an implementation plan for **QA-005**.
+Generate an implementation plan for **[TASK-ID]**.
 
 ## 1. Establish the Task Context
 
@@ -34,7 +34,7 @@ Before planning, inspect the repository and read the authoritative project docum
 
 At minimum, check:
 
-1. The canonical task specification for **QA-005**
+1. The canonical task specification for **[TASK-ID]**
 2. `docs/tasks/00-master-task-list.md` and/or the current master task/roadmap source. Use `docs/archive/technical-implementation-tasks-v0.md` only as historical split notes, not current requirements.
 3. Relevant roadmap/product planning documents, including `docs/product/` when the task
    changes a user-facing capability
@@ -352,7 +352,7 @@ Summarize the actual implementation state and provide repository evidence.
 
 ### 2. Remaining Scope
 
-List only the work that remains for **QA-005**.
+List only the work that remains for **[TASK-ID]**.
 
 ### 3. Ordered Implementation Plan
 
