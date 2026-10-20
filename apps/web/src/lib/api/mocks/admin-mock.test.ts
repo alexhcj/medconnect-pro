@@ -31,10 +31,10 @@ describe('adminMockAPI', () => {
 	});
 
 	it('lists synthetic practice users with catalog roles and no passwords', async () => {
-		const users = await adminMockAPI.listUsers();
+		const {items: users} = await adminMockAPI.listUsers();
 
 		expect(users.length).toBeGreaterThan(0);
-		expect(users.map((user) => user.role)).toEqual([
+		expect(users.slice(0, 6).map((user) => user.role)).toEqual([
 			'SUPER_ADMIN',
 			'PRACTICE_ADMIN',
 			'PROVIDER',
@@ -55,7 +55,7 @@ describe('adminMockAPI', () => {
 	});
 
 	it('lists synthetic audit events with metadata only', async () => {
-		const events = await adminMockAPI.listAuditEvents();
+		const {items: events} = await adminMockAPI.listAuditEvents();
 
 		expect(events.length).toBeGreaterThan(0);
 		expect(events[0]).toEqual(
@@ -76,10 +76,10 @@ describe('adminMockAPI', () => {
 	});
 
 	it('lists synthetic security events with auth actions only', async () => {
-		const events = await adminMockAPI.listSecurityEvents();
+		const {items: events} = await adminMockAPI.listSecurityEvents();
 
 		expect(events.length).toBeGreaterThan(0);
-		expect(events.map((event) => event.action)).toEqual([
+		expect(events.slice(0, 4).map((event) => event.action)).toEqual([
 			'auth.login.succeeded',
 			'auth.login.failed',
 			'auth.mfa.succeeded',
@@ -105,8 +105,8 @@ describe('adminMockAPI', () => {
 		const before = await adminMockAPI.listSecurityEvents();
 		await adminMockAPI.assignRole('user_mock_provider', 'NURSE');
 		const after = await adminMockAPI.listSecurityEvents();
-		expect(after).toHaveLength(before.length);
-		expect(after.some((event) => event.action === 'membership.role_changed')).toBe(false);
+		expect(after.total).toBe(before.total);
+		expect(after.items.some((event) => event.action === 'membership.role_changed')).toBe(false);
 	});
 
 	it('assigns a membership role and records membership.role_changed', async () => {
@@ -114,10 +114,10 @@ describe('adminMockAPI', () => {
 		const updated = await adminMockAPI.assignRole('user_mock_provider', 'NURSE');
 		expect(updated.role).toBe('NURSE');
 
-		const users = await adminMockAPI.listUsers();
+		const {items: users} = await adminMockAPI.listUsers();
 		expect(users.find((user) => user.id === 'user_mock_provider')?.role).toBe('NURSE');
 
-		const events = await adminMockAPI.listAuditEvents();
+		const {items: events} = await adminMockAPI.listAuditEvents();
 		expect(events[0]).toEqual(
 			expect.objectContaining({
 				action: 'membership.role_changed',
@@ -134,9 +134,9 @@ describe('adminMockAPI', () => {
 		await adminMockAPI.assignRole('user_mock_provider', 'NURSE');
 		await adminMockAPI.assignRole('user_mock_provider', 'PROVIDER');
 
-		const events = await adminMockAPI.listAuditEvents();
+		const {items: events} = await adminMockAPI.listAuditEvents();
 		const roleChanges = events.filter((event) => event.action === 'membership.role_changed');
-		expect(roleChanges).toHaveLength(2);
+		expect(roleChanges.length).toBeGreaterThanOrEqual(2);
 		expect(roleChanges[0]?.id).not.toBe(roleChanges[1]?.id);
 		expect(new Set(events.map((event) => event.id)).size).toBe(events.length);
 	});
@@ -147,7 +147,7 @@ describe('adminMockAPI', () => {
 		const updated = await adminMockAPI.assignRole('user_mock_provider', 'PROVIDER');
 		expect(updated.role).toBe('PROVIDER');
 		const after = await adminMockAPI.listAuditEvents();
-		expect(after).toHaveLength(before.length);
+		expect(after.total).toBe(before.total);
 	});
 
 	it('forbids a PRACTICE_ADMIN from granting SUPER_ADMIN', async () => {
@@ -170,7 +170,7 @@ describe('adminMockAPI', () => {
 			status: 403,
 			code: 'FORBIDDEN',
 		});
-		const users = await adminMockAPI.listUsers();
+		const {items: users} = await adminMockAPI.listUsers();
 		expect(users.find((user) => user.id === 'user_mock_practice_admin')?.role).toBe(
 			'PRACTICE_ADMIN',
 		);
@@ -181,6 +181,73 @@ describe('adminMockAPI', () => {
 		await expect(adminMockAPI.assignRole('user_mock_missing', 'NURSE')).rejects.toMatchObject({
 			status: 404,
 			code: 'NOT_FOUND',
+		});
+	});
+
+	describe('paging and filters', () => {
+		it('returns 25 rows per page with total, hasMore and nextPage', async () => {
+			const first = await adminMockAPI.listAuditEvents({page: 1});
+			expect(first.items).toHaveLength(25);
+			expect(first.total).toBeGreaterThan(50);
+			expect(first.hasMore).toBe(true);
+			expect(first.nextPage).toBe(2);
+
+			const last = await adminMockAPI.listAuditEvents({page: Math.ceil(first.total / 25)});
+			expect(last.hasMore).toBe(false);
+			expect(last.nextPage).toBeUndefined();
+			expect(last.items.length).toBeLessThanOrEqual(25);
+		});
+
+		it('returns an empty page with the same total past the end', async () => {
+			const first = await adminMockAPI.listAuditEvents({page: 1});
+			const past = await adminMockAPI.listAuditEvents({page: 99});
+			expect(past.items).toEqual([]);
+			expect(past.total).toBe(first.total);
+			expect(past.hasMore).toBe(false);
+		});
+
+		it('filters by action and resource type and counts only matches', async () => {
+			const result = await adminMockAPI.listAuditEvents({
+				page: 1,
+				action: 'patient.accessed',
+				resourceType: 'patient',
+			});
+			expect(result.total).toBeGreaterThan(0);
+			expect(
+				result.items.every((e) => e.action === 'patient.accessed' && e.resourceType === 'patient'),
+			).toBe(true);
+		});
+
+		it('filters by an inclusive UTC day range', async () => {
+			const result = await adminMockAPI.listAuditEvents({
+				page: 1,
+				from: '2026-09-26',
+				to: '2026-09-26',
+			});
+			expect(result.total).toBeGreaterThan(0);
+			expect(result.items.every((e) => e.createdAt.startsWith('2026-09-26'))).toBe(true);
+		});
+
+		it('rejects a reversed date range like the API does', async () => {
+			await expect(
+				adminMockAPI.listAuditEvents({page: 1, from: '2026-10-05', to: '2026-10-01'}),
+			).rejects.toMatchObject({status: 400, code: 'VALIDATION_ERROR'});
+		});
+
+		it('pages security events and keeps them auth.* only', async () => {
+			const result = await adminMockAPI.listSecurityEvents({page: 1});
+			expect(result.total).toBeGreaterThan(25);
+			expect(result.items.every((e) => e.action.startsWith('auth.'))).toBe(true);
+		});
+
+		it('searches users by email substring and filters by role', async () => {
+			const bySearch = await adminMockAPI.listUsers({page: 1, q: 'DEMO.USER.00'});
+			expect(bySearch.total).toBeGreaterThan(0);
+			expect(bySearch.items.every((u) => u.email.includes('demo.user.00'))).toBe(true);
+
+			const byRole = await adminMockAPI.listUsers({page: 1, role: 'PRACTICE_ADMIN'});
+			expect(byRole.total).toBe(1);
+			expect(byRole.items[0]?.id).toBe('user_mock_practice_admin');
 		});
 	});
 });

@@ -8,7 +8,7 @@ describe('Input', () => {
 		);
 
 		expect(screen.getByText('Email')).toBeInTheDocument();
-		expect(container.querySelector('input')).toHaveClass('border-input', 'h-10', 'rounded-md');
+		expect(container.querySelector('input')).toHaveClass('border-input', 'h-11', 'rounded-md');
 		expect(screen.getByText('Use the demo account.')).toHaveClass('text-foreground-muted');
 	});
 

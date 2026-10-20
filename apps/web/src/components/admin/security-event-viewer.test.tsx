@@ -1,15 +1,24 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {SecurityEventViewer} from '@/components/admin/security-event-viewer';
 import {ApiError} from '@/lib/api/http';
+import type {PagedResult} from '@/types/admin/admin-list';
 import type {AuditEvent} from '@/types/admin/audit-event';
 
-const {useSecurityEvents} = vi.hoisted(() => ({
+const {useSecurityEvents, push, searchParams} = vi.hoisted(() => ({
 	useSecurityEvents: vi.fn(),
+	push: vi.fn(),
+	searchParams: {current: new URLSearchParams()},
 }));
 
 vi.mock('@/lib/hooks/use-admin', () => ({
 	useSecurityEvents,
+}));
+
+vi.mock('next/navigation', () => ({
+	useRouter: () => ({push}),
+	usePathname: () => '/dashboard/admin',
+	useSearchParams: () => searchParams.current,
 }));
 
 const sampleEvent: AuditEvent = {
@@ -23,17 +32,33 @@ const sampleEvent: AuditEvent = {
 	createdAt: '2026-10-06T08:00:00.000Z',
 };
 
+function pageOf(count: number, total = 312): PagedResult<AuditEvent> {
+	return {
+		items: Array.from({length: count}, (_, index) => ({...sampleEvent, id: `demo-security-${index}`})),
+		total,
+		hasMore: true,
+		nextPage: 2,
+	};
+}
+
 function mockEvents(overrides: Record<string, unknown> = {}) {
 	useSecurityEvents.mockReturnValue({
-		data: [sampleEvent],
+		data: pageOf(1),
 		isPending: false,
 		isError: false,
+		isPlaceholderData: false,
 		refetch: vi.fn(),
 		...overrides,
 	});
 }
 
 describe('SecurityEventViewer', () => {
+	beforeEach(() => {
+		useSecurityEvents.mockReset();
+		push.mockClear();
+		searchParams.current = new URLSearchParams();
+	});
+
 	it('renders synthetic security metadata without emails', () => {
 		mockEvents();
 		render(<SecurityEventViewer />);
@@ -44,12 +69,34 @@ describe('SecurityEventViewer', () => {
 				'Tenant-scoped authentication and session events. Synthetic ids only. Not a SIEM or HIPAA audit export.',
 			),
 		).toBeInTheDocument();
-		const list = screen.getByRole('list', {name: 'Security events'});
-		expect(list).toHaveTextContent('auth.login.succeeded');
-		expect(list).toHaveTextContent('session');
-		expect(list).toHaveTextContent('user_mock_practice_admin');
-		expect(list).not.toHaveTextContent('@example.test');
-		expect(list).not.toHaveTextContent('patient.accessed');
+		const table = screen.getByRole('table', {name: 'Security events'});
+		expect(table).toHaveTextContent('auth.login.succeeded');
+		expect(table).toHaveTextContent('user_mock_practice_admin');
+		expect(table).not.toHaveTextContent('@example.test');
+	});
+
+	it('requests one page and offers only auth actions as filters', () => {
+		mockEvents();
+		render(<SecurityEventViewer />);
+
+		expect(useSecurityEvents).toHaveBeenCalledWith(expect.objectContaining({page: 1}));
+		const options = within(screen.getByRole('combobox', {name: 'Action'}))
+			.getAllByRole('option')
+			.map((option) => option.getAttribute('value'));
+		expect(options.filter(Boolean).every((value) => value?.startsWith('auth.'))).toBe(true);
+	});
+
+	it('uses its own URL keys so the other lists keep their position', async () => {
+		searchParams.current = new URLSearchParams('securityPage=2&auditPage=5');
+		mockEvents({data: pageOf(25)});
+		const user = userEvent.setup();
+		render(<SecurityEventViewer />);
+
+		expect(screen.getByText(/Showing 26–50 of 312 events/)).toBeInTheDocument();
+		await user.click(screen.getByRole('button', {name: 'Next page'}));
+		expect(push).toHaveBeenLastCalledWith('/dashboard/admin?securityPage=3&auditPage=5', {
+			scroll: false,
+		});
 	});
 
 	it('shows a loading state', () => {
@@ -57,7 +104,7 @@ describe('SecurityEventViewer', () => {
 		render(<SecurityEventViewer />);
 
 		expect(screen.getByText('Loading security events')).toBeInTheDocument();
-		expect(screen.queryByRole('list', {name: 'Security events'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('table')).not.toBeInTheDocument();
 	});
 
 	it('shows an error alert and retries from the keyboard', async () => {
@@ -86,14 +133,14 @@ describe('SecurityEventViewer', () => {
 		expect(screen.getByRole('alert')).toHaveTextContent(
 			'You do not have permission to perform this action',
 		);
-		expect(screen.queryByRole('list', {name: 'Security events'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('table')).not.toBeInTheDocument();
 	});
 
 	it('shows an empty message', () => {
-		mockEvents({data: []});
+		mockEvents({data: {items: [], total: 0, hasMore: false}});
 		render(<SecurityEventViewer />);
 
 		expect(screen.getByText('No security events to display.')).toBeInTheDocument();
-		expect(screen.queryByRole('list', {name: 'Security events'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('table')).not.toBeInTheDocument();
 	});
 });

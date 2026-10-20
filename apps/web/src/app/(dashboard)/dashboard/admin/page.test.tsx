@@ -19,6 +19,12 @@ vi.mock('@/lib/hooks/use-admin', () => ({
 	useAssignUserRole,
 }));
 
+vi.mock('next/navigation', () => ({
+	useRouter: () => ({push: vi.fn()}),
+	usePathname: () => '/dashboard/admin',
+	useSearchParams: () => new URLSearchParams(),
+}));
+
 vi.mock('@/lib/hooks/use-session', () => ({
 	useSessionStatus,
 }));
@@ -71,19 +77,19 @@ describe('AdministrationPage', () => {
 			isLoading: false,
 		});
 		useAdminUsers.mockReturnValue({
-			data: [sampleUser],
+			data: {items: [sampleUser], total: 1, hasMore: false},
 			isPending: false,
 			isError: false,
 			refetch: vi.fn(),
 		});
 		useAuditEvents.mockReturnValue({
-			data: [sampleEvent],
+			data: {items: [sampleEvent], total: 1, hasMore: false},
 			isPending: false,
 			isError: false,
 			refetch: vi.fn(),
 		});
 		useSecurityEvents.mockReturnValue({
-			data: [sampleSecurityEvent],
+			data: {items: [sampleSecurityEvent], total: 1, hasMore: false},
 			isPending: false,
 			isError: false,
 			refetch: vi.fn(),
@@ -99,14 +105,14 @@ describe('AdministrationPage', () => {
 				'Synthetic demo. Role changes apply to this practice only. Nest enforces grant limits.',
 			),
 		).toBeInTheDocument();
-		expect(screen.getByRole('list', {name: 'Practice users'})).toHaveTextContent(
+		expect(screen.getByRole('table', {name: 'Practice users'})).toHaveTextContent(
 			'practice.admin@example.test',
 		);
 		expect(screen.getByRole('combobox', {name: 'Role for practice.admin@example.test'})).toHaveValue(
 			'PRACTICE_ADMIN',
 		);
-		expect(screen.getByRole('list', {name: 'Audit events'})).toHaveTextContent('auth.login.succeeded');
-		expect(screen.getByRole('list', {name: 'Security events'})).toHaveTextContent(
+		expect(screen.getByRole('table', {name: 'Audit events'})).toHaveTextContent('auth.login.succeeded');
+		expect(screen.getByRole('table', {name: 'Security events'})).toHaveTextContent(
 			'auth.login.failed',
 		);
 	});
@@ -119,9 +125,9 @@ describe('AdministrationPage', () => {
 		render(<AdministrationPage />);
 
 		expect(screen.getByRole('status')).toHaveTextContent('You do not have access to administration.');
-		expect(screen.queryByRole('list', {name: 'Practice users'})).not.toBeInTheDocument();
-		expect(screen.queryByRole('list', {name: 'Audit events'})).not.toBeInTheDocument();
-		expect(screen.queryByRole('list', {name: 'Security events'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('table', {name: 'Practice users'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('table', {name: 'Audit events'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('table', {name: 'Security events'})).not.toBeInTheDocument();
 		expect(useAdminUsers).not.toHaveBeenCalled();
 		expect(useAuditEvents).not.toHaveBeenCalled();
 		expect(useSecurityEvents).not.toHaveBeenCalled();

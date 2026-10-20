@@ -1,6 +1,8 @@
 'use client';
 
+import {Suspense} from 'react';
 import {ADMIN_DEMO_NOTICE} from '@/components/admin/admin-demo-notice';
+import {ListSkeleton} from '@/components/admin/admin-list-states';
 import {AuditEventViewer} from '@/components/admin/audit-event-viewer';
 import {SecurityEventViewer} from '@/components/admin/security-event-viewer';
 import {UserRoleList} from '@/components/admin/user-role-list';
@@ -30,11 +32,13 @@ export default function AdministrationPage() {
 			)}
 
 			{canAccess && (
-				<div className="space-y-6">
-					<UserRoleList />
-					<AuditEventViewer />
-					<SecurityEventViewer />
-				</div>
+				<Suspense fallback={<ListSkeleton label="Loading administration" rows={3} />}>
+					<div className="space-y-6">
+						<UserRoleList />
+						<AuditEventViewer />
+						<SecurityEventViewer />
+					</div>
+				</Suspense>
 			)}
 		</div>
 	);

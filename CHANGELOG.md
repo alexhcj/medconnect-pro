@@ -6,6 +6,29 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.94.0] - 2026-10-20
+
+### Added
+
+- FE-043: Users, Audit events and Security events on `/dashboard/admin` load one page of 25 at a
+  time. Numbered pagination (compact Previous/Next with "Page N of M" below 768 px) shows
+  "Showing 26–50 of 312 events · newest first". Filters: action, resource type and From/To dates for
+  events; email search (Search button or Enter) and role for users. Page and filters live in URL
+  query params, namespaced per list (`auditPage`, `securityAction`, `usersQ`, and so on), so refresh
+  and back/forward keep position; a filter change returns to page 1. Compact table from 768 px,
+  stacked rows below; filtered-empty, past-the-end, page-change loading and error states. The
+  `Pagination` control is shared for FE-044 and FE-045.
+- Mock mode: deterministic synthetic rows after the shared fixtures (66 audit, 44 security, 46
+  users) so paging can be demonstrated; the mock honours the same page, filter and total semantics.
+
+### Changed
+
+- `Input` is 44 px high (`h-11`) to meet the touch-target requirement; the patient list search and
+  appointment form inputs follow. The Figma `Input` component matches.
+- The admin API client and hooks return a paged result (`items`, `total`, `hasMore`, `nextPage`)
+  and send `pageSize=25` explicitly (audit and security default to 50 on the server). A role change
+  patches every cached users page. Date filters are UTC days sent as ISO instants.
+
 ## [0.93.0] - 2026-10-20
 
 ### Added

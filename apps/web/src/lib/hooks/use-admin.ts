@@ -1,5 +1,6 @@
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {adminAPI} from '@/lib/api/admin-api';
+import type {EventListParams, PagedResult, UserListParams} from '@/types/admin/admin-list';
 import type {PracticeUser} from '@/types/admin/practice-user';
 import type {Role} from '@/types/auth/roles';
 
@@ -7,33 +8,36 @@ export const adminUsersQueryKey = ['admin', 'users'] as const;
 export const adminAuditEventsQueryKey = ['admin', 'audit-events'] as const;
 export const adminSecurityEventsQueryKey = ['admin', 'security-events'] as const;
 
-export function useAdminUsers(enabled = true) {
+const listQueryOptions = {
+	staleTime: 5 * 60 * 1000,
+	gcTime: 10 * 60 * 1000,
+	placeholderData: keepPreviousData,
+};
+
+export function useAdminUsers(params: UserListParams = {page: 1}, enabled = true) {
 	return useQuery({
-		queryKey: adminUsersQueryKey,
-		queryFn: () => adminAPI.listUsers(),
+		queryKey: [...adminUsersQueryKey, params],
+		queryFn: () => adminAPI.listUsers(params),
 		enabled,
-		staleTime: 5 * 60 * 1000,
-		gcTime: 10 * 60 * 1000,
+		...listQueryOptions,
 	});
 }
 
-export function useAuditEvents(enabled = true) {
+export function useAuditEvents(params: EventListParams = {page: 1}, enabled = true) {
 	return useQuery({
-		queryKey: adminAuditEventsQueryKey,
-		queryFn: () => adminAPI.listAuditEvents(),
+		queryKey: [...adminAuditEventsQueryKey, params],
+		queryFn: () => adminAPI.listAuditEvents(params),
 		enabled,
-		staleTime: 5 * 60 * 1000,
-		gcTime: 10 * 60 * 1000,
+		...listQueryOptions,
 	});
 }
 
-export function useSecurityEvents(enabled = true) {
+export function useSecurityEvents(params: EventListParams = {page: 1}, enabled = true) {
 	return useQuery({
-		queryKey: adminSecurityEventsQueryKey,
-		queryFn: () => adminAPI.listSecurityEvents(),
+		queryKey: [...adminSecurityEventsQueryKey, params],
+		queryFn: () => adminAPI.listSecurityEvents(params),
 		enabled,
-		staleTime: 5 * 60 * 1000,
-		gcTime: 10 * 60 * 1000,
+		...listQueryOptions,
 	});
 }
 
@@ -44,12 +48,18 @@ export function useAssignUserRole() {
 		mutationFn: ({userId, role}: {userId: string; role: Role}) =>
 			adminAPI.assignRole(userId, role),
 		onSuccess: (updated) => {
-			queryClient.setQueryData<PracticeUser[]>(adminUsersQueryKey, (current) => {
-				if (!current) {
-					return current;
-				}
-				return current.map((user) => (user.id === updated.id ? updated : user));
-			});
+			queryClient.setQueriesData<PagedResult<PracticeUser>>(
+				{queryKey: adminUsersQueryKey},
+				(current) => {
+					if (!current) {
+						return current;
+					}
+					return {
+						...current,
+						items: current.items.map((user) => (user.id === updated.id ? updated : user)),
+					};
+				},
+			);
 			void queryClient.invalidateQueries({queryKey: adminAuditEventsQueryKey});
 		},
 	});

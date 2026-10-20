@@ -55,12 +55,14 @@ describe('adminRealAPI', () => {
 
 	it('lists practice users from Nest and unwraps PracticeUserListRdo', async () => {
 		localStorage.setItem('auth_token', 'demo-access-token');
-		const fetchMock = vi.fn().mockResolvedValue(jsonResponse({users: [userRdo, providerRdo]}));
+		const fetchMock = vi.fn().mockResolvedValue(jsonResponse({users: [userRdo, providerRdo], total: 2, hasMore: false}));
 		vi.stubGlobal('fetch', fetchMock);
 
-		const users = await adminRealAPI.listUsers();
+		const result = await adminRealAPI.listUsers();
 
-		expect(users).toEqual([
+		expect(result.total).toBe(2);
+		expect(result.hasMore).toBe(false);
+		expect(result.items).toEqual([
 			expect.objectContaining({
 				id: userId,
 				email: 'practice.admin@example.test',
@@ -74,7 +76,7 @@ describe('adminRealAPI', () => {
 				synthetic: true,
 			}),
 		]);
-		expect(fetchMock).toHaveBeenCalledWith('http://localhost:3001/admin/users', expect.any(Object));
+		expect(fetchMock).toHaveBeenCalledWith('http://localhost:3001/admin/users?page=1&pageSize=25', expect.any(Object));
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
 		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
@@ -82,13 +84,14 @@ describe('adminRealAPI', () => {
 	it('lists audit events from Nest and unwraps AuditEventSearchResultRdo', async () => {
 		localStorage.setItem('auth_token', 'demo-access-token');
 		const fetchMock = vi.fn().mockResolvedValue(
-			jsonResponse({events: [eventRdo], hasMore: false}),
+			jsonResponse({events: [eventRdo], total: 1, hasMore: false}),
 		);
 		vi.stubGlobal('fetch', fetchMock);
 
-		const events = await adminRealAPI.listAuditEvents();
+		const result = await adminRealAPI.listAuditEvents();
 
-		expect(events).toEqual([
+		expect(result.total).toBe(1);
+		expect(result.items).toEqual([
 			expect.objectContaining({
 				id: eventId,
 				action: 'auth.login.succeeded',
@@ -98,7 +101,7 @@ describe('adminRealAPI', () => {
 			}),
 		]);
 		expect(fetchMock).toHaveBeenCalledWith(
-			'http://localhost:3001/admin/audit-events',
+			'http://localhost:3001/admin/audit-events?page=1&pageSize=25',
 			expect.any(Object),
 		);
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
@@ -108,13 +111,14 @@ describe('adminRealAPI', () => {
 	it('lists security events from Nest and unwraps AuditEventSearchResultRdo', async () => {
 		localStorage.setItem('auth_token', 'demo-access-token');
 		const fetchMock = vi.fn().mockResolvedValue(
-			jsonResponse({events: [eventRdo], hasMore: false}),
+			jsonResponse({events: [eventRdo], total: 1, hasMore: false}),
 		);
 		vi.stubGlobal('fetch', fetchMock);
 
-		const events = await adminRealAPI.listSecurityEvents();
+		const result = await adminRealAPI.listSecurityEvents();
 
-		expect(events).toEqual([
+		expect(result.total).toBe(1);
+		expect(result.items).toEqual([
 			expect.objectContaining({
 				id: eventId,
 				action: 'auth.login.succeeded',
@@ -124,11 +128,50 @@ describe('adminRealAPI', () => {
 			}),
 		]);
 		expect(fetchMock).toHaveBeenCalledWith(
-			'http://localhost:3001/admin/security-events',
+			'http://localhost:3001/admin/security-events?page=1&pageSize=25',
 			expect.any(Object),
 		);
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
 		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
+	});
+
+	it('sends page, filters and UTC day bounds for audit events without a tenant id', async () => {
+		const fetchMock = vi.fn().mockResolvedValue(
+			jsonResponse({events: [], total: 0, hasMore: false}),
+		);
+		vi.stubGlobal('fetch', fetchMock);
+
+		await adminRealAPI.listAuditEvents({
+			page: 3,
+			action: 'role_changed',
+			resourceType: 'user',
+			from: '2026-10-01',
+			to: '2026-10-05',
+		});
+
+		const url = new URL(String(fetchMock.mock.calls[0]?.[0]));
+		expect(url.pathname).toBe('/admin/audit-events');
+		expect(url.searchParams.get('page')).toBe('3');
+		expect(url.searchParams.get('pageSize')).toBe('25');
+		expect(url.searchParams.get('action')).toBe('role_changed');
+		expect(url.searchParams.get('resourceType')).toBe('user');
+		expect(url.searchParams.get('from')).toBe('2026-10-01T00:00:00.000Z');
+		expect(url.searchParams.get('to')).toBe('2026-10-05T23:59:59.999Z');
+		expect(url.search).not.toMatch(/practice|tenant/i);
+	});
+
+	it('sends search and role filters for users', async () => {
+		const fetchMock = vi.fn().mockResolvedValue(
+			jsonResponse({users: [], total: 0, hasMore: false}),
+		);
+		vi.stubGlobal('fetch', fetchMock);
+
+		await adminRealAPI.listUsers({page: 2, q: 'nurse', role: 'NURSE'});
+
+		const url = new URL(String(fetchMock.mock.calls[0]?.[0]));
+		expect(url.searchParams.get('page')).toBe('2');
+		expect(url.searchParams.get('q')).toBe('nurse');
+		expect(url.searchParams.get('role')).toBe('NURSE');
 	});
 
 	it('maps a 403 security-events envelope onto ApiError', async () => {

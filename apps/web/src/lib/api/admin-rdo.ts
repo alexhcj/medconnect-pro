@@ -13,6 +13,9 @@ export interface PracticeUserRdo {
 
 export interface PracticeUserListRdo {
 	users: PracticeUserRdo[];
+	total: number;
+	hasMore: boolean;
+	nextPage?: number;
 }
 
 /** Audit event returned by Nest `AuditEventRdo`. `practiceId` is informational only. */
@@ -29,6 +32,7 @@ export interface AuditEventRdo {
 
 export interface AuditEventSearchResultRdo {
 	events: AuditEventRdo[];
+	total: number;
 	nextPage?: number;
 	hasMore: boolean;
 }
