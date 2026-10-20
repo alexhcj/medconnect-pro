@@ -28,6 +28,7 @@ export class AuditService {
 	private toResult(page: AuditEventPage): AuditEventSearchResultRdo {
 		return {
 			events: page.events.map(toAuditEventRdo),
+			total: page.total,
 			nextPage: page.nextPage,
 			hasMore: page.hasMore,
 		};

@@ -279,6 +279,26 @@ describe('audit HTTP', () => {
 		).toBe(true);
 		expect(events.some((event) => event.correlationId === `cid-foreign-${suffix}`)).toBe(false);
 
+		// Fewer rows than one page: total equals the rows returned and excludes practice B's row.
+		expect(listed.body.total).toBe(events.length);
+		const filtered = await request(app.getHttpServer())
+			.get('/admin/audit-events')
+			.query({action: 'patient.created'})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(200);
+		expect(filtered.body.total).toBe(
+			(filtered.body.events as AuditEventBody[]).filter((e) => e.action === 'patient.created').length,
+		);
+		expect(filtered.body.total).toBeLessThan(listed.body.total);
+		const pastEnd = await request(app.getHttpServer())
+			.get('/admin/audit-events')
+			.query({page: 1000, pageSize: 100})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(200);
+		expect(pastEnd.body.events).toEqual([]);
+		expect(pastEnd.body.total).toBe(listed.body.total);
+		expect(pastEnd.body.hasMore).toBe(false);
+
 		const payload = JSON.stringify(listed.body);
 		expect(payload).not.toContain('Annual follow-up');
 		expect(payload).not.toContain(admin.email);

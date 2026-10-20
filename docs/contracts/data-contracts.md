@@ -310,7 +310,8 @@ schemas here.
 
 `GET /admin/audit-events` returns tenant-scoped rows from `audit_events`. Response fields are
 identity and action metadata only: `id`, `practiceId`, `actorUserId`, `action`, `resourceType`,
-`resourceId`, `correlationId`, `createdAt`. There is no payload object. Emails, passwords, notes,
+`resourceId`, `correlationId`, `createdAt`. There is no payload object. The list envelope is `events` plus `total`, `hasMore` and `nextPage`
+(see [List pagination](api-endpoints.md#list-pagination)). Emails, passwords, notes,
 and clinical text must not appear. Reads require `admin:practice`. Tenant comes from the session.
 
 ## Security events

@@ -115,5 +115,52 @@ describe('AuditEventRepository', () => {
 			action: 'patient.accessed',
 		});
 		expect(exactNonAuth.events).toHaveLength(0);
+		expect(exactNonAuth.total).toBe(0);
+	});
+
+	it('reports a tenant-scoped, filter-aware total and keeps it past the end', async () => {
+		tenant.set({
+			practiceId: practiceA.id,
+			actorUserId: userA.id,
+			role: 'PRACTICE_ADMIN',
+		});
+		for (const action of ['total.probe', 'total.probe', 'total.other']) {
+			await repo.record({
+				action,
+				resourceType: 'total-probe',
+				resourceId: null,
+				correlationId: `cid-${action}`,
+			});
+		}
+		await repo.record(
+			{
+				action: 'total.probe',
+				resourceType: 'total-probe',
+				resourceId: null,
+				correlationId: 'cid-foreign',
+			},
+			{practiceId: practiceB.id, actorUserId: userB.id},
+		);
+
+		const all = await repo.list({resourceType: 'total-probe'});
+		expect(all.total).toBe(3);
+		expect(all.events).toHaveLength(3);
+
+		const byAction = await repo.list({resourceType: 'total-probe', action: 'total.probe'});
+		expect(byAction.total).toBe(2);
+
+		const future = await repo.list({
+			resourceType: 'total-probe',
+			from: new Date(Date.now() + 60 * 60 * 1000),
+		});
+		expect(future.total).toBe(0);
+
+		const first = await repo.list({resourceType: 'total-probe', page: 1, pageSize: 2});
+		expect(first).toMatchObject({total: 3, hasMore: true, nextPage: 2});
+
+		const pastEnd = await repo.list({resourceType: 'total-probe', page: 5, pageSize: 2});
+		expect(pastEnd.events).toEqual([]);
+		expect(pastEnd).toMatchObject({total: 3, hasMore: false});
+		expect(pastEnd.nextPage).toBeUndefined();
 	});
 });

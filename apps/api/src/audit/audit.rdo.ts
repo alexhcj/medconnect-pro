@@ -32,6 +32,9 @@ export class AuditEventSearchResultRdo {
 	@ApiProperty({type: [AuditEventRdo]})
 	events!: AuditEventRdo[];
 
+	@ApiProperty({example: 312})
+	total!: number;
+
 	@ApiProperty({required: false, example: 2})
 	nextPage?: number;
 

@@ -4,6 +4,7 @@ import type {Request} from 'express';
 import {Repository} from 'typeorm';
 import {AuditEvent} from '../persistence/entities/audit-event.entity.js';
 import {getCorrelationId} from '../platform/correlation.js';
+import {toPageMeta} from '../platform/pagination.js';
 import {tenantAls} from '../tenancy/tenant-als.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
 import {resourceTypeFromPath} from './audit-access.js';
@@ -35,6 +36,7 @@ export type AuditEventSearchQuery = {
 
 export type AuditEventPage = {
 	events: AuditEvent[];
+	total: number;
 	nextPage?: number;
 	hasMore: boolean;
 };
@@ -94,12 +96,7 @@ export class AuditEventRepository {
 		qb.skip((page - 1) * pageSize).take(pageSize);
 
 		const [events, total] = await qb.getManyAndCount();
-		const hasMore = page * pageSize < total;
-		return {
-			events,
-			hasMore,
-			nextPage: hasMore ? page + 1 : undefined,
-		};
+		return {events, ...toPageMeta(total, {page, pageSize})};
 	}
 
 	async tryRecordDenied(request: Request, scope?: AuditEventActorScope): Promise<void> {

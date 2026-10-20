@@ -215,7 +215,7 @@
     },
     "/admin/audit-events": {
       "get": {
-        "description": "Requires admin:practice. Newest first. Page size defaults to 50 (max 100). Tenant comes from the session, not from the client. Events store actor, tenant, action, and resource ids only — no emails, notes, or clinical text.",
+        "description": "Requires admin:practice. Newest first. Page size defaults to 50 (max 100). total counts only rows in the resolved practice that match the filters; a page past the end returns an empty array with the same total. Tenant comes from the session, not from the client. Events store actor, tenant, action, and resource ids only — no emails, notes, or clinical text.",
         "operationId": "AuditController_list",
         "parameters": [
           {
@@ -327,7 +327,7 @@
     },
     "/admin/security-events": {
       "get": {
-        "description": "Requires admin:practice. Newest first. Page size defaults to 50 (max 100). Tenant comes from the session, not from the client. Returns auth.* rows only (actor, tenant, action, and resource ids — no emails, passwords, MFA secrets, or session hashes). Does not replace GET /admin/audit-events.",
+        "description": "Requires admin:practice. Newest first. Page size defaults to 50 (max 100). total counts only auth.* rows in the resolved practice that match the filters; a page past the end returns an empty array with the same total. Tenant comes from the session, not from the client. Returns auth.* rows only (actor, tenant, action, and resource ids — no emails, passwords, MFA secrets, or session hashes). Does not replace GET /admin/audit-events.",
         "operationId": "SecurityEventsController_list",
         "parameters": [
           {
@@ -4940,6 +4940,10 @@
               "$ref": "#/components/schemas/AuditEvent"
             }
           },
+          "total": {
+            "type": "number",
+            "example": 312
+          },
           "nextPage": {
             "type": "number",
             "example": 2
@@ -4951,6 +4955,7 @@
         },
         "required": [
           "events",
+          "total",
           "hasMore"
         ]
       },

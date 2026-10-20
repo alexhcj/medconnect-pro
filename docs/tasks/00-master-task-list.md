@@ -203,6 +203,7 @@ Polish and list normalization. Does not close M9 or reopen M17/M18; see the rele
 - FE-041 — Billing design/code sync (shipped at 0.91.2)
 - FE-042 — Billing role-scoped content and status colours (shipped at 0.91.3)
 - BE-025 — Billing and user list pagination contract (shipped at 0.92.0)
+- BE-026 — Audit and security-event list total (shipped at 0.93.0)
 - FE-043 — Administration paginated lists
 - FE-044 — Patient list bounded height
 - FE-045 — Billing bounded invoice and claims lists

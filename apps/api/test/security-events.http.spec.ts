@@ -226,6 +226,17 @@ describe('security-events HTTP', () => {
 		expect(events.some((event) => event.action === 'access.denied')).toBe(false);
 		expect(events.some((event) => event.correlationId === `cid-foreign-${suffix}`)).toBe(false);
 
+		// Fewer rows than one page: total equals the rows returned and excludes practice B's auth row.
+		expect(listed.body.total).toBe(events.length);
+		const pastEnd = await request(app.getHttpServer())
+			.get('/admin/security-events')
+			.query({page: 1000, pageSize: 100})
+			.set('Authorization', `Bearer ${adminToken}`)
+			.expect(200);
+		expect(pastEnd.body.events).toEqual([]);
+		expect(pastEnd.body.total).toBe(listed.body.total);
+		expect(pastEnd.body.hasMore).toBe(false);
+
 		const failedAfter = events.filter((event) => event.action === 'auth.login.failed');
 		expect(failedAfter).toHaveLength(failedBefore.length + 1);
 		expect(failedAfter.some((event) => event.actorUserId === admin.id && event.resourceId === null)).toBe(

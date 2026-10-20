@@ -6,6 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.93.0] - 2026-10-20
+
+### Added
+
+- BE-026: `GET /admin/audit-events` and `GET /admin/security-events` return `total` next to `events`,
+  `hasMore` and `nextPage`. It counts only the caller's practice rows that match the `action`,
+  `resourceType`, `from` and `to` filters; a page past the end returns an empty array with the same
+  `total`. Documented under "List pagination" in `docs/contracts/api-endpoints.md`.
+
+### Changed
+
+- The change is additive, so the current web client keeps working. Default `pageSize` stays 50.
+
 ## [0.92.0] - 2026-10-20
 
 ### Added

@@ -25,7 +25,7 @@ export class SecurityEventsController {
 	@ApiOperation({
 		summary: 'List authentication and session-security events in the resolved practice',
 		description:
-			'Requires admin:practice. Newest first. Page size defaults to 50 (max 100). Tenant comes from the session, not from the client. Returns auth.* rows only (actor, tenant, action, and resource ids — no emails, passwords, MFA secrets, or session hashes). Does not replace GET /admin/audit-events.',
+			'Requires admin:practice. Newest first. Page size defaults to 50 (max 100). total counts only auth.* rows in the resolved practice that match the filters; a page past the end returns an empty array with the same total. Tenant comes from the session, not from the client. Returns auth.* rows only (actor, tenant, action, and resource ids — no emails, passwords, MFA secrets, or session hashes). Does not replace GET /admin/audit-events.',
 	})
 	@ApiOkResponse({type: AuditEventSearchResultRdo})
 	list(

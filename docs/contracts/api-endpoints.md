@@ -173,9 +173,13 @@ Email/SMS are adapter boundaries, not live carriers ([BE-008](../tasks/backend/B
 ## List pagination
 
 Page-based convention ([BE-025](../tasks/backend/BE-025-billing-and-user-list-pagination-contract.md)).
-Applies to `GET /billing/invoices`, `GET /billing/claims` and `GET /admin/users`. Audit and
-security-event lists use the same `page`/`pageSize` query but predate `total`; patients and
-appointments use their own fixed page sizes.
+Applies to `GET /billing/invoices`, `GET /billing/claims` and `GET /admin/users`.
+`GET /admin/audit-events` and `GET /admin/security-events`
+([BE-026](../tasks/backend/BE-026-audit-and-security-event-list-total.md)) use the same envelope
+(`events` plus `total`, `hasMore`, `nextPage`) and `page`/`pageSize` query, but keep a default
+`pageSize` of 50 and their existing filters (`action`, `resourceType`, `from`, `to`); `total`
+counts the caller's practice rows matching those filters. Patients and appointments use their own
+fixed page sizes.
 
 - Query: `page` (integer 1–1000, default 1) and `pageSize` (integer 1–100, default 25). Anything
   else returns 400 `VALIDATION_ERROR`. A request with no params returns the first default page.

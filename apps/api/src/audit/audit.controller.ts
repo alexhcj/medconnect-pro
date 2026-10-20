@@ -25,7 +25,7 @@ export class AuditController {
 	@ApiOperation({
 		summary: 'List audit events in the resolved practice',
 		description:
-			'Requires admin:practice. Newest first. Page size defaults to 50 (max 100). Tenant comes from the session, not from the client. Events store actor, tenant, action, and resource ids only — no emails, notes, or clinical text.',
+			'Requires admin:practice. Newest first. Page size defaults to 50 (max 100). total counts only rows in the resolved practice that match the filters; a page past the end returns an empty array with the same total. Tenant comes from the session, not from the client. Events store actor, tenant, action, and resource ids only — no emails, notes, or clinical text.',
 	})
 	@ApiOkResponse({type: AuditEventSearchResultRdo})
 	list(
