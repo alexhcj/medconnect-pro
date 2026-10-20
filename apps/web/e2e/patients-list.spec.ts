@@ -29,7 +29,7 @@ test.describe('Patient list', () => {
 		await page.getByLabel('Status').selectOption('inactive');
 		await expect(page.getByText('Taylor Bennett')).toBeVisible();
 		await expect(page.getByText('Avery Carter')).toHaveCount(0);
-		await expect(page.getByRole('button', {name: 'Load more'})).toHaveCount(0);
+		await expect(page.getByRole('navigation', {name: 'Patients pagination'})).toHaveCount(0);
 
 		await page.getByLabel('Status').selectOption('all');
 		await page.getByLabel('Sort by name').selectOption('name-desc');
@@ -37,9 +37,45 @@ test.describe('Patient list', () => {
 		await expect(page.getByText('Avery Carter')).toHaveCount(0);
 
 		await page.getByLabel('Sort by name').selectOption('name-asc');
-		await expect(page.getByRole('button', {name: 'Load more'})).toBeVisible();
-		await page.getByRole('button', {name: 'Load more'}).click();
+		await expect(page.getByRole('list', {name: 'Patients'}).getByRole('listitem')).toHaveCount(10);
+		await expect(page.getByTestId('pagination-status')).toHaveText(/Showing 1–10/);
+	});
+
+	test('pages through patients and keeps the page in the URL', async ({page}) => {
+		await signInAsPracticeAdmin(page);
+		await page.goto('/dashboard/patients');
+
+		const rows = page.getByRole('list', {name: 'Patients'}).getByRole('listitem');
+		await expect(rows).toHaveCount(10);
+		await expect(page.getByRole('button', {name: 'Previous page'})).toBeDisabled();
+
+		await page.getByRole('button', {name: 'Next page'}).click();
+		await expect(page).toHaveURL(/patientsPage=2/);
 		await expect(page.getByText('Morgan Morgan')).toBeVisible();
-		await expect(page.getByRole('button', {name: 'Load more'})).toHaveCount(0);
+		await expect(page.getByText('Avery Carter')).toHaveCount(0);
+		await expect(rows.count()).resolves.toBeLessThanOrEqual(10);
+
+		await page.reload();
+		await expect(page).toHaveURL(/patientsPage=2/);
+		await expect(page.getByText('Morgan Morgan')).toBeVisible();
+
+		await page.getByLabel('Status').selectOption('active');
+		await expect(page).not.toHaveURL(/patientsPage=/);
+
+		await page.goBack();
+		await expect(page).toHaveURL(/patientsPage=2/);
+		await expect(page.getByText('Morgan Morgan')).toBeVisible();
+	});
+
+	test('fits a 320 px screen without horizontal scroll', async ({page}) => {
+		await page.setViewportSize({width: 320, height: 800});
+		await signInAsPracticeAdmin(page);
+		await page.goto('/dashboard/patients');
+
+		await expect(page.getByRole('navigation', {name: 'Patients pagination'})).toBeVisible();
+		const overflow = await page.evaluate(
+			() => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+		);
+		expect(overflow).toBeLessThanOrEqual(0);
 	});
 });

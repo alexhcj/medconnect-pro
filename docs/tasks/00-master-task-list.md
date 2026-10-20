@@ -205,5 +205,5 @@ Polish and list normalization. Does not close M9 or reopen M17/M18; see the rele
 - BE-025 — Billing and user list pagination contract (shipped at 0.92.0)
 - BE-026 — Audit and security-event list total (shipped at 0.93.0)
 - FE-043 — Administration paginated lists (shipped at 0.94.0)
-- FE-044 — Patient list bounded height
+- FE-044 — Patient list bounded height (shipped at 0.95.0)
 - FE-045 — Billing bounded invoice and claims lists

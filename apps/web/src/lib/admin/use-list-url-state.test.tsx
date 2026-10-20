@@ -58,6 +58,13 @@ describe('useListUrlState', () => {
 		expect(push).toHaveBeenCalledWith('/dashboard/admin', {scroll: false});
 	});
 
+	it('keeps the patients list under its own prefix', () => {
+		searchParams.current = new URLSearchParams('patientsPage=2&patientsQ=avery&auditPage=7');
+		const {result} = renderHook(() => useListUrlState('patients', ['q', 'status', 'sort']));
+		expect(result.current.page).toBe(2);
+		expect(result.current.filters).toEqual({q: 'avery', status: undefined, sort: undefined});
+	});
+
 	it('resets to page 1 when filters change and removes blank filters', () => {
 		searchParams.current = new URLSearchParams('auditPage=5&auditFrom=2026-10-01&usersPage=2');
 		const {result} = renderHook(() => useListUrlState('audit', NAMES));

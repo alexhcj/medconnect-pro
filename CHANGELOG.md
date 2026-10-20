@@ -6,6 +6,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.95.0] - 2026-10-20
+
+### Added
+
+- FE-044: the patients list shows one page of 10 rows with Previous/Next controls instead of
+  growing with "Load more". The range ("Showing 11–20") and "Page N" sit beside the buttons; below
+  768 px the buttons are full width. The API returns no total, so there is no page count. Page,
+  search, status and sort live in URL query params (`patientsPage`, `patientsQ`, `patientsStatus`,
+  `patientsSort`), so refresh and back/forward keep position; changing search, status or sort
+  returns to page 1. Unknown status or sort values in the URL fall back to the defaults. Focus moves
+  to the list after a page change; the pager is disabled while the next page loads.
+- `SimplePagination` (`components/ui/simple-pagination.tsx`) for lists without a total, and
+  `usePatientPage`, a single-page query that keeps the previous page on screen while loading.
+
+### Changed
+
+- The patient list status and sort selects are 44 px high. `usePatientSearch` stays for the
+  appointment form's patient picker.
+
 ## [0.94.0] - 2026-10-20
 
 ### Added

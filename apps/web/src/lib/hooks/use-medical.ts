@@ -1,4 +1,4 @@
-import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-hot-toast';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {medicalAPI, PatientDemographicsInput, PatientNameSort, PatientStatusFilter} from '@/lib/api/medical-api';
@@ -37,6 +37,24 @@ export function usePatientSearch({
 		staleTime: 2 * 60 * 1000,
 		gcTime: 5 * 60 * 1000,
 		enabled,
+	});
+}
+
+export interface PatientPageInput {
+	query?: string;
+	status?: PatientStatusFilter;
+	sort?: PatientNameSort;
+	page: number;
+}
+
+/** One fixed-size page of the patient directory. The previous page stays on screen while the next loads. */
+export function usePatientPage({query = '', status = 'all', sort = 'name-asc', page}: PatientPageInput) {
+	return useQuery({
+		queryKey: ['patients', 'search', 'page', query, status, sort, page],
+		queryFn: () => medicalAPI.searchPatients({pageParam: page, query, status, sort}),
+		placeholderData: keepPreviousData,
+		staleTime: 2 * 60 * 1000,
+		gcTime: 5 * 60 * 1000,
 	});
 }
 

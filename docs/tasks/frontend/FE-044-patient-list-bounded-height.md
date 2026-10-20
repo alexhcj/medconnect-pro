@@ -3,7 +3,7 @@ id: FE-044
 type: task
 area: frontend
 feature: patient-management
-status: pending
+status: complete
 priority: medium
 estimate: 2
 dependencies: [FE-002, FE-011]
@@ -19,11 +19,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=252-22"
+  frame: "FE-044 Patient list paging: Desktop 1280 page 1 (252:3174) and last page (252:3289); Mobile 320 page 2 (252:3356), loading (252:3470), empty (252:3507), error (252:3534); Tablet 768 page 1 (252:3564); components Patient row (252:39), Patient pager (252:85)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -68,16 +68,16 @@ The patients list has filters but no height limit; it appends pages with `nextPa
 
 ## Acceptance Criteria
 
-- [ ] At most one page of rows is rendered at a time
-- [ ] Filter, search or sort change resets to page 1
-- [ ] Page position survives refresh and back/forward through the URL
-- [ ] Works at 320 px without horizontal scroll
-- [ ] Patient list tests updated and passing
+- [x] At most one page of rows is rendered at a time
+- [x] Filter, search or sort change resets to page 1
+- [x] Page position survives refresh and back/forward through the URL
+- [x] Works at 320 px without horizontal scroll
+- [x] Patient list tests updated and passing
 
 ## Dependencies
 
 - Blocked by: FE-002, FE-011
-- Design: Figma file https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd (frame to be set; status `not_started`)
+- Design: Figma file https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=252-22 (page "FE-044 Patient list paging", frames above; status `approved`). Approved decisions: previous/next pager with "Showing X–Y" and "Page N" (no total, no numbered pages), 10 rows per page, no scroll area or "Load more", pager in page flow
 - Related: FE-043, FE-045
 
 ## Validation
@@ -92,3 +92,11 @@ The patients list has filters but no height limit; it appends pages with `nextPa
 ## Implementation notes
 
 PATCH or MINOR per whether the interaction model counts as a new UI surface.
+
+## Completion
+
+- Shipped at 0.95.0. The patients list renders one page of 10 rows with Previous/Next, "Showing X–Y" and "Page N" (no total: the API returns only `hasMore`). Page, search, status and sort live in `patientsPage`, `patientsQ`, `patientsStatus`, `patientsSort`; a filter change drops the page. New: `SimplePagination`, `usePatientPage`, `lib/patients/list-params.ts`. `usePatientSearch` is unchanged for the appointment picker.
+- Tests: `patient-list`, `simple-pagination`, `list-params`, `use-list-url-state`; e2e `patients-list.spec.ts` (10 rows, paging, URL after reload, back, filter reset, 320 px no horizontal scroll). `lint:web` 0 errors, `type-check:web` clean, `test:web` 512 passed. `e2e:mocks`: 27 of 28 in the full run; the one failure, `billing-dashboard.spec.ts:88`, is unrelated and passed when run alone (4 of 4), so it looks timing-sensitive under parallel load.
+- An e2e run found a race: two quick select changes could overwrite each other while the URL was still updating. Fixed by remembering the last written status and sort.
+- Not verified: keyboard-only use and a 320 px screenshot in a real browser (covered by unit tests and the e2e overflow check), and the live API path (`e2e:live`). Security review not run: no auth, tenant or audit change.
+- Notes: version 0.94.0 → 0.95.0 (MINOR: new interaction model and URL state). `docs/product/` and the capability matrix are unchanged (no new capability claim). Design: Figma page "FE-044 Patient list paging".

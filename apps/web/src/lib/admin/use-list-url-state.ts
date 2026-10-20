@@ -4,7 +4,7 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useCallback} from 'react';
 import {parsePage} from '@/lib/admin/list-params';
 
-export type ListUrlPrefix = 'audit' | 'security' | 'users';
+export type ListUrlPrefix = 'audit' | 'security' | 'users' | 'patients';
 
 function key(prefix: ListUrlPrefix, name: string): string {
 	return `${prefix}${name.charAt(0).toUpperCase()}${name.slice(1)}`;
