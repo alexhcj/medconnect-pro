@@ -21,9 +21,9 @@ export function MarketingMobileNav({open, onClose}: MarketingMobileNavProps) {
 					className="flex w-72 max-w-[80vw] flex-col bg-surface shadow-lg"
 				>
 					<div className="flex h-16 items-center justify-between border-b border-border px-4">
-						<DialogTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
+						<DialogTitle className="flex shrink-0 items-center gap-2 whitespace-nowrap text-base font-semibold text-foreground">
 							<span
-								className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-sm font-bold text-inverse"
+								className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand text-sm font-bold text-inverse"
 								aria-hidden
 							>
 								MC
@@ -34,6 +34,7 @@ export function MarketingMobileNav({open, onClose}: MarketingMobileNavProps) {
 							type="button"
 							variant="ghost"
 							size="icon"
+							className="shrink-0"
 							aria-label="Close navigation"
 							onClick={onClose}
 						>

@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MarketingShell} from '@/components/marketing/marketing-shell';
 
@@ -49,6 +49,22 @@ describe('MarketingShell', () => {
 		expect(footerHome).toHaveClass('text-brand');
 	});
 
+	it('keeps the logo a link named MedConnect Pro that does not shrink', () => {
+		render(
+			<MarketingShell>
+				<p>Placeholder</p>
+			</MarketingShell>,
+		);
+
+		const logo = within(screen.getByRole('banner')).getByRole('link', {name: 'MedConnect Pro'});
+		expect(logo).toHaveAttribute('href', '/');
+		expect(logo).toHaveClass('shrink-0');
+		expect(within(logo).getByText('MedConnect Pro')).toHaveClass(
+			'whitespace-nowrap',
+			'max-[359px]:sr-only',
+		);
+	});
+
 	it('highlights Platform in the footer on nested platform routes', () => {
 		navigation.pathname = '/platform/appointments';
 		render(
@@ -79,6 +95,11 @@ describe('MarketingShell', () => {
 		expect(document.getElementById('marketing-mobile-navigation')).toBeInTheDocument();
 		expect(screen.getByRole('button', {name: 'Close navigation'})).toBeInTheDocument();
 		expect(screen.getAllByRole('navigation', {name: 'Primary'}).length).toBeGreaterThan(0);
+		const dialog = screen.getByRole('dialog', {name: 'MedConnect Pro'});
+		expect(within(dialog).getByText('MC').parentElement).toHaveClass(
+			'whitespace-nowrap',
+			'text-base',
+		);
 
 		await user.click(screen.getByRole('button', {name: 'Close navigation'}));
 

@@ -22,9 +22,9 @@ export function MobileNav({open, onClose, items}: MobileNavProps) {
 					className="flex w-64 max-w-[80vw] flex-col bg-white shadow-lg"
 				>
 					<div className="flex h-16 items-center justify-between border-b border-gray-200 px-4">
-						<DialogTitle className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+						<DialogTitle className="flex shrink-0 items-center gap-2 whitespace-nowrap text-base font-semibold text-gray-900">
 							<span
-								className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white"
+								className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white"
 								aria-hidden
 							>
 								MC
@@ -35,6 +35,7 @@ export function MobileNav({open, onClose, items}: MobileNavProps) {
 							type="button"
 							variant="ghost"
 							size="icon"
+							className="shrink-0"
 							aria-label="Close navigation"
 							onClick={onClose}
 						>

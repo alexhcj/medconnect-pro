@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.91.1] - 2026-10-20
+
+### Changed
+
+- FE-040: the marketing header logo no longer wraps or shrinks; below 360 px it shows the mark
+  only while keeping the accessible name "MedConnect Pro". Marketing and app mobile-nav drawers
+  show the logo on one line with a 16 px wordmark. The About page role tags now render with the
+  Homepage tag colours and spacing through one shared `RoleTag` / `RoleTagList`.
+
 ## [0.91.0] - 2026-10-16
 
 ### Changed

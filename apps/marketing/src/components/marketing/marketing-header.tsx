@@ -19,20 +19,22 @@ export function MarketingHeader({onOpenMobileNav, mobileNavOpen}: MarketingHeade
 			<div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
 				<Link
 					href="/"
-					className="flex items-center gap-2 rounded-md text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+					className="flex shrink-0 items-center gap-2 rounded-md text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 				>
 					<span
-						className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-sm font-bold text-inverse"
+						className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand text-sm font-bold text-inverse"
 						aria-hidden
 					>
 						MC
 					</span>
-					<span className="text-lg font-semibold">MedConnect Pro</span>
+					<span className="whitespace-nowrap text-lg font-semibold max-[359px]:sr-only">
+						MedConnect Pro
+					</span>
 				</Link>
 				<nav aria-label="Primary" className="hidden lg:block">
 					<MarketingNavLinks items={MARKETING_NAV} />
 				</nav>
-				<div className="flex items-center gap-2">
+				<div className="flex shrink-0 items-center gap-2">
 					<Button
 						type="button"
 						variant="ghost"

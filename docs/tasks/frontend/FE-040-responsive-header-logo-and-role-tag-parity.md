@@ -3,7 +3,7 @@ id: FE-040
 type: task
 area: frontend
 feature: marketing
-status: pending
+status: complete
 priority: medium
 estimate: 2
 dependencies: [FE-018, FE-023]
@@ -19,11 +19,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd
+  frame: FE-040 Header logo & RoleTag (page; node-id=212-12)
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -52,12 +52,13 @@ code component exists.
 
 ## Scope
 
-- Reserve enough header space for the logo at tablet and mobile widths, or apply another solution
-  recorded in the design (for example mark-only fallback below a stated breakpoint).
-- Apply the same logo fix to the marketing header, marketing mobile nav, and the app sidebar /
-  mobile nav.
-- Extract one shared `RoleTag` component from the Homepage markup and use it on Home and About.
-- Update the affected Figma frames on this task.
+- Marketing header: logo never wraps or shrinks; mark-only fallback below 360 px (approved design),
+  full lockup from 360 px up.
+- Mobile-nav drawers (marketing `MarketingMobileNav`, app `MobileNav` DialogPanel title): compact
+  16 px wordmark on one line. The app sidebar and app top header are unchanged.
+- Extract one shared `RoleTag` (and a `RoleTagList` that owns the 12 px list gap) from the Homepage
+  markup and use it on Home and About.
+- Update the affected Figma frames on this task (done: page "FE-040 Header logo & RoleTag").
 
 ## Out of Scope
 
@@ -75,18 +76,18 @@ code component exists.
 
 ## Acceptance Criteria
 
-- [ ] At 320, 375, 768 and 1024 px the logo mark and wordmark (or the approved mark-only fallback)
+- [x] At 320, 375, 768 and 1024 px the logo mark and wordmark (or the approved mark-only fallback)
       are fully visible and do not overlap the menu button or nav
-- [ ] No horizontal page scroll in the header at those widths
-- [ ] About page role tags render with the same background and text colour as the Homepage tags
-- [ ] Home and About use one shared `RoleTag` component
-- [ ] Logo remains a link with the accessible name "MedConnect Pro"
-- [ ] Figma header frames and RoleTag match the implemented result
+- [x] No horizontal page scroll in the header at those widths
+- [x] About page role tags render with the same background and text colour as the Homepage tags
+- [x] Home and About use one shared `RoleTag` component
+- [x] Logo remains a link with the accessible name "MedConnect Pro"
+- [x] Figma header frames and RoleTag match the implemented result
 
 ## Dependencies
 
 - Blocked by: FE-018, FE-023
-- Design: Figma file https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd (frame to be set; status `not_started`)
+- Design: Figma file https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd, page "FE-040 Header logo & RoleTag" (status `approved`)
 - Related: FE-019, FE-022
 
 ## Validation
@@ -98,8 +99,15 @@ viewport check at the four widths above.
 ## Risks / considerations
 
 - Header changes touch shared frames; update them on this task, not a new design task.
-- Confirm that the app chrome should change too (default yes) before design approval.
+- App chrome scope confirmed: only the mobile-nav drawer title changes; existing `blue-600` / `gray-*`
+  classes stay (they equal the Figma brand and text tokens).
 
 ## Implementation notes
 
 Likely a PATCH bump (no new capability or contract).
+
+## Completion
+
+- Implementation: marketing header logo is `shrink-0` / `whitespace-nowrap` with a mark-only fallback below 360 px; both mobile-nav drawer titles use a one-line 16 px wordmark; shared `RoleTag` / `RoleTagList` (12 px gap) used on Home and About.
+- Tests: `role-tag.test.tsx`, marketing shell, Home and About, web dashboard shell. Browser check at 320, 375, 768 and 1024 px: no header overlap or horizontal scroll.
+- Notes: Version 0.91.0 → 0.91.1 (PATCH, UI polish). App sidebar and top header unchanged. Figma page "FE-040 Header logo & RoleTag".

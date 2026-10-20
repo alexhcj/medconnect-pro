@@ -48,7 +48,8 @@ describe('MarketingAbout', () => {
 		render(<MarketingAbout />);
 
 		for (const role of MARKETING_ABOUT_PURPOSE.roles) {
-			expect(screen.getByText(role)).toBeInTheDocument();
+			expect(screen.getByText(role)).toHaveClass('bg-brand-subtle', 'text-brand-hover');
+			expect(screen.getByText(role).parentElement).toHaveClass('gap-3');
 		}
 
 		const demoLinks = screen.getAllByRole('link', {name: MARKETING_ABOUT_HERO.primaryCta.label});

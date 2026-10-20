@@ -198,7 +198,7 @@ a persistent document disk. `DAILY_API_KEY` stays an operator secret, not a comm
 
 Design parity and bounded lists on the shipped demo. No new capability claims, no AWS, no
 reopen of M9, M17 or M18. Tasks:
-[FE-040](../tasks/frontend/FE-040-responsive-header-logo-and-role-tag-parity.md) (header logo, RoleTag),
+[FE-040](../tasks/frontend/FE-040-responsive-header-logo-and-role-tag-parity.md) (header logo, RoleTag; shipped at 0.91.1),
 [FE-041](../tasks/frontend/FE-041-billing-design-code-sync.md) (billing Figma/code sync),
 [FE-042](../tasks/frontend/FE-042-billing-role-scoped-content-and-status-colors.md) (mock role scoping, status colours),
 [BE-025](../tasks/backend/BE-025-billing-and-user-list-pagination-contract.md) (invoice, claims, user list paging),
@@ -235,7 +235,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M16 Live Telehealth | SEC-008, BE-021, FE-035 (shipped) | Eligibility on join/mint, join-before-mint, leave versus end (client/Daily leave; Nest end), 502 `MEDIA_UNAVAILABLE`, create/join rate limits, pre-join device UX. Not chat, recording, Socket.IO, or AWS. **Shipped** at 0.81.0. |
 | M17 Security and Compliance Maturity | SEC-009, BE-022, BE-023, FE-036, QA-005 (shipped) | ADR-016 session-tenant SUPER_ADMIN, clinical read audit, live concurrent-session inventory, authz-matrix expansion. Not AWS, HIPAA certification, production MFA, Redis/WAF, or patient DELETE. **Closed** at 0.84.1. |
 | M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (all shipped; closed at 0.91.0) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
-| M19 Polish and list normalization | FE-040, FE-041, FE-042, BE-025, FE-043, FE-044, FE-045 (all pending; proposed) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Does not close M9 or reopen M17/M18. |
+| M19 Polish and list normalization | FE-040 (shipped); FE-041, FE-042, BE-025, FE-043, FE-044, FE-045 (pending; proposed) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Does not close M9 or reopen M17/M18. |
 $row
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,

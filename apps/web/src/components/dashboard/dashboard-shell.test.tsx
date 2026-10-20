@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {DashboardShell} from '@/components/dashboard/dashboard-shell';
 
@@ -85,5 +85,10 @@ describe('DashboardShell', () => {
 		expect(document.getElementById('mobile-navigation')).toBeInTheDocument();
 		expect(screen.getByRole('button', {name: 'Close navigation'})).toBeInTheDocument();
 		expect(screen.getAllByRole('navigation', {name: 'Primary'}).length).toBeGreaterThan(0);
+		const dialog = screen.getByRole('dialog', {name: 'MedConnect Pro'});
+		expect(within(dialog).getByText('MC').parentElement).toHaveClass(
+			'whitespace-nowrap',
+			'text-base',
+		);
 	});
 });

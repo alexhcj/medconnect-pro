@@ -13,6 +13,7 @@ import {
 	marketingSectionGridClassName,
 } from '@/components/marketing/marketing-section';
 import {MarketingStatusCard} from '@/components/marketing/marketing-status-card';
+import {RoleTagList} from '@/components/ui/role-tag';
 
 export function MarketingAbout() {
 	return (
@@ -33,16 +34,9 @@ export function MarketingAbout() {
 					<p className="text-base leading-relaxed text-foreground-secondary">
 						{MARKETING_ABOUT_PURPOSE.body}
 					</p>
-					<ul className="mt-4 flex flex-wrap gap-2">
-						{MARKETING_ABOUT_PURPOSE.roles.map((role) => (
-							<li
-								key={role}
-								className="inline-flex min-h-11 items-center rounded-full bg-subtle px-4 text-sm font-medium text-foreground"
-							>
-								{role}
-							</li>
-						))}
-					</ul>
+					<div className="mt-4">
+						<RoleTagList roles={MARKETING_ABOUT_PURPOSE.roles} />
+					</div>
 				</MarketingSection>
 
 				<MarketingSection

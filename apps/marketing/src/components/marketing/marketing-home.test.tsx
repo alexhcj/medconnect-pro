@@ -17,6 +17,15 @@ import {
 } from '@/components/marketing/marketing-product-visuals';
 
 describe('MarketingHome', () => {
+	it('renders intended roles as shared RoleTag pills', () => {
+		render(<MarketingHome />);
+
+		for (const role of MARKETING_HOME_ROLES.items) {
+			expect(screen.getByText(role)).toHaveClass('bg-brand-subtle', 'text-brand-hover');
+			expect(screen.getByText(role).parentElement).toHaveClass('gap-3');
+		}
+	});
+
 	it('renders homepage sections with a single h1 and labelled landmarks', () => {
 		render(<MarketingHome />);
 
