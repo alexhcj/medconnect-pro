@@ -65,7 +65,7 @@ function harness(role: PracticeRole, userId = actorId) {
 	const tenant = new TenantContext();
 	tenant.set({practiceId, actorUserId: userId, role});
 	const invoices = {
-		list: vi.fn().mockResolvedValue([invoiceRow()]),
+		list: vi.fn().mockResolvedValue({rows: [invoiceRow()], total: 1}),
 		getById: vi.fn().mockResolvedValue(invoiceRow()),
 		create: vi.fn().mockResolvedValue(invoiceRow()),
 		markPaid: vi.fn().mockResolvedValue(invoiceRow({status: 'paid'})),
@@ -165,6 +165,35 @@ describe('BillingService', () => {
 			desk.service.recordPayment({invoiceId, method: 'stripe'}),
 		).rejects.toBeInstanceOf(InvoiceAlreadyPaidError);
 		expect(desk.gateway.charge).not.toHaveBeenCalled();
+	});
+
+	it('pages invoices with defaults, passes filters through, and reports page metadata', async () => {
+		const desk = harness('RECEPTIONIST');
+		desk.invoices.list.mockResolvedValue({rows: [invoiceRow()], total: 60});
+		const first = await desk.service.listInvoices({status: 'overdue', sort: 'issued-asc'});
+		expect(desk.invoices.list).toHaveBeenCalledWith(
+			expect.objectContaining({page: 1, pageSize: 25, status: 'overdue', sort: 'issued-asc'}),
+		);
+		expect(desk.invoices.list.mock.calls[0]?.[0]).not.toHaveProperty('portalUserId');
+		expect(first).toMatchObject({total: 60, hasMore: true, nextPage: 2});
+
+		const last = await desk.service.listInvoices({page: 3, pageSize: 25});
+		expect(last).toMatchObject({total: 60, hasMore: false});
+		expect(last.nextPage).toBeUndefined();
+	});
+
+	it('scopes portal-user invoice and claim pages to the caller before paging', async () => {
+		const own = harness('PATIENT');
+		own.invoices.list.mockResolvedValue({rows: [invoiceRow()], total: 1});
+		const invoices = await own.service.listInvoices({pageSize: 5});
+		const claims = await own.service.listClaims({pageSize: 5});
+		expect(own.invoices.list).toHaveBeenCalledTimes(2);
+		for (const [filter] of own.invoices.list.mock.calls) {
+			expect(filter).toMatchObject({portalUserId: actorId, page: 1, pageSize: 5});
+		}
+		expect(invoices).toMatchObject({total: 1, hasMore: false});
+		expect(claims).toMatchObject({total: 1, hasMore: false});
+		expect(claims.claims).toHaveLength(1);
 	});
 
 	it('denies provider invoice create and payment', async () => {

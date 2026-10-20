@@ -12,6 +12,20 @@ export type MembershipWriteInput = {
 	practiceId?: string;
 };
 
+export type MembershipListQuery = {
+	page: number;
+	pageSize: number;
+	role?: PracticeRole;
+	/** Case-insensitive email substring. */
+	q?: string;
+};
+
+export type MembershipPage = {rows: PracticeMembership[]; total: number};
+
+function escapeLike(value: string): string {
+	return value.replace(/[\\%_]/g, '\\$&');
+}
+
 @Injectable()
 export class MembershipRepository {
 	constructor(
@@ -28,13 +42,26 @@ export class MembershipRepository {
 		});
 	}
 
-	async listWithUsers(): Promise<PracticeMembership[]> {
+	/** One page of session-practice memberships. Tenant, `role` and `q` apply before paging. */
+	async listWithUsers(query: MembershipListQuery): Promise<MembershipPage> {
 		const {practiceId} = this.tenant.require();
-		return this.rows.find({
-			where: {practiceId},
-			relations: {user: true},
-			order: {createdAt: 'ASC'},
-		});
+		const qb = this.rows
+			.createQueryBuilder('membership')
+			.innerJoinAndSelect('membership.user', 'user')
+			.where('membership.practiceId = :practiceId', {practiceId});
+		if (query.role) {
+			qb.andWhere('membership.role = :role', {role: query.role});
+		}
+		if (query.q) {
+			qb.andWhere('user.email ILIKE :q', {q: `%${escapeLike(query.q)}%`});
+		}
+		const [rows, total] = await qb
+			.orderBy('membership.createdAt', 'ASC')
+			.addOrderBy('membership.id', 'ASC')
+			.skip((query.page - 1) * query.pageSize)
+			.take(query.pageSize)
+			.getManyAndCount();
+		return {rows, total};
 	}
 
 	async getById(id: string): Promise<PracticeMembership | undefined> {

@@ -3,9 +3,56 @@
   "paths": {
     "/admin/users": {
       "get": {
-        "description": "Requires admin:users. Returns session-tenant memberships only, including for SUPER_ADMIN. id is the user id, not the membership id. Tenant comes from the session, not from the client. synthetic is always true. Passwords, MFA secrets, and session hashes are not returned.",
+        "description": "Requires admin:users. Returns session-tenant memberships only, including for SUPER_ADMIN. id is the user id, not the membership id. Tenant comes from the session, not from the client. synthetic is always true. Passwords, MFA secrets, and session hashes are not returned. Paged: page (default 1), pageSize (default 25, max 100), optional q (email substring) and role. Ordered by membership creation then id. total counts only session-practice rows matching the filters; invalid values return 400.",
         "operationId": "PracticeUserController_list",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SUPER_ADMIN",
+                "PRACTICE_ADMIN",
+                "PROVIDER",
+                "NURSE",
+                "RECEPTIONIST",
+                "PATIENT"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -13,6 +60,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PracticeUserList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -3121,9 +3178,55 @@
     },
     "/billing/invoices": {
       "get": {
-        "description": "Practice admins, receptionists, providers, and super admins read practice invoices. Portal users read their own. Nurses are denied this practice-revenue surface. Tenant comes from the session, not from the client. synthetic is always true.",
+        "description": "Practice admins, receptionists, providers, and super admins read practice invoices. Portal users read their own. Nurses are denied this practice-revenue surface. Tenant comes from the session, not from the client. synthetic is always true. Paged: page (default 1), pageSize (default 25, max 100), optional status (issued | paid | overdue) and sort (issued-desc default | issued-asc). total counts only rows visible to the caller; invalid values return 400.",
         "operationId": "InvoiceController_list",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "issued",
+                "paid",
+                "overdue"
+              ]
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "issued-desc",
+                "issued-asc"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -3131,6 +3234,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InvoiceList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -3490,9 +3603,30 @@
     },
     "/billing/claims": {
       "get": {
-        "description": "Labeled EDI 837 boundary. Returns not_submitted envelopes derived from visible invoices. This is not claim submission, status workflow, or an X12 payload.",
+        "description": "Labeled EDI 837 boundary. Returns not_submitted envelopes derived from visible invoices. This is not claim submission, status workflow, or an X12 payload. Paged over the caller’s visible invoices: page (default 1) and pageSize (default 25, max 100). total counts only visible rows; invalid values return 400.",
         "operationId": "ClaimsController_list",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -3500,6 +3634,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ClaimList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -4717,10 +4861,25 @@
             "items": {
               "$ref": "#/components/schemas/PracticeUser"
             }
+          },
+          "total": {
+            "type": "number",
+            "example": 42,
+            "description": "Session-practice memberships matching the filters."
+          },
+          "hasMore": {
+            "type": "boolean",
+            "example": true
+          },
+          "nextPage": {
+            "type": "number",
+            "example": 2
           }
         },
         "required": [
-          "users"
+          "users",
+          "total",
+          "hasMore"
         ]
       },
       "AuditEvent": {
@@ -5927,10 +6086,25 @@
             "items": {
               "$ref": "#/components/schemas/Invoice"
             }
+          },
+          "total": {
+            "type": "number",
+            "example": 42,
+            "description": "Rows visible to the caller that match the filters."
+          },
+          "hasMore": {
+            "type": "boolean",
+            "example": true
+          },
+          "nextPage": {
+            "type": "number",
+            "example": 2
           }
         },
         "required": [
-          "invoices"
+          "invoices",
+          "total",
+          "hasMore"
         ]
       },
       "Payment": {
@@ -6036,10 +6210,25 @@
             "items": {
               "$ref": "#/components/schemas/Claim"
             }
+          },
+          "total": {
+            "type": "number",
+            "example": 42,
+            "description": "Claim envelopes for the invoices visible to the caller."
+          },
+          "hasMore": {
+            "type": "boolean",
+            "example": true
+          },
+          "nextPage": {
+            "type": "number",
+            "example": 2
           }
         },
         "required": [
-          "claims"
+          "claims",
+          "total",
+          "hasMore"
         ]
       },
       "PatientDocument": {

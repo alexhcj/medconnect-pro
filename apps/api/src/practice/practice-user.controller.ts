@@ -1,5 +1,6 @@
-import {Body, Controller, Get, Param, Patch} from '@nestjs/common';
+import {Body, Controller, Get, Param, Patch, Query} from '@nestjs/common';
 import {
+	ApiBadRequestResponse,
 	ApiBody,
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
@@ -17,8 +18,10 @@ import {
 } from './practice-user.rdo.js';
 import {
 	practiceUserIdParamsSchema,
+	practiceUserListQuerySchema,
 	practiceUserRoleUpdateSchema,
 	type PracticeUserIdParams,
+	type PracticeUserListQuery,
 	type PracticeUserRoleUpdateBody,
 } from './practice-user.schema.js';
 import {PracticeUserService} from './practice-user.service.js';
@@ -36,11 +39,14 @@ export class PracticeUserController {
 	@ApiOperation({
 		summary: 'List practice memberships in the resolved practice',
 		description:
-			'Requires admin:users. Returns session-tenant memberships only, including for SUPER_ADMIN. id is the user id, not the membership id. Tenant comes from the session, not from the client. synthetic is always true. Passwords, MFA secrets, and session hashes are not returned.',
+			'Requires admin:users. Returns session-tenant memberships only, including for SUPER_ADMIN. id is the user id, not the membership id. Tenant comes from the session, not from the client. synthetic is always true. Passwords, MFA secrets, and session hashes are not returned. Paged: page (default 1), pageSize (default 25, max 100), optional q (email substring) and role. Ordered by membership creation then id. total counts only session-practice rows matching the filters; invalid values return 400.',
 	})
 	@ApiOkResponse({type: PracticeUserListRdo})
-	list(): Promise<PracticeUserListRdo> {
-		return this.practiceUsers.list();
+	@ApiBadRequestResponse({type: ErrorEnvelopeRdo})
+	list(
+		@Query({schema: practiceUserListQuerySchema}) query: PracticeUserListQuery,
+	): Promise<PracticeUserListRdo> {
+		return this.practiceUsers.list(query);
 	}
 
 	@Patch(':id/roles')

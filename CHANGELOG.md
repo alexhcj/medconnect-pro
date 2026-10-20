@@ -6,6 +6,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.92.0] - 2026-10-20
+
+### Added
+
+- BE-025: `GET /billing/invoices`, `GET /billing/claims` and `GET /admin/users` are paged. They take
+  `page` (default 1) and `pageSize` (default 25, max 100); invoices also take `status`
+  (`issued` | `paid` | `overdue`) and `sort` (`issued-desc` default, `issued-asc`); users take `q`
+  (email substring) and `role`. Invalid values return 400. Responses keep their array key and add
+  `total`, `hasMore` and `nextPage`, counted after tenant and own-patient scoping. Convention
+  documented under "List pagination" in `docs/contracts/api-endpoints.md`.
+
+### Changed
+
+- The envelope change is additive, so the current web client keeps working: it reads the array key
+  and receives the first 25 rows until FE-043 and FE-045 consume the paging fields.
+
 ## [0.91.3] - 2026-10-20
 
 ### Changed

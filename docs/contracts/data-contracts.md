@@ -226,6 +226,9 @@ Response concepts (claims):
 - processor labeled `edi837`
 - synthetic (always true)
 
+List responses (invoices, claims) are paged with `total`, `hasMore` and `nextPage`; see
+[List pagination](api-endpoints.md#list-pagination).
+
 This is not Stripe, ACH origination, or EDI 837 generation. `POST /billing/payments` calls an
 in-process demo adapter. `GET /billing/claims` does not persist claim rows or emit X12.
 

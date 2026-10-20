@@ -211,6 +211,72 @@ describe('practice user directory HTTP', () => {
 		expect(superUsers.some((user) => user.id === foreignAdmin.id)).toBe(false);
 	});
 
+	it('pages the directory with a stable order and total, hasMore and nextPage', async () => {
+		const token = await login(admin.email);
+		const get = (query: string) =>
+			request(app.getHttpServer()).get(`/admin/users${query}`).set('Authorization', `Bearer ${token}`);
+
+		const first = await get('').expect(200);
+		expect(first.body.total).toBe(6);
+		expect(first.body.users).toHaveLength(6);
+		expect(first.body.hasMore).toBe(false);
+		expect(first.body.nextPage).toBeUndefined();
+
+		const seen: string[] = [];
+		for (const page of [1, 2, 3]) {
+			const response = await get(`?pageSize=2&page=${page}`).expect(200);
+			expect(response.body.total).toBe(6);
+			expect(response.body.users).toHaveLength(2);
+			expect(response.body.hasMore).toBe(page < 3);
+			expect(response.body.nextPage).toBe(page < 3 ? page + 1 : undefined);
+			seen.push(...(response.body.users as PracticeUserBody[]).map((user) => user.id));
+		}
+		expect(new Set(seen).size).toBe(6);
+		expect(seen).toEqual((first.body.users as PracticeUserBody[]).map((user) => user.id));
+
+		const beyond = await get('?pageSize=2&page=4').expect(200);
+		expect(beyond.body.users).toHaveLength(0);
+		expect(beyond.body.total).toBe(6);
+	});
+
+	it('filters by role and email substring inside the session practice only', async () => {
+		const token = await login(admin.email);
+		const get = (query: string) =>
+			request(app.getHttpServer()).get(`/admin/users${query}`).set('Authorization', `Bearer ${token}`);
+
+		const byRole = await get('?role=PROVIDER').expect(200);
+		expect(byRole.body.total).toBe(1);
+		expect((byRole.body.users as PracticeUserBody[])[0]?.id).toBe(provider.id);
+
+		const byEmail = await get(`?q=DIR.NURSE.${suffix}`).expect(200);
+		expect(byEmail.body.total).toBe(1);
+		expect((byEmail.body.users as PracticeUserBody[])[0]?.id).toBe(nurse.id);
+
+		const both = await get(`?q=dir.&role=NURSE`).expect(200);
+		expect(both.body.total).toBe(1);
+
+		const foreign = await get(`?q=dir.foreign.${suffix}`).expect(200);
+		expect(foreign.body.total).toBe(0);
+		expect(foreign.body.users).toHaveLength(0);
+
+		const wildcard = await get('?q=%25').expect(200);
+		expect(wildcard.body.total).toBe(0);
+
+		const underscore = await get('?q=dir_').expect(200);
+		expect(underscore.body.total).toBe(0);
+	});
+
+	it('rejects invalid paging and role values with 400', async () => {
+		const token = await login(admin.email);
+		for (const query of ['pageSize=101', 'pageSize=0', 'page=0', 'page=abc', 'role=BOGUS']) {
+			const response = await request(app.getHttpServer())
+				.get(`/admin/users?${query}`)
+				.set('Authorization', `Bearer ${token}`)
+				.expect(400);
+			expect(response.body.error.code).toBe('VALIDATION_ERROR');
+		}
+	});
+
 	async function membershipRole(userId: string): Promise<string | undefined> {
 		const row = await dataSource.getRepository(PracticeMembership).findOne({
 			where: {userId, practiceId: practiceA.id},

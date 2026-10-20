@@ -7,6 +7,7 @@ import type {Invoice, InvoiceRdoStatus} from '../persistence/entities/invoice.en
 import type {Patient} from '../persistence/entities/patient.entity.js';
 import type {Payment} from '../persistence/entities/payment.entity.js';
 import {getCorrelationId} from '../platform/correlation.js';
+import {resolvePageRequest, toPageMeta} from '../platform/pagination.js';
 import {PatientRepository} from '../practice/patient.repository.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
@@ -27,8 +28,17 @@ import type {
 	InvoiceRdo,
 	PaymentRdo,
 } from './billing.rdo.js';
-import type {InvoiceCreateBody, PaymentCreateBody} from './billing.schema.js';
-import {InvoiceRepository} from './invoice.repository.js';
+import type {
+	ClaimListQuery,
+	InvoiceCreateBody,
+	InvoiceListQuery,
+	PaymentCreateBody,
+} from './billing.schema.js';
+import {
+	InvoiceRepository,
+	type InvoiceListFilter,
+	type InvoicePage,
+} from './invoice.repository.js';
 import {PAYMENT_GATEWAY, type PaymentGateway} from './payment-gateway.js';
 import {PaymentRepository} from './payment.repository.js';
 
@@ -44,9 +54,19 @@ export class BillingService {
 		@Inject(REQUEST) private readonly request: Request,
 	) {}
 
-	async listInvoices(): Promise<InvoiceListRdo> {
-		const rows = await this.listVisibleInvoices();
-		return {invoices: rows.map((row) => toInvoiceRdo(row))};
+	async listInvoices(query: InvoiceListQuery = {}): Promise<InvoiceListRdo> {
+		const paging = resolvePageRequest(query);
+		const now = new Date();
+		const {rows, total} = await this.listVisibleInvoices({
+			...paging,
+			sort: query.sort,
+			status: query.status,
+			now,
+		});
+		return {
+			invoices: rows.map((row) => toInvoiceRdo(row, now)),
+			...toPageMeta(total, paging),
+		};
 	}
 
 	async getInvoice(id: string): Promise<InvoiceRdo> {
@@ -93,9 +113,10 @@ export class BillingService {
 		return toPaymentRdo(payment);
 	}
 
-	async listClaims(): Promise<ClaimListRdo> {
-		const invoices = await this.listVisibleInvoices();
-		return {claims: invoices.map(toClaimRdo)};
+	async listClaims(query: ClaimListQuery = {}): Promise<ClaimListRdo> {
+		const paging = resolvePageRequest(query);
+		const {rows, total} = await this.listVisibleInvoices({...paging, now: new Date()});
+		return {claims: rows.map(toClaimRdo), ...toPageMeta(total, paging)};
 	}
 
 	private assertCanCreate(): void {
@@ -119,16 +140,16 @@ export class BillingService {
 		}
 	}
 
-	private async listVisibleInvoices(): Promise<Invoice[]> {
+	private async listVisibleInvoices(filter: InvoiceListFilter): Promise<InvoicePage> {
 		const scope = this.tenant.require();
 		const read = resolveBillingReadScope(scope.role);
 		if (read === 'denied') {
 			throw new PermissionDeniedError();
 		}
 		if (read.kind === 'own') {
-			return this.invoices.list({portalUserId: scope.actorUserId});
+			return this.invoices.list({...filter, portalUserId: scope.actorUserId});
 		}
-		return this.invoices.list();
+		return this.invoices.list(filter);
 	}
 
 	private async loadVisibleInvoice(id: string): Promise<Invoice> {

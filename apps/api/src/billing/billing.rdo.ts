@@ -57,6 +57,15 @@ export class InvoiceRdo {
 export class InvoiceListRdo {
 	@ApiProperty({type: [InvoiceRdo]})
 	invoices!: InvoiceRdo[];
+
+	@ApiProperty({example: 42, description: 'Rows visible to the caller that match the filters.'})
+	total!: number;
+
+	@ApiProperty({example: true})
+	hasMore!: boolean;
+
+	@ApiProperty({required: false, example: 2})
+	nextPage?: number;
 }
 
 @ApiSchema({name: 'InvoiceCreateRequest'})
@@ -149,4 +158,13 @@ export class ClaimRdo {
 export class ClaimListRdo {
 	@ApiProperty({type: [ClaimRdo]})
 	claims!: ClaimRdo[];
+
+	@ApiProperty({example: 42, description: 'Claim envelopes for the invoices visible to the caller.'})
+	total!: number;
+
+	@ApiProperty({example: true})
+	hasMore!: boolean;
+
+	@ApiProperty({required: false, example: 2})
+	nextPage?: number;
 }

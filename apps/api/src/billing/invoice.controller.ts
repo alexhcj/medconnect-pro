@@ -1,5 +1,6 @@
-import {Body, Controller, Get, HttpCode, Param, Post} from '@nestjs/common';
+import {Body, Controller, Get, HttpCode, Param, Post, Query} from '@nestjs/common';
 import {
+	ApiBadRequestResponse,
 	ApiBody,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -19,8 +20,10 @@ import {
 import {
 	invoiceCreateSchema,
 	invoiceIdParamsSchema,
+	invoiceListQuerySchema,
 	type InvoiceCreateBody,
 	type InvoiceIdParams,
+	type InvoiceListQuery,
 } from './billing.schema.js';
 import {BillingService} from './billing.service.js';
 
@@ -36,11 +39,12 @@ export class InvoiceController {
 	@ApiOperation({
 		summary: 'List invoices for the current tenant',
 		description:
-			'Practice admins, receptionists, providers, and super admins read practice invoices. Portal users read their own. Nurses are denied this practice-revenue surface. Tenant comes from the session, not from the client. synthetic is always true.',
+			'Practice admins, receptionists, providers, and super admins read practice invoices. Portal users read their own. Nurses are denied this practice-revenue surface. Tenant comes from the session, not from the client. synthetic is always true. Paged: page (default 1), pageSize (default 25, max 100), optional status (issued | paid | overdue) and sort (issued-desc default | issued-asc). total counts only rows visible to the caller; invalid values return 400.',
 	})
 	@ApiOkResponse({type: InvoiceListRdo})
-	list(): Promise<InvoiceListRdo> {
-		return this.billing.listInvoices();
+	@ApiBadRequestResponse({type: ErrorEnvelopeRdo})
+	list(@Query({schema: invoiceListQuerySchema}) query: InvoiceListQuery): Promise<InvoiceListRdo> {
+		return this.billing.listInvoices(query);
 	}
 
 	@Post()

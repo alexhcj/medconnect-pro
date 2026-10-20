@@ -206,7 +206,9 @@ maps onto `admin:users` without a new catalog permission string:
 - **List (`GET /admin/users`):** `admin:users` for `PRACTICE_ADMIN` and `SUPER_ADMIN`. Session-tenant
   scoped, including `SUPER_ADMIN` (same rule as [SEC-003](../tasks/security/SEC-003-audit-event-model.md)
   audit list). Join `practice_memberships` and `users` filtered by server-resolved
-  `TenantContext.practiceId`.
+  `TenantContext.practiceId`. The list is paged with optional `q` (email) and `role` filters
+  ([BE-025](../tasks/backend/BE-025-billing-and-user-list-pagination-contract.md),
+  [List pagination](api-endpoints.md#list-pagination)); `total` counts session-practice rows only.
 - Identity tables (`users`, `auth_sessions`, `practice_memberships`) have no RLS so login can derive
   tenant. Application scoping on `practice_memberships.practice_id` is mandatory. Do not query users
   across practices.

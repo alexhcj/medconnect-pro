@@ -29,6 +29,15 @@ export class PracticeUserRdo {
 export class PracticeUserListRdo {
 	@ApiProperty({type: [PracticeUserRdo]})
 	users!: PracticeUserRdo[];
+
+	@ApiProperty({example: 42, description: 'Session-practice memberships matching the filters.'})
+	total!: number;
+
+	@ApiProperty({example: true})
+	hasMore!: boolean;
+
+	@ApiProperty({required: false, example: 2})
+	nextPage?: number;
 }
 
 @ApiSchema({name: 'PracticeUserRoleUpdateRequest'})

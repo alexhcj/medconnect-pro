@@ -5,11 +5,13 @@ import {AuditEventRepository} from '../audit/audit-event.repository.js';
 import {PermissionDeniedError} from '../identity/auth.errors.js';
 import type {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {getCorrelationId} from '../platform/correlation.js';
+import {resolvePageRequest, toPageMeta} from '../platform/pagination.js';
 import type {PracticeRole} from '../tenancy/practice-role.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
 import {MembershipRepository} from './membership.repository.js';
 import {PracticeUserNotFoundError} from './practice-user.errors.js';
 import type {PracticeUserListRdo, PracticeUserRdo} from './practice-user.rdo.js';
+import type {PracticeUserListQuery} from './practice-user.schema.js';
 
 @Injectable()
 export class PracticeUserService {
@@ -20,9 +22,14 @@ export class PracticeUserService {
 		@Inject(REQUEST) private readonly request: Request,
 	) {}
 
-	async list(): Promise<PracticeUserListRdo> {
-		const rows = await this.memberships.listWithUsers();
-		return {users: rows.map(toPracticeUserRdo)};
+	async list(query: PracticeUserListQuery = {}): Promise<PracticeUserListRdo> {
+		const paging = resolvePageRequest(query);
+		const {rows, total} = await this.memberships.listWithUsers({
+			...paging,
+			q: query.q,
+			role: query.role,
+		});
+		return {users: rows.map(toPracticeUserRdo), ...toPageMeta(total, paging)};
 	}
 
 	async assignRole(userId: string, role: PracticeRole): Promise<PracticeUserRdo> {

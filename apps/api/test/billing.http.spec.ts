@@ -2,7 +2,7 @@ import {randomUUID} from 'node:crypto';
 import type {INestApplication} from '@nestjs/common';
 import {Test} from '@nestjs/testing';
 import request from 'supertest';
-import {DataSource, In} from 'typeorm';
+import {DataSource, In, LessThan, MoreThanOrEqual} from 'typeorm';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {AppModule} from '../src/app.module.js';
 import {MOCK_IDP_USERS, type MockIdpAccount} from '../src/identity/mock-idp.js';
@@ -448,5 +448,159 @@ describe('billing HTTP', () => {
 			synthetic: true,
 		});
 		expect(JSON.stringify(claims.body)).not.toMatch(/ISA\*|GS\*|CLM\*/);
+	});
+
+	describe('paged lists', () => {
+		async function seedInvoice(
+			owner: Patient,
+			status: 'issued' | 'paid',
+			issuedAt: string,
+			dueAt: string,
+			practiceId = practiceA.id,
+		) {
+			return dataSource.getRepository(Invoice).save({
+				practiceId,
+				patientId: owner.id,
+				status,
+				amountCents: 1000,
+				currency: 'USD',
+				issuedAt: new Date(issuedAt),
+				dueAt: new Date(dueAt),
+				synthetic: true,
+			});
+		}
+
+		beforeAll(async () => {
+			await seedInvoice(patient, 'issued', '2020-01-01T00:00:00.000Z', '2020-01-15T00:00:00.000Z');
+			await seedInvoice(patient, 'paid', '2020-02-01T00:00:00.000Z', '2020-02-15T00:00:00.000Z');
+			await seedInvoice(otherPatient, 'issued', '2020-03-01T00:00:00.000Z', '2020-03-15T00:00:00.000Z');
+			await seedInvoice(otherPatient, 'issued', '2020-04-01T00:00:00.000Z', '2099-04-15T00:00:00.000Z');
+			await seedInvoice(foreignPatient, 'issued', '2020-05-01T00:00:00.000Z', '2020-05-15T00:00:00.000Z', practiceB.id);
+		});
+
+		function get(path: string, token: string) {
+			return request(app.getHttpServer()).get(path).set('Authorization', `Bearer ${token}`);
+		}
+
+		it('returns the first default page with total, hasMore and nextPage', async () => {
+			const token = await login(receptionist.email);
+			const visible = await dataSource.getRepository(Invoice).count({where: {practiceId: practiceA.id}});
+			expect(visible).toBeGreaterThan(2);
+
+			const first = await get('/billing/invoices', token).expect(200);
+			expect(first.body.total).toBe(visible);
+			expect(first.body.invoices).toHaveLength(Math.min(visible, 25));
+			expect(first.body.hasMore).toBe(visible > 25);
+
+			const paged = await get('/billing/invoices?pageSize=1', token).expect(200);
+			expect(paged.body.invoices).toHaveLength(1);
+			expect(paged.body.total).toBe(visible);
+			expect(paged.body.hasMore).toBe(true);
+			expect(paged.body.nextPage).toBe(2);
+
+			const last = await get(`/billing/invoices?pageSize=1&page=${visible}`, token).expect(200);
+			expect(last.body.invoices).toHaveLength(1);
+			expect(last.body.hasMore).toBe(false);
+			expect(last.body.nextPage).toBeUndefined();
+
+			const beyond = await get(`/billing/invoices?pageSize=1&page=${visible + 1}`, token).expect(200);
+			expect(beyond.body.invoices).toHaveLength(0);
+			expect(beyond.body.total).toBe(visible);
+		});
+
+		it('rejects out-of-range paging and unknown filter or sort values with 400', async () => {
+			const token = await login(receptionist.email);
+			for (const query of [
+				'pageSize=101',
+				'pageSize=0',
+				'page=0',
+				'page=abc',
+				'sort=bogus',
+				'status=bogus',
+			]) {
+				const response = await get(`/billing/invoices?${query}`, token).expect(400);
+				expect(response.body.error.code).toBe('VALIDATION_ERROR');
+			}
+			await get('/billing/claims?pageSize=101', token).expect(400);
+			await get('/billing/claims?page=0', token).expect(400);
+		});
+
+		it('sorts by issued date and defaults to newest first', async () => {
+			const token = await login(receptionist.email);
+			const defaults = await get('/billing/invoices?pageSize=100', token).expect(200);
+			const desc = await get('/billing/invoices?pageSize=100&sort=issued-desc', token).expect(200);
+			const asc = await get('/billing/invoices?pageSize=100&sort=issued-asc', token).expect(200);
+			const ids = (body: {invoices: {id: string}[]}) => body.invoices.map((row) => row.id);
+			expect(ids(defaults.body)).toEqual(ids(desc.body));
+			expect(ids(asc.body)).toEqual([...ids(desc.body)].reverse());
+			const issued = desc.body.invoices.map((row: {issuedAt: string}) => row.issuedAt);
+			expect([...issued].sort().reverse()).toEqual(issued);
+		});
+
+		it('filters by derived status and counts only matching visible rows', async () => {
+			const token = await login(practiceAdmin.email);
+			const repo = dataSource.getRepository(Invoice);
+			const now = new Date();
+			const paid = await repo.count({where: {practiceId: practiceA.id, status: 'paid'}});
+			const overdue = await repo.count({
+				where: {practiceId: practiceA.id, status: 'issued', dueAt: LessThan(now)},
+			});
+			const issued = await repo.count({
+				where: {practiceId: practiceA.id, status: 'issued', dueAt: MoreThanOrEqual(now)},
+			});
+
+			for (const [status, expected] of [
+				['paid', paid],
+				['overdue', overdue],
+				['issued', issued],
+			] as const) {
+				const response = await get(`/billing/invoices?status=${status}&pageSize=100`, token).expect(200);
+				expect(response.body.total).toBe(expected);
+				expect(response.body.invoices.every((row: {status: string}) => row.status === status)).toBe(
+					true,
+				);
+			}
+			expect(overdue).toBeGreaterThan(0);
+			expect(paid).toBeGreaterThan(0);
+		});
+
+		it('pages only own rows for a portal user and counts only own rows', async () => {
+			const token = await login(portalUser.email);
+			const ownCount = await dataSource
+				.getRepository(Invoice)
+				.count({where: {practiceId: practiceA.id, patientId: patient.id}});
+			const allCount = await dataSource.getRepository(Invoice).count({where: {practiceId: practiceA.id}});
+			expect(ownCount).toBeLessThan(allCount);
+
+			const invoices = await get('/billing/invoices?pageSize=100', token).expect(200);
+			expect(invoices.body.total).toBe(ownCount);
+			expect(
+				invoices.body.invoices.every((row: {patientId: string}) => row.patientId === patient.id),
+			).toBe(true);
+
+			const claims = await get('/billing/claims?pageSize=100', token).expect(200);
+			expect(claims.body.total).toBe(ownCount);
+			expect(claims.body.claims).toHaveLength(ownCount);
+
+			const small = await get('/billing/invoices?pageSize=1', token).expect(200);
+			expect(small.body.invoices).toHaveLength(1);
+			expect(small.body.hasMore).toBe(ownCount > 1);
+		});
+
+		it('pages claims over visible invoices only and never counts another practice', async () => {
+			const token = await login(provider.email);
+			const visible = await dataSource.getRepository(Invoice).count({where: {practiceId: practiceA.id}});
+			const claims = await get('/billing/claims?pageSize=1', token).expect(200);
+			expect(claims.body.total).toBe(visible);
+			expect(claims.body.claims).toHaveLength(1);
+			expect(claims.body.nextPage).toBe(2);
+			expect(claims.body.invoices).toBeUndefined();
+		});
+
+		it('keeps denying nurses on the paged lists', async () => {
+			const token = await login(nurse.email);
+			await get('/billing/invoices?page=1', token).expect(403);
+			await get('/billing/claims?page=1', token).expect(403);
+		});
 	});
 });

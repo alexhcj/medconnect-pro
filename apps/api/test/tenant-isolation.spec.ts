@@ -167,7 +167,11 @@ describe('tenant isolation', () => {
 	});
 
 	it('joins directory users only for the current practice', async () => {
-		const listed = await scopedMembershipRepo(practiceA.id, userA.id).listWithUsers();
+		const {rows: listed, total} = await scopedMembershipRepo(practiceA.id, userA.id).listWithUsers({
+			page: 1,
+			pageSize: 100,
+		});
+		expect(total).toBe(listed.length);
 		expect(listed.map((row) => row.userId)).toContain(userA.id);
 		expect(listed.map((row) => row.userId)).not.toContain(userB.id);
 		expect(listed.every((row) => row.practiceId === practiceA.id)).toBe(true);

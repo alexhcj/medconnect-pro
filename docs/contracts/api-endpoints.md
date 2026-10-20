@@ -162,10 +162,33 @@ Email/SMS are adapter boundaries, not live carriers ([BE-008](../tasks/backend/B
 ## API conventions
 
 - version API when breaking changes require it;
-- consistent pagination;
+- consistent pagination (see [List pagination](#list-pagination));
 - consistent filtering/sorting;
 - consistent error envelope (see [data-contracts.md](data-contracts.md));
 - correlation/request ID (`X-Correlation-ID`);
 - authorization on every protected resource;
 - server-side tenant resolution;
 - no sensitive fields in error messages.
+
+## List pagination
+
+Page-based convention ([BE-025](../tasks/backend/BE-025-billing-and-user-list-pagination-contract.md)).
+Applies to `GET /billing/invoices`, `GET /billing/claims` and `GET /admin/users`. Audit and
+security-event lists use the same `page`/`pageSize` query but predate `total`; patients and
+appointments use their own fixed page sizes.
+
+- Query: `page` (integer 1–1000, default 1) and `pageSize` (integer 1–100, default 25). Anything
+  else returns 400 `VALIDATION_ERROR`. A request with no params returns the first default page.
+- Envelope: the existing array key (`invoices`, `claims`, `users`) plus `total`, `hasMore` and
+  optional `nextPage`. `total` counts only rows visible to the caller that match the filters:
+  tenant and own-patient scope and filters are applied before paging. A page past the end returns an
+  empty array with the same `total`.
+- `GET /billing/invoices`: `status` (`issued` | `paid` | `overdue`, derived as in the invoice
+  response) and `sort` (`issued-desc` default, `issued-asc`). Ties break on invoice id.
+- `GET /billing/claims`: paging only; claims page over the caller's visible invoices, newest first.
+- `GET /admin/users`: `q` (case-insensitive email substring; users have no name field) and `role`.
+  Ordered by membership creation, then id.
+- Unknown `status`, `sort` or `role` values return 400. Unrecognised query keys are ignored.
+- **Client compatibility:** the envelope is additive. Clients that read only the array key keep
+  working and receive the first 25 rows until FE-043 (users) and FE-045 (invoices, claims) consume
+  the paging fields.

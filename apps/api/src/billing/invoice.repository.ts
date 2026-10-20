@@ -1,8 +1,12 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {In, Repository} from 'typeorm';
 import {InvoiceLineItem} from '../persistence/entities/invoice-line-item.entity.js';
-import {Invoice, type InvoicePersistedStatus} from '../persistence/entities/invoice.entity.js';
+import {
+	Invoice,
+	type InvoicePersistedStatus,
+	type InvoiceRdoStatus,
+} from '../persistence/entities/invoice.entity.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 
@@ -19,6 +23,18 @@ export type InvoiceWriteInput = {
 	lineItems: InvoiceLineItemWriteInput[];
 	practiceId?: string;
 };
+
+export type InvoiceListFilter = {
+	page: number;
+	pageSize: number;
+	sort?: 'issued-desc' | 'issued-asc';
+	status?: InvoiceRdoStatus;
+	/** Reference time shared with the response mapper so `overdue` filter and display agree. */
+	now: Date;
+	portalUserId?: string;
+};
+
+export type InvoicePage = {rows: Invoice[]; total: number};
 
 const INVOICE_RELATIONS = {
 	lineItems: true,
@@ -71,19 +87,52 @@ export class InvoiceRepository {
 		};
 	}
 
-	async list(filter?: {portalUserId?: string}): Promise<Invoice[]> {
+	/**
+	 * One page of invoices. Tenant, own-patient scope and filters are applied before paging, so
+	 * `total` counts only rows visible to the caller. Ids are paged first so line-item joins cannot
+	 * distort `skip`/`take`.
+	 */
+	async list(query: InvoiceListFilter): Promise<InvoicePage> {
 		const {practiceId} = this.tenant.require();
-		const qb = this.rows
+		const {page, pageSize} = query;
+		const direction = query.sort === 'issued-asc' ? 'ASC' : 'DESC';
+		const idQb = this.rows
 			.createQueryBuilder('invoice')
-			.leftJoinAndSelect('invoice.lineItems', 'lineItem')
-			.leftJoinAndSelect('invoice.patient', 'patient')
+			.innerJoin('invoice.patient', 'patient')
+			.select('invoice.id', 'id')
 			.where('invoice.practiceId = :practiceId', {practiceId});
-		if (filter?.portalUserId) {
-			qb.andWhere('patient.portalUserId = :portalUserId', {portalUserId: filter.portalUserId});
+		if (query.portalUserId) {
+			idQb.andWhere('patient.portalUserId = :portalUserId', {portalUserId: query.portalUserId});
 		}
-		qb.orderBy('invoice.issuedAt', 'DESC').addOrderBy('invoice.id', 'DESC');
-		qb.addOrderBy('lineItem.id', 'ASC');
-		return qb.getMany();
+		if (query.status === 'paid') {
+			idQb.andWhere("invoice.status = 'paid'");
+		} else if (query.status === 'overdue') {
+			idQb.andWhere("invoice.status = 'issued'").andWhere('invoice.dueAt < :now', {now: query.now});
+		} else if (query.status === 'issued') {
+			idQb.andWhere("invoice.status = 'issued'").andWhere('invoice.dueAt >= :now', {now: query.now});
+		}
+		const total = await idQb.getCount();
+		const idRows = await idQb
+			.orderBy('invoice.issuedAt', direction)
+			.addOrderBy('invoice.id', direction)
+			.offset((page - 1) * pageSize)
+			.limit(pageSize)
+			.getRawMany<{id: string}>();
+		const ids = idRows.map((row) => row.id);
+		if (ids.length === 0) {
+			return {rows: [], total};
+		}
+		const loaded = await this.rows.find({
+			where: {id: In(ids), practiceId},
+			relations: INVOICE_RELATIONS,
+			order: {lineItems: {id: 'ASC'}},
+		});
+		const byId = new Map(loaded.map((row) => [row.id, row]));
+		const rows = ids.flatMap((id) => {
+			const row = byId.get(id);
+			return row ? [row] : [];
+		});
+		return {rows, total};
 	}
 
 	async getById(id: string): Promise<Invoice | undefined> {
