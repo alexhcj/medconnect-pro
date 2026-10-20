@@ -1,11 +1,11 @@
 'use client';
 
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import {ClaimsEnvelopeList} from '@/components/billing/claims-envelope-list';
+import {PaymentRecordedNotice} from '@/components/billing/payment-recorded-notice';
 import {RecordPaymentDialog} from '@/components/billing/record-payment-dialog';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {formatInvoiceAmount, PAYMENT_METHOD_LABELS} from '@/lib/billing/format';
 import type {Invoice} from '@/types/billing/invoice';
 import type {Payment} from '@/types/billing/payment';
 
@@ -31,6 +31,7 @@ export function PaymentClaimsBoundaries({
 }) {
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [recorded, setRecorded] = useState<Payment | null>(null);
+	const dismissRecorded = useCallback(() => setRecorded(null), []);
 	const unpaid = invoice !== undefined && invoice.status !== 'paid';
 	const canSubmit = Boolean(invoice && unpaid && canRecord);
 
@@ -42,13 +43,6 @@ export function PaymentClaimsBoundaries({
 				</CardHeader>
 				<CardContent className="space-y-3">
 					<p className="text-sm text-gray-700">{paymentCopy(invoice, canRecord)}</p>
-					{recorded && (
-						<p className="text-sm text-gray-900">
-							Payment recorded. {PAYMENT_METHOD_LABELS[recorded.method]}. Processor ref{' '}
-							<span className="font-medium">{recorded.processorRef}</span>.{' '}
-							{formatInvoiceAmount(recorded.amountCents)} synthetic only.
-						</p>
-					)}
 					<Button type="button" disabled={!canSubmit} onClick={() => setDialogOpen(true)}>
 						Record payment
 					</Button>
@@ -62,6 +56,7 @@ export function PaymentClaimsBoundaries({
 					<ClaimsEnvelopeList />
 				</CardContent>
 			</Card>
+			{recorded && <PaymentRecordedNotice payment={recorded} onDismiss={dismissRecorded} />}
 			{invoice && (
 				<RecordPaymentDialog
 					invoice={invoice}

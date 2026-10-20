@@ -195,13 +195,13 @@ Interview demo readiness on the existing Render host. Does not close M9 or reope
 - INFRA-017 — Demo presentation pack
 - QA-007 — M18 close audit
 
-## Product (M19, proposed)
+## Product (M19, in progress)
 
-Polish and list normalization. Milestone label is not yet in the release roadmap.
+Polish and list normalization. Does not close M9 or reopen M17/M18; see the release roadmap.
 
 - FE-040 — Responsive header logo and RoleTag parity (shipped at 0.91.1)
 - FE-041 — Billing design/code sync (shipped at 0.91.2)
-- FE-042 — Billing role-scoped content and status colours
+- FE-042 — Billing role-scoped content and status colours (shipped at 0.91.3)
 - BE-025 — Billing and user list pagination contract
 - FE-043 — Administration paginated lists
 - FE-044 — Patient list bounded height

@@ -1,5 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
-import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {signInAsPatient, signInAsPracticeAdmin} from './helpers/mock-auth';
 
 async function openBilling(page: Page) {
 	await page.getByRole('button', {name: 'Open navigation'}).click();
@@ -59,8 +59,44 @@ test.describe('Billing dashboard', () => {
 		await dialog.getByRole('radio', {name: 'ACH (demo)'}).click();
 		await dialog.getByRole('button', {name: 'Confirm payment'}).click();
 
-		await expect(page.getByText(/Processor ref/)).toBeVisible();
+		const notice = page.getByRole('status').filter({hasText: 'Payment recorded'});
+		await expect(notice).toBeVisible();
+		await expect(notice).toContainText('ACH (demo)');
+		await expect(notice).toContainText('Processor ref');
 		await expect(page.getByText('This invoice is already paid. Hosted Stripe is not connected.')).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Record payment'})).toBeDisabled();
+		await expect(page.getByText('Paid', {exact: true})).toHaveClass(/text-success-strong/);
+
+		await notice.getByRole('button', {name: 'Dismiss payment notification'}).click();
+		await expect(notice).toBeHidden();
+
+		await page.getByRole('link', {name: 'Back to billing'}).click();
+		const row = page.getByRole('list', {name: 'Invoices'}).getByRole('listitem').filter({hasText: 'Due'});
+		await expect(row.filter({has: page.getByRole('link', {name: /demo-invoice-003/})})).toContainText('Paid');
+	});
+
+	test('colours invoice status while keeping the text label', async ({page}) => {
+		await signInAsPracticeAdmin(page);
+		await openBilling(page);
+
+		const invoices = page.getByRole('list', {name: 'Invoices'});
+		await expect(invoices.getByText('Issued', {exact: true}).first()).toHaveClass(/text-foreground-secondary/);
+		await expect(invoices.getByText('Paid', {exact: true}).first()).toHaveClass(/text-success-strong/);
+		await expect(invoices.getByText('Overdue', {exact: true}).first()).toHaveClass(/text-danger/);
+	});
+
+	test('a patient sees only their own invoices and claims, and not-found for another', async ({page}) => {
+		await signInAsPatient(page);
+		await openBilling(page);
+
+		const invoices = page.getByRole('list', {name: 'Invoices'});
+		await expect(invoices).toContainText('Avery Carter');
+		await expect(invoices).not.toContainText('Taylor Bennett');
+		await expect(invoices).not.toContainText('Jordan Brooks');
+		await expect(invoices.getByRole('listitem')).toHaveCount(2);
+		await expect(page.getByRole('list', {name: 'Claim envelopes'}).getByRole('listitem')).toHaveCount(2);
+
+		await page.goto('/dashboard/billing/demo-invoice-002');
+		await expect(page.getByRole('alert').filter({hasText: 'Invoice was not found.'})).toBeVisible();
 	});
 });

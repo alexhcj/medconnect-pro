@@ -25,6 +25,17 @@ export function invoiceStatusLabel(status: InvoiceStatus): string {
 	return 'Overdue';
 }
 
+/** Colour cue for the status text; the label always stays (FE-042). Tokens in `styles/tokens.css`. */
+export const INVOICE_STATUS_TEXT_CLASS: Record<InvoiceStatus, string> = {
+	paid: 'text-success-strong',
+	overdue: 'text-danger',
+	issued: 'text-foreground-secondary',
+};
+
+export function invoiceStatusTextClass(status: InvoiceStatus): string {
+	return INVOICE_STATUS_TEXT_CLASS[status];
+}
+
 export function claimStatusLabel(status: ClaimStatus): string {
 	return status === 'not_submitted' ? 'Not submitted' : status;
 }

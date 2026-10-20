@@ -50,6 +50,21 @@ describe('InvoiceList', () => {
 		);
 	});
 
+	it('colours each status while keeping its text label', () => {
+		mockInvoices({
+			data: [
+				{...sampleInvoice, id: 'demo-invoice-001', status: 'issued'},
+				{...sampleInvoice, id: 'demo-invoice-002', status: 'paid'},
+				{...sampleInvoice, id: 'demo-invoice-003', status: 'overdue'},
+			],
+		});
+		render(<InvoiceList />);
+
+		expect(screen.getByText('Issued')).toHaveClass('text-foreground-secondary');
+		expect(screen.getByText('Paid')).toHaveClass('text-success-strong');
+		expect(screen.getByText('Overdue')).toHaveClass('text-danger');
+	});
+
 	it('shows a loading state', () => {
 		mockInvoices({data: undefined, isPending: true});
 		render(<InvoiceList />);

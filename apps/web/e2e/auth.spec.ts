@@ -15,8 +15,8 @@ test.describe('Mock authentication', () => {
 
 	test('rejects invalid credentials', async ({page}) => {
 		await page.goto('/login');
-		await page.getByLabel('Email').fill(DEMO_EMAIL);
-		await page.getByLabel('Password').fill('wrong-password');
+		await page.getByLabel('Email', {exact: true}).fill(DEMO_EMAIL);
+		await page.getByLabel('Password', {exact: true}).fill('wrong-password');
 		await page.getByRole('button', {name: 'Sign in'}).click();
 		await expect(page.getByText('Invalid email or password.')).toBeVisible();
 		await expect(page).toHaveURL(/\/login/);
@@ -24,8 +24,8 @@ test.describe('Mock authentication', () => {
 
 	test('announces a rate-limited sign-in with retry seconds', async ({page}) => {
 		await page.goto('/login');
-		await page.getByLabel('Email').fill('rate.limited@example.test');
-		await page.getByLabel('Password').fill('any-password');
+		await page.getByLabel('Email', {exact: true}).fill('rate.limited@example.test');
+		await page.getByLabel('Password', {exact: true}).fill('any-password');
 		await page.getByRole('button', {name: 'Sign in'}).click();
 		await expect(
 			page.getByRole('alert').filter({hasText: 'Too many attempts. Try again in 60 seconds.'}),

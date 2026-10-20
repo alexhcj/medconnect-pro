@@ -91,6 +91,17 @@ describe('InvoiceDetail', () => {
 		expect(useInvoice).toHaveBeenCalledWith('demo-invoice-001', true);
 	});
 
+	it.each([
+		['issued', 'Issued', 'text-foreground-secondary'],
+		['paid', 'Paid', 'text-success-strong'],
+		['overdue', 'Overdue', 'text-danger'],
+	] as const)('colours the %s status and keeps the label', (status, label, tone) => {
+		mockInvoice({data: {...sampleInvoice, status}});
+		render(<InvoiceDetail invoiceId="demo-invoice-001" />);
+
+		expect(screen.getByText(label)).toHaveClass(tone);
+	});
+
 	it('disables record payment for a provider session', () => {
 		useSessionStatus.mockReturnValue({
 			session: {userRole: 'PROVIDER'},

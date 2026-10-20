@@ -84,6 +84,40 @@ describe('PaymentClaimsBoundaries', () => {
 		expect(screen.queryByLabelText(/card/i)).not.toBeInTheDocument();
 	});
 
+	it('shows the payment recorded notification after recording, not inside the boundary card', async () => {
+		const user = userEvent.setup();
+		const payment = {
+			id: 'demo-payment-demo-invoice-001',
+			invoiceId: 'demo-invoice-001',
+			practiceId: 'demo-practice-001',
+			amountCents: 15000,
+			method: 'stripe',
+			processorRef: 'demo_mock_demo-invoice-001',
+			status: 'recorded',
+			synthetic: true,
+		};
+		useRecordPayment.mockReturnValue({
+			mutate: vi.fn((_body, options) => options.onSuccess(payment)),
+			isPending: false,
+			isError: false,
+		});
+		render(<PaymentClaimsBoundaries invoice={unpaid} canRecord />);
+
+		expect(screen.queryByRole('status')).not.toBeInTheDocument();
+		await user.click(screen.getByRole('button', {name: 'Record payment'}));
+		await user.click(screen.getByRole('button', {name: 'Confirm payment'}));
+
+		const notice = await screen.findByRole('status');
+		expect(notice).toHaveTextContent('Payment recorded');
+		expect(notice).toHaveTextContent('demo_mock_demo-invoice-001');
+		expect(screen.getByRole('heading', {name: 'Payment boundary'}).closest('div.self-start')).not.toContainElement(
+			notice,
+		);
+
+		await user.click(screen.getByRole('button', {name: 'Dismiss payment notification'}));
+		expect(screen.queryByRole('status')).not.toBeInTheDocument();
+	});
+
 	it('disables record payment for a provider', () => {
 		render(<PaymentClaimsBoundaries invoice={unpaid} canRecord={false} />);
 

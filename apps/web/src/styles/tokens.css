@@ -40,6 +40,7 @@
 	--color-text-danger: #dc2626;
 	--color-text-warning: #78350f;
 	--color-text-success: #16a34a;
+	--color-text-success-strong: #15803d; /* green-700, 5.02:1 on white; success text (FE-042) */
 
 	/* Border */
 	--color-border-default: #e5e7eb;
@@ -135,6 +136,7 @@
 	--color-inverse: var(--color-text-inverse);
 	--color-danger: var(--color-text-danger);
 	--color-warning: var(--color-text-warning);
+	--color-success-strong: var(--color-text-success-strong);
 
 	--color-border: var(--color-border-default);
 	--color-border-subtle: var(--color-border-subtle);

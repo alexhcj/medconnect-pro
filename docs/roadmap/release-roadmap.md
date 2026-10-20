@@ -46,9 +46,9 @@ Demo Readiness** is shipped and **closed** at 0.91.0
 [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md) (shipped),
 [INFRA-017](../tasks/infrastructure/INFRA-017-demo-presentation-pack.md) (shipped),
 [QA-007](../tasks/qa/QA-007-m18-close-audit.md) (shipped)). It does not reopen M17 and does not close M9.
-**M19 — Polish and list normalization** is **in progress** (not closed): FE-040 (0.91.1) and
-FE-041 (0.91.2) are shipped; FE-042, BE-025, FE-043, FE-044 and FE-045 are pending. Latest
-release: 0.91.2.
+**M19 — Polish and list normalization** is **in progress** (not closed): FE-040 (0.91.1),
+FE-041 (0.91.2) and FE-042 (0.91.3) are shipped; BE-025, FE-043, FE-044 and FE-045 are pending. Latest
+release: 0.91.3.
 Render PR previews, real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and
 Redis stay deferred. Local product work does not wait on AWS. Resume M9 when the AWS account can
 be configured. Preview/production hosting remains M9, not M8, M10, M11, or M18.
@@ -203,7 +203,7 @@ Design parity and bounded lists on the shipped demo. No new capability claims, n
 reopen of M9, M17 or M18. Tasks:
 [FE-040](../tasks/frontend/FE-040-responsive-header-logo-and-role-tag-parity.md) (header logo, RoleTag; shipped at 0.91.1),
 [FE-041](../tasks/frontend/FE-041-billing-design-code-sync.md) (billing Figma/code sync; shipped at 0.91.2),
-[FE-042](../tasks/frontend/FE-042-billing-role-scoped-content-and-status-colors.md) (mock role scoping, status colours),
+[FE-042](../tasks/frontend/FE-042-billing-role-scoped-content-and-status-colors.md) (mock role scoping, status colours; shipped at 0.91.3),
 [BE-025](../tasks/backend/BE-025-billing-and-user-list-pagination-contract.md) (invoice, claims, user list paging),
 [FE-043](../tasks/frontend/FE-043-administration-paginated-lists.md) (audit, security events, users),
 [FE-044](../tasks/frontend/FE-044-patient-list-bounded-height.md) (patients list), and
@@ -238,7 +238,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M16 Live Telehealth | SEC-008, BE-021, FE-035 (shipped) | Eligibility on join/mint, join-before-mint, leave versus end (client/Daily leave; Nest end), 502 `MEDIA_UNAVAILABLE`, create/join rate limits, pre-join device UX. Not chat, recording, Socket.IO, or AWS. **Shipped** at 0.81.0. |
 | M17 Security and Compliance Maturity | SEC-009, BE-022, BE-023, FE-036, QA-005 (shipped) | ADR-016 session-tenant SUPER_ADMIN, clinical read audit, live concurrent-session inventory, authz-matrix expansion. Not AWS, HIPAA certification, production MFA, Redis/WAF, or patient DELETE. **Closed** at 0.84.1. |
 | M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (all shipped; closed at 0.91.0) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
-| M19 Polish and list normalization | FE-040–FE-041 (shipped, 0.91.2); FE-042, BE-025, FE-043, FE-044, FE-045 (pending) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Does not close M9 or reopen M17/M18. |
+| M19 Polish and list normalization | FE-040–FE-042 (shipped, 0.91.3); BE-025, FE-043, FE-044, FE-045 (pending) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Does not close M9 or reopen M17/M18. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

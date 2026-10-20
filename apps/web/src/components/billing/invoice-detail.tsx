@@ -7,7 +7,12 @@ import {PaymentClaimsBoundaries} from '@/components/billing/payment-claims-bound
 import {Button} from '@/components/ui/button';
 import {canAccessBillingDashboard, canRecordPayment} from '@/lib/auth/billing-access';
 import {billingLoadErrorMessage} from '@/lib/billing/load-error';
-import {formatInvoiceAmount, formatInvoiceDate, invoiceStatusLabel} from '@/lib/billing/format';
+import {
+	formatInvoiceAmount,
+	formatInvoiceDate,
+	invoiceStatusLabel,
+	invoiceStatusTextClass,
+} from '@/lib/billing/format';
 import {useInvoice} from '@/lib/hooks/use-billing';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import type {Invoice} from '@/types/billing/invoice';
@@ -30,7 +35,9 @@ function InvoiceDetailBody({invoice, canRecord}: {invoice: Invoice; canRecord: b
 					</div>
 					<div>
 						<dt className="text-sm text-gray-600">Status</dt>
-						<dd className="text-sm font-medium text-gray-900">{invoiceStatusLabel(invoice.status)}</dd>
+						<dd className={`text-sm font-medium ${invoiceStatusTextClass(invoice.status)}`}>
+							{invoiceStatusLabel(invoice.status)}
+						</dd>
 					</div>
 					<div>
 						<dt className="text-sm text-gray-600">Amount</dt>

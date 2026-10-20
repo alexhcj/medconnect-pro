@@ -6,6 +6,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.91.3] - 2026-10-20
+
+### Changed
+
+- FE-042: in mock mode the billing adapter now follows the signed-in role as the API does. A patient
+  sees only their own invoices, claims and invoice detail (another patient's invoice is not found),
+  providers read practice-wide but cannot record a payment, and nurses are denied. Invoice status
+  text is coloured in the list and detail (paid green, overdue red, issued neutral grey) with the
+  label kept, using a new `color/text/success-strong` token. "Payment recorded" is now a transient
+  notification shown only right after recording instead of text in the Payment boundary card.
+
+### Fixed
+
+- FE-042: in mock mode a recorded payment now shows as paid on the invoice detail and list after
+  refetch (the mock returned objects it mutated in place). The mock e2e sign-in helper no longer
+  trips on the login page "Copy email" buttons.
+
 ## [0.91.2] - 2026-10-20
 
 ### Changed

@@ -5,7 +5,12 @@ import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
 import {useInvoices} from '@/lib/hooks/use-billing';
 import {billingLoadErrorMessage} from '@/lib/billing/load-error';
-import {formatInvoiceAmount, formatInvoiceDate, invoiceStatusLabel} from '@/lib/billing/format';
+import {
+	formatInvoiceAmount,
+	formatInvoiceDate,
+	invoiceStatusLabel,
+	invoiceStatusTextClass,
+} from '@/lib/billing/format';
 
 export function InvoiceList() {
 	const invoices = useInvoices();
@@ -48,7 +53,9 @@ export function InvoiceList() {
 							>
 								<div>
 									<p className="font-medium text-gray-900">{invoice.patientName}</p>
-									<p className="mt-1 text-sm text-gray-700">{invoiceStatusLabel(invoice.status)}</p>
+									<p className={`mt-1 text-sm font-medium ${invoiceStatusTextClass(invoice.status)}`}>
+										{invoiceStatusLabel(invoice.status)}
+									</p>
 									<p className="mt-1 text-sm text-gray-600">Due {formatInvoiceDate(invoice.dueAt)}</p>
 									<Link
 										href={`/dashboard/billing/${invoice.id}`}
