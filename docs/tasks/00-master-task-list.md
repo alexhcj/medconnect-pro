@@ -194,3 +194,15 @@ Interview demo readiness on the existing Render host. Does not close M9 or reope
 - FE-039 — Public demo OAuth unavailable
 - INFRA-017 — Demo presentation pack
 - QA-007 — M18 close audit
+
+## Product (M19, proposed)
+
+Polish and list normalization. Milestone label is not yet in the release roadmap.
+
+- FE-040 — Responsive header logo and RoleTag parity
+- FE-041 — Billing design/code sync
+- FE-042 — Billing role-scoped content and status colours
+- BE-025 — Billing and user list pagination contract
+- FE-043 — Administration paginated lists
+- FE-044 — Patient list bounded height
+- FE-045 — Billing bounded invoice and claims lists

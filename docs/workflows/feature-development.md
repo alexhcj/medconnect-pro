@@ -45,7 +45,8 @@ Do not implement a UI task while `design.required: true` and `design.status` is 
     delivery path ([release.md](release.md)): Amplify Git publishes the web; ECS migrate/deploy
     waits on CI and a GitHub `production` environment approval. Feature branches cannot deploy
     production.
-13. Update Plane operational status.
+13. Update Plane operational status. For new task files, sync to Plane before the commit so the
+    ids are written back ([scripts/plane/README.md](../../scripts/plane/README.md#flow)).
 14. Mark task complete only after acceptance criteria are verified (stage 6): set top-level
     `status` to `implemented` or `completed`, fill the Markdown Completion section, and set
     `implementation.status: complete` when that block is present. Update matching capability

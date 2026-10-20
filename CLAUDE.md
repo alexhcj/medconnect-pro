@@ -20,6 +20,9 @@ HTML comments like this one are stripped before Claude sees the file.
 - Ask before: adding a dependency, changing a public API/data contract, editing an ADR,
   touching `infra/`, CI workflows, or anything under `.github/`.
 - Never commit, push, tag, or create PRs unless I ask in this session.
+- When I ask for a commit that includes new or changed task specs (e.g. a new milestone), follow
+  `/commit-tasks`: run `npm run plane:sync -- <IDs>` first so the Plane ids are written into the
+  task files, then commit. No `Co-Authored-By` trailer.
 - Answer briefly. Lead with the result, then file paths. No recap of steps I watched you do.
 
 ## Commands (root, npm workspaces, Node 24)
@@ -28,7 +31,8 @@ HTML comments like this one are stripped before Claude sees the file.
 - Marketing: `npm run lint:marketing`, `npm run type-check:marketing`, `npm run test:marketing`
 - API: `npm run lint:api`, `npm run type-check:api`, `npm run test:api`,
   `npm run openapi:generate` after controller/DTO changes
-- Plane: `npm run plane:sync:dry` (always dry-run first), `npm run plane:sync`
+- Plane: `npm run plane:sync:dry` (always dry-run first), `npm run plane:sync`;
+  specific tasks: `npm run plane:sync -- FE-040 BE-025`
 - Prefer the narrowest command (single workspace, single spec file) over full suites.
   Delegate long/noisy runs to the `test-runner` subagent so logs stay out of the main context.
 
@@ -53,7 +57,7 @@ HTML comments like this one are stripped before Claude sees the file.
 ## Skills in this repo
 
 `/plan-task <ID>` · `/new-task <description>` · `/implement-task <ID>` ·
-`/design-brief <ID>` · `/close-milestone <M#>` · `/plane-sync`
+`/design-brief <ID>` · `/close-milestone <M#>` · `/plane-sync [IDs]` · `/commit-tasks`
 
 ## Compact instructions
 

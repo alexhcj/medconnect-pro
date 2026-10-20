@@ -21,3 +21,5 @@ Description: $ARGUMENTS
 5. Finish by asking: "Write this to `docs/tasks/<area>/<ID>-<slug>.md` and add it to the master
    task list?" Only on an explicit yes, create the file and update
    `docs/tasks/00-master-task-list.md` (and the roadmap crosswalk only if the user agrees).
+5. New task files are synced to Plane by `/commit-tasks` when the user asks to commit. Do not
+   sync at authoring time.

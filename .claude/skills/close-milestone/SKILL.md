@@ -16,3 +16,4 @@ allowed-tools: Read Grep Glob Bash(git log *) Bash(git diff *)
    call) so file dumps stay out of this conversation; keep only verdicts and `path:line`.
 3. Output the classified gap list. Author new task specs only after the user approves the
    list, using the `/new-task` conventions.
+4. New task specs are synced to Plane by `/commit-tasks` when the user asks to commit.
