@@ -62,6 +62,14 @@ describe('PaymentClaimsBoundaries', () => {
 		expect(screen.queryByLabelText(/card/i)).not.toBeInTheDocument();
 	});
 
+	it('lets the payment boundary card hug its content beside a taller claims card', () => {
+		render(<PaymentClaimsBoundaries canRecord />);
+
+		const paymentCard = screen.getByRole('heading', {name: 'Payment boundary'}).closest('div.self-start');
+		expect(paymentCard).not.toBeNull();
+		expect(screen.getByRole('heading', {name: 'Claims boundary'}).closest('div.self-start')).toBeNull();
+	});
+
 	it('enables record payment for an entitled role on an unpaid invoice', async () => {
 		const user = userEvent.setup();
 		render(<PaymentClaimsBoundaries invoice={unpaid} canRecord />);

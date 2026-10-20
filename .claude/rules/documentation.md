@@ -31,6 +31,22 @@ When architecture, API/data contracts, or security boundaries ship in the same c
 the application version and add a `CHANGELOG.md` entry per `.claude/rules/versioning.md` and
 ADR-007.
 
+## Progress trackers
+
+When a task ships (or a milestone changes state), update all of these in the same change:
+
+1. The task file (`status`, `implementation.status`, Completion; tick only verified criteria).
+2. `docs/roadmap/release-roadmap.md`: the milestone section (heading status, shipped/pending
+   split), the crosswalk row, and the **Current position** paragraph (active milestone, latest
+   release version).
+3. The `AGENTS.md` "Current:" line (one line: closed milestone, active milestone with shipped
+   tasks, latest release, paused work).
+4. `docs/tasks/00-master-task-list.md`.
+5. `CHANGELOG.md` and the root version (see versioning rules).
+
+Milestone states are proposed, in progress, shipped, closed. Only the user declares a milestone
+closed. `docs-sync-checker` verifies these at the end of `/implement-task`.
+
 Create an ADR when a decision has meaningful long-term architectural consequences.
 
 Never put secrets, tokens, credentials, API keys or real patient information in `/docs`.

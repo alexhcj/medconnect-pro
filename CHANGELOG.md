@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.91.2] - 2026-10-20
+
+### Changed
+
+- FE-041: the record-payment dialog's method radios are styled to match Figma (16 px, brand
+  accent, focus-visible outline, dimmed when disabled). Method rows are at least 44 px tall with a
+  2 px gap. The Payment boundary card hugs its content instead of stretching to the Claims boundary
+  card. Figma frames and the shared `Method radio` component are updated.
+
 ## [0.91.1] - 2026-10-20
 
 ### Changed

@@ -200,7 +200,7 @@ Interview demo readiness on the existing Render host. Does not close M9 or reope
 Polish and list normalization. Milestone label is not yet in the release roadmap.
 
 - FE-040 — Responsive header logo and RoleTag parity (shipped at 0.91.1)
-- FE-041 — Billing design/code sync
+- FE-041 — Billing design/code sync (shipped at 0.91.2)
 - FE-042 — Billing role-scoped content and status colours
 - BE-025 — Billing and user list pagination contract
 - FE-043 — Administration paginated lists

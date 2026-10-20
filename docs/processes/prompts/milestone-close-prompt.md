@@ -10,7 +10,8 @@
            ↓
 5. Cursor authors only the missing this-milestone task specs (after approval)
            ↓
-6. Update roadmap crosswalk, relevant roadmap slice, master task list, and matching
+6. Update roadmap crosswalk, Current position paragraph, the `AGENTS.md` "Current:" line,
+   relevant roadmap slice, master task list, and matching
    `docs/product/` capability rows (plus the marketing capability matrix) when user-facing
    status or public claims changed
 

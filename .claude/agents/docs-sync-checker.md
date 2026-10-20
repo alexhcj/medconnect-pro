@@ -9,7 +9,11 @@ Given a task ID, verify and report a checklist (OK / MISSING / MISMATCH with pat
 
 1. Task file: top-level `status`, Completion section, `implementation.status: complete` if the block exists.
 2. `docs/tasks/00-master-task-list.md` row status.
-3. `docs/roadmap/release-roadmap.md`: task moved into the shipped group; current-position paragraph updated.
+3. `docs/roadmap/release-roadmap.md`: task moved into the shipped group (milestone section and
+   crosswalk row); milestone heading status (proposed / in progress / shipped) is right; the
+   **Current position** paragraph names the active milestone and latest release version; no
+   stray template text (for example a literal `$row`) remains.
+3a. `AGENTS.md` "Current:" line names the same milestone state and latest release version.
 4. If user-facing: matching `docs/product/<module>.md` capability row and `docs/marketing/capability-matrix.md` agree.
 5. Root `package.json` version == `package-lock.json` root version == top `CHANGELOG.md` entry.
 6. If API changed: `apps/api/openapi/openapi.json` regenerated (check `git status`).

@@ -1,0 +1,11 @@
+{
+	"version": "0.0.1",
+	"configurations": [
+		{
+			"name": "web-mocks",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run", "dev:mocks", "-w", "medconnect-web"],
+			"port": 3000
+		}
+	]
+}

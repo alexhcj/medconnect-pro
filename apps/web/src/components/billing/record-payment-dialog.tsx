@@ -53,10 +53,14 @@ export function RecordPaymentDialog({
 
 				<fieldset className="mt-4" disabled={recordPayment.isPending}>
 					<legend className="text-sm font-medium text-gray-900">Method</legend>
-					<div className="mt-2 space-y-2">
+					<div className="mt-2 space-y-0.5">
 						{PAYMENT_METHODS.map((value) => (
-							<label key={value} className="flex h-10 items-center gap-3 text-sm text-gray-900">
+							<label
+								key={value}
+								className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-gray-900 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50"
+							>
 								<input
+									className="h-4 w-4 shrink-0 accent-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
 									type="radio"
 									name="payment-method"
 									value={value}

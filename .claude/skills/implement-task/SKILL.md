@@ -29,8 +29,15 @@ model: sonnet
    uploads, audit, or rate limiting changed.
 3. Bump the version per `.claude/rules/versioning.md` and prepend the CHANGELOG entry
    (read only the top entry of `CHANGELOG.md`).
-4. Update the task file completion info, `docs/roadmap/release-roadmap.md` shipped/pending
-   split, and `docs/product/` + `docs/marketing/capability-matrix.md` if a user-facing
-   capability changed. Use the `docs-sync-checker` subagent to confirm nothing was missed.
+4. Update the task file completion info and the history trackers listed in
+   `.claude/rules/documentation.md` ("Progress trackers"): the roadmap milestone section, crosswalk
+   row and **Current position** paragraph, the `AGENTS.md` "Current:" line, and
+   `docs/tasks/00-master-task-list.md`. Also update `docs/product/` +
+   `docs/marketing/capability-matrix.md` if a user-facing capability changed. If this task is the
+   first shipped on a milestone, mark the milestone "in progress"; if it is the last, say
+   "shipped" and ask the user before declaring it closed. Use the `docs-sync-checker` subagent
+   to confirm nothing was missed.
+   Leave an acceptance criterion unticked (and say so in Completion) if it was not verified;
+   do not mark the task `complete` on unverified UI criteria.
 5. Report: changed files, version old -> new with rationale, deviations, suggested commit
    message (Conventional Commits, matching `git log` style). Do not commit.

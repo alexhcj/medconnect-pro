@@ -249,7 +249,8 @@ Prefer existing project validation tools and conventions.
 
 If this task is listed on a milestone in `docs/roadmap/release-roadmap.md`, include a completion
 step that updates that crosswalk row (and the current-position paragraph when it still names the
-task as remaining). Move the completed task ID into the shipped group; leave later IDs pending.
+task as remaining). Also update the `AGENTS.md` "Current:" line and the milestone heading status (proposed / in
+progress / shipped). Move the completed task ID into the shipped group; leave later IDs pending.
 
 Example: `FE-017–FE-018 (shipped), FE-019–FE-023 (pending)` becomes
 `FE-017–FE-019 (shipped), FE-020–FE-023 (pending)` after FE-019 ships. When every mapped ID on

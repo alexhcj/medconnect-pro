@@ -3,7 +3,7 @@ id: FE-041
 type: task
 area: frontend
 feature: billing
-status: pending
+status: complete
 priority: medium
 estimate: 2
 dependencies: [FE-031, FE-032, FE-018]
@@ -18,11 +18,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: "App / Billing — 02 Record payment dialog — tablet (174:2198) and the billing boundary cards"
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=174-2198"
+  frame: "App / Billing — 02 Record payment dialog — tablet (174:2198); 06 dialog — mobile (219:33); 07 Boundary cards — tablet (219:55); 08 Method radio and row spec (219:70); component Method radio (218:25)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -61,29 +61,30 @@ stretches to the height of the longer Claims boundary card.
 
 ## Requirements
 
-Recommended decisions, to be approved before `design.status: approved`:
+Approved decisions (design approved):
 
 1. **Radio:** keep the native radio inside the fieldset (keyboard, form semantics, screen readers).
    Restyle the Figma radio to match the code control. Where this departs from ADR-011 (Figma is
    canonical), record the accessibility exception here; do not edit the ADR.
-2. **Method gap:** keep the code spacing if each method row meets a 44 px target height (the FE-037
-   convention); otherwise set rows to 44 px. Update Figma to the chosen value.
+2. **Method rows:** approved. Rows are 44 px tall (`min-h-11`; the FE-037 convention; code is
+   40 px today) with a 2 px gap between rows (`space-y-0.5`), leaving room for the focus ring.
+   Figma is updated to these values.
 3. **Payment boundary card:** height fits content (`self-start` / `h-fit`) and is not stretched by
    the Claims boundary card.
 
 ## Acceptance Criteria
 
-- [ ] Radio appearance is identical in the Figma frame and the rendered dialog
-- [ ] Method rows are at least 44 px tall and spacing matches Figma at tablet and mobile
-- [ ] Payment boundary card height equals its content when the Claims card is taller
-- [ ] Dialog remains keyboard operable with correct radio group semantics
-- [ ] Each of the three decisions is written in Completion
-- [ ] Existing record-payment and boundary tests updated and passing
+- [x] Radio appearance is identical in the Figma frame and the rendered dialog
+- [x] Method rows are at least 44 px tall and spacing matches Figma at tablet and mobile
+- [x] Payment boundary card height equals its content when the Claims card is taller
+- [x] Dialog remains keyboard operable with correct radio group semantics
+- [x] Each of the three decisions is written in Completion
+- [x] Existing record-payment and boundary tests updated and passing
 
 ## Dependencies
 
 - Blocked by: FE-031, FE-032, FE-018
-- Design: Figma file https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd (frame above; status `not_started`)
+- Design: Figma file https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd?node-id=174-2198 (frames above; status `approved`)
 - Related: FE-042, FE-045
 
 ## Validation
@@ -93,8 +94,21 @@ Update `record-payment-dialog.test.tsx` and `payment-claims-boundaries.test.tsx`
 
 ## Risks / considerations
 
-- The radio and gap decisions need human approval before implementation.
+- Figma frames stacked the two boundary cards while code uses `md:grid-cols-2`. Resolved: frames
+  `01`, `03`, `04` and `07` now show two columns.
 
 ## Implementation notes
 
 Likely a PATCH bump.
+
+## Completion
+
+- Decisions (source of truth):
+  1. **Radio:** native `<input type="radio">` kept inside the fieldset/legend, styled to match the Figma `Method radio` component (16 px, `accent-brand`, 2 px `outline-ring` focus-visible outline with 2 px offset, 50% opacity when disabled). Accessibility exception to ADR-011 (Figma canonical): a custom visual radio was rejected to keep native keyboard, form and screen-reader semantics; the ADR is unchanged.
+  2. **Method rows:** `min-h-11` (44 px, `--control-height-lg`) with a 2 px gap (`space-y-0.5`). Code was `h-10` plus `space-y-2` (40 px rows, 8 px gap). The 2 px gap leaves room for the focus outline of adjacent rows.
+  3. **Payment boundary card:** `self-start` on the Payment `Card`, so it hugs its content beside a taller Claims boundary card.
+- Implementation: `record-payment-dialog.tsx`, `payment-claims-boundaries.tsx`.
+- Tests: `record-payment-dialog.test.tsx` (radio group semantics, ArrowDown selection, row classes, pending disables radios), `payment-claims-boundaries.test.tsx` (Payment card `self-start`). Lint and type-check clean.
+- Figma: tablet dialog `174:2198`, mobile dialog `219:33`, boundary cards `219:55`, spec `219:70`, component `218:25` on page "App / Billing".
+- Browser check (local mocks, practice admin, `/dashboard/billing`): at 1024 px the Payment card is 204 px tall beside a 786 px Claims card; dialog rows measure 44 px with a 2 px gap, radio 16 px, accent `rgb(37, 99, 235)` (the Figma brand blue); at 375 px rows are 44 px with no horizontal scroll. Figma frames `01`, `03` and `04` now show the boundary cards in two columns as in code; FE-032 frames (Claims only) are unchanged.
+- Notes: Version 0.91.1 → 0.91.2 (PATCH, UI polish, no API or contract change).

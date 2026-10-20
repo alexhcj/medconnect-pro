@@ -68,6 +68,32 @@ describe('RecordPaymentDialog', () => {
 		expect(screen.queryByLabelText(/account number/i)).not.toBeInTheDocument();
 	});
 
+	it('exposes the methods as a labelled native radio group with 44px rows', async () => {
+		useRecordPayment.mockReturnValue({mutate: vi.fn(), isPending: false, isError: false});
+		const user = userEvent.setup();
+		render(<RecordPaymentDialog invoice={invoice} open onClose={vi.fn()} onRecorded={vi.fn()} />);
+
+		expect(screen.getByRole('group', {name: 'Method'})).toBeInTheDocument();
+		const stripe = screen.getByRole('radio', {name: 'Stripe (demo)'});
+		const ach = screen.getByRole('radio', {name: 'ACH (demo)'});
+		expect(stripe).toBeChecked();
+		expect(stripe.closest('label')).toHaveClass('min-h-11');
+		expect(ach.closest('label')).toHaveClass('min-h-11');
+		expect(ach.closest('label')?.parentElement).toHaveClass('space-y-0.5');
+
+		stripe.focus();
+		await user.keyboard('{ArrowDown}');
+		expect(ach).toBeChecked();
+	});
+
+	it('disables the method radios while the payment is pending', () => {
+		useRecordPayment.mockReturnValue({mutate: vi.fn(), isPending: true, isError: false});
+		render(<RecordPaymentDialog invoice={invoice} open onClose={vi.fn()} onRecorded={vi.fn()} />);
+
+		expect(screen.getByRole('radio', {name: 'Stripe (demo)'})).toBeDisabled();
+		expect(screen.getByRole('radio', {name: 'ACH (demo)'})).toBeDisabled();
+	});
+
 	it('surfaces a 409 already-paid conflict', () => {
 		useRecordPayment.mockReturnValue({
 			mutate: vi.fn(),

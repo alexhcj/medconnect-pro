@@ -36,7 +36,7 @@ export function PaymentClaimsBoundaries({
 
 	return (
 		<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-			<Card>
+			<Card className="self-start">
 				<CardHeader>
 					<CardTitle>Payment boundary</CardTitle>
 				</CardHeader>
