@@ -26,7 +26,10 @@ The design brief must include:
 - Responsive behavior
 - Accessibility requirements
 - Existing components and design tokens to reuse
-- Design decisions that require my approval
+- Design decisions that require my approval (mark a recommended option for each)
+
+If I cannot picture a recommended option, I will run `/create-html-preview [TASK-ID]` to see an
+HTML mock before spending Figma/Pencil generations.
 
 This brief is stage 2 input on the same implementation task. Do not set
 `design.status: approved` until an approved Figma/Pencil artifact exists (`file_url` and

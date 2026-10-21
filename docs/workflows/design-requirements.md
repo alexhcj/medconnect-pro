@@ -40,7 +40,9 @@ A design brief must include:
 1. Paste [design-brief-prompt.md](../processes/prompts/design-brief-prompt.md) into Cursor Plan Mode
    for the task ID. For the shared library itself, use
    [figma-design-system-prompt.md](../processes/prompts/figma-design-system-prompt.md).
-2. Approve the brief. Do not set `design.status: approved` yet.
+2. Approve the brief. Do not set `design.status: approved` yet. Optional: if the recommended
+   design is hard to picture, run `/create-html-preview <TASK-ID>` for a disposable HTML mock
+   (`docs/design-previews/`, non-canonical) before spending Figma/Pencil generations.
 3. Create or update frames in the **shared** Figma file (create that file only on FE-018).
 4. Review with [design-checklist-flow.md](../processes/flows/design-checklist-flow.md).
 5. On the **same** implementation task, set `design.file_url`, `design.frame`, and

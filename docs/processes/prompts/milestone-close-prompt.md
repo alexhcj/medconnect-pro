@@ -14,6 +14,9 @@
    relevant roadmap slice, master task list, and matching
    `docs/product/` capability rows (plus the marketing capability matrix) when user-facing
    status or public claims changed
+           ↓
+7. After you declare the milestone closed: recapture stale product screenshots and update every
+   place that uses them (see "Screenshot refresh")
 
 This is not a substitute for [plan-mode-prompt.md](plan-mode-prompt.md). That file plans one task.
 This file audits a finished milestone. Its output is a gap list and, at most, new task specs. It
@@ -70,7 +73,49 @@ upload, audit persistence, or a full authorization matrix when those already hav
 If the milestone crosswalk, master list, and shipped code disagree, report the conflict before
 proposing a new task.
 
-**Planning only. Do not modify files, install dependencies, or implement changes.**
+**The audit is planning only. Do not modify files, install dependencies, or implement changes.**
+The only exception is "Screenshot refresh" below, and only after I declare the milestone closed
+and approve its stale-screenshot list.
+
+## Screenshot refresh
+
+Run after I declare the milestone closed. Skip screens that did not change (saves time and tokens).
+
+Inventory (`apps/marketing/public/marketing/`; route prefix `apps/web/src/app/`):
+
+| Image | App route | Owning paths (besides shared components and seed data) |
+| --- | --- | --- |
+| `login.png` | `/login` | `(auth)/login` |
+| `dashboard.png` | `/dashboard` | `(dashboard)/dashboard/page.tsx` |
+| `patients.png` | `/dashboard/patients` | `(dashboard)/dashboard/patients` |
+| `appointments.png` | `/dashboard/appointments` | `(dashboard)/dashboard/appointments` |
+| `telehealth.png` | `/dashboard/telehealth` | `(dashboard)/dashboard/telehealth` |
+| `billing.png` | `/dashboard/billing` | `(dashboard)/dashboard/billing` |
+| `admin.png` | `/dashboard/admin` | `(dashboard)/dashboard/admin` |
+| `og.png` | dashboard crop, 1200x630 | same as `dashboard.png` |
+
+1. **Detect.** For each image, `git log --oneline <last capture commit>..HEAD -- <owning paths>
+   apps/web/src/components apps/web/src/lib apps/api/src/persistence` (seed data lives under
+   `persistence`; add the screen's API module, e.g. `apps/api/src/billing`). List images whose UI, copy or demo seed content changed, each with the commits as
+   evidence. Ask me to approve the list before capturing.
+2. **Recapture** only the approved images from the running app with synthetic data (built-in
+   browser, desktop 1440 px, same crop and viewport as the existing PNG, no dev tools or debug
+   controls, no PHI). Overwrite the same filenames so most references need no change. Keep
+   `og.png` in sync with `dashboard.png`. Open each new PNG to check it.
+3. **Update every place the images apply.** Grep each filename and the old alt text, then check:
+   - `README.md` Screenshots section: alt text and the intro sentence if wording is now wrong;
+   - `apps/marketing/src/components/marketing/marketing-product-visuals.ts`: `alt`, `label`,
+     caption, OG alt;
+   - tests asserting `src`/`alt` (`marketing-product-image.test.tsx`,
+     `feature-page-layout.test.tsx`);
+   - `docs/marketing/capability-matrix.md` and `docs/product/` rows when a screenshot now shows or
+     no longer shows a claimed capability (lockstep, claims never exceed the matrix);
+   - Figma proof frames and `designs/marketing/*.pen` (listed in FE-023): do not regenerate
+     (ADR-011); report them as stale.
+4. **Verify.** `npm run lint:marketing`, `npm run test:marketing`, `npm run type-check:marketing`.
+5. **Report.** Images recaptured, references updated (`path:line`), references intentionally
+   left (Figma), and screens skipped as unchanged. Bump version and `CHANGELOG.md` only if a
+   public claim changed, per `.claude/rules/versioning.md`.
 
 End with:
 
@@ -82,3 +127,5 @@ End with:
 6. Blockers/open questions
 7. Index updates if new tasks are approved (include `docs/product/` when claims or
    user-facing status would change)
+8. Stale screenshots: images whose screens changed this milestone (evidence commits), for
+   approval before the refresh

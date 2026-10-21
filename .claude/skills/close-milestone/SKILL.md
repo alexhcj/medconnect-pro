@@ -5,7 +5,7 @@ argument-hint: "<milestone, e.g. M18>"
 disable-model-invocation: true
 model: opus
 effort: high
-allowed-tools: Read Grep Glob Bash(git log *) Bash(git diff *)
+allowed-tools: Read Grep Glob Edit Write Bash(git log *) Bash(git diff *) Bash(npm run lint:marketing) Bash(npm run test:marketing) Bash(npm run type-check:marketing)
 ---
 
 # Close milestone $0
@@ -19,4 +19,8 @@ allowed-tools: Read Grep Glob Bash(git log *) Bash(git diff *)
 4. When a milestone is actually closed (after the user agrees), update the progress trackers in
    `.claude/rules/documentation.md`: roadmap milestone heading, crosswalk row, Current position
    paragraph, and the `AGENTS.md` "Current:" line.
-5. New task specs are synced to Plane by `/commit-tasks` when the user asks to commit.
+5. After the milestone is closed, run "Screenshot refresh" from the prompt: list stale
+   screenshots with evidence, get approval, recapture them with the built-in browser, then update
+   every reference (README, marketing visuals + tests, capability matrix, product rows) and
+   verify with the marketing lint/test/type-check commands.
+6. New task specs are synced to Plane by `/commit-tasks` when the user asks to commit.
