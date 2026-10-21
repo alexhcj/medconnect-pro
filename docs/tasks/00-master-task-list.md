@@ -195,7 +195,7 @@ Interview demo readiness on the existing Render host. Does not close M9 or reope
 - INFRA-017 — Demo presentation pack
 - QA-007 — M18 close audit
 
-## Product (M19, shipped at 0.96.0)
+## Product (M19, in progress; 8 tasks shipped through 0.96.0)
 
 Polish and list normalization. Does not close M9 or reopen M17/M18; see the release roadmap.
 
@@ -207,3 +207,6 @@ Polish and list normalization. Does not close M9 or reopen M17/M18; see the rele
 - FE-043 — Administration paginated lists (shipped at 0.94.0)
 - FE-044 — Patient list bounded height (shipped at 0.95.0)
 - FE-045 — Billing bounded invoice and claims lists (shipped at 0.96.0)
+- FE-047 — Audit and security event time column without wrapping (pending; includes `patient-form.test.tsx` timeout testing)
+- FE-046 — Admin event filter options parity (pending)
+- DATA-006 — Live seed volume for list paging (pending)
