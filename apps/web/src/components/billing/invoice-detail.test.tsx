@@ -11,6 +11,10 @@ const {useInvoice, useSessionStatus, useRecordPayment, useClaims} = vi.hoisted((
 	useClaims: vi.fn(),
 }));
 
+vi.mock('@/lib/admin/use-list-url-state', () => ({
+	useListUrlState: () => ({page: 1, filters: {}, setPage: vi.fn(), setFilters: vi.fn()}),
+}));
+
 vi.mock('@/lib/hooks/use-billing', () => ({
 	useInvoice,
 	useRecordPayment,
@@ -54,7 +58,7 @@ describe('InvoiceDetail', () => {
 			isError: false,
 		});
 		useClaims.mockReturnValue({
-			data: [
+			data: {items: [
 				{
 					id: 'demo-invoice-001',
 					invoiceId: 'demo-invoice-001',
@@ -62,7 +66,7 @@ describe('InvoiceDetail', () => {
 					processor: 'edi837',
 					synthetic: true,
 				},
-			],
+			], total: 1, hasMore: false},
 			isPending: false,
 			isError: false,
 			refetch: vi.fn(),
@@ -86,7 +90,7 @@ describe('InvoiceDetail', () => {
 		expect(screen.getAllByText('$150.00').length).toBeGreaterThan(0);
 		expect(screen.getByRole('list', {name: 'Line items'})).toHaveTextContent('Office visit');
 		expect(screen.getByRole('heading', {name: 'Payment boundary'})).toBeInTheDocument();
-		expect(screen.getByRole('heading', {name: 'Claims boundary'})).toBeInTheDocument();
+		expect(screen.getByRole('heading', {name: 'Claims envelopes'})).toBeInTheDocument();
 		expect(screen.getByRole('link', {name: 'Back to billing'})).toHaveAttribute('href', '/dashboard/billing');
 		expect(useInvoice).toHaveBeenCalledWith('demo-invoice-001', true);
 	});

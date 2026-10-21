@@ -8,6 +8,10 @@ const {useRecordPayment, useClaims} = vi.hoisted(() => ({
 	useClaims: vi.fn(),
 }));
 
+vi.mock('@/lib/admin/use-list-url-state', () => ({
+	useListUrlState: () => ({page: 1, filters: {}, setPage: vi.fn(), setFilters: vi.fn()}),
+}));
+
 vi.mock('@/lib/hooks/use-billing', () => ({
 	useRecordPayment,
 	useClaims,
@@ -35,7 +39,7 @@ describe('PaymentClaimsBoundaries', () => {
 			isError: false,
 		});
 		useClaims.mockReturnValue({
-			data: [
+			data: {items: [
 				{
 					id: 'demo-invoice-001',
 					invoiceId: 'demo-invoice-001',
@@ -43,7 +47,7 @@ describe('PaymentClaimsBoundaries', () => {
 					processor: 'edi837',
 					synthetic: true,
 				},
-			],
+			], total: 1, hasMore: false},
 			isPending: false,
 			isError: false,
 			refetch: vi.fn(),
@@ -56,9 +60,9 @@ describe('PaymentClaimsBoundaries', () => {
 		expect(screen.getByRole('heading', {name: 'Payment boundary'})).toBeInTheDocument();
 		expect(screen.getByText(/Open an unpaid invoice to record a demo payment/)).toBeInTheDocument();
 		expect(screen.getByRole('button', {name: 'Record payment'})).toBeDisabled();
-		expect(screen.getByRole('heading', {name: 'Claims boundary'})).toBeInTheDocument();
+		expect(screen.getByRole('heading', {name: 'Claims envelopes'})).toBeInTheDocument();
 		expect(screen.getByText(/Labeled EDI 837 envelopes derived from visible invoices/)).toBeInTheDocument();
-		expect(screen.getByRole('list', {name: 'Claim envelopes'})).toHaveTextContent('Not submitted');
+		expect(screen.getByRole('list', {name: 'Claims envelopes'})).toHaveTextContent('Not submitted');
 		expect(screen.queryByLabelText(/card/i)).not.toBeInTheDocument();
 	});
 
@@ -67,7 +71,7 @@ describe('PaymentClaimsBoundaries', () => {
 
 		const paymentCard = screen.getByRole('heading', {name: 'Payment boundary'}).closest('div.self-start');
 		expect(paymentCard).not.toBeNull();
-		expect(screen.getByRole('heading', {name: 'Claims boundary'}).closest('div.self-start')).toBeNull();
+		expect(screen.getByRole('heading', {name: 'Claims envelopes'}).closest('div.self-start')).toBeNull();
 	});
 
 	it('enables record payment for an entitled role on an unpaid invoice', async () => {

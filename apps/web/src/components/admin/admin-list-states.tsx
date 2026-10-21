@@ -35,9 +35,14 @@ export function ListNotice({message, tone = 'info', action}: ListNoticeProps) {
 	);
 }
 
-/** Returns a ref for the card heading; focus moves there when the page changes (not on first render). */
-export function useFocusHeadingOnPageChange(page: number): RefObject<HTMLHeadingElement | null> {
-	const ref = useRef<HTMLHeadingElement>(null);
+/**
+ * Returns a ref for the card heading; focus moves there when the page changes (not on first render).
+ * Pass another element type when the target is not a heading.
+ */
+export function useFocusHeadingOnPageChange<T extends HTMLElement = HTMLHeadingElement>(
+	page: number,
+): RefObject<T | null> {
+	const ref = useRef<T>(null);
 	const previous = useRef(page);
 
 	useEffect(() => {

@@ -1,6 +1,7 @@
 import {fireEvent, render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {AuditEventViewer} from '@/components/admin/audit-event-viewer';
+import {resetPendingListUrlPush} from '@/lib/admin/use-list-url-state';
 import {ApiError} from '@/lib/api/http';
 import type {PagedResult} from '@/types/admin/admin-list';
 import type {AuditEvent} from '@/types/admin/audit-event';
@@ -54,6 +55,7 @@ function mockEvents(overrides: Record<string, unknown> = {}) {
 
 describe('AuditEventViewer', () => {
 	beforeEach(() => {
+		resetPendingListUrlPush();
 		useAuditEvents.mockReset();
 		push.mockClear();
 		searchParams.current = new URLSearchParams();
@@ -131,16 +133,20 @@ describe('AuditEventViewer', () => {
 		const user = userEvent.setup();
 		render(<AuditEventViewer />);
 
+		// Each click starts from the same mocked URL, as if the router had caught up in between.
+		const applyPushedUrl = resetPendingListUrlPush;
 		await user.click(screen.getByRole('button', {name: 'Next page'}));
 		expect(push).toHaveBeenLastCalledWith(
 			'/dashboard/admin?auditPage=3&auditAction=role_changed&usersPage=4',
 			{scroll: false},
 		);
+		applyPushedUrl();
 		await user.click(screen.getByRole('button', {name: 'Previous page'}));
 		expect(push).toHaveBeenLastCalledWith(
 			'/dashboard/admin?auditAction=role_changed&usersPage=4',
 			{scroll: false},
 		);
+		applyPushedUrl();
 		await user.click(screen.getByRole('button', {name: 'Page 13'}));
 		expect(push).toHaveBeenLastCalledWith(
 			'/dashboard/admin?auditPage=13&auditAction=role_changed&usersPage=4',

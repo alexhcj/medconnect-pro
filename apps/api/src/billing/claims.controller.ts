@@ -23,7 +23,7 @@ export class ClaimsController {
 
 	@Get()
 	@ApiOperation({
-		summary: 'List claim envelopes for visible invoices',
+		summary: 'List claims envelopes for visible invoices',
 		description:
 			'Labeled EDI 837 boundary. Returns not_submitted envelopes derived from visible invoices. This is not claim submission, status workflow, or an X12 payload. Paged over the caller’s visible invoices: page (default 1) and pageSize (default 25, max 100). total counts only visible rows; invalid values return 400.',
 	})

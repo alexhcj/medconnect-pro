@@ -63,14 +63,18 @@ export function userListQuery(params: UserListParams): string {
 	return query.toString();
 }
 
-export function pageRange(page: number, count: number): {first: number; last: number} {
+export function pageRange(
+	page: number,
+	count: number,
+	pageSize = ADMIN_PAGE_SIZE,
+): {first: number; last: number} {
 	if (count === 0) {
 		return {first: 0, last: 0};
 	}
-	const first = (page - 1) * ADMIN_PAGE_SIZE + 1;
+	const first = (page - 1) * pageSize + 1;
 	return {first, last: first + count - 1};
 }
 
-export function pageCount(total: number): number {
-	return Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
+export function pageCount(total: number, pageSize = ADMIN_PAGE_SIZE): number {
+	return Math.max(1, Math.ceil(total / pageSize));
 }

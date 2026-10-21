@@ -3,7 +3,13 @@ import {ApiError} from '@/lib/api/http';
 import {fixtureInvoices, fixturePatients} from '@/lib/api/mocks/fixtures';
 import {readMockSession} from '@/lib/api/mocks/mock-session-store';
 import {mockDelay, mockLog, shouldSimulateError} from '@/lib/api/mocks/runtime';
+import type {PagedResult} from '@/types/admin/admin-list';
 import type {Role} from '@/types/auth/roles';
+import {
+	BILLING_PAGE_SIZE,
+	type ClaimListParams,
+	type InvoiceListParams,
+} from '@/types/billing/billing-list';
 import type {Claim} from '@/types/billing/claim';
 import type {Invoice} from '@/types/billing/invoice';
 import type {Payment} from '@/types/billing/payment';
@@ -55,7 +61,38 @@ function withPatientName(invoice: Omit<Invoice, 'patientName'>): Invoice {
 	};
 }
 
-const invoices: Invoice[] = structuredClone(fixtureInvoices).map(withPatientName);
+/**
+ * Extra synthetic invoices so mock mode spans several pages. They sit before the fixture invoices in
+ * time, so the fixture rows stay on page 1 of the default newest-first order. Kept here rather than in
+ * the shared fixture `docs/mocks/invoices.json`.
+ */
+const GENERATED_INVOICE_COUNT = 30;
+const GENERATED_STATUSES = ['paid', 'issued', 'overdue'] as const;
+const GENERATED_FIRST_ISSUED_MS = Date.UTC(2026, 5, 30);
+
+function generatedInvoices(): Array<Omit<Invoice, 'patientName'>> {
+	return Array.from({length: GENERATED_INVOICE_COUNT}, (_, index) => {
+		const issued = new Date(GENERATED_FIRST_ISSUED_MS - index * 3 * 86_400_000);
+		const due = new Date(issued.getTime() + 14 * 86_400_000);
+		const amountCents = 5000 + (index % 7) * 2500;
+		return {
+			id: `demo-invoice-${String(fixtureInvoices.length + index + 1).padStart(3, '0')}`,
+			practiceId: 'demo-practice-001',
+			patientId: `demo-patient-${String((index % 12) + 1).padStart(3, '0')}`,
+			status: GENERATED_STATUSES[index % GENERATED_STATUSES.length],
+			amountCents,
+			currency: 'USD',
+			issuedAt: issued.toISOString(),
+			dueAt: due.toISOString(),
+			lineItems: [{description: 'Office visit', amountCents}],
+			synthetic: true,
+		};
+	});
+}
+
+const invoices: Invoice[] = structuredClone([...fixtureInvoices, ...generatedInvoices()]).map(
+	withPatientName,
+);
 
 async function withMock<T>(work: () => T, errorMessage: string): Promise<T> {
 	await mockDelay();
@@ -100,9 +137,33 @@ function visibleInvoices(scope: MockBillingScope): Invoice[] {
 	return invoices.filter((invoice) => isVisible(scope, invoice)).map((invoice) => ({...invoice}));
 }
 
+/** Newest issued first by default; ties break on id, as the API does. */
+function sortInvoices(rows: Invoice[], sort: InvoiceListParams['sort'] = 'issued-desc'): Invoice[] {
+	const direction = sort === 'issued-asc' ? 1 : -1;
+	return rows.sort(
+		(a, b) => direction * a.issuedAt.localeCompare(b.issuedAt) || a.id.localeCompare(b.id),
+	);
+}
+
+function pageOf<T>(rows: T[], page: number): PagedResult<T> {
+	const start = (page - 1) * BILLING_PAGE_SIZE;
+	const hasMore = page * BILLING_PAGE_SIZE < rows.length;
+	return {
+		items: rows.slice(start, start + BILLING_PAGE_SIZE),
+		total: rows.length,
+		hasMore,
+		nextPage: hasMore ? page + 1 : undefined,
+	};
+}
+
 export const billingMockAPI = {
-	listInvoices: async (): Promise<Invoice[]> =>
-		withMock(() => visibleInvoices(readScope().scope), 'Mock: Failed to load invoices'),
+	listInvoices: async (params: InvoiceListParams = {page: 1}): Promise<PagedResult<Invoice>> =>
+		withMock(() => {
+			const rows = visibleInvoices(readScope().scope).filter(
+				(invoice) => !params.status || invoice.status === params.status,
+			);
+			return pageOf(sortInvoices(rows, params.sort), params.page);
+		}, 'Mock: Failed to load invoices'),
 
 	getInvoice: async (invoiceId: string): Promise<Invoice> =>
 		withMock(() => {
@@ -140,16 +201,15 @@ export const billingMockAPI = {
 			};
 		}, 'Mock: Failed to record payment'),
 
-	listClaims: async (): Promise<Claim[]> =>
-		withMock(
-			() =>
-				visibleInvoices(readScope().scope).map((invoice) => ({
-					id: invoice.id,
-					invoiceId: invoice.id,
-					status: 'not_submitted' as const,
-					processor: 'edi837' as const,
-					synthetic: true,
-				})),
-			'Mock: Failed to load claims',
-		),
+	listClaims: async (params: ClaimListParams = {page: 1}): Promise<PagedResult<Claim>> =>
+		withMock(() => {
+			const claims = sortInvoices(visibleInvoices(readScope().scope)).map((invoice) => ({
+				id: invoice.id,
+				invoiceId: invoice.id,
+				status: 'not_submitted' as const,
+				processor: 'edi837' as const,
+				synthetic: true,
+			}));
+			return pageOf(claims, params.page);
+		}, 'Mock: Failed to load claims'),
 };

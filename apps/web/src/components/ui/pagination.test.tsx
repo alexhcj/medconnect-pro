@@ -69,4 +69,38 @@ describe('Pagination', () => {
 		expect(screen.getByRole('button', {name: 'Next page'})).toHaveClass('h-11');
 		expect(screen.getByRole('button', {name: 'Page 3'})).toHaveClass('h-11', 'w-11');
 	});
+
+	it('counts pages from the given page size', () => {
+		render(<Pagination label="Invoices" page={2} total={35} pageSize={10} onPageChange={vi.fn()} />);
+
+		expect(screen.getByText('Page 2 of 4')).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Page 4'})).toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'Page 5'})).not.toBeInTheDocument();
+	});
+
+	it('breaks on its container width instead of the viewport with container', () => {
+		const {container} = render(
+			<Pagination
+				container
+				label="Claims envelopes"
+				page={2}
+				total={312}
+				pageSize={10}
+				onPageChange={vi.fn()}
+			/>,
+		);
+
+		expect(container.firstElementChild).toHaveClass('@container');
+		expect(screen.getByText('Page 2 of 32')).toHaveClass('@lg:hidden');
+		expect(screen.getByText('Page 2 of 32')).not.toHaveClass('md:hidden');
+		expect(screen.getByRole('button', {name: 'Next page'})).toHaveClass('@lg:flex-none');
+		expect(screen.getByRole('button', {name: 'Next page'})).not.toHaveClass('md:flex-none');
+	});
+
+	it('breaks on the viewport by default', () => {
+		const {container} = render(<Pagination label="Users" page={2} total={312} onPageChange={vi.fn()} />);
+
+		expect(container.firstElementChild?.tagName).toBe('NAV');
+		expect(screen.getByText('Page 2 of 13')).toHaveClass('md:hidden');
+	});
 });

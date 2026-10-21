@@ -45,7 +45,7 @@ glance through colour, so staff can tell paid from unpaid after a payment is rec
 ## Context
 
 Reported behaviour: signed in as Avery Carter with mocks, the billing page lists invoices for
-Taylor Bennett, Jordan Brooks and others, and the Claims boundary shows other patients' invoices.
+Taylor Bennett, Jordan Brooks and others, and the Claims envelopes shows other patients' invoices.
 Signed in as Avery Quinn against the real API, the problem does not appear. The API already scopes
 PATIENT to own invoices (`resolveBillingReadScope`, `Patient.portalUserId`), so the cause is the
 mock adapter and fixtures (`apps/web/src/lib/api/mocks/billing-mock.ts`, `fixtures.ts`), which
@@ -90,7 +90,7 @@ Payment boundary card.
 
 ## Acceptance Criteria
 
-- [x] In mock mode, a patient account sees only invoices linked to its patient, in list, detail and Claims boundary
+- [x] In mock mode, a patient account sees only invoices linked to its patient, in list, detail and Claims envelopes
 - [x] Requesting another patient's invoice as a patient returns not-found in the mock, as the API does
 - [x] Staff roles keep practice-wide billing views; provider and nurse follow `billing-access.ts`
 - [x] `paid` text is green (`success-strong`), `overdue` red, `issued` neutral grey (`text-secondary`), in list and detail
@@ -124,7 +124,7 @@ Mock-only change with no API contract change; likely a PATCH bump.
 - Decisions (source of truth): issued is neutral grey (`text-secondary`), weight unchanged; new token `color/text/success-strong` (green-700 `#15803d`, 5.02:1 on white, 4.80:1 on canvas) because `color/text/success` is 3.30:1; Payment recorded is a transient toast shown only right after recording (no storage, no inbox type, no contract); Claims status colour and dark theme out of scope; AC7 narrowed to same-session refetch (mock state in memory, no persistence).
 - Implementation: `apps/web/src/lib/api/mocks/billing-mock.ts` (role scope mirroring Nest `billing-access.ts`; portal user `77777777-…` linked to `demo-patient-001`; list/get return copies so TanStack Query sees a payment), `lib/billing/format.ts` (`invoiceStatusTextClass`), `invoice-list.tsx`, `invoice-detail.tsx`, `payment-recorded-notice.tsx` (new), `payment-claims-boundaries.tsx`, `styles/tokens.css`.
 - Tests: `billing-mock.test.ts` (role scoping per role, own-scope 404, nurse 403, provider cannot pay, unlinked patient, copies, same cases as `billing-access.spec.ts`), `format.test.ts` (tone map and 4.5:1 check on tokens), `invoice-list.test.tsx`, `invoice-detail.test.tsx`, `payment-recorded-notice.test.tsx`, `payment-claims-boundaries.test.tsx`, e2e `billing-dashboard.spec.ts` (4 tests: patient scope and not-found, status colours, payment flow with toast). Lint 0 errors and type-check clean.
-- Browser check (local mocks): patient sees only Avery Carter invoices and two claim envelopes; computed status colours `rgb(75, 85, 99)` / `rgb(21, 128, 61)` / `rgb(220, 38, 38)`; after paying, detail status reads Paid; toast at x 384, y 16, 360 px wide at 768 px (as in Figma) and 343 px wide at x 16, y 16 at 375 px with a 44 px dismiss and no horizontal scroll.
+- Browser check (local mocks): patient sees only Avery Carter invoices and two claims envelopes; computed status colours `rgb(75, 85, 99)` / `rgb(21, 128, 61)` / `rgb(220, 38, 38)`; after paying, detail status reads Paid; toast at x 384, y 16, 360 px wide at 768 px (as in Figma) and 343 px wide at x 16, y 16 at 375 px with a 44 px dismiss and no horizontal scroll.
 - Security review: no blocking findings; the mock does not mimic the API tenant-mismatch check because the web client sends no practice id.
 - Deviations: fixed the shared e2e `signIn` helper (`getByLabel` exact) because the login page demo panel adds "Copy email" buttons that broke every spec using it; the same exact-label fix was applied to `e2e/auth.spec.ts` (6/6 pass). Mock bug fixed: in-place invoice mutation hid a payment from TanStack Query.
 - Notes: Version 0.91.2 → 0.91.3 (PATCH, mock parity and UI cue, no API or contract change). Full `test:web`: 442 passed, 2 flaky `patient-form.test.tsx` timeouts that pass alone.

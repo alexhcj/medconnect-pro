@@ -3677,7 +3677,7 @@
             "bearer": []
           }
         ],
-        "summary": "List claim envelopes for visible invoices",
+        "summary": "List claims envelopes for visible invoices",
         "tags": [
           "billing"
         ]
@@ -6191,7 +6191,7 @@
           "processor": {
             "type": "string",
             "example": "edi837",
-            "description": "Labeled claims boundary. EDI 837 is not generated."
+            "description": "Labeled claims envelope. EDI 837 is not generated."
           },
           "synthetic": {
             "type": "boolean",
@@ -6219,7 +6219,7 @@
           "total": {
             "type": "number",
             "example": 42,
-            "description": "Claim envelopes for the invoices visible to the caller."
+            "description": "Claims envelopes for the invoices visible to the caller."
           },
           "hasMore": {
             "type": "boolean",

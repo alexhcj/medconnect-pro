@@ -9,6 +9,8 @@ interface SelectFieldProps {
 	value: string;
 	options: readonly string[];
 	allLabel: string;
+	/** Display text for option values that should not show as-is, for example `overdue` as "Overdue". */
+	optionLabels?: Readonly<Record<string, string>>;
 	onChange: (value: string) => void;
 	disabled?: boolean;
 	className?: string;
@@ -19,6 +21,7 @@ export function SelectField({
 	value,
 	options,
 	allLabel,
+	optionLabels,
 	onChange,
 	disabled,
 	className,
@@ -41,7 +44,7 @@ export function SelectField({
 				<option value="">{allLabel}</option>
 				{shown.map((option) => (
 					<option key={option} value={option}>
-						{option}
+						{optionLabels?.[option] ?? option}
 					</option>
 				))}
 			</select>

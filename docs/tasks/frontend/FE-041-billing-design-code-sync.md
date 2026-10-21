@@ -44,7 +44,7 @@ the Payment boundary card, with one recorded decision for each.
 Figma and code differ in three places: the radio selector in the record-payment dialog
 (`record-payment-dialog.tsx`, native `<input type="radio">` in a fieldset), the vertical gap
 between payment methods, and the Payment boundary card (`payment-claims-boundaries.tsx`), which
-stretches to the height of the longer Claims boundary card.
+stretches to the height of the longer Claims envelopes card.
 
 ## Scope
 
@@ -70,7 +70,7 @@ Approved decisions (design approved):
    40 px today) with a 2 px gap between rows (`space-y-0.5`), leaving room for the focus ring.
    Figma is updated to these values.
 3. **Payment boundary card:** height fits content (`self-start` / `h-fit`) and is not stretched by
-   the Claims boundary card.
+   the Claims envelopes card.
 
 ## Acceptance Criteria
 
@@ -106,7 +106,7 @@ Likely a PATCH bump.
 - Decisions (source of truth):
   1. **Radio:** native `<input type="radio">` kept inside the fieldset/legend, styled to match the Figma `Method radio` component (16 px, `accent-brand`, 2 px `outline-ring` focus-visible outline with 2 px offset, 50% opacity when disabled). Accessibility exception to ADR-011 (Figma canonical): a custom visual radio was rejected to keep native keyboard, form and screen-reader semantics; the ADR is unchanged.
   2. **Method rows:** `min-h-11` (44 px, `--control-height-lg`) with a 2 px gap (`space-y-0.5`). Code was `h-10` plus `space-y-2` (40 px rows, 8 px gap). The 2 px gap leaves room for the focus outline of adjacent rows.
-  3. **Payment boundary card:** `self-start` on the Payment `Card`, so it hugs its content beside a taller Claims boundary card.
+  3. **Payment boundary card:** `self-start` on the Payment `Card`, so it hugs its content beside a taller Claims envelopes card.
 - Implementation: `record-payment-dialog.tsx`, `payment-claims-boundaries.tsx`.
 - Tests: `record-payment-dialog.test.tsx` (radio group semantics, ArrowDown selection, row classes, pending disables radios), `payment-claims-boundaries.test.tsx` (Payment card `self-start`). Lint and type-check clean.
 - Figma: tablet dialog `174:2198`, mobile dialog `219:33`, boundary cards `219:55`, spec `219:70`, component `218:25` on page "App / Billing".

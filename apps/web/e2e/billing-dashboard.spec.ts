@@ -25,10 +25,10 @@ test.describe('Billing dashboard', () => {
 		await expect(page.getByRole('heading', {name: 'Payment boundary'})).toBeVisible();
 		await expect(page.getByText(/Open an unpaid invoice to record a demo payment/)).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Record payment'})).toBeDisabled();
-		await expect(page.getByRole('heading', {name: 'Claims boundary'})).toBeVisible();
+		await expect(page.getByRole('heading', {name: 'Claims envelopes'})).toBeVisible();
 		await expect(page.getByText(/Labeled EDI 837 envelopes derived from visible invoices/)).toBeVisible();
-		await expect(page.getByRole('list', {name: 'Claim envelopes'})).toContainText('Not submitted');
-		await expect(page.getByRole('list', {name: 'Claim envelopes'})).toContainText('EDI 837 (labeled)');
+		await expect(page.getByRole('list', {name: 'Claims envelopes'})).toContainText('Not submitted');
+		await expect(page.getByRole('list', {name: 'Claims envelopes'})).toContainText('EDI 837 (labeled)');
 
 		await page.getByRole('link', {name: 'View invoice demo-invoice-001 for Avery Carter'}).click();
 		await expect(page).toHaveURL(/\/dashboard\/billing\/demo-invoice-001$/);
@@ -37,7 +37,7 @@ test.describe('Billing dashboard', () => {
 		await expect(page.getByText('Avery Carter')).toBeVisible();
 		await expect(page.getByRole('list', {name: 'Line items'})).toContainText('Office visit');
 		await expect(page.getByRole('heading', {name: 'Payment boundary'})).toBeVisible();
-		await expect(page.getByRole('heading', {name: 'Claims boundary'})).toBeVisible();
+		await expect(page.getByRole('heading', {name: 'Claims envelopes'})).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Record payment'})).toBeEnabled();
 
 		await page.getByRole('link', {name: 'Back to billing'}).click();
@@ -93,10 +93,94 @@ test.describe('Billing dashboard', () => {
 		await expect(invoices).toContainText('Avery Carter');
 		await expect(invoices).not.toContainText('Taylor Bennett');
 		await expect(invoices).not.toContainText('Jordan Brooks');
-		await expect(invoices.getByRole('listitem')).toHaveCount(2);
-		await expect(page.getByRole('list', {name: 'Claim envelopes'}).getByRole('listitem')).toHaveCount(2);
+		await expect(invoices.getByRole('listitem')).toHaveCount(5);
+		await expect(page.getByText('Showing 1–5 of 5 invoices')).toBeVisible();
+		await expect(page.getByRole('list', {name: 'Claims envelopes'}).getByRole('listitem')).toHaveCount(5);
+		await expect(page.getByRole('navigation', {name: 'Invoices pagination'})).toHaveCount(0);
 
 		await page.goto('/dashboard/billing/demo-invoice-002');
 		await expect(page.getByRole('alert').filter({hasText: 'Invoice was not found.'})).toBeVisible();
+	});
+
+	test('pages invoices and claims independently and keeps position in the URL', async ({page}) => {
+		await signInAsPracticeAdmin(page);
+		await openBilling(page);
+
+		const invoices = page.getByRole('list', {name: 'Invoices'});
+		const claims = page.getByRole('list', {name: 'Claims envelopes'});
+		await expect(page.getByText(/Showing 1–10 of 35 invoices/)).toContainText('newest first');
+		await expect(invoices.getByRole('listitem')).toHaveCount(10);
+		await expect(page.getByText('Showing 1–10 of 35 claims envelopes')).toBeVisible();
+
+		await page.getByRole('navigation', {name: 'Invoices pagination'}).getByRole('button', {name: 'Next page'}).click();
+		await expect(page).toHaveURL(/invoicesPage=2/);
+		await expect(page.getByText('Showing 11–20 of 35 invoices', {exact: false})).toBeVisible();
+		await expect(invoices.getByRole('listitem')).toHaveCount(10);
+		await expect(page.getByRole('heading', {name: 'Invoices'})).toBeFocused();
+		await expect(page.getByText('Showing 1–10 of 35 claims envelopes')).toBeVisible();
+
+		await page.getByRole('navigation', {name: 'Claims envelopes pagination'}).getByRole('button', {name: 'Next page'}).click();
+		await expect(page).toHaveURL(/claimsPage=2/);
+		await expect(page).toHaveURL(/invoicesPage=2/);
+		await expect(page.getByText('Showing 11–20 of 35 claims envelopes')).toBeVisible();
+		await expect(claims.getByRole('listitem')).toHaveCount(10);
+		await expect(page.getByText('Showing 11–20 of 35 invoices', {exact: false})).toBeVisible();
+
+		await page.reload();
+		await expect(page.getByText('Showing 11–20 of 35 invoices', {exact: false})).toBeVisible();
+		await expect(page.getByText('Showing 11–20 of 35 claims envelopes')).toBeVisible();
+	});
+
+	test('status filter and sort reset invoices to page 1 and leave claims alone', async ({page}) => {
+		await signInAsPracticeAdmin(page);
+		await openBilling(page);
+
+		await page.getByRole('navigation', {name: 'Invoices pagination'}).getByRole('button', {name: 'Next page'}).click();
+		await page.getByRole('navigation', {name: 'Claims envelopes pagination'}).getByRole('button', {name: 'Next page'}).click();
+		await expect(page).toHaveURL(/invoicesPage=2/);
+
+		await page.getByLabel('Status').selectOption('overdue');
+		await expect(page).toHaveURL(/invoicesStatus=overdue/);
+		await expect(page).not.toHaveURL(/invoicesPage=/);
+		await expect(page).toHaveURL(/claimsPage=2/);
+		await expect(page.getByText('Showing 1–10 of 11 invoices', {exact: false})).toBeVisible();
+		const invoices = page.getByRole('list', {name: 'Invoices'});
+		await expect(invoices.getByText('Overdue', {exact: true})).toHaveCount(10);
+		await expect(page.getByRole('navigation', {name: 'Invoices pagination'})).toBeVisible();
+
+		await page.getByLabel('Sort').selectOption('issued-asc');
+		await expect(page).toHaveURL(/invoicesSort=issued-asc/);
+		await expect(page.getByText(/Showing 1–10 of 11 invoices/)).toContainText('oldest first');
+
+		await page.getByRole('button', {name: 'Clear filters'}).click();
+		await expect(page.getByText(/Showing 1–10 of 35 invoices/)).toBeVisible();
+		await expect(page).toHaveURL(/claimsPage=2/);
+	});
+
+	test('fits 320 px without horizontal scroll', async ({page}) => {
+		await page.setViewportSize({width: 320, height: 900});
+		await signInAsPracticeAdmin(page);
+		await page.getByRole('button', {name: 'Open navigation'}).click();
+		await page.getByRole('dialog').getByRole('link', {name: 'Billing'}).click();
+		await expect(page.getByRole('list', {name: 'Invoices'})).toBeVisible();
+		await expect(page.getByText('Page 1 of 4').first()).toBeVisible();
+
+		const overflow = await page.evaluate(
+			() => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+		);
+		expect(overflow).toBeLessThanOrEqual(0);
+	});
+
+	test('claims pager shows numbered pages only when its card is wide enough', async ({page}) => {
+		await page.setViewportSize({width: 1440, height: 1000});
+		await signInAsPracticeAdmin(page);
+		await page.goto('/dashboard/billing');
+		await expect(page.getByRole('list', {name: 'Claims envelopes'})).toBeVisible();
+		const claimsPager = page.getByRole('navigation', {name: 'Claims envelopes pagination'});
+		await expect(claimsPager.getByRole('button', {name: 'Page 2'})).toBeVisible();
+
+		await page.setViewportSize({width: 900, height: 1000});
+		await expect(claimsPager.getByRole('button', {name: 'Page 2'})).toBeHidden();
+		await expect(claimsPager.getByText('Page 1 of 4')).toBeVisible();
 	});
 });

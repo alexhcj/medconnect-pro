@@ -143,7 +143,7 @@ export class ClaimRdo {
 
 	@ApiProperty({
 		example: 'edi837',
-		description: 'Labeled claims boundary. EDI 837 is not generated.',
+		description: 'Labeled claims envelope. EDI 837 is not generated.',
 	})
 	processor!: 'edi837';
 
@@ -159,7 +159,7 @@ export class ClaimListRdo {
 	@ApiProperty({type: [ClaimRdo]})
 	claims!: ClaimRdo[];
 
-	@ApiProperty({example: 42, description: 'Claim envelopes for the invoices visible to the caller.'})
+	@ApiProperty({example: 42, description: 'Claims envelopes for the invoices visible to the caller.'})
 	total!: number;
 
 	@ApiProperty({example: true})

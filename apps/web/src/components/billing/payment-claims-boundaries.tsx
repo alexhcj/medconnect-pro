@@ -1,6 +1,7 @@
 'use client';
 
-import {useCallback, useState} from 'react';
+import {Suspense, useCallback, useState} from 'react';
+import {ListSkeleton} from '@/components/admin/admin-list-states';
 import {ClaimsEnvelopeList} from '@/components/billing/claims-envelope-list';
 import {PaymentRecordedNotice} from '@/components/billing/payment-recorded-notice';
 import {RecordPaymentDialog} from '@/components/billing/record-payment-dialog';
@@ -36,7 +37,7 @@ export function PaymentClaimsBoundaries({
 	const canSubmit = Boolean(invoice && unpaid && canRecord);
 
 	return (
-		<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+		<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
 			<Card className="self-start">
 				<CardHeader>
 					<CardTitle>Payment boundary</CardTitle>
@@ -50,10 +51,12 @@ export function PaymentClaimsBoundaries({
 			</Card>
 			<Card>
 				<CardHeader>
-					<CardTitle>Claims boundary</CardTitle>
+					<CardTitle>Claims envelopes</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<ClaimsEnvelopeList />
+					<Suspense fallback={<ListSkeleton label="Loading claims envelopes" rows={2} />}>
+						<ClaimsEnvelopeList />
+					</Suspense>
 				</CardContent>
 			</Card>
 			{recorded && <PaymentRecordedNotice payment={recorded} onDismiss={dismissRecorded} />}

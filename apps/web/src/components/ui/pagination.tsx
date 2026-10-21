@@ -1,5 +1,6 @@
 import {Button} from '@/components/ui/button';
 import {pageCount} from '@/lib/admin/list-params';
+import {cn} from '@/lib/utils/utils';
 
 interface PaginationProps {
 	/** Names the landmark, for example "Audit events" gives "Audit events pagination". */
@@ -8,6 +9,13 @@ interface PaginationProps {
 	total: number;
 	onPageChange: (page: number) => void;
 	disabled?: boolean;
+	/** Rows per page, for lists that do not use the administration page size. */
+	pageSize?: number;
+	/**
+	 * Switch layout on the width of the pager's own container instead of the viewport, for lists in a
+	 * card whose width does not follow the screen. Numbered pages appear once 32 rem is available.
+	 */
+	container?: boolean;
 }
 
 type PageItem = number | 'ellipsis-start' | 'ellipsis-end';
@@ -30,34 +38,56 @@ export function pageItems(page: number, totalPages: number): PageItem[] {
 }
 
 /**
- * Numbered page controls from md up, "Page N of M" with equal-width Previous/Next below md.
+ * Numbered page controls from md up (or from 32 rem of container width with `container`),
+ * "Page N of M" with equal-width Previous/Next below that.
  * Previous and Next are rendered once so assistive technology never meets duplicates.
  */
-export function Pagination({label, page, total, onPageChange, disabled = false}: PaginationProps) {
-	const totalPages = pageCount(total);
+export function Pagination({
+	label,
+	page,
+	total,
+	onPageChange,
+	disabled = false,
+	pageSize,
+	container = false,
+}: PaginationProps) {
+	const totalPages = pageCount(total, pageSize);
+	// Full class names so Tailwind sees them: viewport (md:) or container (@lg:) breakpoints.
+	const bp = container
+		? {
+				nav: '@lg:flex-row @lg:items-center @lg:justify-end',
+				label: '@lg:hidden',
+				row: '@lg:contents',
+				button: '@lg:flex-none',
+				pages: '@lg:flex',
+			}
+		: {
+				nav: 'md:flex-row md:items-center md:justify-end',
+				label: 'md:hidden',
+				row: 'md:contents',
+				button: 'md:flex-none',
+				pages: 'md:flex',
+			};
 	const current = Math.min(page, totalPages);
 
-	return (
-		<nav
-			aria-label={`${label} pagination`}
-			className="flex flex-col gap-2 md:flex-row md:items-center md:justify-end"
-		>
-			<p className="text-center text-sm font-medium text-gray-600 md:hidden">
+	const nav = (
+		<nav aria-label={`${label} pagination`} className={cn('flex flex-col gap-2', bp.nav)}>
+			<p className={cn('text-center text-sm font-medium text-gray-600', bp.label)}>
 				Page {current} of {totalPages}
 			</p>
-			<div className="flex gap-2 md:contents">
+			<div className={cn('flex gap-2', bp.row)}>
 				<Button
 					type="button"
 					variant="outline"
 					size="lg"
-					className="flex-1 md:flex-none"
+					className={cn('flex-1', bp.button)}
 					disabled={disabled || current <= 1}
 					onClick={() => onPageChange(current - 1)}
 					aria-label="Previous page"
 				>
 					Previous
 				</Button>
-				<ol className="hidden items-center gap-2 md:flex">
+				<ol className={cn('hidden items-center gap-2', bp.pages)}>
 					{pageItems(current, totalPages).map((item) =>
 						typeof item === 'number' ? (
 							<li key={item}>
@@ -84,7 +114,7 @@ export function Pagination({label, page, total, onPageChange, disabled = false}:
 					type="button"
 					variant="outline"
 					size="lg"
-					className="flex-1 md:flex-none"
+					className={cn('flex-1', bp.button)}
 					disabled={disabled || current >= totalPages}
 					onClick={() => onPageChange(current + 1)}
 					aria-label="Next page"
@@ -94,4 +124,6 @@ export function Pagination({label, page, total, onPageChange, disabled = false}:
 			</div>
 		</nav>
 	);
+
+	return container ? <div className="@container">{nav}</div> : nav;
 }

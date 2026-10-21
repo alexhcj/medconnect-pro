@@ -1,5 +1,7 @@
 'use client';
 
+import {Suspense} from 'react';
+import {ListSkeleton} from '@/components/admin/admin-list-states';
 import {InvoiceList} from '@/components/billing/invoice-list';
 import {BILLING_DEMO_NOTICE} from '@/components/billing/billing-demo-notice';
 import {PaymentClaimsBoundaries} from '@/components/billing/payment-claims-boundaries';
@@ -30,7 +32,9 @@ export default function BillingPage() {
 
 			{canAccess && (
 				<>
-					<InvoiceList />
+					<Suspense fallback={<ListSkeleton label="Loading invoices" rows={3} />}>
+						<InvoiceList />
+					</Suspense>
 					<PaymentClaimsBoundaries />
 				</>
 			)}

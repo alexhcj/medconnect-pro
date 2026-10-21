@@ -9,6 +9,10 @@ const {useInvoices, useSessionStatus, useClaims, useRecordPayment} = vi.hoisted(
 	useRecordPayment: vi.fn(),
 }));
 
+vi.mock('@/lib/admin/use-list-url-state', () => ({
+	useListUrlState: () => ({page: 1, filters: {}, setPage: vi.fn(), setFilters: vi.fn()}),
+}));
+
 vi.mock('@/lib/hooks/use-billing', () => ({
 	useInvoices,
 	useClaims,
@@ -41,13 +45,13 @@ describe('BillingPage', () => {
 			isLoading: false,
 		});
 		useInvoices.mockReturnValue({
-			data: [sampleInvoice],
+			data: {items: [sampleInvoice], total: 1, hasMore: false},
 			isPending: false,
 			isError: false,
 			refetch: vi.fn(),
 		});
 		useClaims.mockReturnValue({
-			data: [
+			data: {items: [
 				{
 					id: sampleInvoice.id,
 					invoiceId: sampleInvoice.id,
@@ -55,7 +59,7 @@ describe('BillingPage', () => {
 					processor: 'edi837',
 					synthetic: true,
 				},
-			],
+			], total: 1, hasMore: false},
 			isPending: false,
 			isError: false,
 			refetch: vi.fn(),
@@ -75,7 +79,7 @@ describe('BillingPage', () => {
 		expect(screen.getByRole('button', {name: 'Record payment'})).toBeDisabled();
 		expect(screen.getByRole('list', {name: 'Invoices'})).toHaveTextContent('Avery Carter');
 		expect(screen.getByRole('heading', {name: 'Payment boundary'})).toBeInTheDocument();
-		expect(screen.getByRole('heading', {name: 'Claims boundary'})).toBeInTheDocument();
+		expect(screen.getByRole('heading', {name: 'Claims envelopes'})).toBeInTheDocument();
 	});
 
 	it('denies a nurse session without fetching invoices', () => {

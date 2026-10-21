@@ -1,5 +1,5 @@
 import {act, renderHook} from '@testing-library/react';
-import {useListUrlState} from '@/lib/admin/use-list-url-state';
+import {resetPendingListUrlPush, useListUrlState} from '@/lib/admin/use-list-url-state';
 
 const {push, searchParams} = vi.hoisted(() => ({
 	push: vi.fn(),
@@ -16,6 +16,7 @@ const NAMES = ['action', 'from'] as const;
 
 describe('useListUrlState', () => {
 	beforeEach(() => {
+		resetPendingListUrlPush();
 		push.mockClear();
 		searchParams.current = new URLSearchParams();
 	});
@@ -73,5 +74,27 @@ describe('useListUrlState', () => {
 			'/dashboard/admin?usersPage=2&auditAction=role_changed',
 			{scroll: false},
 		);
+	});
+
+	it('keeps an earlier push from another list when two changes land before the URL updates', () => {
+		const invoices = renderHook(() => useListUrlState('invoices', []));
+		const claims = renderHook(() => useListUrlState('claims', []));
+		act(() => invoices.result.current.setPage(2));
+		act(() => claims.result.current.setPage(3));
+
+		expect(push).toHaveBeenLastCalledWith('/dashboard/admin?invoicesPage=2&claimsPage=3', {scroll: false});
+	});
+
+	it('builds on the newest push when a later snapshot only shows the first one', () => {
+		const first = renderHook(() => useListUrlState('invoices', []));
+		act(() => first.result.current.setPage(2));
+		const stale = renderHook(() => useListUrlState('claims', []));
+		act(() => stale.result.current.setPage(3));
+		// The router has shown the first push only, so this snapshot sits in the middle of the chain.
+		searchParams.current = new URLSearchParams('invoicesPage=2');
+		const middle = renderHook(() => useListUrlState('invoices', ['status']));
+		act(() => middle.result.current.setFilters({status: 'paid'}));
+
+		expect(push).toHaveBeenLastCalledWith('/dashboard/admin?claimsPage=3&invoicesStatus=paid', {scroll: false});
 	});
 });

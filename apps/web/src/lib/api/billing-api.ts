@@ -8,10 +8,13 @@ import {
 	type PaymentCreateBody,
 	type PaymentRdo,
 } from '@/lib/api/billing-rdo';
+import {claimListQuery, invoiceListQuery} from '@/lib/billing/list-params';
 import {apiFetch} from '@/lib/api/http';
 import {billingMockAPI} from '@/lib/api/mocks/billing-mock';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {nestApiBaseUrl} from '@/lib/api/nest-api';
+import type {PagedResult} from '@/types/admin/admin-list';
+import type {ClaimListParams, InvoiceListParams} from '@/types/billing/billing-list';
 import type {Claim} from '@/types/billing/claim';
 import type {Invoice} from '@/types/billing/invoice';
 import type {Payment} from '@/types/billing/payment';
@@ -29,9 +32,16 @@ function billingClaimsUrl(): string {
 }
 
 export const billingRealAPI = {
-	listInvoices: async (): Promise<Invoice[]> => {
-		const result = await apiFetch<InvoiceListRdo>(billingInvoicesUrl());
-		return result.invoices.map(invoiceFromRdo);
+	listInvoices: async (params: InvoiceListParams = {page: 1}): Promise<PagedResult<Invoice>> => {
+		const result = await apiFetch<InvoiceListRdo>(
+			`${billingInvoicesUrl()}?${invoiceListQuery(params)}`,
+		);
+		return {
+			items: result.invoices.map(invoiceFromRdo),
+			total: result.total,
+			hasMore: result.hasMore,
+			nextPage: result.nextPage,
+		};
 	},
 	getInvoice: async (invoiceId: string): Promise<Invoice> => {
 		const rdo = await apiFetch<InvoiceRdo>(billingInvoicesUrl(`/${invoiceId}`));
@@ -44,9 +54,14 @@ export const billingRealAPI = {
 		});
 		return paymentFromRdo(rdo);
 	},
-	listClaims: async (): Promise<Claim[]> => {
-		const result = await apiFetch<ClaimListRdo>(billingClaimsUrl());
-		return result.claims.map(claimFromRdo);
+	listClaims: async (params: ClaimListParams = {page: 1}): Promise<PagedResult<Claim>> => {
+		const result = await apiFetch<ClaimListRdo>(`${billingClaimsUrl()}?${claimListQuery(params)}`);
+		return {
+			items: result.claims.map(claimFromRdo),
+			total: result.total,
+			hasMore: result.hasMore,
+			nextPage: result.nextPage,
+		};
 	},
 };
 

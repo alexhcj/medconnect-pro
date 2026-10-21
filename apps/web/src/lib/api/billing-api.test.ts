@@ -40,12 +40,12 @@ describe('billingRealAPI', () => {
 
 	it('lists invoices from Nest and unwraps InvoiceListRdo', async () => {
 		localStorage.setItem('auth_token', 'demo-access-token');
-		const fetchMock = vi.fn().mockResolvedValue(jsonResponse({invoices: [rdo]}));
+		const fetchMock = vi.fn().mockResolvedValue(jsonResponse({invoices: [rdo], total: 1, hasMore: false}));
 		vi.stubGlobal('fetch', fetchMock);
 
-		const invoices = await billingRealAPI.listInvoices();
+		const page = await billingRealAPI.listInvoices();
 
-		expect(invoices).toEqual([
+		expect(page.items).toEqual([
 			expect.objectContaining({
 				id: invoiceId,
 				patientName: 'Avery Quinn',
@@ -54,9 +54,28 @@ describe('billingRealAPI', () => {
 				synthetic: true,
 			}),
 		]);
-		expect(fetchMock).toHaveBeenCalledWith('http://localhost:3001/billing/invoices', expect.any(Object));
+		expect(page).toMatchObject({total: 1, hasMore: false, nextPage: undefined});
+		expect(fetchMock).toHaveBeenCalledWith(
+			'http://localhost:3001/billing/invoices?page=1&pageSize=10',
+			expect.any(Object),
+		);
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
 		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
+	});
+
+	it('sends page, status and sort to the invoice list and maps the paging fields', async () => {
+		const fetchMock = vi
+			.fn()
+			.mockResolvedValue(jsonResponse({invoices: [rdo], total: 60, hasMore: true, nextPage: 3}));
+		vi.stubGlobal('fetch', fetchMock);
+
+		const page = await billingRealAPI.listInvoices({page: 2, status: 'overdue', sort: 'issued-asc'});
+
+		expect(page).toMatchObject({total: 60, hasMore: true, nextPage: 3});
+		expect(fetchMock.mock.calls[0]?.[0]).toBe(
+			'http://localhost:3001/billing/invoices?page=2&pageSize=10&status=overdue&sort=issued-asc',
+		);
+		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
 	});
 
 	it('gets an invoice from Nest by server UUID', async () => {
@@ -106,7 +125,7 @@ describe('billingRealAPI', () => {
 		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});
 
-	it('lists claim envelopes from Nest and unwraps ClaimListRdo', async () => {
+	it('lists claims envelopes from Nest and unwraps ClaimListRdo', async () => {
 		localStorage.setItem('auth_token', 'demo-access-token');
 		const claim = {
 			id: invoiceId,
@@ -115,10 +134,11 @@ describe('billingRealAPI', () => {
 			processor: 'edi837',
 			synthetic: true,
 		};
-		const fetchMock = vi.fn().mockResolvedValue(jsonResponse({claims: [claim]}));
+		const fetchMock = vi.fn().mockResolvedValue(jsonResponse({claims: [claim], total: 40, hasMore: true, nextPage: 2}));
 		vi.stubGlobal('fetch', fetchMock);
 
-		await expect(billingRealAPI.listClaims()).resolves.toEqual([
+		const page = await billingRealAPI.listClaims({page: 1});
+		expect(page.items).toEqual([
 			expect.objectContaining({
 				id: invoiceId,
 				invoiceId,
@@ -127,7 +147,11 @@ describe('billingRealAPI', () => {
 				synthetic: true,
 			}),
 		]);
-		expect(fetchMock).toHaveBeenCalledWith('http://localhost:3001/billing/claims', expect.any(Object));
+		expect(page).toMatchObject({total: 40, hasMore: true, nextPage: 2});
+		expect(fetchMock).toHaveBeenCalledWith(
+			'http://localhost:3001/billing/claims?page=1&pageSize=10',
+			expect.any(Object),
+		);
 		expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain('practiceId');
 		expectCredentialedCookieFetch(fetchMock.mock.calls[0]);
 	});

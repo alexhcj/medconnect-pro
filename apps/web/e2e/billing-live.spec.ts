@@ -68,10 +68,10 @@ test.describe('Live billing list and detail', () => {
 		await expect(page.getByRole('heading', {name: 'Payment boundary'})).toBeVisible();
 		await expect(page.getByText(/Open an unpaid invoice to record a demo payment/)).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Record payment'})).toBeDisabled();
-		await expect(page.getByRole('heading', {name: 'Claims boundary'})).toBeVisible();
+		await expect(page.getByRole('heading', {name: 'Claims envelopes'})).toBeVisible();
 		await expect(page.getByText(/Labeled EDI 837 envelopes derived from visible invoices/)).toBeVisible();
-		await expect(page.getByRole('list', {name: 'Claim envelopes'})).toContainText('Not submitted');
-		await expect(page.getByRole('list', {name: 'Claim envelopes'})).toContainText('EDI 837 (labeled)');
+		await expect(page.getByRole('list', {name: 'Claims envelopes'})).toContainText('Not submitted');
+		await expect(page.getByRole('list', {name: 'Claims envelopes'})).toContainText('EDI 837 (labeled)');
 
 		const overdueRow = invoices
 			.locator('li')
@@ -87,7 +87,7 @@ test.describe('Live billing list and detail', () => {
 		await expect(page.getByText('Overdue')).toBeVisible();
 		await expect(page.getByRole('list', {name: 'Line items'})).toContainText('Office visit');
 		await expect(page.getByRole('heading', {name: 'Payment boundary'})).toBeVisible();
-		await expect(page.getByRole('heading', {name: 'Claims boundary'})).toBeVisible();
+		await expect(page.getByRole('heading', {name: 'Claims envelopes'})).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Record payment'})).toBeEnabled();
 
 		await page.getByRole('link', {name: 'Back to billing'}).click();

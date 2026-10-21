@@ -25,6 +25,9 @@ export interface InvoiceRdo {
 
 export interface InvoiceListRdo {
 	invoices: InvoiceRdo[];
+	total: number;
+	hasMore: boolean;
+	nextPage?: number;
 }
 
 export function invoiceFromRdo(rdo: InvoiceRdo): Invoice {
@@ -87,6 +90,9 @@ export interface ClaimRdo {
 
 export interface ClaimListRdo {
 	claims: ClaimRdo[];
+	total: number;
+	hasMore: boolean;
+	nextPage?: number;
 }
 
 export function claimFromRdo(rdo: ClaimRdo): Claim {

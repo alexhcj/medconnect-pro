@@ -4,7 +4,21 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useCallback} from 'react';
 import {parsePage} from '@/lib/admin/list-params';
 
-export type ListUrlPrefix = 'audit' | 'security' | 'users' | 'patients';
+export type ListUrlPrefix = 'audit' | 'security' | 'users' | 'patients' | 'invoices' | 'claims';
+
+/**
+ * Queries this module pushed since the router last reported back, oldest first (starting with the URL
+ * the first push was built from). Lists on one page (invoices and claims) each hold their own
+ * `searchParams` snapshot, so two quick changes would otherwise both start from an old URL and the
+ * second would drop the first. A snapshot that matches any query in the chain builds on the newest.
+ */
+let pending: {pathname: string; chain: string[]; at: number} | null = null;
+const PENDING_TTL_MS = 2000;
+
+/** For tests: forget the last push so one test's URL change cannot leak into the next. */
+export function resetPendingListUrlPush(): void {
+	pending = null;
+}
 
 function key(prefix: ListUrlPrefix, name: string): string {
 	return `${prefix}${name.charAt(0).toUpperCase()}${name.slice(1)}`;
@@ -27,9 +41,18 @@ export function useListUrlState(prefix: ListUrlPrefix, filterNames: readonly str
 
 	const push = useCallback(
 		(mutate: (next: URLSearchParams) => void) => {
-			const next = new URLSearchParams(searchParams.toString());
+			const from = searchParams.toString();
+			const chain =
+				pending !== null &&
+				pending.pathname === pathname &&
+				pending.chain.includes(from) &&
+				Date.now() - pending.at < PENDING_TTL_MS
+					? pending.chain
+					: [from];
+			const next = new URLSearchParams(chain[chain.length - 1]);
 			mutate(next);
 			const query = next.toString();
+			pending = {pathname, chain: [...chain, query], at: Date.now()};
 			router.push(query ? `${pathname}?${query}` : pathname, {scroll: false});
 		},
 		[pathname, router, searchParams],

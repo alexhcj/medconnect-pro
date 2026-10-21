@@ -6,6 +6,42 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.96.0] - 2026-10-21
+
+### Added
+
+- FE-045: `/dashboard/billing` loads one page of 10 invoices and one page of 10 claims envelopes at
+  a time. Invoices have Status (All, Issued, Paid, Overdue) and Sort (newest or oldest issued first)
+  selects, "Clear filters", "Showing 11–20 of 312 invoices · newest first", and numbered
+  pagination (compact "Page N of M" below 768 px). Claims page on their own with the same range
+  label; their pager is numbered when the card is at least 32 rem wide and compact otherwise. A filter or sort change returns the invoices to page 1 and leaves the
+  claims page alone. Page, status and sort live in URL query params (`invoicesPage`,
+  `invoicesStatus`, `invoicesSort`, `claimsPage`), so refresh and back/forward keep position; unknown
+  values fall back to the defaults. The pager is hidden when everything fits on one page, disabled
+  while the next page loads, and focus moves to the list after a page change. Loading, empty,
+  filtered-empty, page-past-the-end and error states for both lists. Patients see only their own
+  invoices and claims, with their own totals.
+- `Pagination` takes `pageSize` and `container`; with `container` it switches layout on the width of
+  its own container (CSS container query) instead of the viewport, so the claims card shows numbered
+  pages whenever there is room.
+- Mock mode: 30 generated synthetic invoices (35 in all) so paging, filters and sort can be seen
+  without the live API; they live in the mock adapter, not in the shared fixture.
+
+### Changed
+
+- The Payment and Claims cards sit in a 1 : 2 grid from 768 px (Payment takes less space), and the
+  Claims card is now titled "Claims envelopes" (was "Claims boundary"), matching the list, the
+  product docs and the Figma frames; the list label, pager label and messages use the same name.
+- `billingAPI.listInvoices` and `listClaims` take page and filter params and return
+  `{items, total, hasMore, nextPage}`; `useInvoices` and `useClaims` take params and keep the
+  previous page on screen while loading. Recording a payment refetches the page being viewed.
+- The "View invoice" link is a 44 px target. `SelectField` accepts display labels for option values.
+
+### Fixed
+
+- `useListUrlState`: two list changes made before the URL updated (for example paging invoices and
+  then claims) no longer drop the first change.
+
 ## [0.95.0] - 2026-10-20
 
 ### Added
