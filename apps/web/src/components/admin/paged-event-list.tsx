@@ -195,7 +195,7 @@ export function PagedEventList({
 										<th role="columnheader" scope="col" className={headerCell}>
 											Actor
 										</th>
-										<th role="columnheader" scope="col" className={`${headerCell} md:w-48`}>
+										<th role="columnheader" scope="col" className={`${headerCell} whitespace-nowrap md:w-px`}>
 											Time
 										</th>
 									</tr>
@@ -218,7 +218,7 @@ export function PagedEventList({
 												<span className="md:hidden">Actor </span>
 												{event.actorUserId}
 											</td>
-											<td role="cell" className={`${bodyCell} text-gray-600 md:w-48`}>
+											<td role="cell" className={`${bodyCell} text-gray-600 md:w-px md:whitespace-nowrap`}>
 												{formatAuditDate(event.createdAt)}
 											</td>
 										</tr>
@@ -241,4 +241,4 @@ export function PagedEventList({
 }
 
 const headerCell = 'px-4 py-2 text-left text-sm font-medium text-gray-700';
-const bodyCell = 'block break-words text-sm md:table-cell md:border-t md:border-gray-200 md:px-4 md:py-3';
+const bodyCell = 'block break-words text-sm md:table-cell md:[overflow-wrap:anywhere] md:border-t md:border-gray-200 md:px-4 md:py-3';

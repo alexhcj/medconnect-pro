@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.96.3] - 2026-10-22
+
+### Fixed
+
+- FE-047: audit and security event timestamps stay on one line from `md` up. The Time column is
+  content-sized (`md:w-px` with no-wrap) instead of a fixed 192 px, and the other columns break
+  anywhere (`overflow-wrap: anywhere`) so the table no longer clips at 1024 px. Mobile cards are
+  unchanged. Added a unit test for the column classes and an e2e width check at 1440, 1280 and
+  1024 px. `patient-form.test.tsx`: the two `fillCreateForm` tests now use
+  `userEvent.setup({delay: null})` (about 3.5 s down to about 0.3 s each, previously close to the
+  5 s default timeout under load). No API change.
+
 ## [0.96.2] - 2026-10-22
 
 ### Fixed

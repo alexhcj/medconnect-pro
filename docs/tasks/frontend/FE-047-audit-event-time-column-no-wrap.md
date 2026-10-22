@@ -3,7 +3,7 @@ id: FE-047
 type: task
 area: frontend
 feature: administration
-status: pending
+status: shipped
 priority: medium
 estimate: 2
 dependencies: [FE-043]
@@ -20,7 +20,7 @@ design:
   required: false
   status: not_required
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -75,29 +75,29 @@ full `test:web` run (they pass alone).
 
 ## Acceptance Criteria
 
-- [ ] At 1440 px, no timestamp wraps on the audit event list
-- [ ] At 1440 px, no timestamp wraps on the security event list
-- [ ] At 1280 px, no timestamp wraps on either list
-- [ ] Near 1024 px, wrapping is allowed but the table has no horizontal page scroll
-- [ ] Below `md` the stacked card layout is unchanged
-- [ ] A unit test asserts the Time cell and header classes, and an e2e or width check covers
+- [x] At 1440 px, no timestamp wraps on the audit event list
+- [x] At 1440 px, no timestamp wraps on the security event list
+- [x] At 1280 px, no timestamp wraps on either list
+- [x] Near 1024 px, wrapping is allowed but the table has no horizontal page scroll
+- [x] Below `md` the stacked card layout is unchanged
+- [x] A unit test asserts the Time cell and header classes, and an e2e or width check covers
       1440 / 1280 / 1024 px
-- [ ] Testing: the two `patient-form.test.tsx` timeouts are reproduced, their cause is recorded,
+- [ ] Testing: the two `patient-form.test.tsx` timeouts are reproduced (not reproduced in the full run; see Completion), their cause is recorded,
       and the fix lands in the test (for example `userEvent.setup({delay: null})`, a targeted
       timeout, or fewer renders), not through retries
-- [ ] `npm run test:web` completes three consecutive runs with no timeout failures
+- [x] `npm run test:web` completes three consecutive runs with no timeout failures
 
 ## Testing todos
 
-- [ ] Run the full `npm run test:web` and record the failing test names and durations for
+- [x] Run the full `npm run test:web` (no failures this run) and record durations for
       `patient-form.test.tsx`
-- [ ] Run `patient-form.test.tsx` alone to confirm it passes in isolation
-- [ ] Identify the cause (default 5 s timeout under load, slow typing, heavy form render) and note it
+- [x] Run `patient-form.test.tsx` alone to confirm it passes in isolation
+- [x] Identify the cause (default 5 s timeout under load, slow typing, heavy form render) and note it
       in Completion
-- [ ] Apply the narrowest fix in the test or its helper
-- [ ] Repeat the full `test:web` run three times; delegate to the `test-runner` subagent
-- [ ] Add a unit test for the Time column classes in `paged-event-list.test.tsx`
-- [ ] Check widths in the built-in browser at 1440, 1280 and 1024 px in mock mode (the live seed has
+- [x] Apply the narrowest fix in the test or its helper
+- [x] Repeat the full `test:web` run three times; delegate to the `test-runner` subagent
+- [x] Add a unit test for the Time column classes in `paged-event-list.test.tsx`
+- [x] Check widths in the built-in browser at 1440, 1280 and 1024 px in mock mode (the live seed has
       few events until DATA-006)
 
 ## Dependencies
@@ -125,7 +125,20 @@ changes visibly, note parity with the FE-043 Administration frames (node 243:82)
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `paged-event-list.tsx`: Time header `whitespace-nowrap md:w-px`, Time cell
+  `md:w-px md:whitespace-nowrap` (replaces `md:w-48`); `bodyCell` gains `md:[overflow-wrap:anywhere]`.
+  `break-words` does not shrink a table cell's minimum width, so without it the content-sized column
+  made the table 119 px wider than its wrapper at 1024 px (31 px before the change) and the
+  `md:overflow-hidden` wrapper clipped it. `formatAuditDate` unchanged. Shipped at 0.96.3.
+- Tests: `paged-event-list.test.tsx` (new, 3 tests); `administration.spec.ts` gains a width block at
+  1440 / 1280 / 1024 px (one-line check for the first two; no clipping and no page scroll at all three);
+  `e2e:mocks` `administration.spec.ts` 7 passed.
+- Patient-form timeouts: not reproduced (so the "reproduced" criterion stays unticked; the cause is inferred from timings) in this run (full `test:web` 553 passed). Run alone, the two
+  `fillCreateForm` tests took 3.4 and 3.7 s against the 5 s default; cause is one timer wait per
+  keystroke (about 180 keystrokes with `userEvent.setup()`), which exceeds 5 s under parallel load.
+  Fix: `userEvent.setup({delay: null})` in those two tests (now about 0.3 s each). No retries or
+  global timeout change. Three consecutive full `test:web` runs: 553/553 passed each, no timeouts; lint and type-check clean.
 - PR:
-- Notes:
+- Notes: no Figma change; table structure and tokens unchanged, so parity with the FE-043
+  Administration frames (node 243:82) holds. Visual check was by measurement (Playwright) rather than
+  a screenshot. Long live `resourceId` values are not covered until DATA-006 data is used in e2e.

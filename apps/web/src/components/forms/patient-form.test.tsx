@@ -103,7 +103,7 @@ describe('PatientForm', () => {
 	});
 
 	it('maps server field details onto the matching input', async () => {
-		const user = userEvent.setup();
+		const user = userEvent.setup({delay: null});
 		createMutate.mockRejectedValue(
 			new ApiError('Request validation failed', 400, {
 				code: 'VALIDATION_ERROR',
@@ -120,7 +120,7 @@ describe('PatientForm', () => {
 	});
 
 	it('shows a form alert when the server error has no field path', async () => {
-		const user = userEvent.setup();
+		const user = userEvent.setup({delay: null});
 		createMutate.mockRejectedValue(new ApiError('Patient not found', 404, {code: 'NOT_FOUND'}));
 		render(<PatientForm mode="create" providers={providers} />);
 		await fillCreateForm(user);

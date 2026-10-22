@@ -78,6 +78,47 @@ test.describe('Administration', () => {
 	});
 });
 
+for (const width of [1440, 1280, 1024]) {
+	test.describe(`Administration event time column at ${width} px`, () => {
+		test.use({viewport: {width, height: 900}});
+
+		test('keeps timestamps on one line without horizontal page scroll', async ({page}) => {
+			await signInAsPracticeAdmin(page);
+			await page.goto('/dashboard/admin');
+
+			for (const name of ['Audit events', 'Security events']) {
+				const table = page.getByRole('table', {name});
+				await expect(table).toBeVisible();
+
+				const result = await table.evaluate((el) => {
+					const wrapper = el.parentElement as HTMLElement;
+					const lineCounts = Array.from(el.querySelectorAll('tbody td:last-child')).map((cell) => {
+						const range = document.createRange();
+						range.selectNodeContents(cell);
+						return new Set(Array.from(range.getClientRects()).map((rect) => Math.round(rect.top))).size;
+					});
+					return {
+						cells: lineCounts.length,
+						maxLines: Math.max(...lineCounts),
+						clipped: el.scrollWidth - wrapper.clientWidth,
+					};
+				});
+
+				expect(result.cells).toBeGreaterThan(0);
+				if (width >= 1280) {
+					expect(result.maxLines, `${name} timestamp wrapped at ${width} px`).toBe(1);
+				}
+				expect(result.clipped, `${name} is wider than its wrapper at ${width} px`).toBeLessThanOrEqual(0);
+			}
+
+			const overflow = await page.evaluate(
+				() => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+			);
+			expect(overflow).toBeLessThanOrEqual(0);
+		});
+	});
+}
+
 test.describe('Administration at 320 px', () => {
 	test.use({viewport: {width: 320, height: 800}});
 
