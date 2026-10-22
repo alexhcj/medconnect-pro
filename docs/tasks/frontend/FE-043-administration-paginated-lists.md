@@ -3,7 +3,7 @@ id: FE-043
 type: task
 area: frontend
 feature: administration
-status: complete
+status: implemented
 priority: high
 estimate: 3
 dependencies: [FE-009, FE-016, FE-029, BE-025, BE-026]

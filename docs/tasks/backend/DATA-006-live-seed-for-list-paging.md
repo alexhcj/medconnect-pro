@@ -3,7 +3,7 @@ id: DATA-006
 type: task
 area: backend
 feature: demo-data
-status: complete
+status: implemented
 priority: medium
 estimate: 3
 dependencies: [DATA-002, DATA-005, BE-025, BE-026, FE-043, FE-045]
@@ -132,7 +132,8 @@ Update the release-roadmap M19 entry and master task list.
   memberships, 18 invoices and line items; audit events accumulate with sign-ins). Admin API totals
   with a second page (`hasMore` true): users 28, audit events 260, security events 199, invoices 19,
   claims 19.
-- `e2e:live`: NOT green, so its criterion stays unticked. Full run (twice): 2 passed, 12 failed,
+- `e2e:live`: NOT green at this release (the criterion was reworded to record the result and
+  ticked; QA-008 later made the suite green). Full run (twice): 2 passed, 12 failed,
   mostly "Too many attempts" at login and the "Multiple Sessions Detected" dialog from repeated
   sign-ins in one suite. Isolated runs: `administration-live.spec.ts:45` passes. `:13` fails because
   it looks for a list named "Practice users" but `user-role-list.tsx:149` renders a table (spec

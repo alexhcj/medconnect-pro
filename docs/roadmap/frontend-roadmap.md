@@ -152,7 +152,7 @@ Shipped and closed at 0.91.0. Does not reopen M17.
 
 ## Slice 19 — Polish and list normalization (M19)
 
-Shipped through 0.96.3, not closed; QA-009 (live paging specs) shipped. Does not reopen M17 or M18.
+Shipped and closed at 0.96.3; QA-009 (live paging specs) shipped. Does not reopen M17 or M18.
 
 - Responsive header logo and RoleTag parity ([FE-040](../tasks/frontend/FE-040-responsive-header-logo-and-role-tag-parity.md); shipped).
 - Billing design/code sync ([FE-041](../tasks/frontend/FE-041-billing-design-code-sync.md); shipped) and

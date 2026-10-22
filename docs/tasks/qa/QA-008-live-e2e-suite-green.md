@@ -3,7 +3,7 @@ id: QA-008
 type: task
 area: qa
 feature: testing
-status: shipped
+status: implemented
 priority: medium
 estimate: 3
 dependencies: [DATA-006, FE-043, FE-045, FE-046, FE-047]

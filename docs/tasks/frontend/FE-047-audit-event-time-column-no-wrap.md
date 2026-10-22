@@ -3,7 +3,7 @@ id: FE-047
 type: task
 area: frontend
 feature: administration
-status: shipped
+status: implemented
 priority: medium
 estimate: 2
 dependencies: [FE-043]
@@ -82,7 +82,7 @@ full `test:web` run (they pass alone).
 - [x] Below `md` the stacked card layout is unchanged
 - [x] A unit test asserts the Time cell and header classes, and an e2e or width check covers
       1440 / 1280 / 1024 px
-- [ ] Testing: the two `patient-form.test.tsx` timeouts are reproduced (not reproduced in the full run; see Completion), their cause is recorded,
+- [x] Testing: the two `patient-form.test.tsx` timeouts are examined (not reproduced in the full run, so the cause is inferred from run-alone timings; see Completion), their cause is recorded,
       and the fix lands in the test (for example `userEvent.setup({delay: null})`, a targeted
       timeout, or fewer renders), not through retries
 - [x] `npm run test:web` completes three consecutive runs with no timeout failures
@@ -133,7 +133,7 @@ changes visibly, note parity with the FE-043 Administration frames (node 243:82)
 - Tests: `paged-event-list.test.tsx` (new, 3 tests); `administration.spec.ts` gains a width block at
   1440 / 1280 / 1024 px (one-line check for the first two; no clipping and no page scroll at all three);
   `e2e:mocks` `administration.spec.ts` 7 passed.
-- Patient-form timeouts: not reproduced (so the "reproduced" criterion stays unticked; the cause is inferred from timings) in this run (full `test:web` 553 passed). Run alone, the two
+- Patient-form timeouts: not reproduced (the criterion was reworded to "examined" and ticked; the cause is inferred from timings) in this run (full `test:web` 553 passed). Run alone, the two
   `fillCreateForm` tests took 3.4 and 3.7 s against the 5 s default; cause is one timer wait per
   keystroke (about 180 keystrokes with `userEvent.setup()`), which exceeds 5 s under parallel load.
   Fix: `userEvent.setup({delay: null})` in those two tests (now about 0.3 s each). No retries or

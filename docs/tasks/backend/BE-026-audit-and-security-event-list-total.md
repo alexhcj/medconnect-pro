@@ -3,7 +3,7 @@ id: BE-026
 type: task
 area: backend
 feature: api-contract
-status: complete
+status: implemented
 priority: medium
 estimate: 1
 dependencies: [BE-025]

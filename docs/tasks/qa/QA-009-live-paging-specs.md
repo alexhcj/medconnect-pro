@@ -3,7 +3,7 @@ id: QA-009
 type: task
 area: qa
 feature: testing
-status: shipped
+status: implemented
 priority: low
 estimate: 2
 dependencies: [DATA-006, QA-008]

@@ -3,7 +3,7 @@ id: FE-040
 type: task
 area: frontend
 feature: marketing
-status: complete
+status: implemented
 priority: medium
 estimate: 2
 dependencies: [FE-018, FE-023]

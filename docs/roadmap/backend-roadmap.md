@@ -65,7 +65,7 @@ Domain order (not historical ship order). Join to demo milestones in the
     ([DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md), shipped) and open-session
     lookup ([BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md), shipped). Not a session
     list, not Google credentials, and not a reopen of M17.
-22. List paging contract (M19, backend tasks shipped; milestone not closed): invoice, claims and user list paging
+22. List paging contract (M19, backend tasks shipped; milestone closed at 0.96.3): invoice, claims and user list paging
     ([BE-025](../tasks/backend/BE-025-billing-and-user-list-pagination-contract.md), shipped at 0.92.0),
     audit and security-event list `total`
     ([BE-026](../tasks/backend/BE-026-audit-and-security-event-list-total.md), shipped at 0.93.0) and

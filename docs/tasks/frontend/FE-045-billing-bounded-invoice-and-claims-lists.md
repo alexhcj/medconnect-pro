@@ -3,7 +3,7 @@ id: FE-045
 type: task
 area: frontend
 feature: billing
-status: complete
+status: implemented
 priority: medium
 estimate: 3
 dependencies: [FE-015, FE-032, BE-025, FE-042]

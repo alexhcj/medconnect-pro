@@ -3,7 +3,7 @@ id: FE-044
 type: task
 area: frontend
 feature: patient-management
-status: complete
+status: implemented
 priority: medium
 estimate: 2
 dependencies: [FE-002, FE-011]
