@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.96.2] - 2026-10-22
+
+### Fixed
+
+- FE-046: the audit Action filter now offers all 41 actions the API writes (adds appointment
+  update/delete, `auth.oauth.*`, `auth.mfa.failed`, `auth.logout_all`, `auth.refresh.reuse`,
+  `auth.session.revoked`, condition, medication, document list, vital list, patient update and
+  telehealth media actions); the security-events filter offers every `auth.*` action. Removed the
+  mock-only `invoice.viewed`. One declared action set with a drift-guard unit test. No API change.
+
 ## [0.96.1] - 2026-10-22
 
 ### Changed

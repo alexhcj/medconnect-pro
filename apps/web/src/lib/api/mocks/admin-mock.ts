@@ -1,3 +1,4 @@
+import type {ApiAuditAction} from '@/lib/admin/event-filter-options';
 import {dayEndIso, dayStartIso} from '@/lib/admin/list-params';
 import {ApiError} from '@/lib/api/http';
 import {fixtureAdminUsers, fixtureAuditEvents, fixtureSecurityEvents} from '@/lib/api/mocks/fixtures';
@@ -23,16 +24,18 @@ const AUDIT_ACTIONS = [
 	['patient.accessed', 'patient'],
 	['auth.login.succeeded', 'session'],
 	['appointment.created', 'appointment'],
-	['invoice.viewed', 'invoice'],
+	['invoice.created', 'invoice'],
 	['access.denied', 'patient'],
 	['membership.role_changed', 'user'],
-] as const;
+] as const satisfies readonly (readonly [ApiAuditAction, string])[];
 const SECURITY_ACTIONS = [
 	'auth.login.succeeded',
 	'auth.login.failed',
 	'auth.mfa.succeeded',
+	'auth.mfa.failed',
 	'auth.logout',
-] as const;
+	'auth.session.revoked',
+] as const satisfies readonly ApiAuditAction[];
 const GENERATED_ROLES: Role[] = ['PROVIDER', 'NURSE', 'RECEPTIONIST', 'PATIENT'];
 const ACTORS = ['user_mock_practice_admin', 'user_mock_provider', 'user_mock_nurse'];
 

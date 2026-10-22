@@ -3,7 +3,7 @@ id: FE-046
 type: task
 area: frontend
 feature: administration
-status: pending
+status: shipped
 priority: low
 estimate: 1
 dependencies: [FE-043, BE-026]
@@ -20,7 +20,7 @@ design:
   required: false
   status: not_required
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -69,11 +69,11 @@ actions can only be filtered by typing the URL.
 
 ## Acceptance Criteria
 
-- [ ] Every action the API writes to the audit log appears in the audit Action filter
-- [ ] Every `auth.*` action the API writes appears in the security-events Action filter
-- [ ] No option exists that no API path or mock writes, or each such option is documented as mock-only
-- [ ] A unit test guards the option lists against drift from a single declared action set
-- [ ] Existing filter, URL-state and e2e tests still pass
+- [x] Every action the API writes to the audit log appears in the audit Action filter
+- [x] Every `auth.*` action the API writes appears in the security-events Action filter
+- [x] No option exists that no API path or mock writes, or each such option is documented as mock-only
+- [x] A unit test guards the option lists against drift from a single declared action set
+- [x] Existing filter, URL-state and e2e tests still pass
 
 ## Dependencies
 
@@ -97,7 +97,12 @@ PATCH while `0.x` (no new capability or contract).
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `API_AUDIT_ACTIONS` (41 actions) in `apps/web/src/lib/admin/event-filter-options.ts`;
+  both option lists derive from it; `admin-mock.ts` generators typed against it, `invoice.viewed` removed.
+  Shipped at 0.96.2.
+- Tests: `event-filter-options.test.ts` (new); `test:web` admin/mocks/components 153 passed;
+  `e2e:mocks` `administration.spec.ts` 4 passed; type-check and lint clean (pre-existing warnings only).
 - PR:
-- Notes:
+- Notes: the Context section listed 6 missing actions; the API writes 19 that were not offered,
+  all added. Resource-type options also lack `condition`, `medication`, `external_identity`
+  (out of scope, possible follow-up). The test does not scan API source (spec forbids importing API code).

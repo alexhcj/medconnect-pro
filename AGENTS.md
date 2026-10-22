@@ -3,7 +3,7 @@
 Canonical documentation: `/docs`. Product capability catalog:
 [docs/product/](docs/product/README.md) (statused; not tasks).
 
-Current: M18 closed at 0.91.0; M19 in progress, not closed (FE-040, FE-041, FE-042, FE-043, FE-044, FE-045, BE-025, BE-026, DATA-006 shipped; FE-046, FE-047 pending; latest release 0.96.1); M9 paused; see [docs/roadmap/release-roadmap.md](docs/roadmap/release-roadmap.md).
+Current: M18 closed at 0.91.0; M19 in progress, not closed (FE-040, FE-041, FE-042, FE-043, FE-044, FE-045, BE-025, BE-026, DATA-006, FE-046 shipped; FE-047 pending; latest release 0.96.2); M9 paused; see [docs/roadmap/release-roadmap.md](docs/roadmap/release-roadmap.md).
 
 Frontend application: `apps/web`.
 Marketing site: `apps/marketing` (static export).
