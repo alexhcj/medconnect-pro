@@ -3,7 +3,7 @@ id: QA-009
 type: task
 area: qa
 feature: testing
-status: pending
+status: shipped
 priority: low
 estimate: 2
 dependencies: [DATA-006, QA-008]
@@ -17,7 +17,7 @@ related_docs:
     QA-008-live-e2e-suite-green.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -73,12 +73,12 @@ mapping, Next/Previous state) would pass the suite.
 
 ## Acceptance Criteria
 
-- [ ] A live spec reaches page 2 and back for patients, invoices, claims, audit events, security
+- [x] A live spec reaches page 2 and back for patients, invoices, claims, audit events, security
       events and practice users
-- [ ] Each spec asserts the page indicator and URL `page` state, not seeded counts
-- [ ] `npm run e2e:live` passes on a freshly seeded database and again on a second consecutive run
-- [ ] No rate-limit, session-limit, page-size or seed setting is changed
-- [ ] `lint:web` and `type-check:web` pass, and `e2e:mocks` is unaffected
+- [x] Each spec asserts the page indicator and URL `page` state, not seeded counts
+- [x] `npm run e2e:live` passes on a freshly seeded database and again on a second consecutive run
+- [x] No rate-limit, session-limit, page-size or seed setting is changed
+- [x] `lint:web` and `type-check:web` pass, and `e2e:mocks` is unaffected
 
 ## Dependencies
 
@@ -106,4 +106,16 @@ changes.
 
 ## Completion
 
-(not started)
+- Implementation: new `apps/web/e2e/list-paging-live.spec.ts` (6 tests, `app` project, saved admin
+  session, 390 px viewport so the text indicators "Page N of M" and "· Page N" show). Each test checks
+  Previous is disabled and Next enabled on page 1, clicks Next, asserts the `<prefix>Page=2` URL key
+  (`patientsPage`, `invoicesPage`, `claimsPage`, `auditPage`, `securityPage`, `usersPage`; the spec's
+  unprefixed `page=2` wording meant these), the page-2 indicator and a visible row, then clicks Previous
+  and asserts the param is gone and page 1 shows. No exact counts, no sign-ins, no writes. A list that
+  drops below one page fails at the Next-enabled check.
+- Tests: `npm run e2e:live` twice (reset, seed, run; seed, run): 24 passed each, no retries.
+  `lint:web` 0 errors (9 existing warnings), `type-check:web` pass, `e2e:mocks` 35 passed.
+- PR:
+- Notes: no version bump (test and docs only); `frontend-testing.md` unchanged (run steps same). No
+  rate-limit, session, page-size or seed setting changed. Security review not run: no auth, tenant or
+  audit code changed.
