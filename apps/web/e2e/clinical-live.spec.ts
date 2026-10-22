@@ -1,20 +1,15 @@
-import {expect, test, type Page} from '@playwright/test';
-import {signInAsLiveProvider} from './helpers/mock-auth';
-
-async function openPatients(page: Page) {
-	await page.getByRole('button', {name: 'Open navigation'}).click();
-	await page.getByRole('dialog').getByRole('link', {name: 'Patients'}).click();
-	await expect(page).toHaveURL(/\/dashboard\/patients$/);
-}
+import {expect, test} from '@playwright/test';
+import {openDashboard, PROVIDER_STATE} from './helpers/live-session';
 
 test.describe('Live clinical profile lists', () => {
+	test.use({storageState: PROVIDER_STATE});
 	test.use({viewport: {width: 768, height: 1024}});
 
 	test('shows seeded history, conditions, vitals, medications, and documents for the live provider', async ({
 		page,
 	}) => {
-		await signInAsLiveProvider(page);
-		await openPatients(page);
+		await openDashboard(page);
+		await page.goto('/dashboard/patients?patientsQ=Avery');
 
 		await page.getByRole('link', {name: 'View profile for Avery Quinn'}).click();
 		await expect(page).toHaveURL(/\/dashboard\/patients\/[0-9a-f-]{36}$/);

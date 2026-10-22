@@ -1,5 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
-import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {ADMIN_STATE, openDashboard} from './helpers/live-session';
 
 async function openInbox(page: Page) {
 	await page.getByRole('button', {name: /^Notifications/}).click();
@@ -12,8 +12,9 @@ async function openPreferences(page: Page) {
 }
 
 test.describe('Live notifications inbox', () => {
+	test.use({storageState: ADMIN_STATE});
 	test('practice admin sees a self-scoped inbox, mark-read, and preferences', async ({page}) => {
-		await signInAsPracticeAdmin(page);
+		await openDashboard(page);
 
 		await openInbox(page);
 
@@ -32,7 +33,7 @@ test.describe('Live notifications inbox', () => {
 			await page.reload();
 			await openInbox(page);
 			const after = page.getByRole('list', {name: 'Notifications'}).locator('li').filter({hasText: title});
-			await expect(after.getByText('Read')).toBeVisible();
+			await expect(after.getByText('Read', {exact: true})).toBeVisible();
 			await expect(after.getByRole('button', {name: 'Mark as read'})).toHaveCount(0);
 		}
 

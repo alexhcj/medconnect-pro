@@ -1,23 +1,12 @@
 import {expect, test, type Page} from '@playwright/test';
-import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {ADMIN_STATE, mutationHeaders, nestApiBase, openDashboard} from './helpers/live-session';
 
 const invoiceUuid = /\/dashboard\/billing\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const nestApiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 
 async function openBilling(page: Page) {
 	await page.getByRole('button', {name: 'Open navigation'}).click();
 	await page.getByRole('dialog').getByRole('link', {name: 'Billing'}).click();
 	await expect(page).toHaveURL(/\/dashboard\/billing$/);
-}
-
-async function mutationHeaders(page: Page): Promise<Record<string, string>> {
-	const cookies = await page.context().cookies(nestApiBase);
-	const csrf = cookies.find((cookie) => cookie.name === 'mcp_csrf')?.value;
-	const headers: Record<string, string> = {'Content-Type': 'application/json'};
-	if (csrf) {
-		headers['X-CSRF-Token'] = csrf;
-	}
-	return headers;
 }
 
 async function createThrowawayInvoice(page: Page): Promise<string> {
@@ -49,21 +38,30 @@ async function createThrowawayInvoice(page: Page): Promise<string> {
 }
 
 test.describe('Live billing list and detail', () => {
+	test.use({storageState: ADMIN_STATE});
 	test.use({viewport: {width: 768, height: 1024}});
 
 	test('shows seeded Avery Quinn invoices and opens UUID detail', async ({page}) => {
-		await signInAsPracticeAdmin(page);
+		await openDashboard(page);
 		await openBilling(page);
 
 		await expect(page.getByRole('heading', {level: 1, name: 'Billing'})).toBeVisible();
 		await expect(page.getByText('Synthetic demo. Demo payments do not collect card numbers.')).toBeVisible();
 
+		// Billing pages 10 at a time, newest first, and earlier runs leave paid $41 invoices on page 1.
+		// Narrow with the same URL params the Status and Sort filters write instead of assuming page 1.
+		await page.goto('/dashboard/billing?invoicesStatus=paid&invoicesSort=issued-asc');
+		const paidRow = page
+			.getByRole('list', {name: 'Invoices'})
+			.locator('li')
+			.filter({hasText: 'Avery Quinn'})
+			.filter({hasText: '$80.00'});
+		await expect(paidRow).toContainText('Paid');
+
+		await page.goto('/dashboard/billing?invoicesStatus=overdue');
 		const invoices = page.getByRole('list', {name: 'Invoices'});
 		await expect(invoices).toContainText('Avery Quinn');
-		await expect(invoices).toContainText('Overdue');
 		await expect(invoices).toContainText('$150.00');
-		await expect(invoices).toContainText('Paid');
-		await expect(invoices).toContainText('$80.00');
 
 		await expect(page.getByRole('heading', {name: 'Payment boundary'})).toBeVisible();
 		await expect(page.getByText(/Open an unpaid invoice to record a demo payment/)).toBeVisible();
@@ -96,7 +94,7 @@ test.describe('Live billing list and detail', () => {
 	});
 
 	test('records a demo payment on an API-created invoice', async ({page}) => {
-		await signInAsPracticeAdmin(page);
+		await openDashboard(page);
 		const invoiceId = await createThrowawayInvoice(page);
 
 		await page.goto(`/dashboard/billing/${invoiceId}`);

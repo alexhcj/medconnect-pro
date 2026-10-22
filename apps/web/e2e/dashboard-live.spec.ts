@@ -1,9 +1,10 @@
 import {expect, test} from '@playwright/test';
-import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {ADMIN_STATE, openDashboard} from './helpers/live-session';
 
 test.describe('Live dashboard overview', () => {
+	test.use({storageState: ADMIN_STATE});
 	test('shows seeded patient-count and today appointment cards', async ({page}) => {
-		await signInAsPracticeAdmin(page);
+		await openDashboard(page);
 
 		const patients = page.getByRole('heading', {level: 3, name: 'Total Patients'});
 		const today = page.getByRole('heading', {level: 3, name: "Today's Appointments"});

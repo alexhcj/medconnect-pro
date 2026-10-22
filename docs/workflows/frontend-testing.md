@@ -49,6 +49,43 @@ E2E runs against mock mode with `NEXT_PUBLIC_MOCK_DELAY=0` and `NEXT_PUBLIC_MOCK
 - Prefer roles and names over CSS selectors.
 - Authenticated dashboard flows must sign in through the mock IdP (see `e2e/helpers/mock-auth.ts`).
 
+## Live e2e (`npm run e2e:live`)
+
+Browser checks against the Nest API (`apps/web/playwright.live.config.ts`, specs named
+`*-live.spec.ts`). Local only; not run in CI. Mock specs never run here and live specs never run
+under `npm run e2e:mocks`.
+
+Run procedure (repo root):
+
+1. `docker compose up -d postgres`, then `npm run migration:run`.
+2. `npm run seed:mock-identity`. Run it **before every run**: it resets the seeded telehealth visit
+   (a finished session cannot be created again, and the visit is joinable for about 4 hours after
+   seeding) and puts the seeded appointment back in the current week.
+3. Start the API on :3001 (`npm run start -w medconnect-api`, `APP_ENV=local` for the fake OIDC).
+4. Reset limiter and session state (see below) if you signed in by hand or ran the suite recently.
+5. `npm run e2e:live`. Playwright starts Next on :3000 itself, so free that port first.
+
+How sign-in is handled: `auth` projects run the real sign-in specs (`auth-live`, `auth-mfa-live`,
+`auth-oauth-live`); `setup` signs in once as the practice admin and once as the live provider and
+saves the sessions under `e2e/.auth/` (gitignored); every other live spec reuses them through
+`storageState` and must not sign out; `teardown` signs both out. A run makes 2 practice-admin
+password sign-ins, 1 live-provider, 1 MFA nurse, and 1 OAuth. The API allows 5 password sign-ins per
+account per 15 minutes and 20 per IP (`auth.login.account`, `auth.login.ip`). Two runs fit; a
+third within 15 minutes, or manual sign-ins as the same accounts, hit "Too many attempts".
+Production limits are not relaxed for tests.
+
+Reset limiter and session state (local dev database only; it signs out every open session):
+
+```bash
+docker compose exec -T postgres psql -U medconnect -d medconnect \
+  -c "DELETE FROM rate_limit_buckets; UPDATE auth_sessions SET revoked_at = now() WHERE revoked_at IS NULL;"
+```
+
+Writing live specs: do not assert seeded counts or page 1 contents. Lists are paged and runs leave
+rows behind (paid $41 invoices, `Quinn Harlow…` patients, appointments), so narrow with the URL
+params the filters write (`usersQ`, `auditAction`, `securityAction`, `invoicesStatus`,
+`invoicesSort`, `patientsQ`). Clean up only rows the spec created.
+
 ## Commands
 
 ```bash

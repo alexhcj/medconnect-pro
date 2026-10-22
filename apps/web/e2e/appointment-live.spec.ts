@@ -1,5 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
-import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {ADMIN_STATE, openDashboard} from './helpers/live-session';
 
 function pad(value: number) {
 	return String(value).padStart(2, '0');
@@ -23,16 +23,18 @@ async function openAppointments(page: Page) {
 }
 
 test.describe('Live appointment calendar and create', () => {
+	test.use({storageState: ADMIN_STATE});
 	test.use({viewport: {width: 768, height: 1024}});
 
 	test('shows the seeded visit and creates another synthetic appointment', async ({page}) => {
-		await signInAsPracticeAdmin(page);
+		await openDashboard(page);
 		await openAppointments(page);
 
 		await expect(page.getByRole('button', {name: 'Calendar'})).toHaveAttribute('aria-pressed', 'true');
 		await expect(page.getByRole('button', {name: 'Week view'})).toHaveAttribute('aria-pressed', 'true');
 		await expect(
-			page.getByRole('button', {name: /Avery Quinn · Dr\. Jordan Ellis · Scheduled/}),
+			// More than one seeded visit for this pair can fall in the current week.
+			page.getByRole('button', {name: /Avery Quinn · Dr\. Jordan Ellis · Scheduled/}).first(),
 		).toBeVisible();
 
 		await page.getByRole('link', {name: 'Schedule appointment'}).click();

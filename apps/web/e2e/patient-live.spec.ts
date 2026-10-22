@@ -1,5 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
-import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {ADMIN_STATE, openDashboard} from './helpers/live-session';
 
 async function openPatients(page: Page) {
 	await page.getByRole('button', {name: 'Open navigation'}).click();
@@ -8,12 +8,15 @@ async function openPatients(page: Page) {
 }
 
 test.describe('Live patient list and create', () => {
+	test.use({storageState: ADMIN_STATE});
 	test.use({viewport: {width: 768, height: 1024}});
 
 	test('shows seeded patients and creates another synthetic patient', async ({page}) => {
-		await signInAsPracticeAdmin(page);
+		await openDashboard(page);
 		await openPatients(page);
 
+		// The list pages 10 at a time and each run adds a patient, so search instead of assuming page 1.
+		await page.goto('/dashboard/patients?patientsQ=Avery');
 		await expect(page.getByText('Avery Quinn')).toBeVisible();
 
 		await page.getByRole('link', {name: 'Add patient'}).click();
@@ -43,8 +46,7 @@ test.describe('Live patient list and create', () => {
 		await expect(page.getByRole('heading', {level: 1, name: `Quinn Harlow${suffix}`})).toBeVisible();
 		await expect(page.getByRole('link', {name: 'History'})).toHaveCount(0);
 
-		await page.getByRole('link', {name: 'Back to patients'}).click();
-		await expect(page).toHaveURL(/\/dashboard\/patients$/);
+		await page.goto(`/dashboard/patients?patientsQ=Harlow${suffix}`);
 		await expect(page.getByRole('list', {name: 'Patients'}).getByText(`Quinn Harlow${suffix}`)).toBeVisible();
 	});
 });

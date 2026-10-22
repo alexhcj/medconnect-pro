@@ -7,8 +7,8 @@ test.describe('Live mock MFA challenge', () => {
 		context,
 	}) => {
 		await page.goto('/login');
-		await page.getByLabel('Email').fill(MFA_NURSE_EMAIL);
-		await page.getByLabel('Password').fill(MFA_NURSE_PASSWORD);
+		await page.getByLabel('Email', {exact: true}).fill(MFA_NURSE_EMAIL);
+		await page.getByLabel('Password', {exact: true}).fill(MFA_NURSE_PASSWORD);
 		await page.getByRole('button', {name: 'Sign in'}).click();
 
 		await expect(page.getByRole('heading', {name: 'Verify mock MFA'})).toBeVisible();

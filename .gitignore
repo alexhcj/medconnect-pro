@@ -83,3 +83,6 @@ backend.hcl
 CLAUDE.local.md
 .claude/settings.local.json
 .claude/worktrees/
+
+# Playwright live e2e saved sessions (QA-008)
+apps/web/e2e/.auth/

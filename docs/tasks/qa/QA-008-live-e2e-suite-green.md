@@ -3,7 +3,7 @@ id: QA-008
 type: task
 area: qa
 feature: testing
-status: pending
+status: shipped
 priority: medium
 estimate: 3
 dependencies: [DATA-006, FE-043, FE-045, FE-046, FE-047]
@@ -18,7 +18,7 @@ related_docs:
     QA-006-live-demo-smoke.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -81,13 +81,13 @@ not diagnosed; some may be the same sign-in pile-up. Details are in the DATA-006
 
 ## Acceptance Criteria
 
-- [ ] On a freshly seeded local database, `npm run e2e:live` passes with no failures and no retries
-- [ ] A second consecutive `e2e:live` run on the same database also passes
-- [ ] No API rate-limit or session-limit setting is changed
-- [ ] The Practice users, invoice and MFA specs no longer depend on stale locators or page-1
+- [x] On a freshly seeded local database, `npm run e2e:live` passes with no failures and no retries
+- [x] A second consecutive `e2e:live` run on the same database also passes
+- [x] No API rate-limit or session-limit setting is changed
+- [x] The Practice users, invoice and MFA specs no longer depend on stale locators or page-1
       contents
-- [ ] The run procedure is written down, including how to reset limiter and session state
-- [ ] `lint:web` and `type-check:web` pass, and `e2e:mocks` is unaffected
+- [x] The run procedure is written down, including how to reset limiter and session state
+- [x] `lint:web` and `type-check:web` pass, and `e2e:mocks` is unaffected
 
 ## Dependencies
 
@@ -114,7 +114,27 @@ product change); bump PATCH only if a test hook or product file changes.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: live config now has four Playwright projects. `auth` runs the real sign-in specs
+  (`auth-live`, `auth-mfa-live`, `auth-oauth-live`), `setup` signs in once as the practice admin and
+  once as the live provider and saves `e2e/.auth/*.json` (gitignored), `app` reuses them through
+  `storageState`, `teardown` signs both out. New: `e2e/live.setup.ts`, `live.teardown.ts`,
+  `helpers/live-session.ts` (shared `mutationHeaders`, `openDashboard`). A run makes 2 admin password
+  sign-ins against the limit of 5 per 15 minutes; no limit or session setting changed.
+- Why each fix: the app specs no longer sign in themselves (that was the "Too many attempts" and
+  "Multiple Sessions Detected" pile-up). `auth-live` is matched by `auth{,-*}-live.spec.ts`; the first glob
+  missed it and it ran on top of a shared session. Administration: users, audit and security events are
+  tables (FE-043), and 28 users exceed one page, so the spec narrows with `usersQ`, `auditAction`,
+  `securityAction`. Billing: asserts the Overdue row with `invoicesStatus=overdue` and the $80 Paid row with
+  `invoicesStatus=paid&invoicesSort=issued-asc`, so $41 invoices from earlier runs cannot push them off
+  page 1. Patients and clinical use `patientsQ` search. MFA: `getByLabel` with `exact: true`
+  (5 matches). Notifications: `getByText('Read', {exact: true})` (matched body text).
+  Appointments: `.first()` on the seeded visit button (two matches in the week).
+- Rerun safety: run `npm run seed:mock-identity` before every run; it resets the seeded telehealth
+  visit that the telehealth spec ends. Rows the specs create (paid $41 invoices, Quinn Harlow patients,
+  appointments) are left and no spec depends on them. Procedure and the limiter/session reset SQL are
+  in `docs/workflows/frontend-testing.md`.
+- Tests: `npm run e2e:live` twice in a row (reset, seed, run; seed, run): 18 passed each (31 s), no
+  retries. `lint:web` 0 errors (9 existing warnings), `type-check:web` pass, `e2e:mocks` 35 passed.
 - PR:
-- Notes:
+- Notes: no version bump (test and docs only). Not verified: a third run inside 15 minutes (documented
+  to hit the account limit), Render. Security review not run: no auth, tenant or audit code changed.

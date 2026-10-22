@@ -1,5 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
-import {signInAsLiveProvider} from './helpers/mock-auth';
+import {openDashboard, PROVIDER_STATE} from './helpers/live-session';
 
 async function openTelehealth(page: Page) {
 	await page.getByRole('button', {name: 'Open navigation'}).click();
@@ -8,10 +8,11 @@ async function openTelehealth(page: Page) {
 }
 
 test.describe('Live telehealth session shell', () => {
+	test.use({storageState: PROVIDER_STATE});
 	test.use({viewport: {width: 768, height: 1024}});
 
 	test('creates, joins, and ends the seeded in-window visit as the live provider', async ({page}) => {
-		await signInAsLiveProvider(page);
+		await openDashboard(page);
 		await openTelehealth(page);
 
 		await expect(page.getByRole('heading', {level: 1, name: 'Telehealth'})).toBeVisible();
