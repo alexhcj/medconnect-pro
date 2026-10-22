@@ -105,6 +105,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - QA-005 — Authorization and tenant regression expansion
 - QA-006 — Live demo smoke
 - QA-007 — M18 close audit
+- QA-008 — Live e2e suite green
 
 ## Deployment (M9)
 
@@ -210,3 +211,4 @@ Polish and list normalization. Does not close M9 or reopen M17/M18; see the rele
 - FE-047 — Audit and security event time column without wrapping (shipped at 0.96.3; includes `patient-form.test.tsx` timeout fix)
 - FE-046 — Admin event filter options parity (shipped at 0.96.2)
 - DATA-006 — Live seed volume for list paging (shipped at 0.96.1; `e2e:live` not green, see task Completion)
+- QA-008 — Live e2e suite green (pending)
