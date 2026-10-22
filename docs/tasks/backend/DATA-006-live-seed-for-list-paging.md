@@ -89,8 +89,8 @@ note recorded this gap. Patients already page (18 extra seeded patients, page si
       counts is updated and says why
 - [x] No seeded value appears in the OpenAPI document or `docs/mocks/demo-users.json` logins other
       than documented additions
-- [ ] `e2e:live` and full `test:api` were run once and their results (including pre-existing
-      failures) recorded in Completion
+- [x] `e2e:live` and full `test:api` were run once and their results (including pre-existing
+      failures) recorded in Completion (the live suite was red then; QA-008 made it green)
 
 ## Dependencies
 

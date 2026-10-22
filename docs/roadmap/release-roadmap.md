@@ -46,15 +46,15 @@ Demo Readiness** is shipped and **closed** at 0.91.0
 [FE-039](../tasks/frontend/FE-039-public-demo-oauth-unavailable.md) (shipped),
 [INFRA-017](../tasks/infrastructure/INFRA-017-demo-presentation-pack.md) (shipped),
 [QA-007](../tasks/qa/QA-007-m18-close-audit.md) (shipped)). It does not reopen M17 and does not close M9.
-**M19 — Polish and list normalization** is **shipped** (not closed; only the user declares a milestone closed): FE-040 (0.91.1),
+**M19 — Polish and list normalization** is **in progress** (twelve tasks shipped, QA-009 pending; not closed, and only the user declares a milestone closed): FE-040 (0.91.1),
 FE-041 (0.91.2), FE-042 (0.91.3), BE-025 (0.92.0), BE-026 (0.93.0), FE-043 (0.94.0), FE-044 (0.95.0), FE-045 (0.96.0), DATA-006 (0.96.1), FE-046 (0.96.2), FE-047 (0.96.3) and QA-008 (test and docs only) are shipped.
 The close audit added four tasks, all shipped: [FE-047](../tasks/frontend/FE-047-audit-event-time-column-no-wrap.md)
 (audit and security event time column no-wrap, plus `patient-form.test.tsx` timeout fix; shipped at 0.96.3),
 [FE-046](../tasks/frontend/FE-046-admin-event-filter-options-parity.md) (admin action filter options; shipped at 0.96.2) and
 [DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md) (live seed volume so paging shows on the live stack; shipped at 0.96.1) and
 [QA-008](../tasks/qa/QA-008-live-e2e-suite-green.md) (`e2e:live` passes twice in a row on a freshly seeded stack; shipped, no version bump).
-No M19 task is pending.
-Latest release: 0.96.3.
+The M19 close audit added one more, [QA-009](../tasks/qa/QA-009-live-paging-specs.md) (live specs that reach
+page 2 of each list; pending, test only, no version bump). Latest release: 0.96.3.
 Render PR previews, real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and
 Redis stay deferred. Local product work does not wait on AWS. Resume M9 when the AWS account can
 be configured. Preview/production hosting remains M9, not M8, M10, M11, or M18.
@@ -203,7 +203,7 @@ GitHub About, shipped), and
 PR previews, real Google credentials, chat, recording, Socket.IO, hosted Stripe / EDI, Redis, and
 a persistent document disk. `DAILY_API_KEY` stays an operator secret, not a committed value.
 
-### M19 — Polish and list normalization (shipped, not closed)
+### M19 — Polish and list normalization (in progress, not closed)
 
 Design parity and bounded lists on the shipped demo. No new capability claims, no AWS, no
 reopen of M9, M17 or M18. Tasks:
@@ -219,16 +219,25 @@ Close-audit tasks:
 [FE-047](../tasks/frontend/FE-047-audit-event-time-column-no-wrap.md) (audit and security event timestamps on one line; `patient-form.test.tsx` timeout fix; shipped at 0.96.3),
 [FE-046](../tasks/frontend/FE-046-admin-event-filter-options-parity.md) (action filter options match the API; shipped at 0.96.2),
 [DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md) (live seed has a second page of audit events, security events, users, invoices and claims; shipped at 0.96.1), and
-[QA-008](../tasks/qa/QA-008-live-e2e-suite-green.md) (live e2e suite passes on a freshly seeded stack, shared sign-in sessions, no limit changes; shipped, test and docs only).
+[QA-008](../tasks/qa/QA-008-live-e2e-suite-green.md) (live e2e suite passes on a freshly seeded stack, shared sign-in sessions, no limit changes; shipped, test and docs only), and
+[QA-009](../tasks/qa/QA-009-live-paging-specs.md) (live specs reach page 2 of patients, invoices, claims, audit events, security events and users; pending, test only).
 Order: FE-040 and FE-041 independent; FE-042 before FE-045; BE-025 before FE-045 and the users part
 of FE-043; BE-026 before FE-043; FE-043 before FE-046 and FE-047; DATA-006 after BE-025, BE-026,
-FE-043 and FE-045 (and should use the action names FE-046 settles); QA-008 after DATA-006, FE-046 and FE-047.
+FE-043 and FE-045 (and should use the action names FE-046 settles); QA-008 after DATA-006, FE-046 and FE-047;
+QA-009 after DATA-006 and QA-008.
 
-State at the audit: paging is demonstrable in mock mode only. The live seed holds 0 audit events,
-0 security events, 4–5 users and 6 invoices (so 6 claims), which fit on one page each (admin lists
-25 per page, billing 10). Patients (10 per page) and appointments use their own fixed page sizes
-and return no `total` (see `docs/contracts/api-endpoints.md`). `e2e:live` and the full `test:api`
-were not run for the paging tasks. Audit and security-event sorting has no owner.
+State at the first audit (historical): paging was demonstrable in mock mode only. The live seed held
+0 audit events, 0 security events, 4–5 users and 6 invoices (so 6 claims), which fit on one page
+each. DATA-006 then seeded a second page of each (28 memberships, 19 invoices and claims, 45 extra
+audit rows), and QA-008 made `e2e:live` green (two runs of 18).
+
+Deferred with no owning task, recorded at the close audit: audit and security-event sorting
+(the API orders `createdAt DESC, id DESC`; BE-026, FE-043, FE-046 and DATA-006 exclude it);
+`total` on `GET /patients` and `GET /appointments` (the repositories already count; FE-044 uses
+Previous/Next by design); a bound on the appointments list (FE-012 takes the first 50); resource-type
+filter options for `condition`, `medication` and `external_identity` (FE-046 follow-up). Also not
+done: keyboard-only and real 320 px checks for FE-043/044/045, and a Render redeploy with
+`SEED_ON_DEPLOY=true` (operator step).
 
 ## Milestone crosswalk
 
@@ -257,7 +266,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M16 Live Telehealth | SEC-008, BE-021, FE-035 (shipped) | Eligibility on join/mint, join-before-mint, leave versus end (client/Daily leave; Nest end), 502 `MEDIA_UNAVAILABLE`, create/join rate limits, pre-join device UX. Not chat, recording, Socket.IO, or AWS. **Shipped** at 0.81.0. |
 | M17 Security and Compliance Maturity | SEC-009, BE-022, BE-023, FE-036, QA-005 (shipped) | ADR-016 session-tenant SUPER_ADMIN, clinical read audit, live concurrent-session inventory, authz-matrix expansion. Not AWS, HIPAA certification, production MFA, Redis/WAF, or patient DELETE. **Closed** at 0.84.1. |
 | M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (all shipped; closed at 0.91.0) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
-| M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046 (shipped, 0.96.2); FE-047 (shipped, 0.96.3); QA-008 (shipped, no version bump) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Time column no-wrap with `patient-form.test.tsx` timeout fix, live seed volume for paging and event filter options parity shipped. QA-008 (live e2e suite green) shipped; closing is the user's call. Does not close M9 or reopen M17/M18. |
+| M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046 (shipped, 0.96.2); FE-047 (shipped, 0.96.3); QA-008 (shipped, no version bump); QA-009 (pending, test only) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Time column no-wrap with `patient-form.test.tsx` timeout fix, live seed volume for paging and event filter options parity shipped. QA-008 (live e2e suite green) shipped. QA-009 (live paging specs) pending; closing is the user's call. Does not close M9 or reopen M17/M18. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

@@ -163,7 +163,8 @@ Email/SMS are adapter boundaries, not live carriers ([BE-008](../tasks/backend/B
 
 - version API when breaking changes require it;
 - consistent pagination (see [List pagination](#list-pagination));
-- consistent filtering/sorting;
+- consistent filtering; sorting only where an endpoint documents a `sort` parameter (audit and
+  security-event lists are fixed at newest first);
 - consistent error envelope (see [data-contracts.md](data-contracts.md));
 - correlation/request ID (`X-Correlation-ID`);
 - authorization on every protected resource;
@@ -178,10 +179,10 @@ Applies to `GET /billing/invoices`, `GET /billing/claims` and `GET /admin/users`
 ([BE-026](../tasks/backend/BE-026-audit-and-security-event-list-total.md)) use the same envelope
 (`events` plus `total`, `hasMore`, `nextPage`) and `page`/`pageSize` query, but keep a default
 `pageSize` of 50 and their existing filters (`action`, `resourceType`, `from`, `to`); `total`
-counts the caller's practice rows matching those filters. Patients and appointments use their own
-fixed page sizes.
+counts the caller's practice rows matching those filters. Patients page at a fixed 10; appointments
+accept `pageSize` 1–100 (default 50). Neither returns a `total`.
 
-- Query: `page` (integer 1–1000, default 1) and `pageSize` (integer 1–100, default 25). Anything
+- Query: `page` (integer 1–1000, default 1) and `pageSize` (integer 1–100, default 25; audit and security events default to 50). Anything
   else returns 400 `VALIDATION_ERROR`. A request with no params returns the first default page.
 - Envelope: the existing array key (`invoices`, `claims`, `users`) plus `total`, `hasMore` and
   optional `nextPage`. `total` counts only rows visible to the caller that match the filters:
@@ -194,5 +195,5 @@ fixed page sizes.
   Ordered by membership creation, then id.
 - Unknown `status`, `sort` or `role` values return 400. Unrecognised query keys are ignored.
 - **Client compatibility:** the envelope is additive. Clients that read only the array key keep
-  working and receive the first 25 rows until FE-043 (users) and FE-045 (invoices, claims) consume
-  the paging fields.
+  working and receive the first default page. The web app consumes the paging fields for users
+  (FE-043, 0.94.0), invoices and claims (FE-045, 0.96.0).

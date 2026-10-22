@@ -106,6 +106,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - QA-006 — Live demo smoke
 - QA-007 — M18 close audit
 - QA-008 — Live e2e suite green
+- QA-009 — Live paging specs
 
 ## Deployment (M9)
 
@@ -196,7 +197,7 @@ Interview demo readiness on the existing Render host. Does not close M9 or reope
 - INFRA-017 — Demo presentation pack
 - QA-007 — M18 close audit
 
-## Product (M19, shipped, not closed; 12 tasks shipped through 0.96.3)
+## Product (M19, in progress, not closed; 12 tasks shipped through 0.96.3; QA-009 pending)
 
 Polish and list normalization. Does not close M9 or reopen M17/M18; see the release roadmap.
 
@@ -210,5 +211,6 @@ Polish and list normalization. Does not close M9 or reopen M17/M18; see the rele
 - FE-045 — Billing bounded invoice and claims lists (shipped at 0.96.0)
 - FE-047 — Audit and security event time column without wrapping (shipped at 0.96.3; includes `patient-form.test.tsx` timeout fix)
 - FE-046 — Admin event filter options parity (shipped at 0.96.2)
-- DATA-006 — Live seed volume for list paging (shipped at 0.96.1; `e2e:live` not green, see task Completion)
+- DATA-006 — Live seed volume for list paging (shipped at 0.96.1; the live suite was red then, QA-008 made it green)
 - QA-008 — Live e2e suite green (shipped; test and docs only, no version bump)
+- QA-009 — Live paging specs (pending; test only)

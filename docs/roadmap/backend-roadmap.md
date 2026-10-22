@@ -65,13 +65,15 @@ Domain order (not historical ship order). Join to demo milestones in the
     ([DATA-005](../tasks/backend/DATA-005-synthetic-patient-portal-account.md), shipped) and open-session
     lookup ([BE-024](../tasks/backend/BE-024-telehealth-open-session-lookup.md), shipped). Not a session
     list, not Google credentials, and not a reopen of M17.
-22. List paging contract (M19, in progress; not closed): invoice, claims and user list paging
-    ([BE-025](../tasks/backend/BE-025-billing-and-user-list-pagination-contract.md), shipped at 0.92.0) and
+22. List paging contract (M19, backend tasks shipped; milestone not closed): invoice, claims and user list paging
+    ([BE-025](../tasks/backend/BE-025-billing-and-user-list-pagination-contract.md), shipped at 0.92.0),
     audit and security-event list `total`
-    ([BE-026](../tasks/backend/BE-026-audit-and-security-event-list-total.md), shipped at 0.93.0).
-    Patients and appointments keep their own fixed page sizes and return no `total`. Pending:
-    [DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md) seeds enough live rows for a second
-    page. Audit and security-event sorting has no owning task.
+    ([BE-026](../tasks/backend/BE-026-audit-and-security-event-list-total.md), shipped at 0.93.0) and
+    the live seed rows for a second page
+    ([DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md), shipped at 0.96.1).
+    Patients page at a fixed 10 and appointments take `pageSize` 1–100 (default 50); neither returns
+    a `total`. Deferred with no owning task: audit and security-event sorting, `total` on patients
+    and appointments.
 
 M0 shipped items 4 and 3 before item 2 so the platform and tenant persistence could exist without
 login HTTP. That does not make Identity optional for later domain APIs.

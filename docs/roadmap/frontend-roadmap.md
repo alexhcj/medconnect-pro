@@ -152,7 +152,7 @@ Shipped and closed at 0.91.0. Does not reopen M17.
 
 ## Slice 19 — Polish and list normalization (M19)
 
-In progress (eight tasks shipped through 0.96.3; not closed). Does not reopen M17 or M18.
+Shipped through 0.96.3, not closed; QA-009 (live paging specs) pending. Does not reopen M17 or M18.
 
 - Responsive header logo and RoleTag parity ([FE-040](../tasks/frontend/FE-040-responsive-header-logo-and-role-tag-parity.md); shipped).
 - Billing design/code sync ([FE-041](../tasks/frontend/FE-041-billing-design-code-sync.md); shipped) and
@@ -164,4 +164,6 @@ In progress (eight tasks shipped through 0.96.3; not closed). Does not reopen M1
 - Event time column no-wrap and `patient-form.test.tsx` timeout fix
   ([FE-047](../tasks/frontend/FE-047-audit-event-time-column-no-wrap.md); shipped); admin action filter options
   parity ([FE-046](../tasks/frontend/FE-046-admin-event-filter-options-parity.md); shipped).
-- Paging is demonstrable in mock mode only until [DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md) seeds the live stack.
+- Paging is demonstrable on the live stack since [DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md)
+  (shipped at 0.96.1). [QA-008](../tasks/qa/QA-008-live-e2e-suite-green.md) made `e2e:live` green;
+  [QA-009](../tasks/qa/QA-009-live-paging-specs.md) (pending) adds live specs that reach page 2.
