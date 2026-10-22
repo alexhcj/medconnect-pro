@@ -21,6 +21,8 @@ import {RATE_LIMIT_STORE} from '../src/rate-limit/rate-limit-store.js';
 import {testRateLimitStore} from './rate-limit-test-store.js';
 import {utcDateKey} from '../src/identity/seed-mock-identity-corpus.js';
 import {Appointment} from '../src/persistence/entities/appointment.entity.js';
+import {AuditEvent} from '../src/persistence/entities/audit-event.entity.js';
+import {InvoiceLineItem} from '../src/persistence/entities/invoice-line-item.entity.js';
 import {Invoice} from '../src/persistence/entities/invoice.entity.js';
 import {Notification} from '../src/persistence/entities/notification.entity.js';
 import {PatientAssignment} from '../src/persistence/entities/patient-assignment.entity.js';
@@ -31,6 +33,11 @@ import {User} from '../src/persistence/entities/user.entity.js';
 import {createAdminDataSource} from './admin-data-source.js';
 
 type HarborSnapshot = {
+	membershipCount: number;
+	auditCount: number;
+	authAuditCount: number;
+	invoiceCount: number;
+	lineItemCount: number;
 	patientCount: number;
 	patientEmails: string[];
 	appointmentCount: number;
@@ -80,8 +87,26 @@ describe('seed:mock-identity bounded corpus', () => {
 		const notificationRows = await dataSource.getRepository(Notification).find({
 			where: {practiceId, channel: 'in_app'},
 		});
+		const membershipCount = await dataSource.getRepository(PracticeMembership).count({
+			where: {practiceId},
+		});
+		const auditCount = await dataSource.getRepository(AuditEvent).count({where: {practiceId}});
+		const authAuditCount = await dataSource
+			.getRepository(AuditEvent)
+			.createQueryBuilder('event')
+			.where('event.practiceId = :practiceId', {practiceId})
+			.andWhere("event.action LIKE 'auth.%'")
+			.getCount();
+		const lineItemCount = await dataSource.getRepository(InvoiceLineItem).count({
+			where: {practiceId},
+		});
 
 		return {
+			membershipCount,
+			auditCount,
+			authAuditCount,
+			invoiceCount: invoiceRows.length,
+			lineItemCount,
 			patientCount: patientRows.length,
 			patientEmails: patientRows.map((row) => row.email).sort(),
 			appointmentCount: appointmentRows.length,
@@ -174,6 +199,16 @@ describe('seed:mock-identity bounded corpus', () => {
 		await seedMockIdentity();
 		const second = await snapshot();
 
+		expect(first.membershipCount).toBeGreaterThanOrEqual(26);
+		expect(first.auditCount).toBeGreaterThanOrEqual(46);
+		expect(first.authAuditCount).toBeGreaterThanOrEqual(26);
+		expect(first.invoiceCount).toBeGreaterThanOrEqual(14);
+		expect(first.lineItemCount).toBeGreaterThanOrEqual(14);
+		expect(second.membershipCount).toBe(first.membershipCount);
+		expect(second.auditCount).toBe(first.auditCount);
+		expect(second.authAuditCount).toBe(first.authAuditCount);
+		expect(second.invoiceCount).toBe(first.invoiceCount);
+		expect(second.lineItemCount).toBe(first.lineItemCount);
 		expect(second.patientCount).toBe(first.patientCount);
 		expect(second.appointmentCount).toBe(first.appointmentCount);
 		expect(second.todayAppointmentCount).toBeGreaterThanOrEqual(2);
@@ -259,6 +294,21 @@ describe('seeded patient portal login', {timeout: 60_000}, () => {
 				lastName: 'Quinn',
 			}),
 		]);
+
+		const billing = await request(app.getHttpServer())
+			.get('/billing/invoices?page=1&pageSize=100')
+			.set('Authorization', `Bearer ${login.body.accessToken as string}`)
+			.expect(200);
+		expect(billing.body.invoices.length).toBeGreaterThanOrEqual(2);
+		expect(billing.body.total).toBe(billing.body.invoices.length);
+		for (const invoice of billing.body.invoices as {patientName: string}[]) {
+			expect(invoice.patientName).toBe('Avery Quinn');
+		}
+		const claims = await request(app.getHttpServer())
+			.get('/billing/claims?page=1&pageSize=100')
+			.set('Authorization', `Bearer ${login.body.accessToken as string}`)
+			.expect(200);
+		expect(claims.body.total).toBe(billing.body.total);
 
 		const practice = await dataSource.getRepository(Practice).findOne({
 			where: {name: PRACTICE_NAME},

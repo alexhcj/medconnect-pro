@@ -126,3 +126,8 @@ must not point at preview or local URLs. Hosted boot fails closed on missing or 
 
 All fixtures are fictional and must not resemble identifiable real patients. Never introduce real
 PHI into local, preview/demo, or production/demo databases.
+
+The bounded seed ([DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md)) inserts a
+fixed set of `audit_events` rows so the paged admin lists have a second page. `audit_events` has
+no `synthetic` column; those rows are labeled by a `seed-audit-NN` correlation id and are not
+written by real actions.

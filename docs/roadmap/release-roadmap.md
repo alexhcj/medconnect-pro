@@ -47,12 +47,12 @@ Demo Readiness** is shipped and **closed** at 0.91.0
 [INFRA-017](../tasks/infrastructure/INFRA-017-demo-presentation-pack.md) (shipped),
 [QA-007](../tasks/qa/QA-007-m18-close-audit.md) (shipped)). It does not reopen M17 and does not close M9.
 **M19 — Polish and list normalization** is **in progress** (not closed; only the user declares a milestone closed): FE-040 (0.91.1),
-FE-041 (0.91.2), FE-042 (0.91.3), BE-025 (0.92.0), BE-026 (0.93.0), FE-043 (0.94.0), FE-044 (0.95.0) and FE-045 (0.96.0) are shipped.
-The close audit added three pending tasks: [FE-047](../tasks/frontend/FE-047-audit-event-time-column-no-wrap.md)
+FE-041 (0.91.2), FE-042 (0.91.3), BE-025 (0.92.0), BE-026 (0.93.0), FE-043 (0.94.0), FE-044 (0.95.0), FE-045 (0.96.0) and DATA-006 (0.96.1) are shipped.
+The close audit added three tasks, of which DATA-006 has shipped: [FE-047](../tasks/frontend/FE-047-audit-event-time-column-no-wrap.md)
 (audit and security event time column no-wrap, plus `patient-form.test.tsx` timeout testing),
 [FE-046](../tasks/frontend/FE-046-admin-event-filter-options-parity.md) (admin action filter options) and
-[DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md) (live seed volume so paging shows on the live stack).
-Latest release: 0.96.0.
+[DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md) (live seed volume so paging shows on the live stack; shipped, `e2e:live` not green).
+Latest release: 0.96.1.
 Render PR previews, real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and
 Redis stay deferred. Local product work does not wait on AWS. Resume M9 when the AWS account can
 be configured. Preview/production hosting remains M9, not M8, M10, M11, or M18.
@@ -213,7 +213,7 @@ reopen of M9, M17 or M18. Tasks:
 [FE-043](../tasks/frontend/FE-043-administration-paginated-lists.md) (audit, security events, users; shipped at 0.94.0),
 [FE-044](../tasks/frontend/FE-044-patient-list-bounded-height.md) (patients list; shipped at 0.95.0), and
 [FE-045](../tasks/frontend/FE-045-billing-bounded-invoice-and-claims-lists.md) (invoices, claims; shipped at 0.96.0).
-Pending from the close audit:
+Pending from the close audit (DATA-006 shipped at 0.96.1; `e2e:live` still fails on sign-in pile-up, a stale Practice-users list locator and page-1 invoice assertions, see its Completion):
 [FE-047](../tasks/frontend/FE-047-audit-event-time-column-no-wrap.md) (audit and security event timestamps on one line; testing todos for the `patient-form.test.tsx` timeouts),
 [FE-046](../tasks/frontend/FE-046-admin-event-filter-options-parity.md) (action filter options match the API), and
 [DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md) (live seed has a second page of audit events, security events, users, invoices and claims).
@@ -254,7 +254,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M16 Live Telehealth | SEC-008, BE-021, FE-035 (shipped) | Eligibility on join/mint, join-before-mint, leave versus end (client/Daily leave; Nest end), 502 `MEDIA_UNAVAILABLE`, create/join rate limits, pre-join device UX. Not chat, recording, Socket.IO, or AWS. **Shipped** at 0.81.0. |
 | M17 Security and Compliance Maturity | SEC-009, BE-022, BE-023, FE-036, QA-005 (shipped) | ADR-016 session-tenant SUPER_ADMIN, clinical read audit, live concurrent-session inventory, authz-matrix expansion. Not AWS, HIPAA certification, production MFA, Redis/WAF, or patient DELETE. **Closed** at 0.84.1. |
 | M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (all shipped; closed at 0.91.0) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
-| M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); FE-046, FE-047, DATA-006 (pending) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Pending: event filter options parity, time column no-wrap with `patient-form.test.tsx` timeout testing, live seed volume for paging. Does not close M9 or reopen M17/M18. |
+| M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046, FE-047 (pending) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Pending: event filter options parity, time column no-wrap with `patient-form.test.tsx` timeout testing. Live seed volume for paging shipped. Does not close M9 or reopen M17/M18. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.96.1] - 2026-10-22
+
+### Changed
+
+- DATA-006: `npm run seed:mock-identity` adds 24 synthetic NURSE/RECEPTIONIST staff users, 8 older
+  invoices on other patients, and 45 labeled audit events (30 `auth.*`, `seed-audit-NN` correlation
+  ids), so the live audit, security-event, user, invoice and claims lists have a second page.
+  Seeding stays idempotent. No schema, API or login change.
+
 ## [0.96.0] - 2026-10-21
 
 ### Added

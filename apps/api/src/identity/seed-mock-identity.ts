@@ -2,10 +2,11 @@ import {randomUUID} from 'node:crypto';
 import {mkdir, writeFile} from 'node:fs/promises';
 import {basename, dirname, join, resolve} from 'node:path';
 import {Logger} from '@nestjs/common';
-import {DataSource, type Repository} from 'typeorm';
+import {DataSource, In, type Repository} from 'typeorm';
 import {syntheticPdfBytes} from '../documents/document-file.js';
 import {documentStorageKey} from '../documents/document-storage-key.js';
 import {Appointment, type AppointmentType} from '../persistence/entities/appointment.entity.js';
+import {AuditEvent} from '../persistence/entities/audit-event.entity.js';
 import {ClinicalCondition} from '../persistence/entities/clinical-condition.entity.js';
 import {ClinicalHistory} from '../persistence/entities/clinical-history.entity.js';
 import {InvoiceLineItem} from '../persistence/entities/invoice-line-item.entity.js';
@@ -32,6 +33,10 @@ import {
 	SEEDED_CURRENT_MONTH_INVOICES,
 	SEEDED_INBOX_ITEMS,
 	secondTodayAppointmentWindow,
+	SEEDED_AUDIT_EVENTS,
+	SEEDED_PAGING_INVOICES,
+	SEEDED_STAFF_USERS,
+	seededAuditCreatedAt,
 	TODAY_OFFICE_NOTES,
 	TODAY_OFFICE_PATIENT_EMAIL,
 	utcDateKey,
@@ -218,6 +223,7 @@ export async function seedMockIdentity(): Promise<void> {
 		const invoiceRows = dataSource.getRepository(Invoice);
 		const lineItemRows = dataSource.getRepository(InvoiceLineItem);
 		const notificationRows = dataSource.getRepository(Notification);
+		const auditRows = dataSource.getRepository(AuditEvent);
 
 		let admin = await users.findOne({where: {email: account.email}});
 		if (!admin) {
@@ -635,8 +641,81 @@ export async function seedMockIdentity(): Promise<void> {
 			});
 		}
 
+		for (const staff of SEEDED_STAFF_USERS) {
+			let staffUser = await users.findOne({where: {email: staff.email}});
+			if (!staffUser) {
+				staffUser = await users.save({email: staff.email});
+			}
+			const staffMembership = await memberships.findOne({
+				where: {practiceId: practice.id, userId: staffUser.id},
+			});
+			if (!staffMembership) {
+				await memberships.save({
+					practiceId: practice.id,
+					userId: staffUser.id,
+					role: staff.role,
+				});
+			}
+		}
+
+		for (const catalog of SEEDED_PAGING_INVOICES) {
+			const patient = await patients.findOne({
+				where: {practiceId: practice.id, email: catalog.patientEmail},
+			});
+			if (!patient) {
+				continue;
+			}
+			const existingLine = await lineItemRows.findOne({
+				where: {practiceId: practice.id, description: catalog.description},
+			});
+			if (existingLine) {
+				continue;
+			}
+			const invoice = await invoiceRows.save({
+				practiceId: practice.id,
+				patientId: patient.id,
+				status: catalog.status,
+				amountCents: catalog.amountCents,
+				currency: 'USD',
+				issuedAt: catalog.issuedAt,
+				dueAt: new Date(catalog.issuedAt.getTime() + 14 * 24 * 60 * 60 * 1000),
+				synthetic: true,
+			});
+			await lineItemRows.save({
+				practiceId: practice.id,
+				invoiceId: invoice.id,
+				description: catalog.description,
+				amountCents: catalog.amountCents,
+			});
+		}
+
+		const auditActors = {admin: admin.id, provider: provider.id, nurse: mfaNurse.id};
+		const existingAuditIds = new Set(
+			(
+				await auditRows.find({
+					select: {id: true},
+					where: {practiceId: practice.id, id: In(SEEDED_AUDIT_EVENTS.map((event) => event.id))},
+				})
+			).map((row) => row.id),
+		);
+		const missingAudit = SEEDED_AUDIT_EVENTS.filter((event) => !existingAuditIds.has(event.id));
+		if (missingAudit.length > 0) {
+			await auditRows.insert(
+				missingAudit.map((event) => ({
+					id: event.id,
+					practiceId: practice.id,
+					actorUserId: auditActors[event.actor],
+					action: event.action,
+					resourceType: event.resourceType,
+					resourceId: null,
+					correlationId: event.correlationId,
+					createdAt: seededAuditCreatedAt(now, event.hoursAgo),
+				})),
+			);
+		}
+
 		Logger.log(
-			`Seeded synthetic practice admin, provider ${provider.id}, MFA nurse ${mfaNurse.id} assigned to Avery Quinn, patient ${patientUser.id} linked through portalUserId, demo patients, appointments, an in-window telehealth visit, clinical rows, a document, invoices, and inbox rows`,
+			`Seeded synthetic practice admin, provider ${provider.id}, MFA nurse ${mfaNurse.id} assigned to Avery Quinn, patient ${patientUser.id} linked through portalUserId, demo patients, appointments, an in-window telehealth visit, clinical rows, a document, invoices, inbox rows, extra staff users, paging invoices, and labeled audit events`,
 			'MockIdentity',
 		);
 	} finally {

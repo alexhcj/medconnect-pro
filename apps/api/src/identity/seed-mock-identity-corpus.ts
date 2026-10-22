@@ -387,6 +387,144 @@ export const SEEDED_INBOX_ITEMS: readonly SeededInboxItem[] = [
 	},
 ];
 
+export type SeededStaffUser = {
+	email: string;
+	role: 'NURSE' | 'RECEPTIONIST';
+};
+
+const STAFF_NAMES = [
+	'amari.stone',
+	'blair.nguyen',
+	'cory.baptiste',
+	'devon.kline',
+	'emery.okafor',
+	'frankie.lund',
+	'gale.moreno',
+	'hollis.park',
+	'ira.bennett',
+	'jesse.quill',
+	'kendall.ross',
+	'lane.abara',
+	'marlow.diaz',
+	'nico.hale',
+	'ollie.tran',
+	'perry.voss',
+	'quincy.lowe',
+	'remy.castillo',
+	'shay.imani',
+	'tobin.wells',
+	'ursa.holt',
+	'val.moreau',
+	'wren.sol',
+	'zion.platt',
+] as const;
+
+/**
+ * Twenty-four extra Harbor staff for the user-directory second page (25 per page). They hold
+ * NURSE or RECEPTIONIST only and have no mock IdP account, so none can sign in with a password.
+ */
+export const SEEDED_STAFF_USERS: readonly SeededStaffUser[] = STAFF_NAMES.map((name, index) => ({
+	email: `${name}@synthetic.example`,
+	role: index % 2 === 0 ? 'NURSE' : 'RECEPTIONIST',
+}));
+
+export type SeededPagingInvoice = {
+	description: string;
+	patientEmail: string;
+	status: InvoicePersistedStatus;
+	amountCents: number;
+	issuedAt: Date;
+};
+
+const PAGING_INVOICE_PATIENTS = [
+	'reed',
+	'reyes',
+	'rivera',
+	'rowe',
+	'santos',
+	'sato',
+	'sutton',
+	'tate',
+] as const;
+const PAGING_INVOICE_FIRST = ['casey', 'dana', 'ellis', 'finley', 'greer', 'harper', 'indigo', 'jules'];
+
+/**
+ * Eight invoices older than Avery Quinn's Aug 10 invoice, so the invoice and claims lists
+ * (page size 10, newest first) get a second page while Avery's rows stay on page 1.
+ */
+export const SEEDED_PAGING_INVOICES: readonly SeededPagingInvoice[] = PAGING_INVOICE_PATIENTS.map(
+	(last, index) => ({
+		description: `Seeded paging invoice ${String(index + 1).padStart(2, '0')}`,
+		patientEmail: `${PAGING_INVOICE_FIRST[index]}.${last}@synthetic.example`,
+		status: index % 2 === 0 ? 'paid' : 'issued',
+		amountCents: 6000 + index * 1500,
+		issuedAt: new Date(Date.UTC(2026, 2 + (index % 5), 3 + index * 3, 12, 0, 0)),
+	}),
+);
+
+export type SeededAuditActor = 'admin' | 'provider' | 'nurse';
+
+export type SeededAuditEvent = {
+	id: string;
+	action: string;
+	resourceType: string;
+	actor: SeededAuditActor;
+	hoursAgo: number;
+	correlationId: string;
+};
+
+/**
+ * Actions the API writes (auth.service.ts, oauth.service.ts, patient.service.ts,
+ * appointment.service.ts, billing.service.ts, document.service.ts, practice-user.service.ts).
+ * Keep in step with the FE-046 action set.
+ */
+export const SEEDED_AUTH_ACTIONS = [
+	'auth.login.succeeded',
+	'auth.login.succeeded',
+	'auth.login.failed',
+	'auth.mfa.succeeded',
+	'auth.logout',
+	'auth.session.revoked',
+	'auth.mfa.failed',
+	'auth.logout_all',
+	'auth.rate_limited',
+	'auth.refresh.reuse',
+] as const;
+
+export const SEEDED_OTHER_ACTIONS: readonly {action: string; resourceType: string}[] = [
+	{action: 'patient.accessed', resourceType: 'patient'},
+	{action: 'patient.created', resourceType: 'patient'},
+	{action: 'patient.updated', resourceType: 'patient'},
+	{action: 'appointment.created', resourceType: 'appointment'},
+	{action: 'appointment.updated', resourceType: 'appointment'},
+	{action: 'invoice.created', resourceType: 'invoice'},
+	{action: 'payment.recorded', resourceType: 'payment'},
+	{action: 'document.listed', resourceType: 'document'},
+	{action: 'membership.role_changed', resourceType: 'membership'},
+];
+
+const AUDIT_ACTORS: readonly SeededAuditActor[] = ['admin', 'provider', 'nurse'];
+
+/** Forty-five fixed audit rows (30 `auth.*`) with stable ids, spread over about 21 days. */
+export const SEEDED_AUDIT_EVENTS: readonly SeededAuditEvent[] = Array.from({length: 45}, (_, index) => {
+	const isAuth = index % 3 !== 2;
+	const authIndex = index - Math.floor(index / 3);
+	const other = SEEDED_OTHER_ACTIONS[Math.floor(index / 3) % SEEDED_OTHER_ACTIONS.length]!;
+	const nn = String(index + 1).padStart(2, '0');
+	return {
+		id: `5eed0000-0000-4000-8000-0000000000${nn}`,
+		action: isAuth ? SEEDED_AUTH_ACTIONS[authIndex % SEEDED_AUTH_ACTIONS.length]! : other.action,
+		resourceType: isAuth ? 'auth' : other.resourceType,
+		actor: AUDIT_ACTORS[index % AUDIT_ACTORS.length]!,
+		hoursAgo: 12 + index * 11,
+		correlationId: `seed-audit-${nn}`,
+	};
+});
+
+export function seededAuditCreatedAt(now: Date, hoursAgo: number): Date {
+	return new Date(now.getTime() - hoursAgo * 60 * 60 * 1000);
+}
+
 export function utcDateKey(date: Date): string {
 	return date.toISOString().slice(0, 10);
 }

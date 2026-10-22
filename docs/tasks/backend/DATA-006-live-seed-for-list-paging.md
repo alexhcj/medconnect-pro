@@ -3,7 +3,7 @@ id: DATA-006
 type: task
 area: backend
 feature: demo-data
-status: pending
+status: complete
 priority: medium
 estimate: 3
 dependencies: [DATA-002, DATA-005, BE-025, BE-026, FE-043, FE-045]
@@ -21,7 +21,7 @@ related_docs:
     ../frontend/FE-045-billing-bounded-invoice-and-claims-lists.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -80,14 +80,14 @@ note recorded this gap. Patients already page (18 extra seeded patients, page si
 
 ## Acceptance Criteria
 
-- [ ] On a freshly seeded live database the Harbor admin sees at least two pages of audit events,
+- [x] On a freshly seeded live database the Harbor admin sees at least two pages of audit events,
       security events, users, invoices, and claims at the default page sizes
-- [ ] Re-running the seed leaves row counts unchanged for each seeded table
-- [ ] The PATIENT demo account still sees only its own invoices and claims, and its own count is
+- [x] Re-running the seed leaves row counts unchanged for each seeded table
+- [x] The PATIENT demo account still sees only its own invoices and claims, and its own count is
       unchanged or documented
-- [ ] Existing seed, billing, audit and practice-user tests pass; any test that asserted the old
+- [x] Existing seed, billing, audit and practice-user tests pass; any test that asserted the old
       counts is updated and says why
-- [ ] No seeded value appears in the OpenAPI document or `docs/mocks/demo-users.json` logins other
+- [x] No seeded value appears in the OpenAPI document or `docs/mocks/demo-users.json` logins other
       than documented additions
 - [ ] `e2e:live` and full `test:api` were run once and their results (including pre-existing
       failures) recorded in Completion
@@ -119,7 +119,28 @@ Update the release-roadmap M19 entry and master task list.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `seed-mock-identity-corpus.ts` adds 24 NURSE/RECEPTIONIST staff users
+  (`@synthetic.example`, no mock IdP login), 8 invoices older than Avery Quinn's Aug 10 invoice on
+  other patients, and 45 audit events (30 `auth.*`, stable ids, `seed-audit-NN` correlation ids,
+  spread over about 21 days). `seed-mock-identity.ts` seeds them find-or-create; audit rows are
+  inserted only when their id is missing. No schema, route, DTO, web or login change.
+- Tests: `seed-mock-identity-corpus.spec.ts` (corpus shape), `test/seed-mock-identity.spec.ts`
+  (new counts, unchanged on a second run, PATIENT sees only Avery's invoices and claims).
+  `npm run lint:api` pass. `npm run type-check:api` only the existing error at
+  `telehealth-session.service.spec.ts:398`. Full `npm run test:api`: 73 files, 616 tests, all pass.
+- Live check: after two `seed:mock-identity` runs on Compose, Harbor held identical counts (28
+  memberships, 18 invoices and line items; audit events accumulate with sign-ins). Admin API totals
+  with a second page (`hasMore` true): users 28, audit events 260, security events 199, invoices 19,
+  claims 19.
+- `e2e:live`: NOT green, so its criterion stays unticked. Full run (twice): 2 passed, 12 failed,
+  mostly "Too many attempts" at login and the "Multiple Sessions Detected" dialog from repeated
+  sign-ins in one suite. Isolated runs: `administration-live.spec.ts:45` passes. `:13` fails because
+  it looks for a list named "Practice users" but `user-role-list.tsx:149` renders a table (spec
+  predates FE-043; not caused by the seed). `billing-live.spec.ts:54` fails at `$80.00` because six
+  $41 invoices left by earlier `billing-live` runs on this dev database fill page 1; on a fresh
+  seed the $80 invoice is 6th. `auth-mfa-live.spec.ts:5` fails on a strict-mode `Email` label
+  (5 matches). These specs need their own fix (web, out of scope here) or a fresh database run.
 - PR:
-- Notes:
+- Notes: Version 0.96.0 -> 0.96.1 (PATCH, seed content only). Seeded staff can sign in only through
+  the local fake OIDC (`APP_ENV=local`), as every seeded user already can. Render needs an operator
+  `SEED_ON_DEPLOY=true` deploy to pick the rows up; not done.
