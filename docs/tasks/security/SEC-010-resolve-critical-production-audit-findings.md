@@ -72,7 +72,7 @@ A red `ci` stops every `checksPass` deploy (INFRA-020), so this blocks the deplo
 - [x] `npm run build:production`, `npm run build:marketing` and `npm run build:api` pass
 - [x] `npm test`, `npm run lint`, `npm run type-check` (web) and `npm run test:api` pass
 - [x] `npm run e2e:mocks` passes
-- [ ] The `ci` workflow is green on `main` after the push
+- [x] The `ci` workflow is green on `main` after the push
 - [x] Completion records which advisories applied to this app and the version changes
 
 ## Dependencies
@@ -108,9 +108,7 @@ Runtime dependency change with no contract change: PATCH bump and CHANGELOG entr
   marketing 48), `test:api` (616; first run had transient Postgres-unreachable failures, rerun
   73/73 files green), `build:production`, `build:marketing`, `build:api` and `e2e:mocks` (35/35)
   all pass locally.
-- PR: none; the plan is a direct push to `main`. Not yet committed or pushed; pending the user's go-ahead. The `ci`-green-on-`main`
-  criterion stays unticked until the run is checked.
-- Notes: Advisory applicability. GHSA-p3m5-59mp-jv5r (Server Actions): no `'use server'` in
+- PR: none; pushed directly to `main`. The `ci` workflow passed fully (reported by the user).- Notes: Advisory applicability. GHSA-p3m5-59mp-jv5r (Server Actions): no `'use server'` in
   `apps/`, not reachable. GHSA-673q-mjm6-r5xr (`use cache`): no `'use cache'` or `cacheComponents`,
   not reachable. GHSA-2464-fhr4-w9xw (SVG image optimization): marketing is a static export with
   `images.unoptimized`; the web app does not use `next/image` but its server build exposes the

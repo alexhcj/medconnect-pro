@@ -6,6 +6,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.97.3] - 2026-10-23
+
+### Added
+
+- INFRA-020: `.github/pull_request_template.md` (task ID, Plane identifier, lane, preview, ADR-007
+  impact, docs checklist).
+
+### Changed
+
+- `render.yaml`: `autoDeployTrigger: checksPass` on `medconnect-api`, `medconnect-web` and
+  `medconnect-marketing`, so a red `ci` on `main` deploys nothing.
+- `preview-status.yml`: with `AMPLIFY_APP_ID` unset the PR comment now describes the Render setup
+  (CI result, `render-preview` label, mock-data web previews, link to `delivery-lanes.md`). The
+  Amplify branch is unchanged. `test:render-previews` and `test:preview-delivery` cover both.
+- `deploy-render.md` and `delivery-lanes.md` describe the gate. No API or data contract change.
+
+## [0.97.2] - 2026-10-23
+
+### Added
+
+- FE-048: preview environment banner on `apps/web` (all routes, above the app shell and login) and
+  `apps/marketing`. A thin, non-dismissable `role="status"` strip on warning tokens, shown only
+  when `NEXT_PUBLIC_DEPLOY_CONTEXT` is exactly `pr-preview`; no DOM otherwise. Web copy: "PR
+  preview · mock data · not the live demo"; marketing copy omits "mock data".
+  `scripts/infra/render-marketing.mjs` now sets the variable on a marketing PR preview build
+  (`IS_PULL_REQUEST=true`) and removes it otherwise; `render.yaml` builds marketing through it and
+  `test:render-previews` covers it.
+
+### Changed
+
+- `environment-configuration.md`: `NEXT_PUBLIC_DEPLOY_CONTEXT` applies to web and marketing; the
+  `.env.*.example` files note it stays unset outside Render previews. No API or data contract
+  change.
+
 ## [0.97.1] - 2026-10-23
 
 ### Security

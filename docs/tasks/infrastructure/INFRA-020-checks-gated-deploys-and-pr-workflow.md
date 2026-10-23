@@ -3,7 +3,7 @@ id: INFRA-020
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: medium
 estimate: 2
 dependencies: [INFRA-018, QA-011, SEC-010]
@@ -15,7 +15,7 @@ related_docs:
     ../../workflows/deploy-render.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -69,7 +69,7 @@ the Render demo. Work currently lands by direct push.
 - [ ] A commit to `main` with failing `ci` does not deploy any Render service
 - [ ] A commit to `main` with passing `ci` deploys only the services its build filters match
 - [ ] A PR shows one project comment that matches the Render setup when `AMPLIFY_APP_ID` is unset
-- [ ] `npm run test:preview-delivery` passes with the updated workflow
+- [x] `npm run test:preview-delivery` passes with the updated workflow
 - [ ] New PRs open with the template
 - [ ] `main` rejects direct pushes and requires `ci`; Completion records the `gh` output
 
@@ -97,7 +97,14 @@ INFRA-019's MINOR if they ship together.
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `render.yaml` (`autoDeployTrigger: checksPass` on all three services),
+  `.github/workflows/preview-status.yml` (Render comment when `AMPLIFY_APP_ID` is unset, Amplify
+  branch kept), `.github/pull_request_template.md`, docs updated. Version 0.97.3.
+- Tests: `npm run test:render-previews` (22 tests), `npm run test:preview-delivery` (4 tests).
 - PR:
-- Notes:
+- Notes: Branch protection applied on `main` (2026-10-23) with
+  `gh api --method PUT repos/alexhcj/medconnect-pro/branches/main/protection`. Response:
+  required check `ci` (`strict: false`), pull request required with 0 approvals,
+  `enforce_admins: false`, force pushes and deletions off. Admins can still bypass; use rarely.
+  **Not yet verified:** red/green deploy history, test PR comment and template. Criteria 1, 2, 3,
+  5 stay unticked until then; criterion 6 once a non-admin push is shown rejected.

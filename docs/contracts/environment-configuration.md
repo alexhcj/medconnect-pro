@@ -38,7 +38,7 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `NEXT_PUBLIC_USE_MOCKS` | web | Hosted preview and production must be `false`. The one exception is a Render PR service preview ([ADR-019](../decisions/ADR-019-render-pr-previews.md)), whose build sets `true` (see "Render PR previews" below). |
 | `NEXT_PUBLIC_MOCK_DELAY` | web | Local mock timing. A Render PR preview build sets a short delay (`150`). |
 | `NEXT_PUBLIC_MOCK_ERROR_RATE` | web | Local mock faults. A Render PR preview build sets `0`. |
-| `NEXT_PUBLIC_DEPLOY_CONTEXT` | web | `pr-preview` only in a Render PR preview build. Unset everywhere else. Build-time only. Not a secret. Read by the preview banner (FE-048). |
+| `NEXT_PUBLIC_DEPLOY_CONTEXT` | web, marketing | Exact `pr-preview` only in a Render PR preview build; anything else shows no banner. Unset everywhere else. Build-time only. Not a secret. Read by the preview banner (FE-048): web copy mentions mock data, marketing copy does not. |
 | `NEXT_PUBLIC_MOCK_LOG_LEVEL` | web | Local mock logging only. |
 | `NEXT_PUBLIC_API_BASE_URL` | web | Environment-specific API origin, or a same-origin path such as `/mcp-api`. Public by design, not a secret. |
 | `NEXT_PUBLIC_SITE_URL` | marketing | Public origin of the static marketing site. Build-time only. Not a secret. |
@@ -91,6 +91,10 @@ code reads only the provider-neutral variables above.
 | --- | --- | --- |
 | `IS_PULL_REQUEST` | Render build and start (provider variable) | `true` on a preview. The web build then uses `build:mocks` with `NEXT_PUBLIC_USE_MOCKS=true`, `NEXT_PUBLIC_MOCK_ERROR_RATE=0`, `NEXT_PUBLIC_MOCK_DELAY=150`, `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true`, `NEXT_PUBLIC_DEPLOY_CONTEXT=pr-preview`. The web start removes `API_BASE_URL`, so `/mcp-api` answers 503. |
 | `RENDER_GIT_BRANCH` | Render build and start (provider variable) | Live mode (`build:production`, API upstream kept) requires this to be `main` and `IS_PULL_REQUEST` not `true`. Any other value, or both missing, fails closed to mock mode. |
+
+`scripts/infra/render-marketing.mjs` is the only marketing reader of `IS_PULL_REQUEST`: when it is
+exactly `true` the marketing build sets `NEXT_PUBLIC_DEPLOY_CONTEXT=pr-preview`; otherwise the
+variable is removed from the build env.
 
 `fromService` values are copied into a preview at creation, so the start-time removal of
 `API_BASE_URL` is the control, not the Blueprint value. A preview never receives `DATABASE_*`,

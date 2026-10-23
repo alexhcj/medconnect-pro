@@ -45,6 +45,15 @@ describe('render.yaml previews (ADR-019)', () => {
 		assert.match(web, /scripts\/infra\/render-web\.mjs\s*$/m);
 	});
 
+	it('builds marketing only through render-marketing.mjs', () => {
+		const marketing = serviceBlock('medconnect-marketing');
+		assert.match(
+			marketing,
+			/^ {4}buildCommand: npm ci && node scripts\/infra\/render-marketing\.mjs build\s*$/m,
+		);
+		assert.match(marketing, /^ {8}- scripts\/infra\/render-marketing\.mjs\s*$/m);
+	});
+
 	it('keeps API secrets and database variables off the web service', () => {
 		const web = serviceBlock('medconnect-web');
 		assert.doesNotMatch(web, /DATABASE_/);
@@ -55,5 +64,12 @@ describe('render.yaml previews (ADR-019)', () => {
 
 	it('keeps IS_PULL_REQUEST out of the Blueprint env (only render-web.mjs reads it)', () => {
 		assert.doesNotMatch(blueprint.replace(/^\s*#.*$/gm, ''), /IS_PULL_REQUEST/);
+	});
+
+	it('deploys every service only after ci passes (INFRA-020)', () => {
+		for (const name of ['medconnect-api', 'medconnect-web', 'medconnect-marketing']) {
+			assert.match(serviceBlock(name), /^ {4}autoDeployTrigger: checksPass\s*$/m, name);
+		}
+		assert.equal((blueprint.match(/autoDeployTrigger:/g) ?? []).length, 3);
 	});
 });
