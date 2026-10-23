@@ -214,3 +214,14 @@ Polish and list normalization. Does not close M9 or reopen M17/M18; see the rele
 - DATA-006 — Live seed volume for list paging (shipped at 0.96.1; the live suite was red then, QA-008 made it green)
 - QA-008 — Live e2e suite green (shipped; test and docs only, no version bump)
 - QA-009 — Live paging specs (shipped; test only, no version bump)
+
+## Product (M20, proposed)
+
+PR previews and delivery lanes on the Render demo. Frontend previews only, web in mock mode
+(ADR-019). Does not close M9 or add a preview API or database.
+
+- INFRA-018 — Render PR preview decision and delivery lanes
+- INFRA-019 — Render frontend service previews (marketing + web in mock mode)
+- INFRA-020 — Checks-gated deploys and PR workflow
+- FE-048 — Preview environment banner (optional)
+- QA-010 — Preview lanes pilot
