@@ -2,6 +2,8 @@
 # Free web services, one static site, and one Free Postgres.
 # Upgrade Postgres before the 30-day expiry. Do not put real secrets in this file.
 # AWS Terraform and Amplify stay in place. See docs/workflows/deploy-render.md.
+# PR previews (INFRA-019, ADR-019): manual service previews for marketing and web only.
+# No previews on the API or database, and no root-level previews.
 
 databases:
   - name: medconnect-postgres
@@ -72,12 +74,17 @@ services:
     plan: free
     region: frankfurt
     branch: main
-    buildCommand: npm ci && npm run build:production
-    startCommand: npm run start
+    # INFRA-019: render-web.mjs builds live only on main; a PR preview builds on
+    # frontend mocks and starts without API_BASE_URL (/mcp-api answers 503).
+    buildCommand: npm ci && node scripts/infra/render-web.mjs build
+    startCommand: node scripts/infra/render-web.mjs start
     healthCheckPath: /login
+    previews:
+      generation: manual
     buildFilter:
       paths:
         - apps/web/**
+        - scripts/infra/render-web.mjs
         - package.json
         - package-lock.json
     domains:
@@ -104,6 +111,8 @@ services:
     branch: main
     buildCommand: npm ci && npm run build:marketing
     staticPublishPath: apps/marketing/out
+    previews:
+      generation: manual
     buildFilter:
       paths:
         - apps/marketing/**

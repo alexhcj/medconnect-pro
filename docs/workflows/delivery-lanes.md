@@ -6,9 +6,9 @@ Task lifecycle stages stay in [feature-development.md](feature-development.md). 
 [ADR-018](../decisions/ADR-018-render-marketing-static-site.md),
 [ADR-019](../decisions/ADR-019-render-pr-previews.md).
 
-> **Status:** this is the target flow for M20. Render previews arrive with INFRA-019, and the
-> `checksPass` deploy gate and PR-only rule with INFRA-020 (branch protection). Until then, `main`
-> deploys on push and there is no hosted preview.
+> **Status:** this is the target flow for M20. Render previews shipped with INFRA-019 (see
+> [deploy-render.md](deploy-render.md#pr-previews)). The `checksPass` deploy gate and PR-only rule
+> arrive with INFRA-020 (branch protection); until then, `main` deploys on push.
 
 ## Systems
 

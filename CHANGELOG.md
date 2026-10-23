@@ -6,6 +6,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.97.0] - 2026-10-23
+
+### Added
+
+- INFRA-019: Render PR service previews for `medconnect-marketing` and `medconnect-web`
+  (`previews.generation: manual` in `render.yaml`; label `render-preview` or `[render preview]` in
+  the title). `scripts/infra/render-web.mjs` builds the web preview on frontend mocks (no simulated
+  errors, short delay, demo accounts shown, `NEXT_PUBLIC_DEPLOY_CONTEXT=pr-preview`) and starts it
+  without `API_BASE_URL`, so `/mcp-api` answers 503. Live mode needs a non-PR build on `main`; any
+  other state fails closed to mocks. The API and Postgres get no preview. Added
+  `npm run test:render-previews` (Blueprint guard and mode-selection tests).
+
+### Changed
+
+- `render.yaml`: web build and start commands go through `render-web.mjs`.
+- `environment-configuration.md`, `deploy-render.md`, `delivery-lanes.md`: preview behaviour,
+  `IS_PULL_REQUEST` and `RENDER_GIT_BRANCH` mapping, cost and free-hours note. No application
+  code or API change.
+
 ## [0.96.3] - 2026-10-22
 
 ### Fixed

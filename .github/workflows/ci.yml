@@ -47,6 +47,8 @@ jobs:
         run: npm run test:amplify-buildspec
       - name: Test preview delivery workflows
         run: npm run test:preview-delivery
+      - name: Test Render previews
+        run: npm run test:render-previews
       - name: Test production delivery workflows
         run: npm run test:production-delivery
       - name: Test hosted DB operator scripts

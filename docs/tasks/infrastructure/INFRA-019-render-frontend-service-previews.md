@@ -16,7 +16,7 @@ related_docs:
     ../../../render.yaml,
   ]
 implementation:
-  status: not_started
+  status: in_progress
 validation:
   responsive: false
   accessibility: false
@@ -49,6 +49,9 @@ layer already exist (`apps/web/package.json`, `apps/web/src/lib/api/mocks/runtim
   otherwise `build:production` as today. Keep the branching in one committed script or command,
   not in application code.
 - Web start: when `IS_PULL_REQUEST=true`, start without `API_BASE_URL` so `/mcp-api` returns 503.
+- Preview build also sets `NEXT_PUBLIC_DEPLOY_CONTEXT=pr-preview` for the FE-048 banner.
+- Fail closed: live mode needs `IS_PULL_REQUEST` not `true` and `RENDER_GIT_BRANCH=main`; otherwise
+  mocks.
 - Marketing previews: same build; sign-in links keep pointing at the demo app origin.
 - A Node test (like `scripts/ci/amplify-buildspec.spec.mjs`) that fails if the API gets previews,
   if root `previews` is enabled, or if the web preview path can build with mocks off. Wire it into
@@ -83,7 +86,8 @@ layer already exist (`apps/web/package.json`, `apps/web/src/lib/api/mocks/runtim
 - [ ] `medconnect-api` and `medconnect-postgres` get no preview instance
 - [ ] Previews are removed when the PR closes or merges
 - [ ] The new spec test runs in CI and fails on the forbidden configurations above
-- [ ] `deploy-render.md` and `environment-configuration.md` describe the preview behaviour
+      (fails on forbidden configs, verified locally; `ci.yml` step added, tick after the first green CI run)
+- [x] `deploy-render.md` and `environment-configuration.md` describe the preview behaviour
 
 ## Dependencies
 
@@ -111,7 +115,9 @@ New hosted capability for reviewers: MINOR bump on 0.x, changelog entry (INFRA-0
 
 ## Completion
 
-- Implementation:
-- Tests:
+- Implementation: `scripts/infra/render-web.mjs`, `render.yaml` (manual previews on marketing and
+  web, web commands via the script), docs updated. Version 0.97.0.
+- Tests: `npm run test:render-previews` (14 tests; negative edits confirmed to fail).
 - PR:
-- Notes:
+- Notes: criteria 1-5 need real labelled PRs on Render (pilot); criterion 6 needs a green CI run
+  with the new `ci.yml` step. Top-level status stays `pending` until those are verified.

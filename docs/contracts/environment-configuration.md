@@ -35,9 +35,10 @@ real `.env`, `.env.preview`, or `.env.production` files.
 
 | Variable | App | Notes |
 | --- | --- | --- |
-| `NEXT_PUBLIC_USE_MOCKS` | web | Hosted preview and production must be `false`. |
-| `NEXT_PUBLIC_MOCK_DELAY` | web | Local mock timing only. |
-| `NEXT_PUBLIC_MOCK_ERROR_RATE` | web | Local mock faults only. |
+| `NEXT_PUBLIC_USE_MOCKS` | web | Hosted preview and production must be `false`. The one exception is a Render PR service preview ([ADR-019](../decisions/ADR-019-render-pr-previews.md)), whose build sets `true` (see "Render PR previews" below). |
+| `NEXT_PUBLIC_MOCK_DELAY` | web | Local mock timing. A Render PR preview build sets a short delay (`150`). |
+| `NEXT_PUBLIC_MOCK_ERROR_RATE` | web | Local mock faults. A Render PR preview build sets `0`. |
+| `NEXT_PUBLIC_DEPLOY_CONTEXT` | web | `pr-preview` only in a Render PR preview build. Unset everywhere else. Build-time only. Not a secret. Read by the preview banner (FE-048). |
 | `NEXT_PUBLIC_MOCK_LOG_LEVEL` | web | Local mock logging only. |
 | `NEXT_PUBLIC_API_BASE_URL` | web | Environment-specific API origin, or a same-origin path such as `/mcp-api`. Public by design, not a secret. |
 | `NEXT_PUBLIC_SITE_URL` | marketing | Public origin of the static marketing site. Build-time only. Not a secret. |
@@ -78,6 +79,22 @@ real `.env`, `.env.preview`, or `.env.production` files.
 | `DAILY_API_KEY` | api | Daily REST key for media-token minting. Unset selects the Fake adapter. Never `NEXT_PUBLIC_*`. Not in the current Secrets Manager JSON (hosted injection is M9, paused). |
 | `OIDC_CLIENT_SECRET` | api | Optional (BE-017, [ADR-014](../decisions/ADR-014-oidc-bff-and-external-identity.md)). Confidential OIDC client secret. Unset selects the Fake OIDC adapter (`APP_ENV=local` / tests only); hosted without it, OAuth start returns 503 `OAUTH_UNAVAILABLE`. Never `NEXT_PUBLIC_*`. Hosted Secrets Manager injection is M9 / later. |
 | `RATE_LIMIT_KEY_SECRET` | api | Implemented (BE-018, [ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)). HMAC-SHA-256 key for rate-limit bucket keys so raw IPs and emails are never stored. Application-internal, not a third-party secret. Minimum 32 characters. Required when hosted (boot fails without it); local and tests fall back to a fixed development default. Never `NEXT_PUBLIC_*`. Hosted Secrets Manager / ECS injection is M9 (paused). |
+
+### Render PR previews
+
+[ADR-019](../decisions/ADR-019-render-pr-previews.md), [INFRA-019](../tasks/infrastructure/INFRA-019-render-frontend-service-previews.md).
+Render service previews exist for `medconnect-marketing` and `medconnect-web` only. Render sets
+`IS_PULL_REQUEST=true` on a preview. `scripts/infra/render-web.mjs` is the only reader; application
+code reads only the provider-neutral variables above.
+
+| Variable | Where | Value / behaviour |
+| --- | --- | --- |
+| `IS_PULL_REQUEST` | Render build and start (provider variable) | `true` on a preview. The web build then uses `build:mocks` with `NEXT_PUBLIC_USE_MOCKS=true`, `NEXT_PUBLIC_MOCK_ERROR_RATE=0`, `NEXT_PUBLIC_MOCK_DELAY=150`, `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true`, `NEXT_PUBLIC_DEPLOY_CONTEXT=pr-preview`. The web start removes `API_BASE_URL`, so `/mcp-api` answers 503. |
+| `RENDER_GIT_BRANCH` | Render build and start (provider variable) | Live mode (`build:production`, API upstream kept) requires this to be `main` and `IS_PULL_REQUEST` not `true`. Any other value, or both missing, fails closed to mock mode. |
+
+`fromService` values are copied into a preview at creation, so the start-time removal of
+`API_BASE_URL` is the control, not the Blueprint value. A preview never receives `DATABASE_*`,
+`APP_ROLE_PASSWORD`, or `RATE_LIMIT_KEY_SECRET`. The API and Postgres get no preview.
 
 No JWT signing secret or payment processor key exists in the application. Do not invent those
 here. `DAILY_API_KEY` and `OIDC_CLIENT_SECRET` are the only third-party secrets in this catalog.

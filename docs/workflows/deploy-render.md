@@ -123,7 +123,36 @@ Render preview environments stay off. Per-PR review follows
 [ADR-019](../decisions/ADR-019-render-pr-previews.md) and [delivery-lanes.md](delivery-lanes.md):
 manual service previews for marketing and web only, web on frontend mocks, never this interviewer
 database. The AWS target (M9) keeps INFRA-010: a frontend preview against one shared preview API
-and database.
+and database. Details are in "PR previews" below.
+
+## PR previews
+
+[INFRA-019](../tasks/infrastructure/INFRA-019-render-frontend-service-previews.md). The Blueprint
+sets `previews.generation: manual` on `medconnect-marketing` and `medconnect-web`. The API and
+Postgres get no preview, and there is no root-level `previews`.
+
+**Request one:** add the label `render-preview` to the PR, or put `[render preview]` in its title.
+Without either, Render builds nothing. Render deletes the preview when the PR closes or merges.
+A build filter also gates preview builds: a docs-only PR does not build a preview.
+
+**What you get:**
+
+- Marketing: the same static build. Sign-in links still point at the demo app origin.
+- Web: `scripts/infra/render-web.mjs` builds on frontend mocks (`build:mocks`, no simulated
+  errors, short delay, demo account panel shown) and starts without `API_BASE_URL`. Sign in with a
+  demo account on mock data. `/mcp-api/health` returns 503 and the interviewer API sees no
+  requests. Live behaviour needs local `npm run dev:real` or the merged deploy.
+- Fail closed: live mode needs a non-PR build on branch `main`. If Render stops exposing those
+  variables, previews and the demo both build in mock mode, which is visible on `/login`.
+
+**Cost:** no paid resource. Static previews are free. A web preview uses the Free plan, shares the
+workspace's 750 free instance hours with the demo, and spins down after about 15 minutes, so the
+first load takes about a minute. Manual trigger and auto-delete keep the usage small; check the
+hours during the pilot.
+
+**Check one:** the build log prints `render-web: mode=mocks reason=IS_PULL_REQUEST`; the preview's
+`/mcp-api/health` returns 503; the dashboard lists no preview for `medconnect-api` or
+`medconnect-postgres`. Local guard: `npm run test:render-previews`.
 
 ## After the first seed
 
