@@ -3,7 +3,7 @@ id: QA-011
 type: task
 area: qa
 feature: testing
-status: pending
+status: implemented
 priority: high
 estimate: 1
 dependencies: []
@@ -14,7 +14,7 @@ related_docs:
     ../infrastructure/INFRA-020-checks-gated-deploys-and-pr-workflow.md,
   ]
 implementation:
-  status: in_progress
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -68,7 +68,7 @@ would stop deploying, so this lands first.
       `npm run test:api -- telehealth-session.service`
 - [x] `lint:api`, `type-check`, `lint`, `test`, `test:api` and the build steps in `ci.yml` pass
       locally
-- [ ] On `main` after the push, every `ci` step up to and including "Build api" passes. The final
+- [x] On `main` after the push, every `ci` step up to and including "Build api" passes. The final
       "Audit production dependencies" step is expected to stay red until SEC-010.
 
 ## Dependencies
@@ -97,4 +97,4 @@ Test only: no version bump and no CHANGELOG entry (QA-008 and QA-009 precedent).
 - Implementation: `telehealth-session.service.spec.ts:99` typed the `transitionWaitingToInSession` mock as `Promise<TelehealthSession | undefined>` (matches the repository). Test body unchanged.
 - Tests: `type-check:api` exit 0; `telehealth-session.service` 18 tests pass; `lint:api`, web `type-check` and `lint`, `build:production`, `build:marketing`, `build:api` pass locally.
 - PR:
-- Notes: pushed-`main` CI check pending. The final audit step stays red until SEC-010 (3 critical findings).
+- Notes: CI run 39929362866 on `f8a17a7`: every step through "Build api" passed. The final audit step stays red until SEC-010 (3 critical findings).
