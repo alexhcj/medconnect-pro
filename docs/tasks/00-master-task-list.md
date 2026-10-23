@@ -221,7 +221,7 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 (ADR-019). Does not close M9 or add a preview API or database.
 
 - INFRA-018 — Render PR preview decision and delivery lanes (shipped; docs only, no version bump)
-- INFRA-019 — Render frontend service previews (marketing + web in mock mode) (implemented at 0.97.0; hosted pilot checks pending)
+- INFRA-019 — Render frontend service previews (marketing + web in mock mode) (shipped at 0.97.0)
 - INFRA-020 — Checks-gated deploys and PR workflow
 - FE-048 — Preview environment banner (optional)
 - QA-010 — Preview lanes pilot

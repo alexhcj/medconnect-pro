@@ -3,7 +3,7 @@ id: INFRA-019
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [INFRA-018]
@@ -16,7 +16,7 @@ related_docs:
     ../../../render.yaml,
   ]
 implementation:
-  status: in_progress
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -77,16 +77,16 @@ layer already exist (`apps/web/package.json`, `apps/web/src/lib/api/mocks/runtim
 
 ## Acceptance criteria
 
-- [ ] A PR labelled `render-preview` that touches `apps/marketing/**` gets a working marketing
+- [x] A PR labelled `render-preview` that touches `apps/marketing/**` gets a working marketing
       preview URL; without the label it gets none
-- [ ] A labelled PR that touches `apps/web/**` gets a web preview where sign-in with a demo
+- [x] A labelled PR that touches `apps/web/**` gets a web preview where sign-in with a demo
       account works on mock data
-- [ ] On the web preview, a request to `/mcp-api/health` returns 503, and the API logs show no
+- [x] On the web preview, a request to `/mcp-api/health` returns 503, and the API logs show no
       requests from the preview
-- [ ] `medconnect-api` and `medconnect-postgres` get no preview instance
-- [ ] Previews are removed when the PR closes or merges
-- [ ] The new spec test runs in CI and fails on the forbidden configurations above
-      (fails on forbidden configs, verified locally; `ci.yml` step added, tick after the first green CI run)
+- [x] `medconnect-api` and `medconnect-postgres` get no preview instance
+- [x] Previews are removed when the PR closes or merges
+- [x] The new spec test runs in CI and fails on the forbidden configurations above
+      (CI step "Test Render previews" passed on the first run after the push; fails on forbidden configs, verified locally)
 - [x] `deploy-render.md` and `environment-configuration.md` describe the preview behaviour
 
 ## Dependencies
@@ -117,7 +117,12 @@ New hosted capability for reviewers: MINOR bump on 0.x, changelog entry (INFRA-0
 
 - Implementation: `scripts/infra/render-web.mjs`, `render.yaml` (manual previews on marketing and
   web, web commands via the script), docs updated. Version 0.97.0.
-- Tests: `npm run test:render-previews` (14 tests; negative edits confirmed to fail).
+- Tests: `npm run test:render-previews` (14 tests; negative edits confirmed to fail). The
+  "Test Render previews" CI step passed on the push to `main`. The whole `ci` run was red because
+  of an unrelated pre-existing `type-check:api` error in
+  `telehealth-session.service.spec.ts` (from 0.88.0), to be fixed in its own task.
 - PR:
-- Notes: criteria 1-5 need real labelled PRs on Render (pilot); criterion 6 needs a green CI run
-  with the new `ci.yml` step. Top-level status stays `pending` until those are verified.
+- Notes: pilot run by the owner on one marketing and one web PR: labelled gets a preview,
+  unlabelled none, API and Postgres get no preview, previews removed on close. The web preview's
+  `/mcp-api/health` 503 and the "no API log requests" check were **not run**; ticked at the
+  owner's request. Re-check on the next web PR (QA-010 covers isolation evidence).
