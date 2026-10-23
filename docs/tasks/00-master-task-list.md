@@ -223,7 +223,7 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 - INFRA-018 — Render PR preview decision and delivery lanes (shipped; docs only, no version bump)
 - INFRA-019 — Render frontend service previews (marketing + web in mock mode) (shipped at 0.97.0)
 - QA-011 — Fix API type-check error so CI runs green (shipped; test only, no version bump)
-- SEC-010 — Resolve critical production audit findings (blocks INFRA-020)
+- SEC-010 — Resolve critical production audit findings (shipped at 0.97.1)
 - INFRA-020 — Checks-gated deploys and PR workflow
 - FE-048 — Preview environment banner (optional)
 - QA-010 — Preview lanes pilot

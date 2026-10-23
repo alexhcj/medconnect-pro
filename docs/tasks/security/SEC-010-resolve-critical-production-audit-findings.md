@@ -3,7 +3,7 @@ id: SEC-010
 type: task
 area: security
 feature: dependency-security
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [QA-011]
@@ -14,7 +14,7 @@ related_docs:
     ../infrastructure/INFRA-020-checks-gated-deploys-and-pr-workflow.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -68,12 +68,12 @@ A red `ci` stops every `checksPass` deploy (INFRA-020), so this blocks the deplo
 
 ## Acceptance criteria
 
-- [ ] `npm audit --omit=dev` exits 0
-- [ ] `npm run build:production`, `npm run build:marketing` and `npm run build:api` pass
-- [ ] `npm test`, `npm run lint`, `npm run type-check` (web) and `npm run test:api` pass
-- [ ] `npm run e2e:mocks` passes
+- [x] `npm audit --omit=dev` exits 0
+- [x] `npm run build:production`, `npm run build:marketing` and `npm run build:api` pass
+- [x] `npm test`, `npm run lint`, `npm run type-check` (web) and `npm run test:api` pass
+- [x] `npm run e2e:mocks` passes
 - [ ] The `ci` workflow is green on `main` after the push
-- [ ] Completion records which advisories applied to this app and the version changes
+- [x] Completion records which advisories applied to this app and the version changes
 
 ## Dependencies
 
@@ -100,7 +100,21 @@ Runtime dependency change with no contract change: PATCH bump and CHANGELOG entr
 
 ## Completion
 
-- Implementation:
-- Tests:
-- PR:
-- Notes:
+- Implementation: `next` and `eslint-config-next` 16.3.8 -> 16.4.2 (exact pins) in `apps/web` and
+  `apps/marketing`. `@tanstack/react-query-devtools` moved from `dependencies` to
+  `devDependencies` in `apps/web` (user-approved), which takes `seroval` / `solid-js` out of the
+  production tree. Root `package-lock.json` regenerated. Version 0.97.0 -> 0.97.1 (PATCH).
+- Tests: `npm audit --omit=dev` exits 0; `npm run lint`, `type-check`, `npm test` (web 553,
+  marketing 48), `test:api` (616; first run had transient Postgres-unreachable failures, rerun
+  73/73 files green), `build:production`, `build:marketing`, `build:api` and `e2e:mocks` (35/35)
+  all pass locally.
+- PR: none; the plan is a direct push to `main`. Not yet committed or pushed; pending the user's go-ahead. The `ci`-green-on-`main`
+  criterion stays unticked until the run is checked.
+- Notes: Advisory applicability. GHSA-p3m5-59mp-jv5r (Server Actions): no `'use server'` in
+  `apps/`, not reachable. GHSA-673q-mjm6-r5xr (`use cache`): no `'use cache'` or `cacheComponents`,
+  not reachable. GHSA-2464-fhr4-w9xw (SVG image optimization): marketing is a static export with
+  `images.unoptimized`; the web app does not use `next/image` but its server build exposes the
+  default `/_next/image` endpoint, so treat it as potentially reachable. The upgrade fixes all
+  three. `seroval` / `solid-js` came only via the React Query devtools. Dev-tree advisories remain
+  and are out of scope. Render web and marketing builds, Amplify and CI use plain `npm ci`
+  (installs dev dependencies), so the layout's devtools import still resolves.

@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.97.1] - 2026-10-23
+
+### Security
+
+- SEC-010: cleared the 3 critical `npm audit --omit=dev` findings so the last `ci` step passes.
+  `next` 16.3.8 -> 16.4.2 and `eslint-config-next` 16.3.8 -> 16.4.2 in `apps/web` and
+  `apps/marketing` (GHSA-2464-fhr4-w9xw, GHSA-p3m5-59mp-jv5r, GHSA-673q-mjm6-r5xr).
+  `@tanstack/react-query-devtools` moved to `devDependencies` in `apps/web`, which removes the
+  `seroval` / `solid-js` path (GHSA-p6vx-979v-rg4c, GHSA-jp82-f5mq-hwhp) from the production
+  tree. No code or contract change.
+
 ## [0.97.0] - 2026-10-23
 
 ### Added
