@@ -96,9 +96,9 @@ function harness(role: PracticeRole, userId = actorId) {
 		getByAppointmentId: vi.fn().mockResolvedValue(undefined),
 		create: vi.fn().mockResolvedValue(sessionRow()),
 		save: vi.fn(async (row: TelehealthSession) => row),
-		transitionWaitingToInSession: vi.fn(async (_id: string, joinedAt: Date) =>
-			sessionRow({state: 'in_session', joinedAt}),
-		),
+		transitionWaitingToInSession: vi.fn<
+			(id: string, joinedAt: Date) => Promise<TelehealthSession | undefined>
+		>(async (_id, joinedAt) => sessionRow({state: 'in_session', joinedAt})),
 	};
 	const audit = {
 		record: vi.fn().mockResolvedValue({}),
