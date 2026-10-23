@@ -55,7 +55,9 @@ The close audit added four tasks, all shipped: [FE-047](../tasks/frontend/FE-047
 [QA-008](../tasks/qa/QA-008-live-e2e-suite-green.md) (`e2e:live` passes twice in a row on a freshly seeded stack; shipped, no version bump).
 The M19 close audit added one more, [QA-009](../tasks/qa/QA-009-live-paging-specs.md) (live specs that reach
 page 2 of each list; shipped, test only, no version bump). Latest release: 0.96.3.
-**M20 — PR previews and delivery lanes** is proposed
+**M20 — PR previews and delivery lanes** is in progress: INFRA-018 is shipped (ADR-019 accepted,
+workflow docs point at the lanes doc; docs only, no version bump); INFRA-019, INFRA-020, FE-048
+(optional) and QA-010 are pending
 ([INFRA-018](../tasks/infrastructure/INFRA-018-render-pr-preview-decision-and-delivery-lanes.md),
 [INFRA-019](../tasks/infrastructure/INFRA-019-render-frontend-service-previews.md),
 [INFRA-020](../tasks/infrastructure/INFRA-020-checks-gated-deploys-and-pr-workflow.md),
@@ -247,14 +249,14 @@ filter options for `condition`, `medication` and `external_identity` (FE-046 fol
 done: keyboard-only and real 320 px checks for FE-043/044/045, and a Render redeploy with
 `SEED_ON_DEPLOY=true` (operator step).
 
-### M20 — PR previews and delivery lanes (proposed)
+### M20 — PR previews and delivery lanes (in progress)
 
 Per-PR review URLs on the Render demo without touching the interviewer data, and one documented
 path from task to deploy. Marketing and web get manual Render service previews; web previews run
 on frontend mocks; the API and database get none ([ADR-019](../decisions/ADR-019-render-pr-previews.md),
 [delivery-lanes.md](../workflows/delivery-lanes.md)). No paid resources, no AWS, does not close M9.
 Tasks:
-[INFRA-018](../tasks/infrastructure/INFRA-018-render-pr-preview-decision-and-delivery-lanes.md) (accept ADR-019, point workflow docs at the lanes doc; docs only),
+[INFRA-018](../tasks/infrastructure/INFRA-018-render-pr-preview-decision-and-delivery-lanes.md) (accept ADR-019, point workflow docs at the lanes doc; docs only; shipped),
 [INFRA-019](../tasks/infrastructure/INFRA-019-render-frontend-service-previews.md) (manual previews for marketing and web, mock-mode web build, no API upstream, spec test),
 [INFRA-020](../tasks/infrastructure/INFRA-020-checks-gated-deploys-and-pr-workflow.md) (`checksPass` deploys, Render-aware PR comment, PR template, branch protection),
 [FE-048](../tasks/frontend/FE-048-preview-environment-banner.md) (preview banner; optional, needs Figma approval), and
@@ -290,7 +292,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M17 Security and Compliance Maturity | SEC-009, BE-022, BE-023, FE-036, QA-005 (shipped) | ADR-016 session-tenant SUPER_ADMIN, clinical read audit, live concurrent-session inventory, authz-matrix expansion. Not AWS, HIPAA certification, production MFA, Redis/WAF, or patient DELETE. **Closed** at 0.84.1. |
 | M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (all shipped; closed at 0.91.0) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
 | M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046 (shipped, 0.96.2); FE-047 (shipped, 0.96.3); QA-008 (shipped, no version bump); QA-009 (shipped, no version bump) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Time column no-wrap with `patient-form.test.tsx` timeout fix, live seed volume for paging and event filter options parity shipped. QA-008 (live e2e suite green) and QA-009 (live paging specs) shipped. **Closed** at 0.96.3. Does not close M9 or reopen M17/M18. |
-| M20 PR previews and delivery lanes | INFRA-018, INFRA-019, INFRA-020, FE-048 (optional), QA-010 (proposed) | Render service previews for marketing and web only; web previews on frontend mocks; no API or database preview; `main` deploys after `ci`; PR-only flow. No paid resources. Does not close M9 or change the AWS topology (ADR-012, INFRA-010). |
+| M20 PR previews and delivery lanes | INFRA-018 (shipped, docs only); INFRA-019, INFRA-020, FE-048 (optional), QA-010 (pending) | Render service previews for marketing and web only; web previews on frontend mocks; no API or database preview; `main` deploys after `ci`; PR-only flow. No paid resources. Does not close M9 or change the AWS topology (ADR-012, INFRA-010). |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

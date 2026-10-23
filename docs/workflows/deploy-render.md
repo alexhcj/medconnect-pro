@@ -119,9 +119,11 @@ adapter and the shell labels media unavailable. In-app notifications do not send
 [M18](../roadmap/release-roadmap.md) is shipped interviewer readiness (closed at 0.91.0) on this same host. It does
 not add services or domains. A portal patient can sign in, and Join visit opens an existing
 session for that patient or an assigned nurse. The public login hides the provider button.
-Render preview environments stay off through M18. Later previews, if any, follow
-INFRA-010: a frontend preview against one shared preview API and database, never this interviewer
-database.
+Render preview environments stay off. Per-PR review follows
+[ADR-019](../decisions/ADR-019-render-pr-previews.md) and [delivery-lanes.md](delivery-lanes.md):
+manual service previews for marketing and web only, web on frontend mocks, never this interviewer
+database. The AWS target (M9) keeps INFRA-010: a frontend preview against one shared preview API
+and database.
 
 ## After the first seed
 

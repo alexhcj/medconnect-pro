@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed
+Accepted. Implemented by INFRA-019 (service previews) and INFRA-020 (`checksPass` deploys, PR
+comment); until those ship, `main` deploys on push and no hosted preview exists.
 
 ## Decision
 
@@ -56,5 +57,6 @@ only. This does not replace the AWS preview topology in
   ADR-012's shared-preview shape and needs no application change. It needs its own ADR update.
 - ADR-018's line "Do not enable Render preview environments against the shared demo database"
   stays in force. This ADR adds service previews that do not touch that database.
-- The Amplify-only text in `.github/workflows/preview-status.yml` and the workflow docs is
-  updated to cover the active host.
+- The Amplify-only text in the workflow docs now points at the lanes doc
+  ([delivery-lanes.md](../workflows/delivery-lanes.md)) and keeps Amplify as the M9 target.
+  `.github/workflows/preview-status.yml` is updated by INFRA-020.

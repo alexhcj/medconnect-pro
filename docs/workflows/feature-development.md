@@ -39,12 +39,12 @@ Do not implement a UI task while `design.required: true` and `design.status` is 
     slice is user-facing).
 11. Classify SemVer impact and bump version plus changelog per [versioning.md](versioning.md)
     (before opening the PR).
-12. Open PR. Quality CI must pass. The project-advertised Amplify preview URL is posted on the
-    PR after `ci` succeeds ([deploy.md](deploy.md)). Review against that URL; the preview API
-    and preview/demo database are shared across PRs. Merge to `main` is the only production
-    delivery path ([release.md](release.md)): Amplify Git publishes the web; ECS migrate/deploy
-    waits on CI and a GitHub `production` environment approval. Feature branches cannot deploy
-    production.
+12. Open PR. Quality CI must pass. Review on the preview the change's lane gets, if any
+    ([delivery-lanes.md](delivery-lanes.md), [ADR-019](../decisions/ADR-019-render-pr-previews.md)).
+    Merge to `main` is the only delivery path ([release.md](release.md)). AWS target (M9):
+    Amplify PR preview against the shared preview API ([deploy.md](deploy.md), INFRA-010); ECS
+    migrate/deploy waits on CI and a GitHub `production` environment approval. Feature branches
+    cannot deploy production.
 13. Update Plane operational status. For new task files, sync to Plane before the commit so the
     ids are written back ([scripts/plane/README.md](../../scripts/plane/README.md#flow)).
 14. Mark task complete only after acceptance criteria are verified (stage 6): set top-level

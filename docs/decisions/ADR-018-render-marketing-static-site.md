@@ -45,3 +45,5 @@ Putting `Domain=.medconnectpro.app` on session cookies would share them with the
 - The `onrender.com` name for the application stays enabled until the apex certificate is
   verified. Disabling it earlier would remove the only working application hostname.
 - Railway, if ever used, would need its own blueprint. This decision does not add one.
+- [ADR-019](ADR-019-render-pr-previews.md) adds manual service previews for marketing and web
+  only. The rule above against previews on the shared demo database stays in force.

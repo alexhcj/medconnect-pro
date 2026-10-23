@@ -13,10 +13,13 @@
 10. Verify environment configuration (`local` / `preview` / `production` — not development or
     staging).
 11. Verify synthetic demo data.
-12. Review the advertised Amplify preview URL (after quality CI). Preview uses the shared
-    preview API and preview/demo database, not production.
-13. Merge to `main` only after quality CI is green. Amplify Git publishes the production web
-    from `main`. Quality CI on `main` must succeed before
+12. Review the lane's Render preview, if the lane has one ([delivery-lanes.md](delivery-lanes.md),
+    [ADR-019](../decisions/ADR-019-render-pr-previews.md)). Web previews use frontend mocks and
+    never touch the interviewer database. AWS target (M9): the Amplify preview URL against the
+    shared preview API and preview/demo database, not production.
+13. Merge to `main` only after quality CI is green. Render deploys `main` (interim demo). AWS
+    target (M9): Amplify Git publishes the production web from `main`. Quality CI on `main` must
+    succeed before
     [`.github/workflows/production-deploy.yml`](../../.github/workflows/production-deploy.yml)
     migrates and rolls ECS (preview API first, then production API behind the GitHub
     `production` environment).

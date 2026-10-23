@@ -42,9 +42,12 @@ implementation tasks, roadmaps and development workflows.
   ECS topology and local / preview / production,
   [ADR-016](decisions/ADR-016-super-admin-session-tenant-scope.md) for session-membership
   `SUPER_ADMIN` scope, and
-  [ADR-017](decisions/ADR-017-interim-render-demo.md) for the interim Render public demo.
+  [ADR-017](decisions/ADR-017-interim-render-demo.md) for the interim Render public demo,
+  [ADR-018](decisions/ADR-018-render-marketing-static-site.md) for the Render marketing static
+  site, and [ADR-019](decisions/ADR-019-render-pr-previews.md) for Render PR previews.
 - `workflows/` — repeatable engineering processes, including [versioning](workflows/versioning.md),
   [frontend testing](workflows/frontend-testing.md),
+  [delivery lanes](workflows/delivery-lanes.md),
   [API contract / Postman / OpenAPI](workflows/api-contract-workflow.md), and
   [design requirements](workflows/design-requirements.md) (workflow, not a paste prompt).
 - `processes/prompts/` — paste-in Cursor prompts: [plan-mode](processes/prompts/plan-mode-prompt.md),

@@ -215,12 +215,12 @@ Polish and list normalization. Does not close M9 or reopen M17/M18; see the rele
 - QA-008 — Live e2e suite green (shipped; test and docs only, no version bump)
 - QA-009 — Live paging specs (shipped; test only, no version bump)
 
-## Product (M20, proposed)
+## Product (M20, in progress)
 
 PR previews and delivery lanes on the Render demo. Frontend previews only, web in mock mode
 (ADR-019). Does not close M9 or add a preview API or database.
 
-- INFRA-018 — Render PR preview decision and delivery lanes
+- INFRA-018 — Render PR preview decision and delivery lanes (shipped; docs only, no version bump)
 - INFRA-019 — Render frontend service previews (marketing + web in mock mode)
 - INFRA-020 — Checks-gated deploys and PR workflow
 - FE-048 — Preview environment banner (optional)

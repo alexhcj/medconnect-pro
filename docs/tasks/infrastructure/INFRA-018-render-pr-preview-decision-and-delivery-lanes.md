@@ -3,7 +3,7 @@ id: INFRA-018
 type: task
 area: infrastructure
 feature: deployment
-status: pending
+status: completed
 priority: high
 estimate: 2
 dependencies: [INFRA-015, INFRA-016]
@@ -16,7 +16,7 @@ related_docs:
     ../../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: not_started
+  status: completed
 validation:
   responsive: false
   accessibility: false
@@ -70,12 +70,12 @@ This task:
 
 ## Acceptance criteria
 
-- [ ] ADR-019 is `Accepted`, is linked from ADR-018 consequences and `docs/README.md`, and names every
+- [x] ADR-019 is `Accepted`, is linked from ADR-018 consequences and `docs/README.md`, and names every
       Render service's preview status
-- [ ] `delivery-lanes.md` covers six lanes and states which lanes get which preview
-- [ ] `feature-development.md`, `release.md`, and `deploy-render.md` no longer imply a working
+- [x] `delivery-lanes.md` covers six lanes and states which lanes get which preview
+- [x] `feature-development.md`, `release.md`, and `deploy-render.md` no longer imply a working
       Amplify preview on the current host
-- [ ] The release-roadmap Current position and M20 section mention this milestone
+- [x] The release-roadmap Current position and M20 section mention this milestone
 
 ## Dependencies
 
@@ -98,7 +98,12 @@ Docs only. No version bump or changelog entry (ADR-007).
 
 ## Completion
 
-- Implementation:
-- Tests:
-- PR:
-- Notes:
+- Implementation: ADR-019 accepted (status note names INFRA-019/INFRA-020 as implementers); ADR-018
+  consequences link ADR-019; `delivery-lanes.md` gained a status note for the not-yet-live parts;
+  `feature-development.md` step 12, `release.md` steps 12-13 and the `deploy-render.md` M18
+  paragraph point at the lanes doc and ADR-019 and keep Amplify as the M9 target; `docs/README.md`
+  links ADR-018, ADR-019 and the lanes doc.
+- Tests: none (docs only). Links checked with docs-sync-checker.
+- PR: none yet.
+- Notes: no version bump or changelog (ADR-007). `preview-status.yml` is still Amplify-only; INFRA-020
+  updates it.
