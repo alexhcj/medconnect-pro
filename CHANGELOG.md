@@ -6,6 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.97.2] - 2026-10-23
+
+### Added
+
+- FE-048: preview environment banner on `apps/web` (all routes, above the app shell and login) and
+  `apps/marketing`. A thin, non-dismissable `role="status"` strip on warning tokens, shown only
+  when `NEXT_PUBLIC_DEPLOY_CONTEXT` is exactly `pr-preview`; no DOM otherwise. Web copy: "PR
+  preview · mock data · not the live demo"; marketing copy omits "mock data".
+  `scripts/infra/render-marketing.mjs` now sets the variable on a marketing PR preview build
+  (`IS_PULL_REQUEST=true`) and removes it otherwise; `render.yaml` builds marketing through it and
+  `test:render-previews` covers it.
+
+### Changed
+
+- `environment-configuration.md`: `NEXT_PUBLIC_DEPLOY_CONTEXT` applies to web and marketing; the
+  `.env.*.example` files note it stays unset outside Render previews. No API or data contract
+  change.
+
 ## [0.97.1] - 2026-10-23
 
 ### Security

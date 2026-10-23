@@ -225,5 +225,5 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 - QA-011 — Fix API type-check error so CI runs green (shipped; test only, no version bump)
 - SEC-010 — Resolve critical production audit findings (shipped at 0.97.1)
 - INFRA-020 — Checks-gated deploys and PR workflow
-- FE-048 — Preview environment banner (optional)
+- FE-048 — Preview environment banner (optional; shipped at 0.97.2)
 - QA-010 — Preview lanes pilot

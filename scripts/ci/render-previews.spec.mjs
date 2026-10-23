@@ -45,6 +45,15 @@ describe('render.yaml previews (ADR-019)', () => {
 		assert.match(web, /scripts\/infra\/render-web\.mjs\s*$/m);
 	});
 
+	it('builds marketing only through render-marketing.mjs', () => {
+		const marketing = serviceBlock('medconnect-marketing');
+		assert.match(
+			marketing,
+			/^ {4}buildCommand: npm ci && node scripts\/infra\/render-marketing\.mjs build\s*$/m,
+		);
+		assert.match(marketing, /^ {8}- scripts\/infra\/render-marketing\.mjs\s*$/m);
+	});
+
 	it('keeps API secrets and database variables off the web service', () => {
 		const web = serviceBlock('medconnect-web');
 		assert.doesNotMatch(web, /DATABASE_/);

@@ -109,7 +109,8 @@ services:
     name: medconnect-marketing
     runtime: static
     branch: main
-    buildCommand: npm ci && npm run build:marketing
+    # FE-048: render-marketing.mjs marks a PR preview build for the preview banner.
+    buildCommand: npm ci && node scripts/infra/render-marketing.mjs build
     staticPublishPath: apps/marketing/out
     previews:
       generation: manual
@@ -117,6 +118,7 @@ services:
       paths:
         - apps/marketing/**
         - apps/web/src/styles/tokens.css
+        - scripts/infra/render-marketing.mjs
         - package.json
         - package-lock.json
     domains:
