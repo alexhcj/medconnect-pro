@@ -19,9 +19,9 @@ import {OAuthProviderButton} from '@/components/auth/oauth-provider-button';
 import {
 	configuredOAuthProvider,
 	LOGIN_REASON_MESSAGES,
+	type LoginReason,
 	oauthEnabled,
 	parseLoginReason,
-	type LoginReason,
 } from '@/lib/auth/oauth';
 
 const loginSchema = z.object({
@@ -37,12 +37,13 @@ type MfaChallengeState = {
 	expiresIn: number;
 };
 
-function ReasonBanner({reason}: {reason: LoginReason}) {
+function ReasonBanner({reason}: { reason: LoginReason }) {
 	const message = LOGIN_REASON_MESSAGES[reason];
 	if (reason === 'oauth_failed' || reason === 'rate_limited') {
 		return (
-			<div className="mt-4 flex items-start gap-2 rounded-md bg-danger-subtle p-3 text-sm font-medium text-danger" role="alert">
-				<CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+			<div className="mt-4 flex items-start gap-2 rounded-md bg-danger-subtle p-3 text-sm font-medium text-danger"
+			     role="alert">
+				<CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true"/>
 				<p>{message}</p>
 			</div>
 		);
@@ -50,7 +51,7 @@ function ReasonBanner({reason}: {reason: LoginReason}) {
 	const tone = reason === 'unauthorized' ? 'bg-warning-subtle text-warning' : 'bg-brand-subtle text-brand-strong';
 	return (
 		<div className={`mt-4 flex items-start gap-2 rounded-md p-3 text-sm font-medium ${tone}`} role="status">
-			<Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+			<Info className="mt-0.5 size-4 shrink-0" aria-hidden="true"/>
 			<p>{message}</p>
 		</div>
 	);
@@ -119,9 +120,9 @@ export function LoginForm() {
 			<div className="w-full max-w-md rounded-xl border border-border bg-surface px-4 py-6 shadow-sm sm:p-8">
 				<h1 className="text-2xl font-bold text-foreground">Sign in</h1>
 				<p className="mt-2 text-sm text-foreground-secondary">
-					Sign in to the MedConnect Pro dashboard.
+					Sign in to the MedConnect Pro dashboardd.
 				</p>
-				{reason && <ReasonBanner reason={reason} />}
+				{reason && <ReasonBanner reason={reason}/>}
 				<p className="mt-4 rounded-md bg-warning-subtle p-3 text-xs text-warning" role="note">
 					<strong>Demo identity.</strong> Google/Fake OIDC sign-in is a demo integration, not a
 					production IdP. Email sign-in uses a mock identity provider.
@@ -130,13 +131,13 @@ export function LoginForm() {
 				{oauthEnabled() ? (
 					<>
 						<div className="mt-4">
-							<OAuthProviderButton provider={configuredOAuthProvider()} available={!isMockMode()} />
+							<OAuthProviderButton provider={configuredOAuthProvider()} available={!isMockMode()}/>
 						</div>
 
 						<div className="mt-4 flex items-center gap-3" aria-hidden="true">
-							<span className="h-px flex-1 bg-border" />
+							<span className="h-px flex-1 bg-border"/>
 							<span className="text-xs text-foreground-muted">or sign in with email</span>
-							<span className="h-px flex-1 bg-border" />
+							<span className="h-px flex-1 bg-border"/>
 						</div>
 					</>
 				) : (
@@ -145,7 +146,7 @@ export function LoginForm() {
 					</p>
 				)}
 
-				{showDemoAccounts() && <DemoAccountPanel />}
+				{showDemoAccounts() && <DemoAccountPanel/>}
 
 				<form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
 					<div>
