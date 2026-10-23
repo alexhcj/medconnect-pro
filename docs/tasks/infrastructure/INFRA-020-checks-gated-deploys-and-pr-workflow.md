@@ -6,7 +6,7 @@ feature: deployment
 status: pending
 priority: medium
 estimate: 2
-dependencies: [INFRA-018]
+dependencies: [INFRA-018, QA-011, SEC-010]
 related_adrs: [ADR-007-semantic-versioning.md, ADR-017-interim-render-demo.md]
 related_docs:
   [
@@ -75,7 +75,7 @@ the Render demo. Work currently lands by direct push.
 
 ## Dependencies
 
-- Blocked by: INFRA-018
+- Blocked by: INFRA-018, QA-011, SEC-010 (a red `ci` on `main` would stop all `checksPass` deploys)
 - Related: INFRA-019, INFRA-010 (Amplify branch of the comment)
 
 ## Validation
