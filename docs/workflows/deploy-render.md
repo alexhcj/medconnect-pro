@@ -154,6 +154,13 @@ hours during the pilot.
 `/mcp-api/health` returns 503; the dashboard lists no preview for `medconnect-api` or
 `medconnect-postgres`. Local guard: `npm run test:render-previews`.
 
+## Checks-gated deploys
+
+[INFRA-020](../tasks/infrastructure/INFRA-020-checks-gated-deploys-and-pr-workflow.md). Every
+service sets `autoDeployTrigger: checksPass`, so Render deploys a `main` commit only after its
+GitHub checks pass (the `ci` job). A red `ci` deploys nothing; a green one deploys the services
+whose `buildFilter` matches the changed paths. Any later check that fails also stops deploys.
+
 ## After the first seed
 
 The committed flag is already `SEED_ON_DEPLOY=false`. If a one-off seed deploy set it to `true`,

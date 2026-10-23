@@ -65,4 +65,11 @@ describe('render.yaml previews (ADR-019)', () => {
 	it('keeps IS_PULL_REQUEST out of the Blueprint env (only render-web.mjs reads it)', () => {
 		assert.doesNotMatch(blueprint.replace(/^\s*#.*$/gm, ''), /IS_PULL_REQUEST/);
 	});
+
+	it('deploys every service only after ci passes (INFRA-020)', () => {
+		for (const name of ['medconnect-api', 'medconnect-web', 'medconnect-marketing']) {
+			assert.match(serviceBlock(name), /^ {4}autoDeployTrigger: checksPass\s*$/m, name);
+		}
+		assert.equal((blueprint.match(/autoDeployTrigger:/g) ?? []).length, 3);
+	});
 });

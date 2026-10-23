@@ -50,4 +50,15 @@ describe('preview delivery workflows', () => {
 		assert.doesNotMatch(previewStatus, /createDeployment/i);
 		assert.doesNotMatch(previewStatus, /amplify start/i);
 	});
+
+	it('posts a Render comment when AMPLIFY_APP_ID is unset, without implying a live API', () => {
+		assert.match(previewStatus, /previewUrl \? amplifyPassed : renderPassed/);
+		assert.match(previewStatus, /`render-preview` label/);
+		assert.match(previewStatus, /\*\*mock data\*\*/);
+		assert.match(previewStatus, /delivery-lanes\.md/);
+		assert.doesNotMatch(previewStatus, /Set it to the Amplify app id/);
+		const renderBlock = previewStatus.split('const renderPassed')[1].split('const failed')[0];
+		assert.doesNotMatch(renderBlock, /shared preview API/);
+		assert.doesNotMatch(renderBlock, /amplifyapp\.com/);
+	});
 });
