@@ -57,7 +57,7 @@ The M19 close audit added one more, [QA-009](../tasks/qa/QA-009-live-paging-spec
 page 2 of each list; shipped, test only, no version bump). Latest release: 0.96.3.
 **M20 — PR previews and delivery lanes** is in progress: INFRA-018 is shipped (ADR-019 accepted,
 workflow docs point at the lanes doc; docs only, no version bump); INFRA-019 is shipped at
-0.97.0 (manual Render previews for marketing and web); QA-011 is shipped (API type-check fix; test only, no version bump); SEC-010 is shipped at 0.97.1 (production audit findings cleared); FE-048 is shipped at 0.97.2 (PR preview banner on web and marketing); INFRA-020 is shipped at 0.97.3 (`checksPass` deploys, Render-aware PR comment, PR template; branch protection on `main` is an operator step still to record); SEC-011 is shipped at 0.97.4 (new production audit advisories cleared; latest release 0.97.4);
+0.97.0 (manual Render previews for marketing and web); QA-011 is shipped (API type-check fix; test only, no version bump); SEC-010 is shipped at 0.97.1 (production audit findings cleared); FE-048 is shipped at 0.97.2 (PR preview banner on web and marketing); INFRA-020 is shipped at 0.97.3 (`checksPass` deploys, Render-aware PR comment, PR template; branch protection on `main` is an operator step still to record); SEC-011 is shipped at 0.97.4 (new production audit advisories cleared); standalone FE-049 is shipped at 0.98.0 (latest release 0.98.0);
 QA-010 is pending
 ([INFRA-018](../tasks/infrastructure/INFRA-018-render-pr-preview-decision-and-delivery-lanes.md),
 [INFRA-019](../tasks/infrastructure/INFRA-019-render-frontend-service-previews.md),
@@ -70,7 +70,7 @@ QA-010 is pending
 [ADR-019](../decisions/ADR-019-render-pr-previews.md) and
 [delivery-lanes.md](../workflows/delivery-lanes.md).
 [FE-049](../tasks/frontend/FE-049-api-status-indicator.md) (API status indicator on `/login`) is a
-standalone pending task outside any milestone.
+standalone task outside any milestone, shipped at 0.98.0 (Figma frames approved; web indicator, wake ping, queued sign-in; real Render sleep test still to record).
 Real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and
 Redis stay deferred. Local product work does not wait on AWS. Resume M9 when the AWS account can
 be configured. Preview/production hosting remains M9, not M8, M10, M11, or M18.
@@ -303,7 +303,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (all shipped; closed at 0.91.0) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
 | M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046 (shipped, 0.96.2); FE-047 (shipped, 0.96.3); QA-008 (shipped, no version bump); QA-009 (shipped, no version bump) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Time column no-wrap with `patient-form.test.tsx` timeout fix, live seed volume for paging and event filter options parity shipped. QA-008 (live e2e suite green) and QA-009 (live paging specs) shipped. **Closed** at 0.96.3. Does not close M9 or reopen M17/M18. |
 | M20 PR previews and delivery lanes | INFRA-018 (shipped, docs only), INFRA-019 (shipped at 0.97.0), QA-011 (shipped, test only), SEC-010 (shipped at 0.97.1), SEC-011 (shipped at 0.97.4), FE-048 (optional; shipped at 0.97.2), INFRA-020 (shipped at 0.97.3); QA-010 (pending) | Render service previews for marketing and web only; web previews on frontend mocks; no API or database preview; `main` deploys after `ci`; PR-only flow. No paid resources. Does not close M9 or change the AWS topology (ADR-012, INFRA-010). |
-| Standalone (no milestone) | FE-049 (pending) | API status indicator on `/login` and a gesture-gated wake ping for the sleeping Render Free API (ADR-017). Not part of M20. No paid resources, keep-alive pinger, or API change. |
+| Standalone (no milestone) | FE-049 (shipped at 0.98.0) | API status indicator on `/login` and a gesture-gated wake ping for the sleeping Render Free API (ADR-017). Not part of M20. No paid resources, keep-alive pinger, or API change. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

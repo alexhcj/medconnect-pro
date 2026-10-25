@@ -23,6 +23,15 @@ export function appOrigin(): string {
 	return httpOrigin(process.env.NEXT_PUBLIC_APP_ORIGIN, LOCAL_APP_ORIGIN);
 }
 
+/**
+ * API origin the sign-in wake ping targets (FE-049). Build-time. Unset means no ping, so there is
+ * no local default.
+ */
+export function apiOrigin(): string | null {
+	const raw = process.env.NEXT_PUBLIC_API_ORIGIN?.trim();
+	return raw ? httpOrigin(raw, raw) : null;
+}
+
 export function appLoginHref(): string {
 	return `${appOrigin()}/login`;
 }

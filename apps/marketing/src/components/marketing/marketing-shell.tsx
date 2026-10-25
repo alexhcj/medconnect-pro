@@ -5,6 +5,7 @@ import {usePathname} from 'next/navigation';
 import {MarketingFooter} from '@/components/marketing/marketing-footer';
 import {MarketingHeader} from '@/components/marketing/marketing-header';
 import {MarketingMobileNav} from '@/components/marketing/marketing-mobile-nav';
+import {wakePingOnSignInGesture} from '@/lib/marketing/wake-ping';
 
 interface MarketingShellProps {
 	children: React.ReactNode;
@@ -19,7 +20,12 @@ export function MarketingShell({children}: MarketingShellProps) {
 	}, [pathname]);
 
 	return (
-		<div className="flex min-h-screen flex-col bg-surface">
+		<div
+			className="flex min-h-screen flex-col bg-surface"
+			onPointerOver={(event) => wakePingOnSignInGesture(event.nativeEvent)}
+			onFocus={(event) => wakePingOnSignInGesture(event.nativeEvent)}
+			onClick={(event) => wakePingOnSignInGesture(event.nativeEvent)}
+		>
 			<a
 				href="#main-content"
 				className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:m-3 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-brand-hover focus:shadow"

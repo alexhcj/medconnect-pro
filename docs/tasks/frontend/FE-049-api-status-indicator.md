@@ -3,7 +3,7 @@ id: FE-049
 type: task
 area: frontend
 feature: auth
-status: pending
+status: implemented
 priority: medium
 estimate: 5
 dependencies: [INFRA-015, INFRA-016]
@@ -19,11 +19,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/?node-id=282-2"
+  frame: "FE-049 API status indicator"
+  status: approved
 implementation:
-  status: not_started
+  status: partial
 validation:
   responsive: true
   accessibility: true
@@ -111,34 +111,35 @@ and nothing has woken the API by the time the user retries. That reads as a brok
 
 ## Acceptance criteria
 
-- [ ] A trusted gesture on a marketing CTA sends exactly one `/health` with no cookies;
+- [x] A trusted gesture on a marketing CTA sends exactly one `/health` with no cookies;
       synthetic/untrusted events and `navigator.webdriver` send none
-- [ ] `/login` pings on first field focus (not on mount), deduplicated
-- [ ] With a stubbed asleep API, the indicator auto-expands to the waking state with elapsed
+- [x] `/login` pings on first field focus (not on mount), deduplicated
+- [x] With a stubbed asleep API, the indicator auto-expands to the waking state with elapsed
       seconds and the form shows the hint, not "Unable to sign in. Try again."
-- [ ] Polling runs only while waking and stops on 200; a collapsed healthy dot never polls
-- [ ] The indicator works by keyboard (Enter toggles, Esc closes) and by touch; hover preview
+- [x] Polling runs only while waking and stops on 200; a collapsed healthy dot never polls
+- [x] The indicator works by keyboard (Enter toggles, Esc closes) and by touch; hover preview
       applies on fine pointers only
-- [ ] A queued submit completes automatically, including the MFA path; cancel works; the cap
+- [x] A queued submit completes automatically, including the MFA path; cancel works; the cap
       shows the unreachable fallback with a retry
-- [ ] A queued submit triggers a pulse (shake only under `no-preference`, static highlight
+- [x] A queued submit triggers a pulse (shake only under `no-preference`, static highlight
       otherwise)
-- [ ] 401 and 429 messages are unchanged; a 5xx with a valid error envelope is not a wake
-- [ ] Mock mode and PR previews show no indicator and send no ping
-- [ ] At 320 px the indicator does not overlap the form or submit button
-- [ ] Axe clean; status announced once; reduced motion respected
+- [x] 401 and 429 messages are unchanged; a 5xx with a valid error envelope is not a wake
+- [x] Mock mode and PR previews show no indicator and send no ping
+- [x] At 320 px the indicator does not overlap the form or submit button
+- [x] Axe clean; status announced once; reduced motion respected
 - [ ] Unit tests: ping helper (dedupe, cooldown), gesture and webdriver gating, error mapping,
       indicator state machine, queued submit; Playwright mock-mode spec; one QA-006 live smoke
       case
-- [ ] Public marketing API-origin variable documented in `environment-configuration.md` and the
+- [x] Public marketing API-origin variable documented in `environment-configuration.md` and the
       `.env.*` examples
 
 ## Dependencies
 
 - Depends on: INFRA-015, INFRA-016 (the free-tier spin-down this task works around)
 - Related: FE-048 (preview detection via `isPrPreview()`), QA-006, FE-039, ADR-017
-- Design: required before implementation. Figma states: dot, pill, expanded card, waking, ready,
-  unreachable, each at mobile and desktop. Figma URL to be added here when approved.
+- Design: approved. Figma page "FE-049 API status indicator" (frames 01–06 desktop, 07–11
+  mobile, plus Trigger and Card component sets):
+  https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/?node-id=282-2
 - Product registry: no `docs/product/` row changes expected; check for a sign-in row on ship.
 
 ## Validation
@@ -160,4 +161,40 @@ New visible UI and a public env variable: MINOR bump at ship time.
 
 ## Completion
 
-Pending.
+- Implementation: web `src/lib/api/http.ts` (`ServiceWakingError`, `wakeErrorFromBody`,
+  `liveFetch`), `session-real.ts` (login and MFA verify use them), `app/mcp-api/[[...path]]/route.ts`
+  (bare 502 when the upstream is unreachable), `lib/api/{wake-ping,health-api}.ts`,
+  `lib/api-status/{api-status-machine,use-api-status}.ts`,
+  `components/auth/{api-status-provider,api-status-indicator,login-form}.tsx`, `app/globals.css`
+  (attention cue), `app/(auth)/login/layout.tsx` (noindex), `app/robots.ts`. Marketing
+  `lib/marketing/{wake-ping,public-urls}.ts` and `marketing-shell.tsx`. Contract row in
+  `environment-configuration.md`, `.env.*` examples, `deploy-render.md`. Version 0.98.0.
+- Deviations: the probe loop is an effect-driven hook, not `useQuery`, because it needs abort,
+  backoff and a state machine; no new dependency. A queued submit stops after three automatic
+  attempts or 5 minutes and shows the generic error. A sign-in that timed out is never replayed
+  (security review: it may have reached the server). A submit made while unreachable is sent once
+  instead of queued. The proxy catch logs only the error class and sets `x-mcp-proxy-error`. `render.yaml` is unchanged: `NEXT_PUBLIC_API_ORIGIN` is set
+  in the Render dashboard (see `deploy-render.md`).
+- Tests: Vitest for http and session-real wake mapping, the `/mcp-api` route, both wake-ping
+  helpers (dedupe, cooldown, webdriver, gesture gating), the state machine, the hook, the
+  indicator, login-form wake flows (queue, cancel, MFA, 401/429, enveloped 5xx, retry cap) and
+  robots. Playwright: `api-status-mock.spec.ts` (in `e2e:mocks`) and `auth-wake-live.spec.ts`
+  (stubbed API, no database: `playwright.live.config.ts --project=auth`). `test:web` 618,
+  `test:marketing` 59, `e2e:mocks` 37 passed; lint and type-check clean for both apps (existing
+  warnings only).
+- Indexing: `/login` has both `noindex` and a robots.txt `Disallow`, as the spec asks. A
+  disallowed URL can still be listed as a bare link because crawlers never read its `noindex`;
+  accepted on purpose.
+- Input modes and accessibility (`auth-wake-live.spec.ts`, stubbed API): keyboard (Enter, Esc),
+  emulated touch tap (no hover preview), mouse hover preview, and `@axe-core/playwright`
+  (new web devDependency, approved) with WCAG 2.0 to 2.2 A/AA tags at 320 and 1280 px in the
+  waking and queued states: no violations. Axe's only finding was a missing page `<title>` on
+  `/login`, fixed in `(auth)/login/layout.tsx`. Not scanned: the ready-open and unreachable
+  cards (same markup, different copy and colour); contrast of those colours is by token choice.
+  Emulated touch is not a real device. In `next dev` the TanStack devtools button sits bottom-right
+  under the indicator (dev only; the e2e hides it).
+- Not verified (criteria left unticked):
+  - The unit-test criterion stays open only for its "one QA-006 live smoke case" part.
+  - Real Render sleep test and the QA-006 live smoke case: after deploy, set
+    `NEXT_PUBLIC_API_ORIGIN` on marketing, let the API sleep, time marketing → login → submit and
+    record it here. Watch free-instance hours for a month.

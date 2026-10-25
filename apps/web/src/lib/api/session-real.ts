@@ -9,7 +9,7 @@ import type {
 	SessionInfo,
 	VerifyMfaInput,
 } from '@/types/auth/session';
-import {ApiError, apiErrorFromBody, apiFetch, liveRequestInit} from '@/lib/api/http';
+import {ApiError, apiFetch, errorFromResponseBody, liveFetch, liveRequestInit} from '@/lib/api/http';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 import {clearLiveSession, readLiveSession, writeLiveSession} from '@/lib/api/live-session-store';
 import {nestApiBaseUrl} from '@/lib/api/nest-api';
@@ -169,7 +169,7 @@ function persistSession(email: string, expiresIn: number): SessionInfo {
 
 export const sessionRealAPI = {
 	login: async (email: string, password: string): Promise<LoginOutcome> => {
-		const response = await fetch(
+		const response = await liveFetch(
 			`${nestApiBaseUrl()}/auth/login`,
 			liveRequestInit({
 				method: 'POST',
@@ -179,7 +179,7 @@ export const sessionRealAPI = {
 		);
 		const body = await readJson(response);
 		if (!response.ok) {
-			throw apiErrorFromBody(body, response.status);
+			throw errorFromResponseBody(body, response.status);
 		}
 		if (isMfaChallenge(body)) {
 			const challenge: MfaChallengeResult = {
@@ -196,7 +196,7 @@ export const sessionRealAPI = {
 	},
 
 	verifyMfa: async ({email, code, mfaToken}: VerifyMfaInput): Promise<SessionInfo> => {
-		const response = await fetch(
+		const response = await liveFetch(
 			`${nestApiBaseUrl()}/auth/mfa/verify`,
 			liveRequestInit({
 				method: 'POST',
@@ -206,7 +206,7 @@ export const sessionRealAPI = {
 		);
 		const body = await readJson(response);
 		if (!response.ok) {
-			throw apiErrorFromBody(body, response.status);
+			throw errorFromResponseBody(body, response.status);
 		}
 		if (!isTokenPair(body)) {
 			throw new ApiError('Unable to sign in. Try again.', 502);

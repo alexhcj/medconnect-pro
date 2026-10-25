@@ -1,5 +1,5 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {ApiError, CSRF_HEADER_NAME} from '@/lib/api/http';
+import {ApiError, CSRF_HEADER_NAME, ServiceWakingError} from '@/lib/api/http';
 import {clearLiveSession, readLiveSession} from '@/lib/api/live-session-store';
 import {MOCK_TOKEN_STORAGE_KEY} from '@/lib/api/mocks/mock-session-store';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
@@ -67,6 +67,47 @@ describe('sessionRealAPI', () => {
 			expect.objectContaining({method: 'POST', credentials: 'include'}),
 		);
 		expectCredentialed((fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[1] as RequestInit);
+	});
+
+	it('reports a bare 502 from sign-in as a wake, not a sign-in failure', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: false,
+				status: 502,
+				json: async () => {
+					throw new Error('not json');
+				},
+			}),
+		);
+		await expect(sessionRealAPI.login(demo.email, demo.password)).rejects.toBeInstanceOf(
+			ServiceWakingError,
+		);
+		expect(readLiveSession()).toBeNull();
+	});
+
+	it('reports a network failure on MFA verify as a wake', async () => {
+		vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+		await expect(
+			sessionRealAPI.verifyMfa({email: 'mfa.nurse@example.test', code: '135790', mfaToken: 't'}),
+		).rejects.toBeInstanceOf(ServiceWakingError);
+	});
+
+	it('keeps 401 and an enveloped 5xx as plain API errors on sign-in', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(jsonResponse(401, {error: {code: 'UNAUTHORIZED', message: 'no'}})),
+		);
+		await expect(sessionRealAPI.login(demo.email, demo.password)).rejects.toMatchObject({status: 401});
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue(
+				jsonResponse(503, {error: {code: 'SERVICE_UNAVAILABLE', message: 'x'}}),
+			),
+		);
+		const error = await sessionRealAPI.login(demo.email, demo.password).catch((e: unknown) => e);
+		expect(error).toBeInstanceOf(ApiError);
+		expect(error).not.toBeInstanceOf(ServiceWakingError);
 	});
 
 	it('stores a provider session with clinical write grants for the live demo provider', async () => {

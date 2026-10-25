@@ -2,6 +2,49 @@
 @import "../styles/tokens.css";
 @import "react-big-calendar/lib/css/react-big-calendar.css";
 
+/* API status indicator attention cue (FE-049): static ring always; motion only when allowed. */
+@keyframes api-status-pulse {
+	0% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-border-brand) 55%, transparent);
+	}
+	100% {
+		box-shadow: 0 0 0 12px transparent;
+	}
+}
+
+@keyframes api-status-shake {
+	10%,
+	90% {
+		transform: translateX(-1px);
+	}
+	20%,
+	80% {
+		transform: translateX(2px);
+	}
+	30%,
+	50%,
+	70% {
+		transform: translateX(-3px);
+	}
+	40%,
+	60% {
+		transform: translateX(3px);
+	}
+}
+
+.api-status-attention {
+	outline: 3px solid color-mix(in srgb, var(--color-border-brand) 45%, transparent);
+	outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.api-status-attention {
+		animation:
+			api-status-pulse 0.9s ease-out 2,
+			api-status-shake 0.5s ease-in-out 1;
+	}
+}
+
 .appointment-calendar .rbc-calendar {
 	min-height: 32rem;
 	min-width: 40rem;

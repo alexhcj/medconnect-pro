@@ -21,14 +21,22 @@ async function handle(request: Request, context: RouteContext): Promise<NextResp
 	const method = request.method.toUpperCase();
 	const body =
 		method === 'GET' || method === 'HEAD' ? undefined : await request.arrayBuffer();
-	const result = await proxyMcpApiRequest({
-		method,
-		search: url.search,
-		pathSegments: path,
-		headers: request.headers,
-		body,
-		apiBaseUrl,
-	});
+	let result;
+	try {
+		result = await proxyMcpApiRequest({
+			method,
+			search: url.search,
+			pathSegments: path,
+			headers: request.headers,
+			body,
+			apiBaseUrl,
+		});
+	} catch (error) {
+		// Upstream asleep or unreachable. No error envelope on purpose: the client reads a bare
+		// gateway status as "waking" (FE-049). Only the error class is logged: no URL, header or body.
+		console.warn(`[mcp-api] upstream request failed: ${error instanceof Error ? error.name : 'unknown'}`);
+		return new NextResponse(null, {status: 502, headers: {'x-mcp-proxy-error': 'upstream-unreachable'}});
+	}
 
 	return new NextResponse(result.body, {
 		status: result.status,

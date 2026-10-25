@@ -231,4 +231,4 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 
 ## Standalone (no milestone)
 
-- FE-049 — API status indicator (pending; wakes the sleeping free-tier API and shows live status on `/login`)
+- FE-049 — API status indicator (shipped at 0.98.0; wakes the sleeping free-tier API and shows live status on `/login`)
