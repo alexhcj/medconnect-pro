@@ -228,3 +228,7 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 - INFRA-020 — Checks-gated deploys and PR workflow (shipped at 0.97.3; branch protection is an operator step)
 - FE-048 — Preview environment banner (optional; shipped at 0.97.2)
 - QA-010 — Preview lanes pilot
+
+## Standalone (no milestone)
+
+- FE-049 — API status indicator (pending; wakes the sleeping free-tier API and shows live status on `/login`)
