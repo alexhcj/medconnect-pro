@@ -23,6 +23,9 @@ HTML comments like this one are stripped before Claude sees the file.
 - When I ask for a commit that includes new or changed task specs (e.g. a new milestone), follow
   `/commit-tasks`: run `npm run plane:sync -- <IDs>` first so the Plane ids are written into the
   task files, then commit. No `Co-Authored-By` trailer.
+- PR bodies are never left as the raw template: use `/open-pr [ID]` (fills task, lane, version,
+  checklist from the task file and diff; lists manual steps such as the `render-preview` label and
+  `ci` green under "Manual before merge"). See `docs/workflows/delivery-lanes.md` "PR body".
 - Answer briefly. Lead with the result, then file paths. No recap of steps I watched you do.
 
 ## Commands (root, npm workspaces, Node 24)
@@ -57,7 +60,7 @@ HTML comments like this one are stripped before Claude sees the file.
 ## Skills in this repo
 
 `/plan-task <ID>` · `/new-task <description>` · `/implement-task <ID>` ·
-`/design-brief <ID>` · `/create-html-preview <ID>` · `/close-milestone <M#>` · `/plane-sync [IDs]` · `/commit-tasks`
+`/open-pr [ID]` · `/design-brief <ID>` · `/create-html-preview <ID>` · `/close-milestone <M#>` · `/plane-sync [IDs]` · `/commit-tasks`
 
 ## Compact instructions
 

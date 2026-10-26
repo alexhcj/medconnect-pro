@@ -71,6 +71,32 @@ Rules shared by every lane:
 - Previews never use production secrets, real PHI, or the interviewer database.
 - A PR is not review-ready until `ci` is green.
 
+## PR body
+
+GitHub pastes the template verbatim; it never fills itself in. The body is generated: run
+`/open-pr [ID]` (or `/open-pr --update <PR#>` to repair a PR). It reads the task file, the diff
+against `main`, the root version and the top `CHANGELOG.md` entry, shows the body for approval,
+then pushes and opens or edits the PR. Title: `<ID> <short title>`.
+
+| Field | Source |
+| --- | --- |
+| Task ID, Plane identifier | Branch or title; task front matter `plane.identifier` |
+| Lane, preview box | Changed paths (lane table above) |
+| Version box and `old → new` | Root `package.json` on `main` vs branch |
+| Checklist ticks | Only what the diff proves (task, roadmap, `AGENTS.md`, master list, changelog) |
+| Summary, verification | Task Completion section and checks actually run |
+
+Manual, never auto-ticked (listed under "Manual before merge" in the body):
+
+- `ci` is green: tick after the check passes.
+- `render-preview` label for marketing and web UI PRs, and reviewing the preview URL.
+- Operator steps named in the task Completion (Render dashboard, AWS apply, branch protection).
+- Any acceptance criterion left unverified.
+- Squash merge and post-merge smoke of the changed surface.
+
+The `Preview environment` comment is separate: [preview-status.yml](../../.github/workflows/preview-status.yml)
+posts it after `ci` and its text is the same for every PR.
+
 ## What a web preview is and is not
 
 | It shows | It does not show |
