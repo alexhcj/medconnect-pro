@@ -232,3 +232,4 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 ## Standalone (no milestone)
 
 - FE-049 — API status indicator (shipped at 0.98.0; wakes the sleeping free-tier API and shows live status on `/login`)
+- FE-050 — Auth pages marketing logo link (pending; logo link back to the marketing site on sign-in, register, and email-verification)
