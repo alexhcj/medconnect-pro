@@ -90,6 +90,11 @@ After the first deploy is live:
 - `https://<marketing>/` shows the public homepage. Its sign-in link is
   `https://medconnectpro.app/login` (or `http://localhost:3000/login` locally). The marketing
   response does not set `mcp_access`, `mcp_refresh`, `mcp_mfa`, or `mcp_csrf`.
+- `https://<web>/login`, `/register` and `/email-verification` show the MedConnect Pro logo above
+  the card. Its link and "← Back to home" go to `https://marketing.medconnectpro.app` (FE-050).
+  `render.yaml` sets `NEXT_PUBLIC_MARKETING_URL` on `medconnect-web`; it is inlined at build time,
+  so redeploy web after changing it. Without a valid `http(s)` value the logo is plain branding
+  with no link. PR previews inherit the production marketing URL, not a marketing preview origin.
 - `https://<api>/health` returns `{"status":"ok"}`.
 - `https://<api>/ready` returns ready after Postgres accepts a connection.
 - `https://<api>/api/docs` does not serve Swagger UI.

@@ -6,6 +6,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.99.0] - 2026-10-26
+
+### Added
+
+- FE-050: the web auth pages (`/login`, `/register`, `/email-verification`) show the MedConnect Pro
+  logo above the card and a "← Back to home" link below it, both plain same-tab links to the
+  marketing site, so a visitor who arrived by a direct link can leave without Back. Logo target is at
+  least 44 px tall with a visible focus ring and the accessible name "MedConnect Pro, back to home".
+  Below 360 px the wordmark shrinks (Compact variant).
+- `NEXT_PUBLIC_MARKETING_URL` (web, optional, public, build-time). Only an `http(s)` URL is used;
+  unset or invalid renders the logo as plain branding with no link and no back link. Documented in
+  `environment-configuration.md`, the `.env.*` examples, `deploy-render.md` and `deploy.md`; set in
+  `render.yaml` for `medconnect-web`. Amplify needs the value in the console (operator step).
+
+### Changed
+
+- New shared `app/(auth)/layout.tsx`. `/login/oauth/complete` moved to an `(oauth)` route group (same
+  URL, same `noindex`, no header). The login, MFA and stub cards no longer own the full-screen
+  wrapper; the page is top-aligned and the FE-049 status-indicator bottom reserve moved to the layout.
+
 ## [0.98.0] - 2026-10-26
 
 ### Added

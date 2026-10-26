@@ -101,6 +101,8 @@ services:
         value: /mcp-api
       - key: NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS
         value: "true"
+      - key: NEXT_PUBLIC_MARKETING_URL
+        value: https://marketing.medconnectpro.app
       - key: API_BASE_URL
         fromService:
           type: web
