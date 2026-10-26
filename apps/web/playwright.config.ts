@@ -37,6 +37,7 @@ export default defineConfig({
 			NEXT_PUBLIC_MOCK_DELAY: '0',
 			NEXT_PUBLIC_MOCK_ERROR_RATE: '0',
 			NEXT_PUBLIC_MOCK_LOG_LEVEL: 'silent',
+			NEXT_PUBLIC_MARKETING_URL: 'http://localhost:3002',
 		},
 	},
 });

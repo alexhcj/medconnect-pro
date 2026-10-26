@@ -91,84 +91,82 @@ export function MfaChallengeForm({
 	};
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-canvas p-4">
-			<div className="w-full max-w-md space-y-4 rounded-xl border border-border bg-surface p-8 shadow-sm">
-				<h1 className="text-2xl font-bold text-foreground">Verify mock MFA</h1>
-				<p className="text-sm text-foreground-secondary">
-					Enter the demo verification code to finish signing in as the MFA nurse.
+		<div className="w-full max-w-md space-y-4 rounded-xl border border-border bg-surface p-8 shadow-sm">
+			<h1 className="text-2xl font-bold text-foreground">Verify mock MFA</h1>
+			<p className="text-sm text-foreground-secondary">
+				Enter the demo verification code to finish signing in as the MFA nurse.
+			</p>
+			<p className="rounded-md bg-warning-subtle p-3 text-xs text-warning" role="note">
+				This is a <strong>mock MFA challenge</strong> for the demo. It is not production TOTP or
+				WebAuthn.
+			</p>
+			<div className="rounded-md border border-border bg-subtle p-3 text-xs text-foreground-secondary">
+				<p className="text-sm font-medium text-foreground">Demo verification code</p>
+				<p className="mt-1">
+					Code: <span className="font-mono">{DEMO_MFA_CODE}</span>
 				</p>
-				<p className="rounded-md bg-warning-subtle p-3 text-xs text-warning" role="note">
-					This is a <strong>mock MFA challenge</strong> for the demo. It is not production TOTP or
-					WebAuthn.
-				</p>
-				<div className="rounded-md border border-border bg-subtle p-3 text-xs text-foreground-secondary">
-					<p className="text-sm font-medium text-foreground">Demo verification code</p>
-					<p className="mt-1">
-						Code: <span className="font-mono">{DEMO_MFA_CODE}</span>
-					</p>
-					<p className="mt-1 text-foreground-muted">Theater only. Not a production secret.</p>
+				<p className="mt-1 text-foreground-muted">Theater only. Not a production secret.</p>
+			</div>
+
+			<form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+				<div>
+					<label htmlFor="mfa-code" className="block text-sm font-medium text-foreground-label">
+						Verification code
+					</label>
+					<input
+						id="mfa-code"
+						type="text"
+						inputMode="numeric"
+						autoComplete="one-time-code"
+						autoFocus
+						disabled={verifyMfa.isPending || expired}
+						className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+						{...codeField}
+						ref={(element) => {
+							codeField.ref(element);
+							codeInputRef.current = element;
+						}}
+					/>
+					{errors.code ? (
+						<p className="mt-1 text-sm text-danger" role="alert">
+							{errors.code.message}
+						</p>
+					) : (
+						<p className="mt-1 text-sm text-foreground-muted">6-digit demo code</p>
+					)}
 				</div>
 
-				<form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-					<div>
-						<label htmlFor="mfa-code" className="block text-sm font-medium text-foreground-label">
-							Verification code
-						</label>
-						<input
-							id="mfa-code"
-							type="text"
-							inputMode="numeric"
-							autoComplete="one-time-code"
-							autoFocus
-							disabled={verifyMfa.isPending || expired}
-							className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-							{...codeField}
-							ref={(element) => {
-								codeField.ref(element);
-								codeInputRef.current = element;
-							}}
-						/>
-						{errors.code ? (
-							<p className="mt-1 text-sm text-danger" role="alert">
-								{errors.code.message}
-							</p>
-						) : (
-							<p className="mt-1 text-sm text-foreground-muted">6-digit demo code</p>
-						)}
-					</div>
+				{!expired && (
+					<p className="text-xs text-foreground-muted">
+						Challenge expires in {formatCountdown(remaining)}
+					</p>
+				)}
 
-					{!expired && (
-						<p className="text-xs text-foreground-muted">
-							Challenge expires in {formatCountdown(remaining)}
-						</p>
-					)}
+				{(formError || expired) && (
+					<p className="text-sm text-danger" role="alert">
+						{formError ??
+							'This mock MFA challenge has expired. Go back and sign in again.'}
+					</p>
+				)}
 
-					{(formError || expired) && (
-						<p className="text-sm text-danger" role="alert">
-							{formError ??
-								'This mock MFA challenge has expired. Go back and sign in again.'}
-						</p>
-					)}
-
-					<Button
-						type="submit"
-						className="w-full"
-						disabled={verifyMfa.isPending || expired}
-						isLoading={verifyMfa.isPending}
-					>
-						Verify
-					</Button>
-					<Button
-						type="button"
-						variant="ghost"
-						className="w-full"
-						disabled={verifyMfa.isPending}
-						onClick={onBack}
-					>
-						Back to sign in
-					</Button>
-				</form>
-			</div>
+				<Button
+					type="submit"
+					className="w-full"
+					disabled={verifyMfa.isPending || expired}
+					isLoading={verifyMfa.isPending}
+				>
+					Verify
+				</Button>
+				<Button
+					type="button"
+					variant="ghost"
+					className="w-full"
+					disabled={verifyMfa.isPending}
+					onClick={onBack}
+				>
+					Back to sign in
+				</Button>
+			</form>
 		</div>
 	);
 }

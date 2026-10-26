@@ -203,129 +203,127 @@ function LoginFormContent() {
 	}
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-canvas p-4 max-lg:pb-[calc(1rem+var(--api-status-reserve,0px))]">
-			<div className="w-full max-w-md rounded-xl border border-border bg-surface px-4 py-6 shadow-sm sm:p-8">
-				<h1 className="text-2xl font-bold text-foreground">Sign in</h1>
-				<p className="mt-2 text-sm text-foreground-secondary">
-					Sign in to the MedConnect Pro dashboard.
-				</p>
-				{reason && <ReasonBanner reason={reason} />}
-				<p className="mt-4 rounded-md bg-warning-subtle p-3 text-xs text-warning" role="note">
-					<strong>Demo identity.</strong> Google/Fake OIDC sign-in is a demo integration, not a
-					production IdP. Email sign-in uses a mock identity provider.
-				</p>
+		<div className="w-full max-w-md rounded-xl border border-border bg-surface px-4 py-6 shadow-sm sm:p-8">
+			<h1 className="text-2xl font-bold text-foreground">Sign in</h1>
+			<p className="mt-2 text-sm text-foreground-secondary">
+				Sign in to the MedConnect Pro dashboard.
+			</p>
+			{reason && <ReasonBanner reason={reason} />}
+			<p className="mt-4 rounded-md bg-warning-subtle p-3 text-xs text-warning" role="note">
+				<strong>Demo identity.</strong> Google/Fake OIDC sign-in is a demo integration, not a
+				production IdP. Email sign-in uses a mock identity provider.
+			</p>
 
-				{oauthEnabled() ? (
-					<>
-						<div className="mt-4">
-							<OAuthProviderButton provider={configuredOAuthProvider()} available={!isMockMode()} />
-						</div>
+			{oauthEnabled() ? (
+				<>
+					<div className="mt-4">
+						<OAuthProviderButton provider={configuredOAuthProvider()} available={!isMockMode()} />
+					</div>
 
-						<div className="mt-4 flex items-center gap-3" aria-hidden="true">
-							<span className="h-px flex-1 bg-border" />
-							<span className="text-xs text-foreground-muted">or sign in with email</span>
-							<span className="h-px flex-1 bg-border" />
-						</div>
-					</>
-				) : (
-					<p className="mt-4 text-sm text-foreground-secondary" role="note">
-						Provider sign-in is not configured for this demo. Use a demo account.
+					<div className="mt-4 flex items-center gap-3" aria-hidden="true">
+						<span className="h-px flex-1 bg-border" />
+						<span className="text-xs text-foreground-muted">or sign in with email</span>
+						<span className="h-px flex-1 bg-border" />
+					</div>
+				</>
+			) : (
+				<p className="mt-4 text-sm text-foreground-secondary" role="note">
+					Provider sign-in is not configured for this demo. Use a demo account.
+				</p>
+			)}
+
+			{showDemoAccounts() && <DemoAccountPanel />}
+
+			<form
+					className="mt-6 space-y-4"
+					onSubmit={(event) => void handleSubmit(onSubmit)(event)}
+					onFocus={() => {
+						if (!begun.current) {
+							begun.current = true;
+							status?.begin();
+						}
+					}}
+					noValidate
+				>
+				<div>
+					<label htmlFor="email" className="block text-sm font-medium text-foreground-label">
+						Email
+					</label>
+					<input
+						id="email"
+						type="email"
+						autoComplete="username"
+						className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						{...register('email')}
+					/>
+					{errors.email && (
+						<p className="mt-1 text-sm text-danger" role="alert">
+							{errors.email.message}
+						</p>
+					)}
+				</div>
+
+				<div>
+					<label htmlFor="password" className="block text-sm font-medium text-foreground-label">
+						Password
+					</label>
+					<input
+						id="password"
+						type="password"
+						autoComplete="current-password"
+						className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						{...register('password')}
+					/>
+					{errors.password && (
+						<p className="mt-1 text-sm text-danger" role="alert">
+							{errors.password.message}
+						</p>
+					)}
+				</div>
+
+				{formError && (
+					<p className="text-sm text-danger" role="alert">
+						{formError}
 					</p>
 				)}
 
-				{showDemoAccounts() && <DemoAccountPanel />}
+				<Button
+					type="submit"
+					className="w-full"
+					disabled={login.isPending && !queued}
+					isLoading={login.isPending && !queued}
+					aria-busy={queued || undefined}
+					aria-describedby={hintVisible ? WAKE_HINT_ID : undefined}
+				>
+					{queued && <LoaderCircle className="mr-2 size-4 motion-safe:animate-spin" aria-hidden="true" />}
+					{queued ? 'Signing in when ready' : 'Sign in'}
+				</Button>
 
-				<form
-						className="mt-6 space-y-4"
-						onSubmit={(event) => void handleSubmit(onSubmit)(event)}
-						onFocus={() => {
-							if (!begun.current) {
-								begun.current = true;
-								status?.begin();
-							}
-						}}
-						noValidate
-					>
-					<div>
-						<label htmlFor="email" className="block text-sm font-medium text-foreground-label">
-							Email
-						</label>
-						<input
-							id="email"
-							type="email"
-							autoComplete="username"
-							className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-							{...register('email')}
-						/>
-						{errors.email && (
-							<p className="mt-1 text-sm text-danger" role="alert">
-								{errors.email.message}
-							</p>
-						)}
+				{hintVisible && (
+					<p id={WAKE_HINT_ID} className="flex items-start gap-2 text-sm text-warning">
+						<Clock className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+						<span>Server is waking up, see the status indicator</span>
+					</p>
+				)}
+
+				{queued && (
+					<div className="text-center">
+						<Button type="button" variant="link" size="sm" className="min-h-11" onClick={clearQueue}>
+							Cancel
+						</Button>
 					</div>
+				)}
+			</form>
 
-					<div>
-						<label htmlFor="password" className="block text-sm font-medium text-foreground-label">
-							Password
-						</label>
-						<input
-							id="password"
-							type="password"
-							autoComplete="current-password"
-							className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-							{...register('password')}
-						/>
-						{errors.password && (
-							<p className="mt-1 text-sm text-danger" role="alert">
-								{errors.password.message}
-							</p>
-						)}
-					</div>
-
-					{formError && (
-						<p className="text-sm text-danger" role="alert">
-							{formError}
-						</p>
-					)}
-
-					<Button
-						type="submit"
-						className="w-full"
-						disabled={login.isPending && !queued}
-						isLoading={login.isPending && !queued}
-						aria-busy={queued || undefined}
-						aria-describedby={hintVisible ? WAKE_HINT_ID : undefined}
-					>
-						{queued && <LoaderCircle className="mr-2 size-4 motion-safe:animate-spin" aria-hidden="true" />}
-						{queued ? 'Signing in when ready' : 'Sign in'}
-					</Button>
-
-					{hintVisible && (
-						<p id={WAKE_HINT_ID} className="flex items-start gap-2 text-sm text-warning">
-							<Clock className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-							<span>Server is waking up, see the status indicator</span>
-						</p>
-					)}
-
-					{queued && (
-						<div className="text-center">
-							<Button type="button" variant="link" size="sm" className="min-h-11" onClick={clearQueue}>
-								Cancel
-							</Button>
-						</div>
-					)}
-				</form>
-
-				<p className="mt-6 text-center text-sm text-foreground-muted">
-					<Link href="/password-reset" className="text-brand hover:underline">
-						Password reset
-					</Link>
-					{' · '}
-					<Link href="/register" className="text-brand hover:underline">
-						Practice registration
-					</Link>
-				</p>
-			</div>
+			<p className="mt-6 text-center text-sm text-foreground-muted">
+				<Link href="/password-reset" className="text-brand hover:underline">
+					Password reset
+				</Link>
+				{' · '}
+				<Link href="/register" className="text-brand hover:underline">
+					Practice registration
+				</Link>
+			</p>
 		</div>
 	);
 }

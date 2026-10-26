@@ -330,6 +330,7 @@ destination branch’s overrides. Set:
 | `main` branch override | `NEXT_PUBLIC_USE_MOCKS` | `false` |
 | `main` branch override | `NEXT_PUBLIC_API_BASE_URL` | Terraform output `production_api_url` |
 | `main` branch override | `API_BASE_URL` | the same `production_api_url` |
+| All branches (default) | `NEXT_PUBLIC_MARKETING_URL` | Optional (FE-050). The public marketing origin. Operator step: set it in the console after merge. Unset shows the auth-page logo without a link. |
 
 Never put `DATABASE_URL`, `DATABASE_ADMIN_URL`, Secrets Manager ARNs, AWS access keys, or
 `PLANE_API_KEY` in Amplify. Do not point `main` at `preview_api_url`. Do not point previews at
