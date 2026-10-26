@@ -1,6 +1,6 @@
 {
   "name": "medconnect-web",
-  "version": "0.97.4",
+  "version": "0.98.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -48,6 +48,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "^5.102.8",

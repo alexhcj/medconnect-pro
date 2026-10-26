@@ -1,6 +1,7 @@
-import {render, screen, within} from '@testing-library/react';
+import {fireEvent, render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MarketingShell} from '@/components/marketing/marketing-shell';
+import {resetWakePingForTests} from '@/lib/marketing/wake-ping';
 
 const navigation = vi.hoisted(() => ({pathname: '/'}));
 
@@ -104,5 +105,31 @@ describe('MarketingShell', () => {
 		await user.click(screen.getByRole('button', {name: 'Close navigation'}));
 
 		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+	});
+
+	it('wakes the API only on a trusted gesture on a sign-in link, never on render (FE-049)', () => {
+		vi.stubEnv('NEXT_PUBLIC_API_ORIGIN', 'https://api.example.test');
+		const fetchMock = vi.fn().mockResolvedValue({});
+		vi.stubGlobal('fetch', fetchMock);
+		resetWakePingForTests();
+		window.localStorage.clear();
+
+		render(
+			<MarketingShell>
+				<p>Placeholder</p>
+			</MarketingShell>,
+		);
+		expect(fetchMock).not.toHaveBeenCalled();
+
+		const signIn = screen.getAllByRole('link', {name: /sign in/i})[0];
+		signIn.addEventListener('click', (event) => event.preventDefault());
+		// jsdom dispatches untrusted events (isTrusted false), like a script would.
+		fireEvent.pointerOver(signIn);
+		fireEvent.focusIn(signIn);
+		fireEvent.click(signIn);
+		expect(fetchMock).not.toHaveBeenCalled();
+
+		vi.unstubAllEnvs();
+		vi.unstubAllGlobals();
 	});
 });

@@ -106,6 +106,13 @@ After the first deploy is live:
   wrong; change the env var, and do not raise it above the real hop count.
 - Watch the workspace free-instance hours. The pool is 750 hours per month and is shared with
   every free web service in the workspace. Sleeping services should stay inside it.
+- The first sign-in after the API sleeps takes 45–60 s to wake it. FE-049 softens that: a trusted
+  click, hover or focus on a marketing sign-in link, and the first focus of the `/login` form, send
+  one unauthenticated `GET /health`, and `/login` shows an API status indicator while it waits.
+  Set `NEXT_PUBLIC_API_ORIGIN` on `medconnect-marketing` in the Render dashboard (public value,
+  for example `https://api.medconnectpro.app`) and redeploy marketing; without it the marketing
+  side sends no ping. Bots that hit the API directly can still wake it, so watch the free-instance
+  hours for a month after this ships.
 - If the Next.js service runs out of memory on 512 MB, move it to a plan with more than 512 MB.
   Starter is still 512 MB. It only removes spin-down.
 

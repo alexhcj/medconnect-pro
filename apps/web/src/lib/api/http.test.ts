@@ -1,5 +1,16 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {apiErrorFromBody, apiFetch, ApiError, CSRF_HEADER_NAME, RateLimitedError, rateLimitMessage} from '@/lib/api/http';
+import {
+	apiErrorFromBody,
+	apiFetch,
+	ApiError,
+	CSRF_HEADER_NAME,
+	errorFromResponseBody,
+	liveFetch,
+	RateLimitedError,
+	rateLimitMessage,
+	ServiceWakingError,
+	wakeErrorFromBody,
+} from '@/lib/api/http';
 
 describe('apiErrorFromBody', () => {
 	it('reads the documented error envelope', () => {
@@ -139,5 +150,60 @@ describe('apiFetch', () => {
 
 		await expect(apiFetch('/api/local-route')).rejects.toMatchObject({status: 401});
 		expect(window.location.pathname).not.toContain('login');
+	});
+});
+
+describe('service waking errors (FE-049)', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		vi.useRealTimers();
+	});
+
+	it.each([502, 503, 504])('treats a bare %i as a wake', (status) => {
+		expect(wakeErrorFromBody({}, status)).toBeInstanceOf(ServiceWakingError);
+		expect(errorFromResponseBody(undefined, status)).toMatchObject({reason: 'gateway', status});
+	});
+
+	it('does not treat an enveloped 5xx as a wake', () => {
+		const body = {error: {code: 'SERVICE_UNAVAILABLE', message: 'API proxy is not configured'}};
+		expect(wakeErrorFromBody(body, 503)).toBeUndefined();
+		const error = errorFromResponseBody(body, 503);
+		expect(error).not.toBeInstanceOf(ServiceWakingError);
+		expect(error.code).toBe('SERVICE_UNAVAILABLE');
+	});
+
+	it('leaves 401, 429 and 500 alone', () => {
+		expect(wakeErrorFromBody({}, 500)).toBeUndefined();
+		expect(errorFromResponseBody({}, 401)).not.toBeInstanceOf(ServiceWakingError);
+		expect(errorFromResponseBody({}, 429)).toBeInstanceOf(RateLimitedError);
+	});
+
+	it('maps a network failure to a wake', async () => {
+		vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+		await expect(liveFetch('/x', {})).rejects.toMatchObject({reason: 'network'});
+	});
+
+	it('maps a timeout to a wake', async () => {
+		vi.useFakeTimers();
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(
+				(_url: string, init: RequestInit) =>
+					new Promise((_resolve, reject) => {
+						init.signal?.addEventListener('abort', () =>
+							reject(new DOMException('aborted', 'AbortError')),
+						);
+					}),
+			),
+		);
+		const assertion = expect(liveFetch('/x', {}, 1000)).rejects.toMatchObject({reason: 'timeout'});
+		await vi.advanceTimersByTimeAsync(1000);
+		await assertion;
+	});
+
+	it('passes a normal response through', async () => {
+		const response = {ok: true, status: 200};
+		vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response));
+		await expect(liveFetch('/x', {})).resolves.toBe(response);
 	});
 });

@@ -40,6 +40,69 @@ export function rateLimitMessage(error: RateLimitedError): string {
 	return `Too many attempts. Try again in ${seconds} ${seconds === 1 ? 'second' : 'seconds'}.`;
 }
 
+export type ServiceWakingReason = 'gateway' | 'network' | 'timeout';
+
+/**
+ * The API is asleep or unreachable (free-tier spin-down, ADR-017), as opposed to answering with a
+ * real error. Covers a 502/503/504 without an API error envelope, a network failure and a timeout
+ * (FE-049).
+ */
+export class ServiceWakingError extends ApiError {
+	reason: ServiceWakingReason;
+
+	constructor(reason: ServiceWakingReason, status = 503) {
+		super('Server is waking up', status, {code: 'SERVICE_WAKING'});
+		this.reason = reason;
+	}
+}
+
+const WAKE_STATUSES = new Set([502, 503, 504]);
+/** Longer than a normal sign-in, shorter than the 45-60 s cold start, so the form can queue. */
+export const LIVE_AUTH_TIMEOUT_MS = 30_000;
+
+function hasErrorEnvelope(body: unknown): boolean {
+	const error = body && typeof body === 'object' ? (body as {error?: unknown}).error : undefined;
+	return (
+		!!error && typeof error === 'object' && typeof (error as {code?: unknown}).code === 'string'
+	);
+}
+
+/** A gateway status with no API error envelope is a wake. An enveloped 5xx is a real error. */
+export function wakeErrorFromBody(body: unknown, status: number): ServiceWakingError | undefined {
+	if (WAKE_STATUSES.has(status) && !hasErrorEnvelope(body)) {
+		return new ServiceWakingError('gateway', status);
+	}
+	return undefined;
+}
+
+/** Wake error when the response is one, otherwise the usual API error. */
+export function errorFromResponseBody(body: unknown, status: number): ApiError {
+	return wakeErrorFromBody(body, status) ?? apiErrorFromBody(body, status);
+}
+
+/** `fetch` that reports a network failure or timeout as a `ServiceWakingError`. */
+export async function liveFetch(
+	input: string,
+	init: RequestInit,
+	timeoutMs: number = LIVE_AUTH_TIMEOUT_MS,
+): Promise<Response> {
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), timeoutMs);
+	try {
+		return await fetch(input, {...init, signal: controller.signal});
+	} catch (error) {
+		if (error instanceof DOMException && error.name === 'AbortError') {
+			throw new ServiceWakingError('timeout', 504);
+		}
+		if (error instanceof TypeError) {
+			throw new ServiceWakingError('network');
+		}
+		throw error;
+	} finally {
+		clearTimeout(timer);
+	}
+}
+
 function readRetryAfterSeconds(details: unknown): number | undefined {
 	if (!details || typeof details !== 'object' || Array.isArray(details)) {
 		return undefined;

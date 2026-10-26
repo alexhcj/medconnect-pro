@@ -6,6 +6,42 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.98.0] - 2026-10-26
+
+### Added
+
+- FE-049: API status indicator on web `/login`. A fixed bottom-right button opens a small non-modal
+  card (checking, waking, ready, unreachable): it opens by itself while the free-tier API wakes
+  (elapsed seconds, "usually about a minute", no percentage), gives up with a manual Retry after
+  about 90 s, and collapses to a green dot when `/health` answers. Polls `/health` with backoff
+  only while checking or waking; a healthy dot never polls. Bottom sheet below 480 px, with page
+  bottom padding so the form stays clear. Hidden in mock mode and PR previews. Real `<button>` with
+  `aria-expanded`; Enter/Space toggle, Esc closes; one `role="status"` announcement per change.
+- Wake ping helper (web and marketing): unauthenticated, cookieless, no-cors `keepalive`
+  `GET /health`, deduplicated for 60 s per tab and across tabs through `localStorage`, skipped for
+  `navigator.webdriver`. Web `/login` pings on first form focus, not on mount. Marketing pings only
+  on a trusted hover, focus or click on a sign-in link.
+- `ServiceWakingError` in `apps/web/src/lib/api/http.ts` (502/503/504 without an error envelope,
+  network failures and timeouts). A sign-in submitted while the API is asleep is queued, shows
+  "Server is waking up, see the status indicator", finishes by itself (including the MFA step),
+  can be cancelled, gives up after three automatic attempts, drops after 5 minutes, and never resends
+  a sign-in that timed out (it may have reached the server). 401, 429 and enveloped 5xx
+  handling is unchanged. Attention cue on a queued submit: ring pulse, shake only under
+  `prefers-reduced-motion: no-preference`.
+- `NEXT_PUBLIC_API_ORIGIN` (marketing, optional, public, build-time). Documented in
+  `environment-configuration.md` and the marketing `.env.*` examples. Unset sends no ping.
+- `@axe-core/playwright` (web devDependency) and Playwright specs for the indicator: touch tap,
+  mouse hover preview, and axe scans (WCAG 2.2 A/AA) of `/login` in the waking and queued states.
+- `/login` has a page title ("Sign in | MedConnect Pro"); axe flagged its absence.
+- `/login` is `noindex`, and a new `apps/web/src/app/robots.ts` disallows it.
+
+### Changed
+
+- The `/mcp-api` route returns a bare 502 when the upstream is unreachable (previously an
+  unhandled 500), which the client reads as a wake.
+- `deploy-render.md` notes the wake ping, the API origin variable and instance-hours watching.
+  No API or data contract change.
+
 ## [0.97.4] - 2026-10-26
 
 ### Changed
