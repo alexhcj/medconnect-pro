@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.97.4] - 2026-10-26
+
+### Changed
+
+- SEC-011: production audit regressions. `package-lock.json` moves `zod` 4.6.5 -> 4.6.7,
+  `body-parser` 2.3.0 -> 2.4.0 and `fast-uri` 3.1.8 -> 3.1.9; a root `overrides` entry pins
+  `multer` to 2.5.0 (`@nestjs/platform-express` pins 2.4.0 exactly). `@nestjs/*` stays at 12.1.2.
+  `npm audit --omit=dev` exits 0 again. No API or data contract change.
+
 ## [0.97.3] - 2026-10-23
 
 ### Added
