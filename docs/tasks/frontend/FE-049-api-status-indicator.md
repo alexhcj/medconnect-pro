@@ -23,7 +23,7 @@ design:
   frame: "FE-049 API status indicator"
   status: approved
 implementation:
-  status: partial
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -127,7 +127,7 @@ and nothing has woken the API by the time the user retries. That reads as a brok
 - [x] Mock mode and PR previews show no indicator and send no ping
 - [x] At 320 px the indicator does not overlap the form or submit button
 - [x] Axe clean; status announced once; reduced motion respected
-- [ ] Unit tests: ping helper (dedupe, cooldown), gesture and webdriver gating, error mapping,
+- [x] Unit tests: ping helper (dedupe, cooldown), gesture and webdriver gating, error mapping,
       indicator state machine, queued submit; Playwright mock-mode spec; one QA-006 live smoke
       case
 - [x] Public marketing API-origin variable documented in `environment-configuration.md` and the
@@ -193,8 +193,20 @@ New visible UI and a public env variable: MINOR bump at ship time.
   cards (same markup, different copy and colour); contrast of those colours is by token choice.
   Emulated touch is not a real device. In `next dev` the TanStack devtools button sits bottom-right
   under the indicator (dev only; the e2e hides it).
-- Not verified (criteria left unticked):
-  - The unit-test criterion stays open only for its "one QA-006 live smoke case" part.
-  - Real Render sleep test and the QA-006 live smoke case: after deploy, set
-    `NEXT_PUBLIC_API_ORIGIN` on marketing, let the API sleep, time marketing → login → submit and
-    record it here. Watch free-instance hours for a month.
+- Live demo checks, 2026-10-26, after the deploy (browser pane, no sign-in performed):
+  - Marketing `https://marketing.medconnectpro.app`: no `/health` request on page load; a real
+    hover on a Sign in link wrote the 60 s cooldown timestamp (`mcp_wake_ping_at`, 14 s old when
+    read) and the built bundle contains the API origin, so `NEXT_PUBLIC_API_ORIGIN` is baked in.
+    The no-cors request itself does not show in the pane's network list.
+  - `https://medconnectpro.app/login`: nothing on mount (no `/mcp-api/health`, neutral "API
+    status" dot, collapsed, `noindex, nofollow`, title "Sign in | MedConnect Pro", one
+    `role="status"` region). Focusing Email sent the ping plus the readable probe (2 requests to
+    `/mcp-api/health`, about 0.6 s each; the duplicate is expected) and the dot turned green, "API
+    ready", announced as "The API is ready.". No further `/health` requests over the next 10+ s,
+    so a healthy dot does not poll. Enter opened the card ("The API is awake. Free tier sleeps
+    again when idle.") and Esc closed it with focus back on the trigger. No horizontal scroll.
+  - Owner, same day: keyboard (Space, Esc) and the grey and green states on desktop, and a phone
+    test after the 15 minute idle wait: works. Timings of the sleep path were not recorded.
+- Follow-up, not a criterion: watch Render free-instance hours for a month (bots can wake the API
+  directly). The waking and unreachable cards were not reproduced live (the API was already awake);
+  they are covered by the stubbed e2e only.

@@ -68,7 +68,7 @@ suggested fix is a downgrade to `@nestjs/platform-express@11.1.1`.
 - [x] `npm run test:api` passes against the local compose Postgres, including
       `test/documents.http.spec.ts` (document upload via `multer`)
 - [x] `npm run test:web` and `npm run test:marketing` pass
-- [ ] The `ci` workflow is green on the PR and on `main` after the merge
+- [x] The `ci` workflow is green on the PR and on `main` after the merge
 
 ## Dependencies
 
@@ -100,4 +100,6 @@ Runtime dependency change with no contract change: PATCH bump (0.97.3 -> 0.97.4)
   `type-check:api`, `type-check:web`, `type-check:marketing`, `test:web` (556), `test:marketing`
   (51) and `test:api` (73 files, 616 tests, with the local compose Postgres) all pass, including
   `documents.http.spec.ts` (6 of 6).
-- Not verified: the `ci` run on the PR and on `main` (criterion left unticked).
+- CI: PR #5 `ci` and `api-image` passed; the `ci` push run on `main` after the squash merge
+  (`d0f2a5b`, 2026-10-26) succeeded, and the later `main` run for FE-049 (`e1c4c1a`) passed too, so
+  the `npm audit --omit=dev` step is green on `main`.
