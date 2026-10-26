@@ -71,7 +71,7 @@ the Render demo. Work currently lands by direct push.
 - [x] A PR shows one project comment that matches the Render setup when `AMPLIFY_APP_ID` is unset
 - [x] `npm run test:preview-delivery` passes with the updated workflow
 - [x] New PRs open with the template
-- [ ] `main` rejects direct pushes and requires `ci`; Completion records the `gh` output
+- [x] `main` rejects direct pushes and requires `ci`; Completion records the `gh` output
 
 ## Dependencies
 
@@ -134,9 +134,28 @@ INFRA-019's MINOR if they ship together.
   workflow triggers on push to `main`) and the owner cancelled it; no Render deploy was created for
   it on any service (an empty commit also matches no build filter, so this does not prove the
   `checksPass` gate). The commit stays on `main`; force pushes are off and it changes nothing.
-  Criterion 6 needs `enforce_admins` enabled, read back with `gh api
-  repos/alexhcj/medconnect-pro/branches/main/protection/enforce_admins`, and a second empty-commit
-  push shown rejected.
+  Admin enforcement enabled by the owner afterwards (`gh api --method POST
+  repos/alexhcj/medconnect-pro/branches/main/protection/enforce_admins`); read back 2026-10-26:
+  `gh api repos/alexhcj/medconnect-pro/branches/main/protection/enforce_admins` returns
+  `enabled: true`. Required check `ci` (`strict: false`) and a pull request (0 approvals) were
+  already in the protection output above; `gh api repos/alexhcj/medconnect-pro/rulesets` is `[]`.
+  Second empty-commit push to `main` (`test: enforce_admins check`) was refused:
+  ```
+  remote: error: GH006: Protected branch update failed for refs/heads/main.
+  remote: - Changes must be made through a pull request.
+  remote: - Required status check "ci" is expected.
+   ! [remote rejected] main -> main (protected branch hook declined)
+  ```
+  `origin/main` stayed at `1eb0f5c` and no `ci` run started for the rejected push. The
+  rejected commit exists only locally and was dropped. Criterion 6 is met.
+  Criterion 1 stays open on purpose, with a one-week observation window (2026-10-26 to
+  2026-11-02). With admin enforcement on, a red `ci` cannot be merged to `main`, so the case is
+  watched, not forced: each `main` push whose `ci` run is red or cancelled (the cancelled run for
+  `1eb0f5c` is one such case, but that commit matches no build filter) is compared with the Render
+  deploy list of `medconnect-api`, `-web` and `-marketing`. If no service deploys for any
+  such commit by 2026-11-02, record the commits and tick the criterion; if one does, open a fix task.
+  Until then the supporting evidence is the deploy timing above (deploys are created when `ci`
+  finishes, not at push) and `autoDeployTrigger: checksPass` on all three services.
   **Not yet verified:** criterion 1 (no `main` commit with a red `ci` has occurred since
   `checksPass` took effect; the red `main` run on 2026-10-23 09:05 pre-dates it and did deploy),
   and criterion 6 (a
