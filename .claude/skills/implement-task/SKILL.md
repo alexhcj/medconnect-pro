@@ -40,4 +40,5 @@ model: sonnet
    Leave an acceptance criterion unticked (and say so in Completion) if it was not verified;
    do not mark the task `complete` on unverified UI criteria.
 5. Report: changed files, version old -> new with rationale, deviations, suggested commit
-   message (Conventional Commits, matching `git log` style). Do not commit.
+   message (Conventional Commits, matching `git log` style). Do not commit. Suggest `/open-pr $0`
+   for the PR body (generated; never leave the raw template).
