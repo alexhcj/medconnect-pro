@@ -126,7 +126,7 @@ describe('capability-matrix copy', () => {
 		expect(screen.getByText('Extra chart widgets remain unscheduled.')).toBeInTheDocument();
 
 		rerender(<MarketingFeaturePage slug="administration" />);
-		expect(screen.getByText('Security-events HTTP is not shipped.')).toBeInTheDocument();
+		expect(screen.getByText('Security events are auth and session rows for the tenant, not a SIEM.')).toBeInTheDocument();
 		expect(screen.getByText(/no HIPAA certification claim/)).toBeInTheDocument();
 
 		expect(screen.queryByText(/HIPAA compliant/i)).not.toBeInTheDocument();

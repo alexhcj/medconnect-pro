@@ -57,7 +57,7 @@ export const MARKETING_DEMO_WALKTHROUGH = {
 		{
 			title: 'Administration',
 			description:
-				'User directory, audit viewer, and role assignment with tenant/grant limits. Security-events HTTP is not shipped.',
+				'User directory, audit viewer, and role assignment with tenant/grant limits and a tenant-scoped security-events viewer.',
 			detail: 'Implemented with those limits.',
 			status: {label: '/platform/administration', href: '/platform/administration'},
 		},

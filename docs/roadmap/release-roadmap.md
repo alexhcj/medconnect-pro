@@ -57,7 +57,7 @@ The M19 close audit added one more, [QA-009](../tasks/qa/QA-009-live-paging-spec
 page 2 of each list; shipped, test only, no version bump). Latest release: 0.96.3.
 **M20 — PR previews and delivery lanes** is in progress: INFRA-018 is shipped (ADR-019 accepted,
 workflow docs point at the lanes doc; docs only, no version bump); INFRA-019 is shipped at
-0.97.0 (manual Render previews for marketing and web); QA-011 is shipped (API type-check fix; test only, no version bump); SEC-010 is shipped at 0.97.1 (production audit findings cleared); FE-048 is shipped at 0.97.2 (PR preview banner on web and marketing); INFRA-020 is shipped at 0.97.3 (`checksPass` deploys, Render-aware PR comment, PR template; branch protection on `main` applied 2026-10-23 and recorded in the task); SEC-011 is shipped at 0.97.4 (new production audit advisories cleared); standalone FE-049 is shipped at 0.98.0 and FE-050 at 0.99.0 (latest release 0.99.0);
+0.97.0 (manual Render previews for marketing and web); QA-011 is shipped (API type-check fix; test only, no version bump); SEC-010 is shipped at 0.97.1 (production audit findings cleared); FE-048 is shipped at 0.97.2 (PR preview banner on web and marketing); INFRA-020 is shipped at 0.97.3 (`checksPass` deploys, Render-aware PR comment, PR template; branch protection on `main` applied 2026-10-23 and recorded in the task); SEC-011 is shipped at 0.97.4 (new production audit advisories cleared); standalone FE-049 is shipped at 0.98.0 and FE-050 at 0.99.0 (latest release 0.99.1);
 QA-010 is pending
 ([INFRA-018](../tasks/infrastructure/INFRA-018-render-pr-preview-decision-and-delivery-lanes.md),
 [INFRA-019](../tasks/infrastructure/INFRA-019-render-frontend-service-previews.md),
@@ -72,7 +72,7 @@ QA-010 is pending
 [FE-049](../tasks/frontend/FE-049-api-status-indicator.md) (API status indicator on `/login`) is a
 standalone task outside any milestone, shipped at 0.98.0 (Figma frames approved; web indicator, wake ping, queued sign-in; real Render sleep test still to record).
 [FE-050](../tasks/frontend/FE-050-auth-pages-marketing-logo-link.md) (logo link back to the marketing
-site on the auth pages) is a standalone task outside any milestone, shipped at 0.99.0 (header and back link via `NEXT_PUBLIC_MARKETING_URL`; Figma frames approved).
+site on the auth pages) is a standalone task outside any milestone, shipped at 0.99.0 (header and back link via `NEXT_PUBLIC_MARKETING_URL`; Figma frames approved). The untasked marketing copy sync (`/about` state, security-events wording, matrix "Last synced release" line, `docs:marketing-sync` drift check in CI) shipped at 0.99.1.
 Real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and
 Redis stay deferred. Local product work does not wait on AWS. Resume M9 when the AWS account can
 be configured. Preview/production hosting remains M9, not M8, M10, M11, or M18.

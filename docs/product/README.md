@@ -12,7 +12,8 @@ between the complete-product vision and engineering tasks.
 
 Do not Plane-sync these IDs. Do not treat them as task IDs (`FE-007`, `BE-006`, …). Do not
 generate marketing pages, dashboard nav, or roadmaps from this folder until a later, explicit
-workflow exists.
+workflow exists. The read-only drift check `npm run docs:marketing-sync` compares this folder, the
+marketing matrix, marketing copy and the root version.
 
 ## Source-of-truth position
 

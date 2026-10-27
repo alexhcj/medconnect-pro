@@ -47,7 +47,7 @@ export const MARKETING_PLATFORM_MODULES = {
 		{
 			title: 'Administration',
 			description: 'User directory, audit viewer, and role assignment with tenant/grant limits.',
-			status: 'Security-events HTTP is not shipped.',
+			status: 'Security events are auth and session rows, not a SIEM.',
 			href: '/platform/administration',
 		},
 	],

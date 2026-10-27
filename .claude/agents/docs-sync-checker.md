@@ -14,7 +14,12 @@ Given a task ID, verify and report a checklist (OK / MISSING / MISMATCH with pat
    **Current position** paragraph names the active milestone and latest release version; no
    stray template text (for example a literal `$row`) remains.
 3a. `AGENTS.md` "Current:" line names the same milestone state and latest release version.
-4. If user-facing: matching `docs/product/<module>.md` capability row and `docs/marketing/capability-matrix.md` agree.
+4. If user-facing (the task adds or changes a capability, a public claim, or files under `apps/web` or
+   `apps/marketing`): matching `docs/product/<module>.md` capability row and
+   `docs/marketing/capability-matrix.md` agree, and the relevant
+   `apps/marketing/src/components/marketing/*-copy.ts` text does not exceed the matrix row.
+4a. Run `npm run docs:marketing-sync`; report its failures verbatim. The matrix "Last synced
+   release" line must equal the root version after every version bump.
 5. Root `package.json` version == `package-lock.json` root version == top `CHANGELOG.md` entry.
 6. If API changed: `apps/api/openapi/openapi.json` regenerated (check `git status`).
 

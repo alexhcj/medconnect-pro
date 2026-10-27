@@ -73,4 +73,4 @@ The public pages deploy as a Render static site
 ([ADR-018](../decisions/ADR-018-render-marketing-static-site.md)). The authenticated application
 is a separate web service. Sign-in stays `/login` on that application, not on the marketing host.
 `/privacy-policy` and `/terms-of-service` stay on the application. AWS preview and production
-hosting remain M9 and are not closed by this site.
+hosting remain M9 (paused) and are not closed by this site.

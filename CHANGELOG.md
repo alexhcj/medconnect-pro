@@ -6,6 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.99.1] - 2026-10-27
+
+### Changed
+
+- Marketing copy synced with the live app state: `/about` Implementation state now covers the application demo, security patterns, the delivery pipeline (CI, manual PR previews, interim Render demo) and paused AWS production instead of stopping at M8. Docker image builds and Terraform definitions are listed as current; Redis, S3/KMS document storage and an applied AWS production stay planned.
+- Administration copy no longer says "Security-events HTTP is not shipped"; it describes the tenant-scoped security-events viewer.
+- Capability matrix: Scheduling lists the planned waitlist and check-in, the deploy row names the shipped Render PR previews, and a "Last synced release" line tracks the root version.
+
+### Added
+
+- `npm run docs:marketing-sync` (`scripts/ci/check-marketing-sync.mjs`, spec via `npm run test:marketing-sync`): read-only drift check between the product registry, the matrix, marketing copy and the root version; runs in CI.
+- Process: `docs-sync-checker`, `implement-task`, `close-milestone` and the documentation rule now require the marketing re-audit and the matrix version line.
+
 ## [0.99.0] - 2026-10-26
 
 ### Added

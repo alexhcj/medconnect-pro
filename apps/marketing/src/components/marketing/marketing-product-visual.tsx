@@ -18,7 +18,7 @@ export function MarketingProductVisual({
 }: MarketingProductVisualProps) {
 	return (
 		<figure>
-			<div className={frameClassName ?? 'mt-4 min-h-[16rem] bg-subtle sm:min-h-[20rem] lg:min-h-[26.25rem]'}>
+			<div className={frameClassName ?? 'mt-4 overflow-hidden rounded-xl bg-subtle'}>
 				<MarketingProductImage src={src} alt={alt} className={imageClassName} />
 			</div>
 			<figcaption className="mt-3 text-sm text-foreground-secondary">{caption}</figcaption>
