@@ -5,7 +5,7 @@ argument-hint: "<milestone, e.g. M18>"
 disable-model-invocation: true
 model: opus
 effort: high
-allowed-tools: Read Grep Glob Edit Write Bash(git log *) Bash(git diff *) Bash(npm run lint:marketing) Bash(npm run test:marketing) Bash(npm run type-check:marketing)
+allowed-tools: Read Grep Glob Edit Write Bash(git log *) Bash(git diff *) Bash(npm run lint:marketing) Bash(npm run test:marketing) Bash(npm run type-check:marketing) Bash(npm run docs:marketing-sync)
 ---
 
 # Close milestone $0
@@ -19,6 +19,10 @@ allowed-tools: Read Grep Glob Edit Write Bash(git log *) Bash(git diff *) Bash(n
 4. When a milestone is actually closed (after the user agrees), update the progress trackers in
    `.claude/rules/documentation.md`: roadmap milestone heading, crosswalk row, Current position
    paragraph, and the `AGENTS.md` "Current:" line.
+4a. Marketing copy re-audit: compare `apps/marketing/src/components/marketing/*-copy.ts` (about
+   implementation state, platform, security, demo cards) with the capability matrix, the product
+   registry and the roadmap Current position. Fix drift, bump the matrix "Last synced release"
+   line, and run `npm run docs:marketing-sync`.
 5. After the milestone is closed, run "Screenshot refresh" from the prompt: list stale
    screenshots with evidence, get approval, recapture them with the built-in browser, then update
    every reference (README, marketing visuals + tests, capability matrix, product rows) and

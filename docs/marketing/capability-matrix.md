@@ -8,6 +8,12 @@ matrix.
 This file is a **claim view** of the registry plus infrastructure rows that are not product
 modules (CI, hosted deploy). If a row and its catalog file disagree, fix both.
 
+Last synced release: 0.99.1
+
+Keep the line above equal to the root `package.json` version whenever a task ships or a milestone
+closes. `npm run docs:marketing-sync` fails when it drifts. After a claim-affecting release, also
+re-audit `apps/marketing/src/components/marketing/*-copy.ts` against this table.
+
 Columns:
 
 - **Catalog** — product module file, or — for infra-only rows.
@@ -19,7 +25,7 @@ Columns:
 | --- | --- | --- | --- | --- |
 | Authentication (mock IdP, sessions) | [identity-access](../product/identity-access.md) | Yes (Nest HttpOnly cookies + opaque bearer JSON for machine clients; live Next does not persist tokens; labeled mock MFA on `/login`; demo OIDC + PKCE with Google or Fake adapter; demo API rate limits on login, MFA, refresh, OAuth, telehealth create/join/media-token, document download, and payments with `auth.rate_limited` security events and an accessible "too many attempts" message on sign-in, MFA, and OAuth landing; demo concurrent-session review lists the caller's sessions and can end other sessions without signing out; live rows omit IP and location; mock location and IP stay labeled demo data). One synthetic patient (Avery Quinn) can sign in with no MFA. The public Render login hides the provider button unless `NEXT_PUBLIC_OAUTH_ENABLED` is exactly true (unset on Render) and does not complete Google or Fake sign-in. When `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true` (the Render web service), `/login` lists four synthetic accounts with role labels, copy actions, and the MFA nurse code. Production builds leave the flag unset. | Yes — labeled mock identity, mock MFA, and "Demo OIDC + PKCE (Google or Fake). Not a production IdP." May say "demo rate limiting on sign-in and sensitive API routes" and "demo concurrent-session review" (list and end other sessions). Not production OAuth, production MFA, production abuse protection, or a production session manager. Do not say the public demo completes Google or Fake sign-in. Do not describe a patient portal on the marketing site. Do not list fixture passwords in marketing prose. The marketing demo-page screenshot may show the same synthetic sign-in panel as `/login`, including fixture passwords. | Production OAuth / IdP and production MFA stay later ([ADR-003](../decisions/ADR-003-authentication.md)) |
 | Patient management | [patient-management](../product/patient-management.md) | Yes | Yes | — |
-| Scheduling (appointments, calendar) | [scheduling](../product/scheduling.md) | Yes | Yes | — |
+| Scheduling (appointments, calendar) | [scheduling](../product/scheduling.md) | Yes | Yes | Waitlist and check-in / check-out (not in the demo) |
 | Clinical / EHR foundation | [patient-management](../product/patient-management.md) | Yes (lists on patient profile) | Yes, as foundation | External EHR integrations |
 | Telehealth | [telehealth](../product/telehealth.md) | Session shell plus Daily call-object media when `DAILY_API_KEY` is set; labeled unavailable otherwise; leave does not end the visit; ended/ineligible visits stay closed; mock mode keeps placeholders. A portal patient or assigned nurse opens an existing visit from Join visit; writers still create the session. Lookup says the visit is not open yet when none exists. | Qualified — demo Daily media, not production telehealth or HIPAA video | Chat, recording, transcription |
 | Billing | [billing](../product/billing.md) | Invoice list/detail plus demo record-payment and labeled claims envelopes | Qualified demo payments and envelopes; not hosted Stripe or claims submission | Hosted payments, claims submission, EDI |
@@ -29,7 +35,7 @@ Columns:
 | RBAC, tenant isolation, audit, document ACL | [security](../product/security.md) | Yes (demo patterns) | Yes, as implemented engineering patterns | — |
 | HIPAA certification | [security](../product/security.md) | No | Must not claim | Organizational compliance is out of this demo |
 | GitHub Actions CI | — | Yes (PR/`main` quality gates) | Not a hosted production | INFRA-005 |
-| Cloud deploy / preview | — | Partial (ECS API + Amplify Hosting + PR previews + production ECS workflow; operator apply/connect). Interim Render demo is INFRA-015 and INFRA-016 and is not AWS production. | Must not claim a hosted production or working public OAuth. The Render URL may be named as an interim synthetic demo. | M9 **PAUSED / BLOCKED** — AWS unavailable (INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). M18 interviewer readiness is shipped (0.91.0) and does not add Render PR previews. |
+| Cloud deploy / preview | — | Partial (ECS API + Amplify Hosting + PR previews + production ECS workflow; operator apply/connect). Interim Render demo is INFRA-015 and INFRA-016 and is not AWS production. | Must not claim a hosted production or working public OAuth. The Render URL may be named as an interim synthetic demo. | M9 **PAUSED / BLOCKED** — AWS unavailable (INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). M18 interviewer readiness is shipped (0.91.0). Manual Render PR previews for marketing and web are shipped (M20, INFRA-019). |
 
 ## Copy examples
 

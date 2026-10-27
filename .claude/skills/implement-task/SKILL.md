@@ -33,7 +33,9 @@ model: sonnet
    `.claude/rules/documentation.md` ("Progress trackers"): the roadmap milestone section, crosswalk
    row and **Current position** paragraph, the `AGENTS.md` "Current:" line, and
    `docs/tasks/00-master-task-list.md`. Also update `docs/product/` +
-   `docs/marketing/capability-matrix.md` if a user-facing capability changed. If this task is the
+   `docs/marketing/capability-matrix.md` if a user-facing capability changed, update the matrix
+   "Last synced release" line to the new version, and fix any `apps/marketing` copy and tests the
+   claim touches (`npm run lint:marketing`, `test:marketing`, `docs:marketing-sync`). If this task is the
    first shipped on a milestone, mark the milestone "in progress"; if it is the last, say
    "shipped" and ask the user before declaring it closed. Use the `docs-sync-checker` subagent
    to confirm nothing was missed.

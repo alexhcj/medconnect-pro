@@ -43,6 +43,10 @@ jobs:
         run: npm run ci:secrets
       - name: Test secret guard
         run: npm run test:ci-secrets
+      - name: Marketing sync check
+        run: npm run docs:marketing-sync
+      - name: Test marketing sync check
+        run: npm run test:marketing-sync
       - name: Test Amplify buildspec
         run: npm run test:amplify-buildspec
       - name: Test preview delivery workflows

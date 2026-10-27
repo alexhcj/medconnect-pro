@@ -50,25 +50,31 @@ export const MARKETING_ABOUT_STATE = {
 	headingId: 'implementation-state',
 	items: [
 		{
-			title: 'M0–M7 shipped',
+			title: 'Application demo',
 			description:
-				'Authentication, patients, appointments, clinical lists, telehealth session shell, invoices, and administration.',
-			detail: 'Live Nest mode exists alongside the mock-first frontend.',
+				'Mock identity with labeled mock MFA, patients, appointments, clinical lists, telehealth, invoices, analytics, notifications, and administration, with demo rate limiting and concurrent-session review.',
+			detail: 'Live Nest mode with HttpOnly cookie sessions runs alongside the mock-first frontend.',
 			status: 'Shipped',
 		},
 		{
-			title: 'M8 marketing',
+			title: 'Security patterns',
 			description:
-				'This public site describes implemented capabilities without inventing unshipped product features.',
-			detail: 'Public pages include captured synthetic demo screens.',
+				'RBAC, tenant isolation, resource-level authorization, audit events, and a tenant-scoped security-events viewer.',
+			detail: 'Demo OIDC with PKCE uses a Google or Fake adapter. It is not a production IdP.',
 			status: 'Shipped',
 		},
 		{
-			title: 'Later: deploy',
+			title: 'Delivery pipeline',
 			description:
-				'GitHub Actions, preview environments, and production hosting are a later milestone.',
+				'GitHub Actions quality gates and manual PR previews run for this site and the web app. An interim synthetic demo is hosted on Render.',
+			detail: 'AWS infrastructure code exists, but it has not been applied as a hosted production.',
+			status: 'Partial',
+		},
+		{
+			title: 'Production hosting on AWS',
+			description: 'Hosted AWS production is paused until an AWS account is available.',
 			detail: 'Do not claim a hosted production.',
-			status: 'Not this milestone',
+			status: 'Paused',
 		},
 	],
 } as const;
@@ -78,11 +84,11 @@ export const MARKETING_ABOUT_STACK = {
 	headingId: 'current-stack-vs-planned',
 	current: {
 		title: 'Current',
-		body: 'Next.js, React, TypeScript, Tailwind, NestJS 12, PostgreSQL, REST/OpenAPI, mock IdP sessions.',
+		body: 'Next.js, React, TypeScript, Tailwind, NestJS 12, PostgreSQL, REST/OpenAPI, mock IdP sessions, GitHub Actions, and Terraform definitions. Daily call-object media is in the demo when configured.',
 	},
 	planned: {
 		title: 'Planned — not shipped',
-		body: 'Redis, S3/KMS, AWS, Docker, and Terraform remain planned. Do not present them as current. Daily call-object media is in the demo when configured.',
+		body: 'Redis, S3/KMS document storage, and an applied AWS production environment remain planned. Do not present them as current.',
 	},
 } as const;
 

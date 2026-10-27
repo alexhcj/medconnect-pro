@@ -61,7 +61,7 @@ export const FEATURE_PAGE_METADATA: Record<
 	administration: {
 		title: 'Administration',
 		description:
-			'User directory, audit viewer, and role assignment with tenant and grant limits. Security-events HTTP is not shipped.',
+			'User directory, audit viewer, and role assignment with tenant and grant limits, plus a tenant-scoped security-events viewer.',
 	},
 };
 
@@ -433,7 +433,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 			headingId: 'administration-hero-heading',
 			eyebrow: 'Administration · demo limits',
 			heading: 'Users, roles, and audit viewer',
-			body: 'User directory, audit viewer, and role assignment with tenant and grant limits. Security-events HTTP is not shipped.',
+			body: 'User directory, audit viewer, and role assignment with tenant and grant limits, plus a tenant-scoped security-events viewer.',
 			...FEATURE_PAGE_HERO_CTAS,
 		},
 		capabilities: {
@@ -455,7 +455,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 				},
 				{
 					title: 'Honest status',
-					description: 'Security-events HTTP is not shipped.',
+					description: 'Security events are auth and session rows for the tenant, not a SIEM.',
 				},
 			],
 		},

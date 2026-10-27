@@ -13,7 +13,8 @@
 6. Update roadmap crosswalk, Current position paragraph, the `AGENTS.md` "Current:" line,
    relevant roadmap slice, master task list, and matching
    `docs/product/` capability rows (plus the marketing capability matrix) when user-facing
-   status or public claims changed
+   status or public claims changed; re-audit `apps/marketing/src/components/marketing/*-copy.ts`
+   against the matrix, set the matrix "Last synced release" line, run `npm run docs:marketing-sync`
            ↓
 7. After you declare the milestone closed: recapture stale product screenshots and update every
    place that uses them (see "Screenshot refresh")
