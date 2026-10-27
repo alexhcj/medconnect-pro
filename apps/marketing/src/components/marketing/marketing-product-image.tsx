@@ -36,7 +36,7 @@ export function MarketingProductImage({src, alt, className}: MarketingProductIma
 			height={900}
 			unoptimized
 			className={cn(
-				'h-full w-full rounded-xl border border-border bg-subtle object-cover object-top',
+				'h-auto w-full rounded-xl border border-border bg-subtle object-cover object-top',
 				className,
 			)}
 			onError={() => {

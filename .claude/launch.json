@@ -6,6 +6,12 @@
 			"runtimeExecutable": "npm",
 			"runtimeArgs": ["run", "dev:mocks", "-w", "medconnect-web"],
 			"port": 3000
+		},
+		{
+			"name": "marketing",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run", "dev", "-w", "medconnect-marketing"],
+			"port": 3002
 		}
 	]
 }

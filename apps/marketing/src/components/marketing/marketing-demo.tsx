@@ -69,7 +69,7 @@ export function MarketingDemo() {
 						src={MARKETING_DEMO_LOGIN_PREVIEW.image.src}
 						alt={MARKETING_DEMO_LOGIN_PREVIEW.image.alt}
 						caption={MARKETING_DEMO_LOGIN_PREVIEW.caption}
-						frameClassName="mt-4 min-h-[16rem] bg-subtle sm:min-h-[17.5rem]"
+						frameClassName="mt-4 overflow-hidden rounded-xl bg-subtle"
 						imageClassName="h-auto max-h-[540px] w-full object-contain object-top"
 					/>
 				</MarketingSection>
