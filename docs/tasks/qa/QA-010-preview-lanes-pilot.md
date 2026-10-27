@@ -50,6 +50,8 @@ changed surface.
 
 - [ ] Each lane behaves as `delivery-lanes.md` says
 - [ ] Web preview: demo-account sign-in works on mocks; `/mcp-api/health` returns 503
+  - [x] `/mcp-api/health` returns 503 (PR #8 preview, 2026-10-26; see Completion)
+  - [ ] demo-account sign-in works on mocks
 - [ ] Interviewer API logs show no requests from preview hosts during the pilot
 - [ ] Free instance hours used by previews during the pilot are recorded
 - [ ] Any mismatch becomes a doc fix or a new task, listed in Completion
@@ -81,9 +83,12 @@ Test and docs only. No version bump.
     path filter.
   - **Marketing lane (pending):** needs a real PR touching `apps/marketing` with `render-preview`;
     record the preview URL, the 320 px smoke and the `main` deploy after `ci`.
-  - **Web lane (pending):** needs a real PR touching `apps/web` with `render-preview`; record the
-    preview URL, demo-account sign-in on mocks, and that `/mcp-api/health` returns 503 on the
-    preview.
+  - **Web lane (in progress):** PR [#8](https://github.com/alexhcj/medconnect-pro/pull/8) (FE-050,
+    `apps/web`) built a preview at `https://medconnect-web-pr-8.onrender.com`. Evidence recorded
+    2026-10-26 (owner): `GET /mcp-api/health` on that preview returns 503 with
+    `{"error":{"code":"SERVICE_UNAVAILABLE","message":"API proxy is not configured"}}`, as
+    expected for a preview with no `API_BASE_URL`. Still to record: demo-account sign-in on mocks,
+    and the `main` deploy after merge.
   - **Isolation evidence (pending):** interviewer API logs showing no requests from preview hosts,
     and the free instance hours used by previews. The hours are not available through the Render
     workspace API used here; read them from the dashboard (baseline below). Take the log excerpt
@@ -105,6 +110,11 @@ Test and docs only. No version bump.
     - Custom domains are 4 against 2 included. `deploy-render.md` puts extra names at about $0.25
       per month each, so "no paid resources" may not hold. Check the billing page for the domain
       line, then fix the wording or open a task.
+    - Service previews copy base-service settings at creation, so the `NEXT_PUBLIC_MARKETING_URL`
+      entry added to `render.yaml` in PR #8 did not reach its preview (no logo link, no back link
+      even after setting the var and rebuilding). Documented in `deploy-render.md` "PR previews";
+      preview-to-preview links stay unwired (low priority, Render docs silent on `fromService`
+      across previews).
     - The PR template is pasted verbatim by GitHub and was left unfilled. Doc fix: the `/open-pr`
       skill, the "PR body" section in `delivery-lanes.md`, the template and `CLAUDE.md` (this
       branch).

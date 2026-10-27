@@ -17,7 +17,10 @@ Flow and lane rules: `docs/workflows/delivery-lanes.md` ("PR body"). Template:
    Completion section). Several IDs on one branch: list all, use the strictest lane.
 2. Collect facts, no guessing: `git diff --name-only main...HEAD`, `git log main..HEAD --format=%s`,
    root `package.json` version on `main` vs `HEAD`, top `CHANGELOG.md` entry only.
-3. Fill the template, section by section:
+3. Fill the template, section by section. The generated body is clean: replace every
+   placeholder, drop the template's example hints (`e.g. FE-048 …`, `e.g. MEDCONNECT-133`, lane
+   lists, parenthetical box hints), and remove all `<!-- … -->` comments, keeping only the section
+   headings, short labels (`Task ID:`, `Plane identifier:`, `Lane:`) and the values:
    - **Task**: ID(s); Plane identifier from the task file; lane from the changed paths (lane
      table in `delivery-lanes.md`); then 1-3 sentences: what changed and why, in the project's
      words. Title format: `<ID> <short title>` (no `Docs/…` branch-name titles).
@@ -35,7 +38,10 @@ Flow and lane rules: `docs/workflows/delivery-lanes.md` ("PR body"). Template:
    preview URL, operator steps named in the task Completion (Render dashboard, AWS apply,
    branch protection), and any acceptance criterion left unticked. State "none" if empty.
 5. Show the full body and title to the user and wait for approval. Then: new PR → `git push -u
-   origin HEAD` and `gh pr create --title … --body-file …`; existing PR (`--update <PR#>`) →
-   `gh pr edit <PR#> --body-file …`. Write the body file to the scratchpad, not the repo.
+   origin HEAD` and `gh pr create --draft --title … --body-file …` (always a draft; the user reviews it and
+   publishes it manually, never run `gh pr ready`); existing PR (`--update <PR#>`) →
+   `gh pr edit <PR#> --body-file …` (leave its draft state alone). Write the body file to the
+   scratchpad, not the repo.
 6. End the body with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
-   Report the PR URL. Never enable auto-merge, never merge.
+   Report the PR URL and say it is a draft awaiting the user's publish. Never enable auto-merge,
+   never merge.

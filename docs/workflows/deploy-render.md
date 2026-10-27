@@ -94,7 +94,8 @@ After the first deploy is live:
   the card. Its link and "← Back to home" go to `https://marketing.medconnectpro.app` (FE-050).
   `render.yaml` sets `NEXT_PUBLIC_MARKETING_URL` on `medconnect-web`; it is inlined at build time,
   so redeploy web after changing it. Without a valid `http(s)` value the logo is plain branding
-  with no link. PR previews inherit the production marketing URL, not a marketing preview origin.
+  with no link. A PR preview shows the links only if the var is on the preview instance when it is
+  built (see "PR previews"), and then it points at production marketing, not a marketing preview.
 - `https://<api>/health` returns `{"status":"ok"}`.
 - `https://<api>/ready` returns ready after Postgres accepts a connection.
 - `https://<api>/api/docs` does not serve Swagger UI.
@@ -154,6 +155,14 @@ A build filter also gates preview builds: a docs-only PR does not build a previe
   errors, short delay, demo account panel shown) and starts without `API_BASE_URL`. Sign in with a
   demo account on mock data. `/mcp-api/health` returns 503 and the interviewer API sees no
   requests. Live behaviour needs local `npm run dev:real` or the merged deploy.
+- Settings: Render copies the base service's settings, including env vars, when a service preview
+  is created. Later changes to the base service do not reach it, and `render.yaml` edits on the PR
+  branch are not documented to apply to it. A new `NEXT_PUBLIC_*` var (for example
+  `NEXT_PUBLIC_MARKETING_URL`, FE-050) is therefore missing from that PR's preview. To see its
+  effect, add the var on the preview instance in the dashboard and rebuild: it is inlined at build
+  time. Preview-to-preview links (marketing sign-in to the web preview, web logo to the marketing
+  preview) are not wired. Render documents `previewValue` for web services only, not static sites,
+  and does not document `fromService` across preview instances.
 - Fail closed: live mode needs a non-PR build on branch `main`. If Render stops exposing those
   variables, previews and the demo both build in mock mode, which is visible on `/login`.
 
@@ -163,7 +172,7 @@ first load takes about a minute. Manual trigger and auto-delete keep the usage s
 hours during the pilot.
 
 **Check one:** the build log prints `render-web: mode=mocks reason=IS_PULL_REQUEST`; the preview's
-`/mcp-api/health` returns 503; the dashboard lists no preview for `medconnect-api` or
+`/mcp-api/health` returns 503 with `{"error":{"code":"SERVICE_UNAVAILABLE","message":"API proxy is not configured"}}`; the dashboard lists no preview for `medconnect-api` or
 `medconnect-postgres`. Local guard: `npm run test:render-previews`.
 
 ## Checks-gated deploys
