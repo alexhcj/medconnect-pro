@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.99.2] - 2026-10-28
+
+### Added
+
+- QA-012: `npm run screenshots:marketing` regenerates the 8 marketing and README screenshots (`apps/web/playwright.capture.config.ts`, `apps/web/e2e/capture/marketing-screenshots.spec.ts`). It serves a production mock build on port 3100 and asserts that no TanStack Query or Next.js devtools are present before each shot. Fixed 1440 px viewport, device scale factor 1, light scheme, animations off.
+
+### Changed
+
+- All marketing screenshots were recaptured with the new command. `login.png` now shows the FE-050 logo header. Filenames and alt text are unchanged.
+- `playwright.config.ts` ignores `e2e/capture/`, so `npm run e2e:mocks` does not run the capture.
+- The milestone-close prompt's "Screenshot refresh" step and `frontend-testing.md` now point at the command.
+
 ## [0.99.1] - 2026-10-27
 
 ### Changed

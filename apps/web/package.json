@@ -21,6 +21,7 @@
     "e2e:mocks": "playwright test",
     "e2e:live": "playwright test --config=playwright.live.config.ts",
     "e2e:ui": "playwright test --ui",
+    "screenshots:marketing": "playwright test --config=playwright.capture.config.ts",
     "clean": "rm -rf .next out dist coverage test-results playwright-report"
   },
   "dependencies": {

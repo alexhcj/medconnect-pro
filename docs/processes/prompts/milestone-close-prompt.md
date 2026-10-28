@@ -99,10 +99,11 @@ Inventory (`apps/marketing/public/marketing/`; route prefix `apps/web/src/app/`)
    apps/web/src/components apps/web/src/lib apps/api/src/persistence` (seed data lives under
    `persistence`; add the screen's API module, e.g. `apps/api/src/billing`). List images whose UI, copy or demo seed content changed, each with the commits as
    evidence. Ask me to approve the list before capturing.
-2. **Recapture** only the approved images from the running app with synthetic data (built-in
-   browser, desktop 1440 px, same crop and viewport as the existing PNG, no dev tools or debug
-   controls, no PHI). Overwrite the same filenames so most references need no change. Keep
-   `og.png` in sync with `dashboard.png`. Open each new PNG to check it.
+2. **Recapture** with `npm run screenshots:marketing` (QA-012). Stop `next dev` first. The script
+   builds the mock app in production mode, so no devtools render, and rewrites all 8 PNGs at their
+   fixed sizes, with `og.png` cropped from the dashboard. Keep only the approved images and
+   restore the rest with `git restore apps/marketing/public/marketing/<file>.png`. Open each kept
+   PNG to check it.
 3. **Update every place the images apply.** Grep each filename and the old alt text, then check:
    - `README.md` Screenshots section: alt text and the intro sentence if wording is now wrong;
    - `apps/marketing/src/components/marketing/marketing-product-visuals.ts`: `alt`, `label`,

@@ -3,7 +3,7 @@ id: QA-012
 type: task
 area: qa
 feature: marketing
-status: pending
+status: implemented
 priority: high
 estimate: 2
 dependencies: [FE-023, INFRA-017]
@@ -16,7 +16,7 @@ related_docs:
     ../infrastructure/INFRA-017-demo-presentation-pack.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -71,12 +71,12 @@ milestone-close prompt has a screenshot-refresh step but no tool for it.
 
 ## Acceptance Criteria
 
-- [ ] `npm run screenshots:marketing` writes all 8 images at the stated sizes.
-- [ ] No image shows the TanStack or Next.js devtools icon (asserted in the spec and checked by eye).
-- [ ] The images show the current app UI: the FE-049 status indicator and the FE-050 logo link
-      appear where they apply.
-- [ ] `npm run e2e:mocks` does not run the capture spec.
-- [ ] The milestone-close prompt documents the command.
+- [x] `npm run screenshots:marketing` writes all 8 images at the stated sizes.
+- [x] No image shows the TanStack or Next.js devtools icon (asserted in the spec and checked by eye).
+- [x] The images show the current app UI: the FE-050 logo link appears on `login.png`. The FE-049
+      status indicator does not appear, because it is hidden in mock mode by design.
+- [x] `npm run e2e:mocks` does not run the capture spec.
+- [x] The milestone-close prompt documents the command.
 
 ## Dependencies
 
@@ -91,3 +91,26 @@ Run the script and open every PNG. Then run `npm run test:marketing` and `npm ru
 - `build:mocks` takes a few minutes, so the script is for occasional use, not CI.
 - Next.js in this repo is newer than training data. Check `node_modules/next/dist/docs/` for how
   the dev indicator behaves in production builds.
+
+## Completion
+
+- Implementation: `apps/web/playwright.capture.config.ts` runs `build:mocks` then `start:mocks`
+  on port 3100 with `reuseExistingServer: false`, so it can never attach to a dev server. It sets
+  mock delay 0, error rate 0, `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true` and
+  `NEXT_PUBLIC_MARKETING_URL` at build time. `apps/web/e2e/capture/marketing-screenshots.spec.ts`
+  captures `login` at 1440×1200, then signs in once as practice admin (every screen allows it) and
+  captures six screens at 1440×900 plus the `og` 1200×630 top-left dashboard crop. Before each
+  shot it waits for network idle and `document.fonts.ready`, and asserts that
+  `.tsqd-parent-container` and `nextjs-portal` are absent. `playwright.config.ts` ignores
+  `**/capture/**`. Scripts: root and `medconnect-web` `screenshots:marketing`. Docs:
+  milestone-close prompt "Screenshot refresh" step 2 and `frontend-testing.md` E2E.
+  Version 0.99.1 -> 0.99.2.
+- Refresh (2026-10-28): all 8 PNGs were rewritten. `dashboard`, `patients`, `admin` and `og`
+  came out byte-identical. `login` (FE-050 logo header), `appointments` (no "today" highlight
+  outside the mock anchor week), `billing` and `telehealth` changed slightly. Alt text, README
+  embeds and marketing tests needed no change.
+- Deviations: AC3 was amended before implementation. The FE-049 indicator is hidden in mock mode,
+  and live captures are out of scope.
+- Notes: Figma proof frames and `designs/marketing/*.pen` were not regenerated (ADR-011). FE-052
+  owns hero and slider images. The appointments calendar opens on the mock anchor week
+  (Oct 11–17, 2026) with an empty morning view, which FE-052 may want to change.
