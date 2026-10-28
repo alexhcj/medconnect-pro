@@ -108,7 +108,7 @@ export function MarketingAbout() {
 					body={MARKETING_ABOUT_CTA.body}
 					primaryCta={MARKETING_ABOUT_CTA.primaryCta}
 					secondaryCta={MARKETING_ABOUT_CTA.secondaryCta}
-					stackUntilLg
+					rowFrom="lg"
 				/>
 			</div>
 		</div>

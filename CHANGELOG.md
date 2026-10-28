@@ -6,6 +6,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.99.3] - 2026-10-28
+
+### Added
+
+- FE-051: marketing building blocks for M21.
+  - `Badge`: a static status label with `success`, `accent`, `neutral` and `warning` tones,
+    using existing tokens only.
+  - `MarketingBand`: a full-bleed section background (`surface`, `canvas` or `brand`).
+  - `MarketingSplitSection`: a two-column lead and items layout with `reverse`.
+  - `MarketingLinkCard`: a card that is a single link, with an arrow, a hover state and a
+    focus ring.
+- Matching Figma components on the Components page: `Card` variants Default, Icon, Link and
+  Status; `Badge`; `Section band`; `Split section`.
+
+### Changed
+
+- Marketing grids: 3 items now go from 1 to 3 columns at `md`, so no card is left on its own at
+  640–767 px. 4 items show 2 columns from `sm` before 4 at `lg`.
+- `MarketingCtaBand` takes `rowFrom` (`sm`, `md` or `lg`) instead of `stackUntilLg`.
+- The homepage CTA renders through `MarketingCtaBand` with unchanged copy; the duplicate
+  component is removed.
+
 ## [0.99.2] - 2026-10-28
 
 ### Added

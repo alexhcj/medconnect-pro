@@ -104,7 +104,7 @@ export function MarketingSecurity() {
 					body={MARKETING_SECURITY_CTA.body}
 					primaryCta={MARKETING_SECURITY_CTA.primaryCta}
 					secondaryCta={MARKETING_SECURITY_CTA.secondaryCta}
-					stackUntilLg
+					rowFrom="lg"
 				/>
 			</div>
 		</div>

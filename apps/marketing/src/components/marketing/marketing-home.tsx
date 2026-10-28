@@ -1,5 +1,6 @@
-import {MarketingHomeCta} from '@/components/marketing/marketing-home-cta';
+import {MarketingCtaBand} from '@/components/marketing/marketing-cta-band';
 import {
+	MARKETING_HOME_CTA,
 	MARKETING_HOME_SECURITY_PRINCIPLES,
 	MARKETING_HOME_UX_PRINCIPLES,
 } from '@/components/marketing/marketing-home-copy';
@@ -29,7 +30,14 @@ export function MarketingHome() {
 					items={MARKETING_HOME_SECURITY_PRINCIPLES.items}
 				/>
 				<MarketingHomeRoles />
-				<MarketingHomeCta />
+				<MarketingCtaBand
+					headingId={MARKETING_HOME_CTA.headingId}
+					heading={MARKETING_HOME_CTA.heading}
+					body={MARKETING_HOME_CTA.body}
+					primaryCta={MARKETING_HOME_CTA.primaryCta}
+					secondaryCta={MARKETING_HOME_CTA.secondaryCta}
+					rowFrom="sm"
+				/>
 			</div>
 		</div>
 	);

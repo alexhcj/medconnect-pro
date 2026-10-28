@@ -235,7 +235,7 @@ Marketing design refresh, the last design pass before 1.0.0. Then 1.0.0 ships as
 AWS production (INFRA-013) moves to a later 1.x release. Does not close M9.
 
 - QA-012 — Repeatable marketing screenshot capture (shipped at 0.99.2; `npm run screenshots:marketing`)
-- FE-051 — Marketing design-system extension
+- FE-051 — Marketing design-system extension (shipped at 0.99.3; Badge, MarketingBand, MarketingSplitSection, MarketingLinkCard)
 - FE-052 — Homepage refresh
 - FE-053 — Status vs link affordance
 - FE-054 — About: implementation state as a roadmap board
