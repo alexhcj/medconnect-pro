@@ -120,7 +120,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - INFRA-011 — Production delivery workflow and rollback
 - INFRA-012 — GitHub v1.0.0 release-notes template
 - INFRA-014 — AWS account setup and hosted first-apply
-- INFRA-013 — v1.0.0 production release readiness
+- INFRA-013 — AWS production release readiness (post-1.0; retargeted 2026-10-28, 1.0.0 is INFRA-021)
 - INFRA-015 — Interim Render public demo (does not close M9)
 - INFRA-016 — Render marketing static site (does not close M9)
 - INFRA-017 — Demo presentation pack (M18; does not close M9)
@@ -228,6 +228,19 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 - INFRA-020 — Checks-gated deploys and PR workflow (shipped at 0.97.3; branch protection is an operator step)
 - FE-048 — Preview environment banner (optional; shipped at 0.97.2)
 - QA-010 — Preview lanes pilot
+
+## Product (M21, proposed)
+
+Marketing design refresh, the last design pass before 1.0.0. Then 1.0.0 ships as the Render demo;
+AWS production (INFRA-013) moves to a later 1.x release. Does not close M9.
+
+- QA-012 — Repeatable marketing screenshot capture
+- FE-051 — Marketing design-system extension
+- FE-052 — Homepage refresh
+- FE-053 — Status vs link affordance
+- FE-054 — About: implementation state as a roadmap board
+- FE-055 — Architecture page
+- INFRA-021 — 1.0.0 demo release
 
 ## Standalone (no milestone)
 

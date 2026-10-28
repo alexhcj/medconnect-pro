@@ -73,6 +73,16 @@ QA-010 is pending
 standalone task outside any milestone, shipped at 0.98.0 (Figma frames approved; web indicator, wake ping, queued sign-in; real Render sleep test still to record).
 [FE-050](../tasks/frontend/FE-050-auth-pages-marketing-logo-link.md) (logo link back to the marketing
 site on the auth pages) is a standalone task outside any milestone, shipped at 0.99.0 (header and back link via `NEXT_PUBLIC_MARKETING_URL`; Figma frames approved). The untasked marketing copy sync (`/about` state, security-events wording, matrix "Last synced release" line, `docs:marketing-sync` drift check in CI) shipped at 0.99.1.
+**M21 — Marketing design refresh** is proposed: [QA-012](../tasks/qa/QA-012-marketing-screenshot-capture.md),
+[FE-051](../tasks/frontend/FE-051-marketing-design-system-extension.md),
+[FE-052](../tasks/frontend/FE-052-homepage-refresh.md),
+[FE-053](../tasks/frontend/FE-053-status-and-link-affordance.md),
+[FE-054](../tasks/frontend/FE-054-about-roadmap-board.md),
+[FE-055](../tasks/frontend/FE-055-architecture-page.md), and
+[INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md) (all pending).
+**1.0.0** is redefined (user decision, 2026-10-28) as the feature-complete synthetic demo on Render,
+released by INFRA-021 after M20 and M21 close. AWS production (INFRA-014, INFRA-013) becomes a later
+1.x release and no longer gates 1.0.0.
 Real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and
 Redis stay deferred. Local product work does not wait on AWS. Resume M9 when the AWS account can
 be configured. Preview/production hosting remains M9, not M8, M10, M11, or M18.
@@ -128,7 +138,8 @@ local / preview / production demo databases, and the `v1.0.0` production-release
 Separate from M8. **PAUSED / BLOCKED** — AWS account setup unavailable. Close audit found no
 missing task IDs; M9 is **not closed** and **not cancelled**. Tasks: INFRA-004–INFRA-012
 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused). Do not treat
-Terraform/workflows as a hosted demo. Do not pull AWS work into M10.
+Terraform/workflows as a hosted demo. Do not pull AWS work into M10. Since 2026-10-28 INFRA-013
+is the post-1.0 AWS production release (1.x); the 1.0.0 demo release is INFRA-021 in M21.
 
 ### M10 — Product Analytics, Notifications & Role Administration
 
@@ -276,6 +287,23 @@ Order: INFRA-018 first; INFRA-019 after it; QA-011, then SEC-010, before INFRA-0
 `ci` would stop `checksPass` deploys); FE-048 after INFRA-019; QA-010 last.
 Deferred: a paid shared preview API and database (live web previews), a docs-only CI fast lane.
 
+### M21 — Marketing design refresh (proposed)
+
+The last design pass before 1.0.0. Section bands and responsive fixes on the homepage, a hero
+product visual, module icons and links, a clearer slider, status badges distinct from links, an
+About roadmap board, and a new `/architecture` page. Copy stays except where a new surface needs
+it; Figma and code ship together (ADR-011). No new dependencies. Does not close M9.
+Tasks:
+[QA-012](../tasks/qa/QA-012-marketing-screenshot-capture.md) (repeatable screenshot capture without devtools icons),
+[FE-051](../tasks/frontend/FE-051-marketing-design-system-extension.md) (badge, section band, split section, link card; Figma variants),
+[FE-052](../tasks/frontend/FE-052-homepage-refresh.md) (homepage bands, hero visual, module icons and links, slider, principles),
+[FE-053](../tasks/frontend/FE-053-status-and-link-affordance.md) (status badges vs link cards),
+[FE-054](../tasks/frontend/FE-054-about-roadmap-board.md) (About shipped / in progress / up next board),
+[FE-055](../tasks/frontend/FE-055-architecture-page.md) (`/architecture` page with system map), and
+[INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md) (1.0.0 demo release).
+Order: QA-012 and FE-051 first; FE-052–FE-055 after FE-051; INFRA-021 last, after M20 (QA-010) and
+M21 are closed.
+
 ## Milestone crosswalk
 
 A milestone may be **demonstrable on frontend mocks** before the matching NestJS surface exists. A
@@ -293,7 +321,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M6 Billing | FE-008, BE-007, FE-015 | Frontend billing mocks may start after FE-010. Billing API waits on BE-009. FE-015 connects the shipped dashboard to that API. |
 | M7 Administration | FE-009, FE-016, BE-010, SEC-002, SEC-004, QA-004, BE-008 as needed | User directory HTTP plus admin UI on Nest. Isolation hardening and authorization matrix remain. BE-008 is the notifications domain, not admin UI. **Closed** at 0.44.0. |
 | M8 Marketing website and visual language | FE-017–FE-023 (shipped) | Public marketing site and shared visual language. Deploy/preview is M9. **Closed** at 0.51.1. |
-| M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. INFRA-015 is an interim Render demo and is not part of this AWS close. INFRA-016 adds the marketing static site on that demo and does not close M9. |
+| M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. INFRA-015 is an interim Render demo and is not part of this AWS close. INFRA-016 adds the marketing static site on that demo and does not close M9. Since 2026-10-28 INFRA-013 is the post-1.0 AWS production release (1.x); 1.0.0 is INFRA-021 (M21). |
 | M10 Product Analytics, Notifications & Role Administration | DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026 (shipped) | Live overview API and UI, notification producers + UI, role PATCH + UI. Bounded seed, Nest overview API, live dashboard cards, appointment producers, in-app notification center, and role assignment HTTP/UI shipped. No Redis, OAuth, Daily, Stripe, or AWS. |
 | M11 Application Security & Session Hardening | BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005 (shipped) | Nest HttpOnly cookies, live cookie client, mock MFA UI, security-events HTTP/UI, production-gap docs. Not OAuth, production MFA, rate limiting, Redis, or AWS. |
 | M12 Telehealth Media Maturity | BE-016, FE-030 (shipped) | Daily media token HTTP plus Daily call-object UI on the shipped session shell. Fake adapter when `DAILY_API_KEY` is unset. Not chat, recording, Socket.IO, Stripe, or AWS. |
@@ -305,6 +333,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (all shipped; closed at 0.91.0) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
 | M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046 (shipped, 0.96.2); FE-047 (shipped, 0.96.3); QA-008 (shipped, no version bump); QA-009 (shipped, no version bump) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Time column no-wrap with `patient-form.test.tsx` timeout fix, live seed volume for paging and event filter options parity shipped. QA-008 (live e2e suite green) and QA-009 (live paging specs) shipped. **Closed** at 0.96.3. Does not close M9 or reopen M17/M18. |
 | M20 PR previews and delivery lanes | INFRA-018 (shipped, docs only), INFRA-019 (shipped at 0.97.0), QA-011 (shipped, test only), SEC-010 (shipped at 0.97.1), SEC-011 (shipped at 0.97.4), FE-048 (optional; shipped at 0.97.2), INFRA-020 (shipped at 0.97.3); QA-010 (pending) | Render service previews for marketing and web only; web previews on frontend mocks; no API or database preview; `main` deploys after `ci`; PR-only flow. No paid resources. Does not close M9 or change the AWS topology (ADR-012, INFRA-010). |
+| M21 Marketing design refresh | QA-012, FE-051, FE-052, FE-053, FE-054, FE-055, INFRA-021 (all pending) | **Proposed.** Homepage bands and responsive fixes, hero visual, module icons and links, slider, status badges vs links, About roadmap board, `/architecture` page, repeatable screenshots. INFRA-021 releases 1.0.0 as the Render demo; AWS production (INFRA-013) moves to 1.x. Does not close M9. |
 | Standalone (no milestone) | FE-049 (shipped at 0.98.0); FE-050 (shipped at 0.99.0) | API status indicator on `/login` and a gesture-gated wake ping for the sleeping Render Free API (ADR-017). Not part of M20. No paid resources, keep-alive pinger, or API change. FE-050: logo link to the marketing site on the auth pages via `NEXT_PUBLIC_MARKETING_URL`; no API or auth change. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,

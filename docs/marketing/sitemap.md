@@ -17,8 +17,11 @@ or `(dashboard)`.
 | `/security` | Implemented controls and design principles | FE-022 |
 | `/about` | Project, architecture, portfolio context | FE-022 |
 | `/demo` | Safe demo entry; links to existing `/login` | FE-022 |
+| `/architecture` | Visual system map, request and authorization flow, current vs planned (planned; not in top nav) | FE-055 |
 
 Top-level marketing nav stays Home, Platform, Security, About, Demo unless this sitemap changes.
+`/architecture` is reached from the footer, About › Architecture, and each Security implemented
+control, not from the top nav.
 
 ## Platform feature pages
 
