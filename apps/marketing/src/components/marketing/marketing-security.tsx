@@ -46,6 +46,7 @@ export function MarketingSecurity() {
 									description={item.description}
 									detail={item.detail}
 									status={item.status}
+									link={item.link}
 								/>
 							</li>
 						))}

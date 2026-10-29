@@ -25,6 +25,8 @@ export interface MarketingStatusCardProps {
 	description: string;
 	detail: string;
 	status: MarketingStatusLabel | MarketingStatusCardLink;
+	/** Inline link beside a string status Badge. Ignored when the whole card is a link. */
+	link?: MarketingStatusCardLink;
 }
 
 /**
@@ -36,6 +38,7 @@ export function MarketingStatusCard({
 	description,
 	detail,
 	status,
+	link,
 }: MarketingStatusCardProps) {
 	const isLink = typeof status !== 'string';
 	const card = (
@@ -52,7 +55,7 @@ export function MarketingStatusCard({
 			<CardContent>
 				<p className="text-sm leading-relaxed text-foreground">{detail}</p>
 			</CardContent>
-			<CardFooter className={cn(isLink && 'justify-between gap-2')}>
+			<CardFooter className={cn((isLink || link) && 'flex-wrap justify-between gap-2')}>
 				{isLink ? (
 					<>
 						<span className="min-w-0 break-words text-sm font-medium text-brand">
@@ -64,7 +67,22 @@ export function MarketingStatusCard({
 						/>
 					</>
 				) : (
-					<Badge tone={marketingStatusTone(status)}>{status}</Badge>
+					<>
+						<Badge tone={marketingStatusTone(status)}>{status}</Badge>
+						{link ? (
+							<Link
+								href={link.href}
+								aria-label={`${link.label}: ${title}`}
+								className="group/link inline-flex min-h-11 items-center gap-1 rounded-md text-sm font-medium text-brand underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							>
+								{link.label}
+								<ArrowRight
+									aria-hidden
+									className="size-4 shrink-0 transition-transform group-hover/link:translate-x-0.5"
+								/>
+							</Link>
+						) : null}
+					</>
 				)}
 			</CardFooter>
 		</Card>

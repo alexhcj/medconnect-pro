@@ -239,7 +239,7 @@ AWS production (INFRA-013) moves to a later 1.x release. Does not close M9.
 - FE-052 — Homepage refresh (shipped at 0.99.4; homepage bands, hero visual, module links, slider, security and role cards)
 - FE-053 — Status vs link affordance (shipped at 0.99.5; tone-mapped status badges, whole-card `/demo` route links)
 - FE-054 — About: implementation state as a roadmap board (shipped at 0.99.6; Shipped / In progress / Up next lists and a Paused line)
-- FE-055 — Architecture page
+- FE-055 — Architecture page (shipped at 0.100.0; system map with list fallback, request flow, current vs planned, sixth top-nav item)
 - INFRA-021 — 1.0.0 demo release
 
 ## Standalone (no milestone)

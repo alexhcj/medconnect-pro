@@ -6,6 +6,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.100.0] - 2026-10-29
+
+### Added
+
+- FE-055: new static `/architecture` marketing page. A system map shows the public site, web app,
+  NestJS API (nine domain modules) and PostgreSQL as Current; Daily, the sign-in adapter (mock IdP
+  today) and Render demo hosting as External; Redis, S3/KMS and AWS production as Planned (dashed,
+  `bg-warning-subtle`, "Planned" badge). From `md` the map is an SVG (title and description) with
+  node buttons (`aria-pressed`) and a polite live detail panel; below `md` a grouped accordion list
+  replaces it. `/architecture#<node>` preselects a node. The page also draws the five-step
+  authorization flow with where each step is enforced, and the current vs planned stack.
+- Architecture is the sixth top-nav item (header, mobile menu and footer) and is in the sitemap.
+- Each `/security` implemented control has a "Where it's enforced" link to its node.
+  `MarketingStatusCard` takes an optional inline `link` beside the static Badge.
+
+### Changed
+
+- `/about` drops "Current stack vs planned" (moved to `/architecture`) and links to the new page
+  from the Architecture section. The status tone map adds `External` (neutral).
+- `sitemap.md`, the FE-055 spec and `capability-matrix.md` (new "Architecture page" note) match.
+  Figma page "FE-055 Architecture" holds the 1440, 768 and 390 frames.
+
 ## [0.99.6] - 2026-10-29
 
 ### Changed

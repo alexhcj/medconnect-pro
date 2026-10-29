@@ -1,5 +1,8 @@
 import {appLoginHref} from '@/lib/marketing/public-urls';
 
+const enforcedIn = (layer: 'api' | 'database' | 'sign-in') =>
+	({label: "Where it's enforced", href: `/architecture#${layer}`}) as const;
+
 export const MARKETING_SECURITY_HERO = {
 	eyebrow: 'Security',
 	heading: 'Security-focused architecture, not a certified production system',
@@ -25,6 +28,7 @@ export const MARKETING_SECURITY_CONTROLS = {
 				'Demo sessions via the existing mock IdP, with opaque bearer sessions. Not production OAuth or OIDC.',
 			detail: 'Refresh-token rotation and idle expiry are in the demo session model.',
 			status: 'Implemented pattern',
+			link: enforcedIn('sign-in'),
 		},
 		{
 			title: 'RBAC and resource authorization',
@@ -32,6 +36,7 @@ export const MARKETING_SECURITY_CONTROLS = {
 				'Role and permission checks in the API. Frontend checks are UX only; Nest is authoritative.',
 			detail: 'Identity, then tenant, then role, then permission, then resource.',
 			status: 'Implemented pattern',
+			link: enforcedIn('api'),
 		},
 		{
 			title: 'Tenant isolation',
@@ -39,6 +44,7 @@ export const MARKETING_SECURITY_CONTROLS = {
 				'Practice-owned records are scoped server-side. Browser-supplied tenant IDs are not trusted.',
 			detail: 'Tenant scoping in services plus PostgreSQL RLS on business tables.',
 			status: 'Implemented pattern',
+			link: enforcedIn('database'),
 		},
 		{
 			title: 'Audit events',
@@ -46,6 +52,7 @@ export const MARKETING_SECURITY_CONTROLS = {
 				'Sensitive operations emit audit events. Administration includes an audit viewer. Synthetic data only.',
 			detail: 'Auth, patient, document, appointment, telehealth, and billing actions.',
 			status: 'Implemented pattern',
+			link: enforcedIn('api'),
 		},
 		{
 			title: 'PostgreSQL RLS',
@@ -53,6 +60,7 @@ export const MARKETING_SECURITY_CONTROLS = {
 				'Row-level security on tenant-owned tables, with a least-privilege application database role.',
 			detail: 'Runtime uses medconnect_app, not the table-owner role.',
 			status: 'Implemented pattern',
+			link: enforcedIn('database'),
 		},
 		{
 			title: 'Document ACL',
@@ -60,6 +68,7 @@ export const MARKETING_SECURITY_CONTROLS = {
 				'Authorized list and download of patient documents, with access audited. Local store; not S3/KMS.',
 			detail: 'PDF, PNG, and JPEG up to 5 MiB after type checks.',
 			status: 'Implemented pattern',
+			link: enforcedIn('api'),
 		},
 	],
 } as const;

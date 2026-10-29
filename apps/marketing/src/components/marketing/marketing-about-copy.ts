@@ -19,6 +19,11 @@ export const MARKETING_ABOUT_ARCHITECTURE = {
 	heading: 'Architecture',
 	headingId: 'architecture',
 	note: 'This is a modular monolith in an npm workspace. Do not treat domains as independently deployed microservices.',
+	link: {
+		title: 'View architecture',
+		description: 'System map, request and authorization flow, and current vs planned.',
+		href: '/architecture',
+	},
 	items: [
 		{
 			title: 'Next.js frontend',
@@ -94,19 +99,6 @@ export const MARKETING_ABOUT_STATE = {
 	paused: {
 		label: 'Paused',
 		text: 'Production hosting on AWS is paused until an AWS account is available. No hosted production is claimed.',
-	},
-} as const;
-
-export const MARKETING_ABOUT_STACK = {
-	heading: 'Current stack vs planned',
-	headingId: 'current-stack-vs-planned',
-	current: {
-		title: 'Current',
-		body: 'Next.js, React, TypeScript, Tailwind, NestJS 12, PostgreSQL, REST/OpenAPI, mock IdP sessions, GitHub Actions, and Terraform definitions. Daily call-object media is in the demo when configured.',
-	},
-	planned: {
-		title: 'Planned — not shipped',
-		body: 'Redis, S3/KMS document storage, and an applied AWS production environment remain planned. Do not present them as current.',
 	},
 } as const;
 

@@ -8,6 +8,7 @@ export const MARKETING_NAV: readonly MarketingNavItem[] = [
 	{name: 'Platform', href: '/platform'},
 	{name: 'Security', href: '/security'},
 	{name: 'About', href: '/about'},
+	{name: 'Architecture', href: '/architecture'},
 	{name: 'Demo', href: '/demo'},
 ];
 

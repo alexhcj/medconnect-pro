@@ -1,6 +1,6 @@
 import type {BadgeTone} from '@/components/ui/badge';
 
-/** Single source of truth for status-label tones on /security, /about and /demo cards. */
+/** Single source of truth for status-label tones on /security, /about, /demo and /architecture. */
 export const MARKETING_STATUS_TONES = {
 	'Implemented pattern': 'success',
 	Shipped: 'success',
@@ -9,6 +9,7 @@ export const MARKETING_STATUS_TONES = {
 	'Up next': 'neutral',
 	'Not shipped': 'neutral',
 	Planned: 'neutral',
+	External: 'neutral',
 	Partial: 'warning',
 	Paused: 'warning',
 	'Must not claim': 'warning',

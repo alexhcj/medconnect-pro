@@ -26,6 +26,26 @@ describe('MarketingStatusCard', () => {
 		},
 	);
 
+	it('keeps the Badge static and adds one inline link beside it', () => {
+		render(
+			<MarketingStatusCard
+				title="Tenant isolation"
+				description="Description"
+				detail="Detail"
+				status="Implemented pattern"
+				link={{label: "Where it's enforced", href: '/architecture#database'}}
+			/>,
+		);
+
+		const links = screen.getAllByRole('link');
+		expect(links).toHaveLength(1);
+		expect(links[0]).toHaveAttribute('href', '/architecture#database');
+		expect(links[0]).toHaveAccessibleName("Where it's enforced: Tenant isolation");
+		expect(links[0]).toHaveClass('min-h-11', 'focus-visible:ring-2');
+		expect(links[0]).not.toHaveTextContent('Implemented pattern');
+		expect(screen.getByText('Implemented pattern').tagName).toBe('SPAN');
+	});
+
 	it('makes the whole card one link with the route and a hidden arrow', () => {
 		const {container} = render(
 			<MarketingStatusCard

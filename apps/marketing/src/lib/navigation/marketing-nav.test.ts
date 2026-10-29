@@ -7,6 +7,7 @@ describe('MARKETING_NAV', () => {
 			'/platform',
 			'/security',
 			'/about',
+			'/architecture',
 			'/demo',
 		]);
 	});
