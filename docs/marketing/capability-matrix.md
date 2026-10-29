@@ -8,7 +8,7 @@ matrix.
 This file is a **claim view** of the registry plus infrastructure rows that are not product
 modules (CI, hosted deploy). If a row and its catalog file disagree, fix both.
 
-Last synced release: 0.99.5
+Last synced release: 0.99.6
 
 Keep the line above equal to the root `package.json` version whenever a task ships or a milestone
 closes. `npm run docs:marketing-sync` fails when it drifts. After a claim-affecting release, also
@@ -36,6 +36,17 @@ Columns:
 | HIPAA certification | [security](../product/security.md) | No | Must not claim | Organizational compliance is out of this demo |
 | GitHub Actions CI | — | Yes (PR/`main` quality gates) | Not a hosted production | INFRA-005 |
 | Cloud deploy / preview | — | Partial (ECS API + Amplify Hosting + PR previews + production ECS workflow; operator apply/connect). Interim Render demo is INFRA-015 and INFRA-016 and is not AWS production. | Must not claim a hosted production or working public OAuth. The Render URL may be named as an interim synthetic demo. | M9 **PAUSED / BLOCKED** — AWS unavailable (INFRA-004–INFRA-012 shipped; INFRA-014 pending, blocks INFRA-013; INFRA-013 paused). M18 interviewer readiness is shipped (0.91.0). Manual Render PR previews for marketing and web are shipped (M20, INFRA-019). |
+
+## About roadmap board
+
+The `/about` "Implementation state" board (`MARKETING_ABOUT_STATE`, FE-054) lists Shipped, In
+progress and Up next items plus one Paused line. **Shipped** items must be allowed by a row above
+(Application demo, Security patterns, PR previews and delivery lanes, interim Render demo hosting).
+**In progress** and **Up next** may name roadmap work that is not a capability row, such as the
+marketing design refresh and the 1.0.0 demo release, from
+[release-roadmap.md](../roadmap/release-roadmap.md). Those items are not shipped claims. Never
+move one to Shipped before it ships, and never use task IDs. AWS production hosting stays on the
+Paused line until the Cloud deploy row changes.
 
 ## Copy examples
 

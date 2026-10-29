@@ -3,7 +3,7 @@ id: FE-054
 type: task
 area: frontend
 feature: marketing
-status: pending
+status: implemented
 priority: medium
 estimate: 2
 dependencies: [FE-022, FE-051]
@@ -17,11 +17,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System"
+  frame: "Security / About / Demo (41:2) — About / Desktop 1440 (41:7), Tablet 768 (44:522), Mobile 390 (44:584); components Roadmap item (352:1487), Roadmap paused row (352:1490)"
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -69,18 +69,37 @@ grouping is the inspiration; the visuals stay in this design system.
 
 ## Acceptance Criteria
 
-- [ ] `/about` shows the three columns and the Paused line with current content.
-- [ ] No card sits alone on a row at any width.
-- [ ] The documentation rule is updated.
-- [ ] The Figma frame matches.
+- [x] `/about` shows the three columns and the Paused line with current content.
+- [x] No card sits alone on a row at any width.
+- [x] The documentation rule is updated.
+- [x] The Figma frame matches.
 
 ## Dependencies
 
 - Blocked by: FE-051. Related: FE-022.
 - Design: Figma file https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System
-  (page "Security / About / Demo" 41:2).
+  (page "Security / About / Demo" 41:2; About frames 41:7, 44:522, 44:584; components
+  "Roadmap item" 352:1487 and "Roadmap paused row" 352:1490). Approved.
 
 ## Validation
 
 Run `npm run test:marketing` (`marketing-about.test.tsx`), lint, type-check and
 `npm run docs:marketing-sync`.
+
+## Completion
+
+- Shipped at 0.99.6 (2026-10-29).
+- Implementation:
+  - `marketing-about-copy.ts`: `MARKETING_ABOUT_STATE` holds `columns` (Shipped, In progress,
+    Up next) with capability-level `{title, description}` items, and a `paused` line.
+  - `marketing-roadmap-board.tsx`: new `MarketingRoadmapBoard`. Each column is an h3 `Badge`
+    (dot, tone from `marketingStatusTone`) over a labelled `<ul>`; `grid gap-4 lg:grid-cols-3`;
+    the Paused line is a full-width `bg-subtle` row with a warning `Badge`.
+  - `marketing-status-tones.ts`: adds `Up next` (neutral).
+  - `.claude/rules/documentation.md` step 6 and a `capability-matrix.md` "About roadmap board"
+    note (user-approved) on what each column may claim.
+- Tests: `marketing-about.test.tsx` checks the three h3 column headings in order, each list's
+  items, that 1.0.0 is only under Up next, the Paused line, and that no task ID appears.
+- Visual check (dev server `/about`): 1440 px shows three equal-height 352 px columns; 768 and
+  375 px stack Shipped → In progress → Up next with no horizontal overflow and no console errors.
+  This matches Figma frames 41:7, 44:522 and 44:584.

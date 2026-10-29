@@ -6,6 +6,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.99.6] - 2026-10-29
+
+### Changed
+
+- FE-054: the `/about` "Implementation state" section is a roadmap board. Three columns
+  (Shipped, In progress, Up next), each a list under an h3 `Badge` heading, plus one full-width
+  Paused line for AWS production hosting. Columns stack below `lg` and sit three-up from `lg`, so
+  no card is alone on a row. Items are capability-level, never task IDs. Figma About frames and
+  the `Roadmap item` / `Roadmap paused row` components match.
+- `MARKETING_ABOUT_STATE` holds `columns` and `paused` instead of four status cards. The status
+  tone map adds `Up next` (neutral).
+- `.claude/rules/documentation.md` progress trackers: update the About roadmap board when a
+  milestone changes state. `capability-matrix.md` adds an "About roadmap board" note on what each
+  column may claim.
+
 ## [0.99.5] - 2026-10-29
 
 ### Changed

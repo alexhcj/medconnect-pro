@@ -8,6 +8,7 @@ import {
 } from '@/components/marketing/marketing-about-copy';
 import {MarketingCtaBand} from '@/components/marketing/marketing-cta-band';
 import {MarketingHero} from '@/components/marketing/marketing-hero';
+import {MarketingRoadmapBoard} from '@/components/marketing/marketing-roadmap-board';
 import {
 	MarketingSection,
 	marketingSectionGridClassName,
@@ -64,18 +65,10 @@ export function MarketingAbout() {
 					headingId={MARKETING_ABOUT_STATE.headingId}
 					title={MARKETING_ABOUT_STATE.heading}
 				>
-					<ul className={marketingSectionGridClassName(3)}>
-						{MARKETING_ABOUT_STATE.items.map((item) => (
-							<li key={item.title}>
-								<MarketingStatusCard
-									title={item.title}
-									description={item.description}
-									detail={item.detail}
-									status={item.status}
-								/>
-							</li>
-						))}
-					</ul>
+					<MarketingRoadmapBoard
+						columns={MARKETING_ABOUT_STATE.columns}
+						paused={MARKETING_ABOUT_STATE.paused}
+					/>
 				</MarketingSection>
 
 				<MarketingSection

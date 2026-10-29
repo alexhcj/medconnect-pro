@@ -6,6 +6,7 @@ export const MARKETING_STATUS_TONES = {
 	Shipped: 'success',
 	Current: 'success',
 	'In progress': 'accent',
+	'Up next': 'neutral',
 	'Not shipped': 'neutral',
 	Planned: 'neutral',
 	Partial: 'warning',

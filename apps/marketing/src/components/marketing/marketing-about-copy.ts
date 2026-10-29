@@ -1,5 +1,4 @@
 import {MARKETING_HOME_ROLES} from '@/components/marketing/marketing-home-copy';
-
 export const MARKETING_ABOUT_HERO = {
 	eyebrow: 'About',
 	heading: 'A portfolio demonstration of a multi-tenant healthcare SaaS',
@@ -48,35 +47,54 @@ export const MARKETING_ABOUT_ARCHITECTURE = {
 export const MARKETING_ABOUT_STATE = {
 	heading: 'Implementation state',
 	headingId: 'implementation-state',
-	items: [
+	columns: [
 		{
-			title: 'Application demo',
-			description:
-				'Mock identity with labeled mock MFA, patients, appointments, clinical lists, telehealth, invoices, analytics, notifications, and administration, with demo rate limiting and concurrent-session review.',
-			detail: 'Live Nest mode with HttpOnly cookie sessions runs alongside the mock-first frontend.',
-			status: 'Shipped',
+			label: 'Shipped',
+			items: [
+				{
+					title: 'Application demo',
+					description:
+						'Mock identity with labeled mock MFA, patients, scheduling, clinical lists, telehealth, billing and admin.',
+				},
+				{
+					title: 'Security patterns',
+					description:
+						'RBAC, tenant isolation with PostgreSQL RLS, resource-level authorization and audit events.',
+				},
+				{
+					title: 'PR previews and delivery lanes',
+					description:
+						'GitHub Actions quality gates and manual PR previews for this site and the web app.',
+				},
+				{
+					title: 'Interim demo hosting',
+					description: 'A synthetic demo is hosted on Render.',
+				},
+			],
 		},
 		{
-			title: 'Security patterns',
-			description:
-				'RBAC, tenant isolation with PostgreSQL RLS, resource-level authorization, document ACL, audit events, and a tenant-scoped security-events viewer.',
-			detail: 'Demo OIDC with PKCE uses a Google or Fake adapter. It is not a production IdP.',
-			status: 'Shipped',
+			label: 'In progress',
+			items: [
+				{
+					title: 'Marketing design refresh',
+					description: 'A refreshed homepage, status badges and page layouts for this site.',
+				},
+			],
 		},
 		{
-			title: 'Delivery pipeline',
-			description:
-				'GitHub Actions quality gates and manual PR previews run for this site and the web app. An interim synthetic demo is hosted on Render.',
-			detail: 'AWS infrastructure code exists, but it has not been applied as a hosted production.',
-			status: 'Partial',
-		},
-		{
-			title: 'Production hosting on AWS',
-			description: 'Hosted AWS production is paused until an AWS account is available.',
-			detail: 'Do not claim a hosted production.',
-			status: 'Paused',
+			label: 'Up next',
+			items: [
+				{
+					title: '1.0.0 demo release',
+					description: 'The first tagged demo release on Render, after the marketing refresh.',
+				},
+			],
 		},
 	],
+	paused: {
+		label: 'Paused',
+		text: 'Production hosting on AWS is paused until an AWS account is available. No hosted production is claimed.',
+	},
 } as const;
 
 export const MARKETING_ABOUT_STACK = {
