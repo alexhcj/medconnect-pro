@@ -7,41 +7,62 @@ import {
 	MARKETING_PRODUCT_VISUAL_CAPTION,
 } from '@/components/marketing/marketing-product-visuals';
 
-const SLIDE_CLASS_NAME =
-	'w-[85%] shrink-0 snap-start md:w-[calc((100%-1rem)/2.15)]';
+const SLIDE_GAP_PX = 16;
 
-export function scrollProductUiTrack(
-	track: HTMLDivElement | null,
-	direction: -1 | 1,
-) {
-	const slide = track?.querySelector('[data-product-slide]');
-	if (!track || !(slide instanceof HTMLElement)) {
+function prefersReducedMotion(): boolean {
+	return (
+		typeof window !== 'undefined' &&
+		typeof window.matchMedia === 'function' &&
+		window.matchMedia('(prefers-reduced-motion: reduce)').matches
+	);
+}
+
+function slideStride(track: HTMLDivElement): number {
+	const slide = track.querySelector('[data-product-slide]');
+	return slide instanceof HTMLElement ? slide.offsetWidth + SLIDE_GAP_PX : 0;
+}
+
+export function scrollProductUiTrackTo(track: HTMLDivElement | null, index: number) {
+	if (!track) {
 		return;
 	}
-
-	track.scrollBy({
-		left: direction * (slide.offsetWidth + 16),
-		behavior: 'smooth',
+	track.scrollTo({
+		left: index * slideStride(track),
+		behavior: prefersReducedMotion() ? 'auto' : 'smooth',
 	});
+}
+
+/** Index of the slide closest to the track's scroll position. */
+export function productUiTrackIndex(track: HTMLDivElement): number {
+	const stride = slideStride(track);
+	if (stride <= 0) {
+		return 0;
+	}
+	const index = Math.round(track.scrollLeft / stride);
+	return Math.min(Math.max(index, 0), MARKETING_PRODUCT_SLIDES.length - 1);
 }
 
 interface MarketingProductUiSliderProps {
 	trackRef: RefObject<HTMLDivElement | null>;
-	onScrollBySlide: (direction: -1 | 1) => void;
+	onStep: (direction: -1 | 1) => void;
+	onTrackScroll: () => void;
+	onTrackScrollEnd: () => void;
 }
 
 export function MarketingProductUiSlider({
 	trackRef,
-	onScrollBySlide,
+	onStep,
+	onTrackScroll,
+	onTrackScrollEnd,
 }: MarketingProductUiSliderProps) {
 	function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
 		if (event.key === 'ArrowLeft') {
 			event.preventDefault();
-			onScrollBySlide(-1);
+			onStep(-1);
 		}
 		if (event.key === 'ArrowRight') {
 			event.preventDefault();
-			onScrollBySlide(1);
+			onStep(1);
 		}
 	}
 
@@ -58,15 +79,20 @@ export function MarketingProductUiSlider({
 				<div
 					ref={trackRef}
 					data-product-track
-					className="flex items-start gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory"
+					className="flex items-start gap-4 overflow-x-auto snap-x snap-mandatory motion-safe:scroll-smooth"
+					onScroll={onTrackScroll}
+					onScrollEnd={onTrackScrollEnd}
 				>
-					{MARKETING_PRODUCT_SLIDES.map((slide) => (
-						<div key={slide.id} data-product-slide className={SLIDE_CLASS_NAME}>
-							<MarketingProductImage
-								src={slide.src}
-								alt={slide.alt}
-								className="h-auto"
-							/>
+					{MARKETING_PRODUCT_SLIDES.map((slide, index) => (
+						<div
+							key={slide.id}
+							role="group"
+							aria-roledescription="slide"
+							aria-label={`${index + 1} of ${MARKETING_PRODUCT_SLIDES.length}: ${slide.label}`}
+							data-product-slide
+							className="w-full shrink-0 snap-start"
+						>
+							<MarketingProductImage src={slide.src} alt={slide.alt} className="h-auto" />
 						</div>
 					))}
 				</div>

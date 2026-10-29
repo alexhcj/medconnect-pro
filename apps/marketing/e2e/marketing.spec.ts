@@ -146,7 +146,7 @@ test.describe('Marketing public navigation', () => {
 			},
 			{
 				href: '/platform/administration',
-				heading: 'Users and audit viewer',
+				heading: 'Users, roles, and audit viewer',
 			},
 		];
 

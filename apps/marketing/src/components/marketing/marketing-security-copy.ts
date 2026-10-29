@@ -71,7 +71,7 @@ export const MARKETING_SECURITY_AUTHORIZATION = {
 	steps: [
 		{title: 'Identity', description: 'Mock IdP session'},
 		{title: 'Practice / tenant', description: 'Server-resolved boundary'},
-		{title: 'Role', description: 'Practice and platform roles'},
+		{title: 'Role', description: 'Six roles; super admin stays in the session practice'},
 		{title: 'Permission', description: 'Grant catalog in the API'},
 		{title: 'Resource', description: 'Ownership or assignment'},
 	],

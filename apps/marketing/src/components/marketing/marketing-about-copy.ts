@@ -13,7 +13,7 @@ export const MARKETING_ABOUT_PURPOSE = {
 	heading: 'Purpose and audience',
 	headingId: 'purpose-and-audience',
 	body: 'MedConnect Pro is a portfolio and interview demonstration of how a senior engineering team could design a multi-tenant healthcare SaaS product. It is production-oriented in architecture, not a deployed clinical service. All patient information is synthetic.',
-	roles: MARKETING_HOME_ROLES.items,
+	roles: MARKETING_HOME_ROLES.items.map((role) => role.label),
 } as const;
 
 export const MARKETING_ABOUT_ARCHITECTURE = {
@@ -59,7 +59,7 @@ export const MARKETING_ABOUT_STATE = {
 		{
 			title: 'Security patterns',
 			description:
-				'RBAC, tenant isolation, resource-level authorization, audit events, and a tenant-scoped security-events viewer.',
+				'RBAC, tenant isolation with PostgreSQL RLS, resource-level authorization, document ACL, audit events, and a tenant-scoped security-events viewer.',
 			detail: 'Demo OIDC with PKCE uses a Google or Fake adapter. It is not a production IdP.',
 			status: 'Shipped',
 		},

@@ -6,6 +6,56 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.99.4] - 2026-10-29
+
+### Added
+
+- FE-052: homepage hero visual. From `lg` the hero is two columns, with the dashboard screenshot
+  and two claim chips ("RBAC and tenant isolation", "Synthetic data only"). At `md` the image sits
+  alone under the CTAs, and below `md` it is hidden.
+- Homepage "Who it is for" role cards: an intro and six cards (icon, role, scope line), with the
+  copy approved in the FE-052 spec and covered by a unit test. Below `md` they are 2-column
+  icon-and-name tiles. About keeps its role tags.
+- Homepage Security principles add "PostgreSQL RLS" and "Document ACL", reused verbatim from
+  `/security`.
+
+### Changed
+
+- The homepage uses `MarketingBand` sections in a fixed order:
+  - Hero, Practice modules, Product UI, UX principles and Who it is for on surface.
+  - Connected workflow and Security principles on canvas.
+  - The CTA keeps its rounded brand card.
+
+  A band that follows another of the same tone drops its top padding (Hero → Modules excepted).
+- Practice module cards are `MarketingLinkCard`s to `/platform/<slug>`, with the app sidebar's
+  icons.
+- The Product UI slider:
+  - shows one full-width slide;
+  - has module chips (`aria-current`) and a disabled-at-the-ends prev/next with an "n / 6"
+    counter;
+  - labels each slide "n of 6: Module";
+  - announces user-driven changes in a polite live region;
+  - turns smooth scrolling off under `prefers-reduced-motion`;
+  - ignores scroll sync while a requested move is in flight.
+- Security principles use `MarketingSplitSection` (the `/security` intro and link) with five icon
+  cards. UX principles keep text-only cards in a 3 / 2 / 1-column grid.
+- Below `md`, cards use 16px padding (`p-4`), matching the approved Figma 390 frame.
+- `telehealth.png` re-captured with the QA-012 signed-in capture.
+- `docs/marketing/requirements.md`: super admin is described as scoped to the signed-in practice
+  (ADR-016).
+- Marketing copy aligned with the homepage:
+  - `/about` Security patterns now names PostgreSQL RLS and document ACL.
+  - The `/security` authorization model's Role step reads "Six roles; super admin stays in the
+    session practice" instead of "Practice and platform roles".
+- Capability matrix, Authentication row: the "no patient portal" rule now allows a Patient
+  role-scope line that matches the app's role nav and the identity contract. It still rules out
+  portal products, portal features and patient sign-up.
+
+### Fixed
+
+- The marketing e2e expects the current Administration feature-page heading ("Users, roles, and
+  audit viewer"). It had been stale since the 0.99.1 copy sync.
+
 ## [0.99.3] - 2026-10-28
 
 ### Added
