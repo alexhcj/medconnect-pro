@@ -57,7 +57,7 @@ The M19 close audit added one more, [QA-009](../tasks/qa/QA-009-live-paging-spec
 page 2 of each list; shipped, test only, no version bump). Latest release: 0.96.3.
 **M20 — PR previews and delivery lanes** is in progress: INFRA-018 is shipped (ADR-019 accepted,
 workflow docs point at the lanes doc; docs only, no version bump); INFRA-019 is shipped at
-0.97.0 (manual Render previews for marketing and web); QA-011 is shipped (API type-check fix; test only, no version bump); SEC-010 is shipped at 0.97.1 (production audit findings cleared); FE-048 is shipped at 0.97.2 (PR preview banner on web and marketing); INFRA-020 is shipped at 0.97.3 (`checksPass` deploys, Render-aware PR comment, PR template; branch protection on `main` applied 2026-10-23 and recorded in the task); SEC-011 is shipped at 0.97.4 (new production audit advisories cleared); standalone FE-049 is shipped at 0.98.0 and FE-050 at 0.99.0 (latest release 0.99.4);
+0.97.0 (manual Render previews for marketing and web); QA-011 is shipped (API type-check fix; test only, no version bump); SEC-010 is shipped at 0.97.1 (production audit findings cleared); FE-048 is shipped at 0.97.2 (PR preview banner on web and marketing); INFRA-020 is shipped at 0.97.3 (`checksPass` deploys, Render-aware PR comment, PR template; branch protection on `main` applied 2026-10-23 and recorded in the task); SEC-011 is shipped at 0.97.4 (new production audit advisories cleared); standalone FE-049 is shipped at 0.98.0 and FE-050 at 0.99.0 (latest release 0.99.5);
 QA-010 is pending
 ([INFRA-018](../tasks/infrastructure/INFRA-018-render-pr-preview-decision-and-delivery-lanes.md),
 [INFRA-019](../tasks/infrastructure/INFRA-019-render-frontend-service-previews.md),
@@ -78,8 +78,9 @@ site on the auth pages) is a standalone task outside any milestone, shipped at 0
 [FE-051](../tasks/frontend/FE-051-marketing-design-system-extension.md) (badge, section band,
 split section, link card; Figma variants) shipped at 0.99.3;
 [FE-052](../tasks/frontend/FE-052-homepage-refresh.md) (homepage bands, hero visual, module links,
-slider, security and role cards) shipped at 0.99.4 (latest release 0.99.4);
-[FE-053](../tasks/frontend/FE-053-status-and-link-affordance.md),
+slider, security and role cards) shipped at 0.99.4;
+[FE-053](../tasks/frontend/FE-053-status-and-link-affordance.md) (status badges vs whole-card
+route links) shipped at 0.99.5 (latest release 0.99.5);
 [FE-054](../tasks/frontend/FE-054-about-roadmap-board.md),
 [FE-055](../tasks/frontend/FE-055-architecture-page.md), and
 [INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md) are pending.
@@ -306,7 +307,7 @@ Tasks:
 [INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md) (1.0.0 demo release).
 Order: QA-012 and FE-051 first; FE-052–FE-055 after FE-051; INFRA-021 last, after M20 (QA-010) and
 M21 are closed.
-Shipped: QA-012 (0.99.2), FE-051 (0.99.3), FE-052 (0.99.4). Pending: FE-053–FE-055, INFRA-021.
+Shipped: QA-012 (0.99.2), FE-051 (0.99.3), FE-052 (0.99.4), FE-053 (0.99.5). Pending: FE-054, FE-055, INFRA-021.
 
 ## Milestone crosswalk
 
@@ -337,7 +338,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (all shipped; closed at 0.91.0) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
 | M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046 (shipped, 0.96.2); FE-047 (shipped, 0.96.3); QA-008 (shipped, no version bump); QA-009 (shipped, no version bump) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Time column no-wrap with `patient-form.test.tsx` timeout fix, live seed volume for paging and event filter options parity shipped. QA-008 (live e2e suite green) and QA-009 (live paging specs) shipped. **Closed** at 0.96.3. Does not close M9 or reopen M17/M18. |
 | M20 PR previews and delivery lanes | INFRA-018 (shipped, docs only), INFRA-019 (shipped at 0.97.0), QA-011 (shipped, test only), SEC-010 (shipped at 0.97.1), SEC-011 (shipped at 0.97.4), FE-048 (optional; shipped at 0.97.2), INFRA-020 (shipped at 0.97.3); QA-010 (pending) | Render service previews for marketing and web only; web previews on frontend mocks; no API or database preview; `main` deploys after `ci`; PR-only flow. No paid resources. Does not close M9 or change the AWS topology (ADR-012, INFRA-010). |
-| M21 Marketing design refresh | QA-012, FE-051, FE-052 (shipped), FE-053, FE-054, FE-055, INFRA-021 (pending) | **In progress.** Homepage bands and responsive fixes, hero visual, module icons and links, slider, status badges vs links, About roadmap board, `/architecture` page, repeatable screenshots. INFRA-021 releases 1.0.0 as the Render demo; AWS production (INFRA-013) moves to 1.x. Does not close M9. |
+| M21 Marketing design refresh | QA-012, FE-051–FE-053 (shipped), FE-054, FE-055, INFRA-021 (pending) | **In progress.** Homepage bands and responsive fixes, hero visual, module icons and links, slider, status badges vs links, About roadmap board, `/architecture` page, repeatable screenshots. INFRA-021 releases 1.0.0 as the Render demo; AWS production (INFRA-013) moves to 1.x. Does not close M9. |
 | Standalone (no milestone) | FE-049 (shipped at 0.98.0); FE-050 (shipped at 0.99.0) | API status indicator on `/login` and a gesture-gated wake ping for the sleeping Render Free API (ADR-017). Not part of M20. No paid resources, keep-alive pinger, or API change. FE-050: logo link to the marketing site on the auth pages via `NEXT_PUBLIC_MARKETING_URL`; no API or auth change. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,

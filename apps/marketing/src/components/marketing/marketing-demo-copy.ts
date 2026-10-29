@@ -23,14 +23,14 @@ export const MARKETING_DEMO_WALKTHROUGH = {
 		{
 			title: 'Patient management',
 			description:
-				'Directory, profiles, vitals, documents, and clinical lists. Link: /platform/patient-management',
+				'Directory, profiles, vitals, documents, and clinical lists.',
 			detail: 'Implemented in the authenticated app.',
 			status: {label: '/platform/patient-management', href: '/platform/patient-management'},
 		},
 		{
 			title: 'Appointments',
 			description:
-				'Calendar, appointments, and provider availability. Link: /platform/appointments',
+				'Calendar, appointments, and provider availability.',
 			detail: 'Implemented in the authenticated app.',
 			status: {label: '/platform/appointments', href: '/platform/appointments'},
 		},

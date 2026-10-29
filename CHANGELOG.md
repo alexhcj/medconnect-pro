@@ -6,6 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.99.5] - 2026-10-29
+
+### Changed
+
+- FE-053: status labels on the `/security`, `/about` and `/demo` cards render as a `Badge`. The
+  tone comes from one typed map (`marketing-status-tones.ts`): Implemented pattern, Shipped and
+  Current are success; In progress is accent; Not shipped and Planned are neutral; Partial, Paused
+  and Must not claim are warning. Badges are static and not focusable.
+- The `/demo` "What you can walk through" cards are whole-card links (one focus stop each). The
+  route text stays in the footer next to an ArrowRight icon, with hover (stronger border and
+  shadow, arrow nudge) and focus-visible ring states. Figma Card `Variant=Route` matches.
+- The Patient management and Appointments walk-through descriptions drop the duplicated
+  "Link: /platform/..." text.
+
 ## [0.99.4] - 2026-10-29
 
 ### Added

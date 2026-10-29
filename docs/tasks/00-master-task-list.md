@@ -237,7 +237,7 @@ AWS production (INFRA-013) moves to a later 1.x release. Does not close M9.
 - QA-012 — Repeatable marketing screenshot capture (shipped at 0.99.2; `npm run screenshots:marketing`)
 - FE-051 — Marketing design-system extension (shipped at 0.99.3; Badge, MarketingBand, MarketingSplitSection, MarketingLinkCard)
 - FE-052 — Homepage refresh (shipped at 0.99.4; homepage bands, hero visual, module links, slider, security and role cards)
-- FE-053 — Status vs link affordance
+- FE-053 — Status vs link affordance (shipped at 0.99.5; tone-mapped status badges, whole-card `/demo` route links)
 - FE-054 — About: implementation state as a roadmap board
 - FE-055 — Architecture page
 - INFRA-021 — 1.0.0 demo release
