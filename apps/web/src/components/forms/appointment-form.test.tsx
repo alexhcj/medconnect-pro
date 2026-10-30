@@ -53,8 +53,12 @@ const patients: Patient[] = [
 async function fillCreateForm(user: ReturnType<typeof userEvent.setup>) {
 	await user.selectOptions(screen.getByLabelText('Patient'), 'demo-patient-002');
 	await user.selectOptions(screen.getByLabelText('Provider'), 'demo-provider-001');
-	await user.type(screen.getByLabelText('Start'), '2026-10-20T10:00');
-	await user.type(screen.getByLabelText('End'), '2026-10-20T11:00');
+	await user.type(screen.getByLabelText('Start date'), '10202026');
+	await user.type(screen.getByRole('combobox', {name: 'Start time'}), '10:00 am');
+	await user.tab();
+	await user.clear(screen.getByRole('combobox', {name: 'End time'}));
+	await user.type(screen.getByRole('combobox', {name: 'End time'}), '11:00 am');
+	await user.tab();
 	await user.selectOptions(screen.getByLabelText('Type'), 'office_visit');
 }
 
@@ -96,6 +100,59 @@ describe('AppointmentForm', () => {
 		expect(screen.getByLabelText('Patient')).toHaveValue('demo-patient-002');
 	});
 
+	it('fills End 30 minutes after Start and keeps a valid End', async () => {
+		const user = userEvent.setup();
+		render(<AppointmentForm patients={patients} providers={providers} />);
+		const startTime = screen.getByRole('combobox', {name: 'Start time'});
+
+		await user.type(screen.getByLabelText('Start date'), '10202026');
+		await user.type(startTime, '10:00 am');
+		await user.tab();
+		expect(screen.getByLabelText('End date')).toHaveValue('10/20/2026');
+		expect(screen.getByRole('combobox', {name: 'End time'})).toHaveValue('10:30 AM');
+
+		// An End that is still after the new Start is left alone.
+		await user.clear(startTime);
+		await user.type(startTime, '9:00 am');
+		await user.tab();
+		expect(screen.getByRole('combobox', {name: 'End time'})).toHaveValue('10:30 AM');
+
+		// An End that is no longer after Start moves with it.
+		await user.clear(startTime);
+		await user.type(startTime, '11:00 am');
+		await user.tab();
+		expect(screen.getByRole('combobox', {name: 'End time'})).toHaveValue('11:30 AM');
+	});
+
+	it('sends the local ISO date-times the schema expects', async () => {
+		const user = userEvent.setup();
+		createMutate.mockResolvedValue({id: 'demo-appointment-new'});
+		render(<AppointmentForm patients={patients} providers={providers} />);
+		await fillCreateForm(user);
+		await user.click(screen.getByRole('button', {name: 'Schedule appointment'}));
+
+		expect(createMutate).toHaveBeenCalledWith(
+			expect.objectContaining({
+				start: new Date('2026-10-20T10:00').toISOString(),
+				end: new Date('2026-10-20T11:00').toISOString(),
+			}),
+		);
+	});
+
+	it('shows End before Start as text on the End field', async () => {
+		const user = userEvent.setup();
+		render(<AppointmentForm patients={patients} providers={providers} />);
+		await fillCreateForm(user);
+		const endTime = screen.getByRole('combobox', {name: 'End time'});
+		await user.clear(endTime);
+		await user.type(endTime, '9:00 am');
+		await user.tab();
+		await user.click(screen.getByRole('button', {name: 'Schedule appointment'}));
+
+		expect(await screen.findByText('End must be after start')).toHaveAttribute('role', 'alert');
+		expect(createMutate).not.toHaveBeenCalled();
+	});
+
 	it('maps conflict details onto the start field', async () => {
 		const user = userEvent.setup();
 		createMutate.mockRejectedValue(
@@ -111,7 +168,7 @@ describe('AppointmentForm', () => {
 		expect(
 			await screen.findByText('This time overlaps an existing appointment for the provider.'),
 		).toHaveAttribute('role', 'alert');
-		expect(screen.getByLabelText('Start')).toHaveAttribute('aria-invalid', 'true');
+		expect(screen.getByLabelText('Start date')).toHaveAttribute('aria-invalid', 'true');
 		expect(push).not.toHaveBeenCalled();
 	});
 

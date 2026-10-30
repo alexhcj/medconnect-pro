@@ -1,4 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
+import {fillDateTimeField} from './helpers/date-fields';
 import {signInAsNurse, signInAsPracticeAdmin} from './helpers/mock-auth';
 
 function toDatetimeLocalValue(iso: string) {
@@ -19,8 +20,8 @@ async function fillAppointment(
 ) {
 	await page.getByLabel('Patient').selectOption(values.patientId);
 	await page.getByLabel('Provider').selectOption(values.providerId);
-	await page.getByLabel('Start').fill(values.start);
-	await page.getByLabel('End').fill(values.end);
+	await fillDateTimeField(page, 'Start', values.start);
+	await fillDateTimeField(page, 'End', values.end);
 	await page.getByLabel('Type').selectOption(values.type);
 }
 
@@ -74,7 +75,7 @@ test.describe('Appointment creation', () => {
 		await expect(page.locator('#start-error')).toHaveText(
 			'This time overlaps an existing appointment for the provider.',
 		);
-		await expect(page.getByLabel('Start')).toHaveAttribute('aria-invalid', 'true');
+		await expect(page.getByLabel('Start date', {exact: true})).toHaveAttribute('aria-invalid', 'true');
 		await expect(page).toHaveURL(/\/dashboard\/appointments\/new$/);
 	});
 

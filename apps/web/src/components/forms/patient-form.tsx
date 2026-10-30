@@ -2,11 +2,13 @@
 
 import {ReactNode, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {FieldPath, UseFormRegisterReturn, useForm} from 'react-hook-form';
+import {Controller, FieldPath, UseFormRegisterReturn, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent} from '@/components/ui/card';
+import {DateField} from '@/components/ui/date-field';
 import {ApiError} from '@/lib/api/http';
+import {todayDay} from '@/lib/format/date-input';
 import {useCreatePatient, useUpdatePatient} from '@/lib/hooks/use-medical';
 import {Patient} from '@/types/medical/patient';
 import {Provider} from '@/types/medical/provider';
@@ -126,7 +128,24 @@ export function PatientForm({mode, providers, patient}: PatientFormProps) {
 						<div className="grid gap-4 sm:grid-cols-2">
 							<TextField id="firstName" label="First name" autoComplete="given-name" error={errors.firstName?.message} register={register('firstName')} />
 							<TextField id="lastName" label="Last name" autoComplete="family-name" error={errors.lastName?.message} register={register('lastName')} />
-							<TextField id="dateOfBirth" label="Date of birth" type="date" autoComplete="bday" error={errors.dateOfBirth?.message} register={register('dateOfBirth')} />
+							<Controller
+								control={form.control}
+								name="dateOfBirth"
+								render={({field, fieldState}) => (
+									<DateField
+										id="dateOfBirth"
+										label="Date of birth"
+										autoComplete="bday"
+										max={todayDay()}
+										name={field.name}
+										value={field.value}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										inputRef={field.ref}
+										error={fieldState.error?.message}
+									/>
+								)}
+							/>
 							<SelectField
 								id="gender"
 								label="Gender"

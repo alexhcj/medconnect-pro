@@ -6,6 +6,7 @@ import {Monitor, Smartphone, TriangleAlert} from 'lucide-react';
 import {useConcurrentSessions, useLogoutEverywhere, useTerminateSessions} from '@/lib/hooks/use-session';
 import {useUISelectors} from '@/lib/stores/ui-store';
 import {loginUrl} from '@/lib/auth/paths';
+import {formatDate} from '@/lib/format/date';
 
 function terminateLabel(device: string, lastActive: string | null): string {
 	return lastActive ? `Terminate ${device}, last active ${lastActive}` : `Terminate ${device}`;
@@ -127,7 +128,7 @@ export function ConcurrentSessionDialog() {
 		if (minutes < 1) return 'Just now';
 		if (minutes < 60) return `${minutes}m ago`;
 		if (hours < 24) return `${hours}h ago`;
-		return new Date(timestamp).toLocaleDateString();
+		return formatDate(new Date(timestamp).toISOString());
 	};
 
 	if (isLoading || sessions.length <= 1) {

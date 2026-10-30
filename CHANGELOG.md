@@ -6,6 +6,37 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.101.0] - 2026-10-30
+
+### Added
+
+- FE-057: `DateField` (`components/ui/date-field.tsx`): masked `MM/DD/YYYY` text input with a
+  calendar popover (react-day-picker 9.14.0, bundled, token-styled; bottom sheet below 640 px).
+  Typing always works without the calendar; min/max, disabled and text error states; the value
+  stays `YYYY-MM-DD`. Keyboard: arrows, PageUp/PageDown (Shift: year), Home/End, Enter, Escape
+  returns focus to the calendar button; the month heading is a polite live region.
+- `DateTimeField` and `TimeField`: a date plus a typeable 15-minute time combobox (`h:mm AM/PM`)
+  and the viewer's zone label (`PDT`). The value stays the local `YYYY-MM-DDTHH:mm` string the
+  appointment schema expects.
+- Shared formatters in `lib/format/date.ts`, fixed to `en-US`: `08/10/2026`, `7:00 PM`,
+  `08/10/2026, 7:00 PM – 7:30 PM PDT`. An ESLint rule bans `toLocale*String` in `apps/web/src`.
+
+### Changed
+
+- Every date and time in the web app is US English, whatever the browser or OS language:
+  appointment list and event dialog, telehealth visit range, admin audit/security timestamps,
+  invoice dates, session dialog, and patient date of birth (was raw ISO).
+- Patient date of birth, appointment start/end and admin date filters use the new fields; no
+  native `date`, `datetime-local` or `time` inputs remain. Appointment End fills to Start + 30 min
+  when it is empty or not after Start.
+
+### Fixed
+
+- Invoice issued/due dates (stored as UTC midnight) no longer show the previous day in US time
+  zones. Date of birth formats from its parts, so it never shifts a day.
+
+No API or contract change.
+
 ## [0.100.1] - 2026-10-30
 
 ### Fixed

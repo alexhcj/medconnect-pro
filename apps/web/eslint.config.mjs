@@ -15,6 +15,20 @@ export default defineConfig([
 			'react-hooks/preserve-manual-memoization': 'off',
 		},
 	},
+	{
+		files: ['src/**/*.{ts,tsx}'],
+		ignores: ['src/**/*.test.{ts,tsx}'],
+		rules: {
+			// FE-057: dates and times follow one fixed en-US format, never the browser language.
+			'no-restricted-syntax': [
+				'error',
+				{
+					selector: "CallExpression[callee.property.name=/^toLocale(Date|Time)?String$/]",
+					message: 'Use the shared formatters in @/lib/format/date (fixed en-US) instead of toLocale*String.',
+				},
+			],
+		},
+	},
 	globalIgnores([
 		'.next/**',
 		'out/**',

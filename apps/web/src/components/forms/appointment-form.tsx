@@ -2,11 +2,13 @@
 
 import {ReactNode, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {FieldPath, UseFormRegisterReturn, useForm} from 'react-hook-form';
+import {Controller, FieldPath, UseFormRegisterReturn, useForm, useWatch} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent} from '@/components/ui/card';
+import {DateTimeField} from '@/components/ui/date-time-field';
 import {ApiError} from '@/lib/api/http';
+import {addMinutesLocal} from '@/lib/format/date-input';
 import {useCreateAppointment} from '@/lib/hooks/use-medical';
 import {Patient} from '@/types/medical/patient';
 import {Provider} from '@/types/medical/provider';
@@ -71,8 +73,11 @@ export function AppointmentForm({patients, providers, prefilledPatientId}: Appoi
 		register,
 		handleSubmit,
 		setError,
+		getValues,
+		setValue,
 		formState: {errors},
 	} = form;
+	const start = useWatch({control: form.control, name: 'start'});
 	const [formError, setFormError] = useState<string | null>(null);
 
 	const onSubmit = async (data: AppointmentFormValues) => {
@@ -138,19 +143,45 @@ export function AppointmentForm({patients, providers, prefilledPatientId}: Appoi
 								placeholder="Choose a provider"
 								options={providers.map((provider) => ({value: provider.id, label: provider.displayName}))}
 							/>
-							<TextField
-								id="start"
-								label="Start"
-								type="datetime-local"
-								error={errors.start?.message}
-								register={register('start')}
+							<Controller
+								control={form.control}
+								name="start"
+								render={({field, fieldState}) => (
+									<DateTimeField
+										id="start"
+										legend="Start"
+										name={field.name}
+										value={field.value}
+										onChange={(next) => {
+											field.onChange(next);
+											// Offer a 30-minute visit: fill End only when it is empty or no longer after Start.
+											const end = getValues('end');
+											if (next && (!end || new Date(end) <= new Date(next))) {
+												setValue('end', addMinutesLocal(next, 30));
+											}
+										}}
+										onBlur={field.onBlur}
+										inputRef={field.ref}
+										error={fieldState.error?.message}
+									/>
+								)}
 							/>
-							<TextField
-								id="end"
-								label="End"
-								type="datetime-local"
-								error={errors.end?.message}
-								register={register('end')}
+							<Controller
+								control={form.control}
+								name="end"
+								render={({field, fieldState}) => (
+									<DateTimeField
+										id="end"
+										legend="End"
+										name={field.name}
+										value={field.value}
+										minValue={start}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										inputRef={field.ref}
+										error={fieldState.error?.message}
+									/>
+								)}
 							/>
 							<SelectField
 								id="type"
@@ -189,34 +220,6 @@ export function AppointmentForm({patients, providers, prefilledPatientId}: Appoi
 				</CardContent>
 			</Card>
 		</form>
-	);
-}
-
-function TextField({
-	id,
-	label,
-	type = 'text',
-	error,
-	register,
-}: {
-	id: string;
-	label: string;
-	type?: string;
-	error?: string;
-	register: UseFormRegisterReturn;
-}) {
-	const errorId = `${id}-error`;
-	return (
-		<FieldFrame id={id} label={label} error={error}>
-			<input
-				id={id}
-				type={type}
-				aria-invalid={error ? true : undefined}
-				aria-describedby={error ? errorId : undefined}
-				className={formControlClassName}
-				{...register}
-			/>
-		</FieldFrame>
 	);
 }
 

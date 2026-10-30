@@ -1,4 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
+import {fillDateField} from './helpers/date-fields';
 import {ADMIN_STATE, openDashboard} from './helpers/live-session';
 
 async function openPatients(page: Page) {
@@ -25,7 +26,7 @@ test.describe('Live patient list and create', () => {
 		const suffix = Date.now().toString().slice(-6);
 		await page.getByLabel('First name').fill('Quinn');
 		await page.getByLabel('Last name').fill(`Harlow${suffix}`);
-		await page.getByLabel('Date of birth').fill('1991-03-04');
+		await fillDateField(page, 'Date of birth', '1991-03-04');
 		await page.getByLabel('Gender').selectOption('non-binary');
 		await page.getByLabel('Phone', {exact: true}).fill('555-0142');
 		await page.getByLabel('Email').fill(`quinn.harlow.${suffix}@synthetic.example`);

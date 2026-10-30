@@ -170,11 +170,12 @@ describe('AuditEventViewer', () => {
 		mockEvents();
 		render(<AuditEventViewer />);
 
-		fireEvent.change(screen.getByLabelText('From'), {target: {value: '2026-10-05'}});
+		fireEvent.change(screen.getByLabelText('From'), {target: {value: '10/05/2026'}});
+		expect(screen.getByLabelText('From')).toHaveValue('10/05/2026');
 		expect(push).toHaveBeenLastCalledWith('/dashboard/admin?auditFrom=2026-10-05', {scroll: false});
 
 		push.mockClear();
-		fireEvent.change(screen.getByLabelText('To'), {target: {value: '2026-10-01'}});
+		fireEvent.change(screen.getByLabelText('To'), {target: {value: '10/01/2026'}});
 		expect(screen.getByRole('alert')).toHaveTextContent(
 			'The end date must be on or after the start date.',
 		);

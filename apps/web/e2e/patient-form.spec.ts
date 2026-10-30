@@ -1,4 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
+import {fillDateField} from './helpers/date-fields';
 import {signIn, signInAsPracticeAdmin} from './helpers/mock-auth';
 
 async function openPatients(page: Page) {
@@ -10,7 +11,7 @@ async function openPatients(page: Page) {
 async function fillNewPatient(page: Page) {
 	await page.getByLabel('First name').fill('Quinn');
 	await page.getByLabel('Last name').fill('Harlow');
-	await page.getByLabel('Date of birth').fill('1991-03-04');
+	await fillDateField(page, 'Date of birth', '1991-03-04');
 	await page.getByLabel('Gender').selectOption('non-binary');
 	await page.getByLabel('Phone', {exact: true}).fill('+1-555-010-4242');
 	await page.getByLabel('Email').fill('quinn.harlow@example.test');

@@ -1,3 +1,4 @@
+import {formatUtcDay} from '@/lib/format/date';
 import type {ClaimProcessor, ClaimStatus} from '@/types/billing/claim';
 import type {InvoiceStatus} from '@/types/billing/invoice';
 import type {PaymentMethod} from '@/types/billing/payment';
@@ -11,8 +12,9 @@ export function formatInvoiceAmount(amountCents: number, currency = 'USD'): stri
 	return new Intl.NumberFormat('en-US', {style: 'currency', currency}).format(amountCents / 100);
 }
 
+/** Issued and due dates are stored as UTC midnight: show that calendar day in every time zone. */
 export function formatInvoiceDate(iso: string): string {
-	return new Date(iso).toLocaleDateString();
+	return formatUtcDay(iso);
 }
 
 export function invoiceStatusLabel(status: InvoiceStatus): string {

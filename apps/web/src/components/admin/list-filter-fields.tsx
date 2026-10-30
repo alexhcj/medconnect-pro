@@ -1,4 +1,5 @@
 import {useId} from 'react';
+import {DateField as UiDateField} from '@/components/ui/date-field';
 import {cn} from '@/lib/utils/utils';
 
 const controlClass =
@@ -61,29 +62,17 @@ interface DateFieldProps {
 	className?: string;
 }
 
+/** Admin list date filter: the shared `DateField` (typed `MM/DD/YYYY` or calendar), at the filter-bar height. */
 export function DateField({label, value, onChange, disabled, error, className}: DateFieldProps) {
-	const id = useId();
-	const errorId = `${id}-error`;
 	return (
-		<div className={cn('flex flex-col gap-1', className)}>
-			<label htmlFor={id} className="text-sm font-medium text-foreground-label">
-				{label}
-			</label>
-			<input
-				id={id}
-				type="date"
-				value={value}
-				disabled={disabled}
-				aria-invalid={error ? true : undefined}
-				aria-describedby={error ? errorId : undefined}
-				onChange={(event) => onChange(event.target.value)}
-				className={cn(controlClass, error && 'border-danger')}
-			/>
-			{error && (
-				<p id={errorId} role="alert" className="text-sm text-danger">
-					{error}
-				</p>
-			)}
-		</div>
+		<UiDateField
+			label={label}
+			value={value}
+			onChange={onChange}
+			disabled={disabled}
+			error={error}
+			className={className}
+			controlClassName="h-11"
+		/>
 	);
 }

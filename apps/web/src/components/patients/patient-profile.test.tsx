@@ -127,6 +127,8 @@ describe('PatientProfile', () => {
 		expect(screen.getByRole('navigation', {name: 'Profile sections'})).toBeInTheDocument();
 		expect(screen.getByRole('heading', {level: 2, name: 'Demographics'})).toBeInTheDocument();
 		expect(screen.getByText('patient001@example.test')).toBeInTheDocument();
+		expect(screen.getByText('01/01/1970')).toBeInTheDocument();
+		expect(screen.queryByText('1970-01-01')).not.toBeInTheDocument();
 		expect(screen.getByText('Robin Carter')).toBeInTheDocument();
 		expect(screen.getByText('Demo Health Partners')).toBeInTheDocument();
 		expect(screen.getByText('Dr. Jordan Ellis')).toBeInTheDocument();

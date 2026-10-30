@@ -11,6 +11,7 @@ import {
 	canWritePatientDemographics,
 } from '@/lib/auth/patient-profile-access';
 import {canWriteAppointments} from '@/lib/auth/appointment-access';
+import {formatDateOnly} from '@/lib/format/date';
 import {
 	usePatient,
 	usePatientConditions,
@@ -114,7 +115,7 @@ function DemographicsSection({patient}: {patient: Patient}) {
 				</CardHeader>
 				<CardContent>
 					<dl className="grid gap-4 sm:grid-cols-2">
-						<DefinitionItem label="Date of birth" value={patient.dateOfBirth} />
+						<DefinitionItem label="Date of birth" value={formatDateOnly(patient.dateOfBirth)} />
 						<DefinitionItem label="Gender" value={patient.gender} />
 						<DefinitionItem label="Status" value={patient.status === 'active' ? 'Active' : 'Inactive'} />
 						<DefinitionItem label="Phone" value={patient.phone} />
