@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {BILLING_DEMO_NOTICE} from '@/components/billing/billing-demo-notice';
 import {PaymentClaimsBoundaries} from '@/components/billing/payment-claims-boundaries';
 import {Button} from '@/components/ui/button';
+import {Card} from '@/components/ui/card';
 import {canAccessBillingDashboard, canRecordPayment} from '@/lib/auth/billing-access';
 import {billingLoadErrorMessage} from '@/lib/billing/load-error';
 import {
@@ -20,60 +21,64 @@ import type {Invoice} from '@/types/billing/invoice';
 function InvoiceDetailBody({invoice, canRecord}: {invoice: Invoice; canRecord: boolean}) {
 	return (
 		<div className="space-y-6">
-			<section className="rounded-lg border border-gray-200 bg-white p-4" aria-labelledby="invoice-details-heading">
-				<h2 id="invoice-details-heading" className="mb-3 text-lg font-semibold text-gray-900">
-					Details
-				</h2>
-				<dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-					<div>
-						<dt className="text-sm text-gray-600">Invoice</dt>
-						<dd className="text-sm font-medium text-gray-900">{invoice.id}</dd>
-					</div>
-					<div>
-						<dt className="text-sm text-gray-600">Patient</dt>
-						<dd className="text-sm font-medium text-gray-900">{invoice.patientName}</dd>
-					</div>
-					<div>
-						<dt className="text-sm text-gray-600">Status</dt>
-						<dd className={`text-sm font-medium ${invoiceStatusTextClass(invoice.status)}`}>
-							{invoiceStatusLabel(invoice.status)}
-						</dd>
-					</div>
-					<div>
-						<dt className="text-sm text-gray-600">Amount</dt>
-						<dd className="text-sm font-medium text-gray-900">
-							{formatInvoiceAmount(invoice.amountCents, invoice.currency)}
-						</dd>
-					</div>
-					<div>
-						<dt className="text-sm text-gray-600">Issued on</dt>
-						<dd className="text-sm font-medium text-gray-900">{formatInvoiceDate(invoice.issuedAt)}</dd>
-					</div>
-					<div>
-						<dt className="text-sm text-gray-600">Due on</dt>
-						<dd className="text-sm font-medium text-gray-900">{formatInvoiceDate(invoice.dueAt)}</dd>
-					</div>
-				</dl>
-			</section>
+			<Card>
+				<section className="p-4" aria-labelledby="invoice-details-heading">
+					<h2 id="invoice-details-heading" className="mb-3 text-lg font-semibold text-gray-900">
+						Details
+					</h2>
+					<dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+						<div>
+							<dt className="text-sm text-gray-600">Invoice</dt>
+							<dd className="text-sm font-medium text-gray-900">{invoice.id}</dd>
+						</div>
+						<div>
+							<dt className="text-sm text-gray-600">Patient</dt>
+							<dd className="text-sm font-medium text-gray-900">{invoice.patientName}</dd>
+						</div>
+						<div>
+							<dt className="text-sm text-gray-600">Status</dt>
+							<dd className={`text-sm font-medium ${invoiceStatusTextClass(invoice.status)}`}>
+								{invoiceStatusLabel(invoice.status)}
+							</dd>
+						</div>
+						<div>
+							<dt className="text-sm text-gray-600">Amount</dt>
+							<dd className="text-sm font-medium text-gray-900">
+								{formatInvoiceAmount(invoice.amountCents, invoice.currency)}
+							</dd>
+						</div>
+						<div>
+							<dt className="text-sm text-gray-600">Issued on</dt>
+							<dd className="text-sm font-medium text-gray-900">{formatInvoiceDate(invoice.issuedAt)}</dd>
+						</div>
+						<div>
+							<dt className="text-sm text-gray-600">Due on</dt>
+							<dd className="text-sm font-medium text-gray-900">{formatInvoiceDate(invoice.dueAt)}</dd>
+						</div>
+					</dl>
+				</section>
+			</Card>
 
-			<section className="rounded-lg border border-gray-200 bg-white p-4" aria-labelledby="invoice-line-items-heading">
-				<h2 id="invoice-line-items-heading" className="mb-3 text-lg font-semibold text-gray-900">
-					Line items
-				</h2>
-				<ul className="space-y-2" aria-label="Line items">
-					{invoice.lineItems.map((item) => (
-						<li
-							key={`${item.description}-${item.amountCents}`}
-							className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"
-						>
-							<span className="text-sm text-gray-900">{item.description}</span>
-							<span className="text-sm text-gray-700">
-								{formatInvoiceAmount(item.amountCents, invoice.currency)}
-							</span>
-						</li>
-					))}
-				</ul>
-			</section>
+			<Card>
+				<section className="p-4" aria-labelledby="invoice-line-items-heading">
+					<h2 id="invoice-line-items-heading" className="mb-3 text-lg font-semibold text-gray-900">
+						Line items
+					</h2>
+					<ul className="space-y-2" aria-label="Line items">
+						{invoice.lineItems.map((item) => (
+							<li
+								key={`${item.description}-${item.amountCents}`}
+								className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"
+							>
+								<span className="text-sm text-gray-900">{item.description}</span>
+								<span className="text-sm text-gray-700">
+									{formatInvoiceAmount(item.amountCents, invoice.currency)}
+								</span>
+							</li>
+						))}
+					</ul>
+				</section>
+			</Card>
 
 			<PaymentClaimsBoundaries invoice={invoice} canRecord={canRecord} />
 		</div>

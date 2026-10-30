@@ -92,6 +92,17 @@ describe('PatientForm', () => {
 		expect(createMutate).not.toHaveBeenCalled();
 	});
 
+	it('renders the form inside a white bordered card with white fields', () => {
+		const {container} = render(<PatientForm mode="create" providers={providers} />);
+
+		const card = container.querySelector('form > div');
+		expect(card).toHaveClass('border-border', 'bg-surface');
+		expect(card).toContainElement(screen.getByRole('heading', {level: 1, name: 'Add patient'}));
+		expect(card).toContainElement(screen.getByRole('button', {name: 'Create patient'}));
+		expect(screen.getByLabelText('First name')).toHaveClass('border-input', 'bg-surface');
+		expect(screen.getByLabelText('Gender')).toHaveClass('border-input', 'bg-surface');
+	});
+
 	it('loads edit values from the patient record', () => {
 		render(<PatientForm mode="edit" patient={samplePatient} providers={providers} />);
 

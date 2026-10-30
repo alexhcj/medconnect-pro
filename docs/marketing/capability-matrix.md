@@ -8,7 +8,7 @@ matrix.
 This file is a **claim view** of the registry plus infrastructure rows that are not product
 modules (CI, hosted deploy). If a row and its catalog file disagree, fix both.
 
-Last synced release: 0.100.0
+Last synced release: 0.100.1
 
 Keep the line above equal to the root `package.json` version whenever a task ships or a milestone
 closes. `npm run docs:marketing-sync` fails when it drifts. After a claim-affecting release, also

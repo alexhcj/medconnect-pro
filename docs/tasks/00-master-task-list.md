@@ -232,7 +232,8 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 ## Product (M21, in progress)
 
 Marketing design refresh, the last design pass before 1.0.0. Then 1.0.0 ships as the Render demo;
-AWS production (INFRA-013) moves to a later 1.x release. Does not close M9.
+AWS production (INFRA-013) moves to a later 1.x release. Does not close M9. FE-056 brings
+the web app's forms in line with the same design system.
 
 - QA-012 — Repeatable marketing screenshot capture (shipped at 0.99.2; `npm run screenshots:marketing`)
 - FE-051 — Marketing design-system extension (shipped at 0.99.3; Badge, MarketingBand, MarketingSplitSection, MarketingLinkCard)
@@ -240,6 +241,7 @@ AWS production (INFRA-013) moves to a later 1.x release. Does not close M9.
 - FE-053 — Status vs link affordance (shipped at 0.99.5; tone-mapped status badges, whole-card `/demo` route links)
 - FE-054 — About: implementation state as a roadmap board (shipped at 0.99.6; Shipped / In progress / Up next lists and a Paused line)
 - FE-055 — Architecture page (shipped at 0.100.0; system map with list fallback, request flow, current vs planned, sixth top-nav item)
+- FE-056 — App page surface parity (shipped at 0.100.1; patient and appointment forms, waiting room, and invoice detail on the white bordered card)
 - INFRA-021 — 1.0.0 demo release
 
 ## Standalone (no milestone)

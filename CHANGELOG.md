@@ -6,6 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.100.1] - 2026-10-30
+
+### Fixed
+
+- FE-056: Add patient, Edit patient and Schedule appointment now render inside the shared white
+  bordered `Card` (16 px padding on mobile, 24 px from `sm`), matching the patient list and
+  profile. Form controls use one shared style (`components/forms/form-field-styles.ts`,
+  `border-input bg-surface`) instead of transparent fields on the gray canvas.
+- The telehealth waiting room panel moves from gray to the white `Card` used by the lobby; the
+  invoice detail sections use `Card` too. No behaviour, copy, API or contract change.
+
 ## [0.100.0] - 2026-10-29
 
 ### Added

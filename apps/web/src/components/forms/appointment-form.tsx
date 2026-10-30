@@ -5,6 +5,7 @@ import {useRouter} from 'next/navigation';
 import {FieldPath, UseFormRegisterReturn, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Button} from '@/components/ui/button';
+import {Card, CardContent} from '@/components/ui/card';
 import {ApiError} from '@/lib/api/http';
 import {useCreateAppointment} from '@/lib/hooks/use-medical';
 import {Patient} from '@/types/medical/patient';
@@ -18,9 +19,11 @@ import {
 	emptyAppointmentFormValues,
 	isAppointmentFieldPath,
 } from '@/components/forms/appointment-form-schema';
-
-const inputClassName =
-	'mt-1 flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500';
+import {
+	formCardContentClassName,
+	formControlBaseClassName,
+	formControlClassName,
+} from '@/components/forms/form-field-styles';
 
 interface AppointmentFormProps {
 	patients: Patient[];
@@ -97,90 +100,94 @@ export function AppointmentForm({patients, providers, prefilledPatientId}: Appoi
 	};
 
 	return (
-		<form className="space-y-8" onSubmit={handleSubmit(onSubmit)} noValidate>
-			<div>
-				<h1 className="text-2xl font-bold text-gray-900">Schedule appointment</h1>
-				<p className="mt-2 text-sm text-gray-600">Synthetic demo data. Not a real medical record.</p>
-			</div>
+		<form onSubmit={handleSubmit(onSubmit)} noValidate>
+			<Card>
+				<CardContent className={formCardContentClassName}>
+					<div>
+						<h1 className="text-2xl font-bold text-gray-900">Schedule appointment</h1>
+						<p className="mt-2 text-sm text-gray-600">Synthetic demo data. Not a real medical record.</p>
+					</div>
 
-			{formError && (
-				<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
-					<p className="text-sm text-gray-700">{formError}</p>
-				</div>
-			)}
+					{formError && (
+						<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
+							<p className="text-sm text-gray-700">{formError}</p>
+						</div>
+					)}
 
-			<section className="space-y-4" aria-labelledby="appointment-details-heading">
-				<h2 id="appointment-details-heading" className="text-lg font-semibold text-gray-900">
-					Appointment details
-				</h2>
-				<div className="grid gap-4 sm:grid-cols-2">
-					<SelectField
-						id="patientId"
-						label="Patient"
-						error={errors.patientId?.message}
-						register={register('patientId')}
-						placeholder="Choose a patient"
-						options={patients.map((patient) => ({
-							value: patient.id,
-							label: `${patient.firstName} ${patient.lastName}`,
-						}))}
-					/>
-					<SelectField
-						id="providerId"
-						label="Provider"
-						error={errors.providerId?.message}
-						register={register('providerId')}
-						placeholder="Choose a provider"
-						options={providers.map((provider) => ({value: provider.id, label: provider.displayName}))}
-					/>
-					<TextField
-						id="start"
-						label="Start"
-						type="datetime-local"
-						error={errors.start?.message}
-						register={register('start')}
-					/>
-					<TextField
-						id="end"
-						label="End"
-						type="datetime-local"
-						error={errors.end?.message}
-						register={register('end')}
-					/>
-					<SelectField
-						id="type"
-						label="Type"
-						error={errors.type?.message}
-						register={register('type')}
-						placeholder="Choose a type"
-						options={Object.entries(APPOINTMENT_TYPE_LABELS).map(([value, label]) => ({value, label}))}
-					/>
-					<SelectField
-						id="state"
-						label="State"
-						error={errors.state?.message}
-						register={register('state')}
-						options={[
-							{value: 'scheduled', label: APPOINTMENT_STATE_LABELS.scheduled},
-							{value: 'confirmed', label: APPOINTMENT_STATE_LABELS.confirmed},
-						]}
-					/>
-				</div>
-				<FieldFrame id="notes" label="Notes" error={errors.notes?.message}>
-					<textarea
-						id="notes"
-						rows={3}
-						aria-invalid={errors.notes?.message ? true : undefined}
-						aria-describedby={errors.notes?.message ? 'notes-error' : undefined}
-						className="mt-1 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-						{...register('notes')}
-					/>
-				</FieldFrame>
-			</section>
+					<section className="space-y-4" aria-labelledby="appointment-details-heading">
+						<h2 id="appointment-details-heading" className="text-lg font-semibold text-gray-900">
+							Appointment details
+						</h2>
+						<div className="grid gap-4 sm:grid-cols-2">
+							<SelectField
+								id="patientId"
+								label="Patient"
+								error={errors.patientId?.message}
+								register={register('patientId')}
+								placeholder="Choose a patient"
+								options={patients.map((patient) => ({
+									value: patient.id,
+									label: `${patient.firstName} ${patient.lastName}`,
+								}))}
+							/>
+							<SelectField
+								id="providerId"
+								label="Provider"
+								error={errors.providerId?.message}
+								register={register('providerId')}
+								placeholder="Choose a provider"
+								options={providers.map((provider) => ({value: provider.id, label: provider.displayName}))}
+							/>
+							<TextField
+								id="start"
+								label="Start"
+								type="datetime-local"
+								error={errors.start?.message}
+								register={register('start')}
+							/>
+							<TextField
+								id="end"
+								label="End"
+								type="datetime-local"
+								error={errors.end?.message}
+								register={register('end')}
+							/>
+							<SelectField
+								id="type"
+								label="Type"
+								error={errors.type?.message}
+								register={register('type')}
+								placeholder="Choose a type"
+								options={Object.entries(APPOINTMENT_TYPE_LABELS).map(([value, label]) => ({value, label}))}
+							/>
+							<SelectField
+								id="state"
+								label="State"
+								error={errors.state?.message}
+								register={register('state')}
+								options={[
+									{value: 'scheduled', label: APPOINTMENT_STATE_LABELS.scheduled},
+									{value: 'confirmed', label: APPOINTMENT_STATE_LABELS.confirmed},
+								]}
+							/>
+						</div>
+						<FieldFrame id="notes" label="Notes" error={errors.notes?.message}>
+							<textarea
+								id="notes"
+								rows={3}
+								aria-invalid={errors.notes?.message ? true : undefined}
+								aria-describedby={errors.notes?.message ? 'notes-error' : undefined}
+								className={formControlBaseClassName}
+								{...register('notes')}
+							/>
+						</FieldFrame>
+					</section>
 
-			<Button type="submit" disabled={createAppointment.isPending}>
-				{createAppointment.isPending ? 'Scheduling appointment' : 'Schedule appointment'}
-			</Button>
+					<Button type="submit" disabled={createAppointment.isPending}>
+						{createAppointment.isPending ? 'Scheduling appointment' : 'Schedule appointment'}
+					</Button>
+				</CardContent>
+			</Card>
 		</form>
 	);
 }
@@ -206,7 +213,7 @@ function TextField({
 				type={type}
 				aria-invalid={error ? true : undefined}
 				aria-describedby={error ? errorId : undefined}
-				className={inputClassName}
+				className={formControlClassName}
 				{...register}
 			/>
 		</FieldFrame>
@@ -235,7 +242,7 @@ function SelectField({
 				id={id}
 				aria-invalid={error ? true : undefined}
 				aria-describedby={error ? errorId : undefined}
-				className={inputClassName}
+				className={formControlClassName}
 				{...register}
 			>
 				{placeholder && <option value="">{placeholder}</option>}

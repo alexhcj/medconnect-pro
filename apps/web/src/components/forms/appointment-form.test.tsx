@@ -79,6 +79,17 @@ describe('AppointmentForm', () => {
 		expect(createMutate).not.toHaveBeenCalled();
 	});
 
+	it('renders the form inside a white bordered card with white fields', () => {
+		const {container} = render(<AppointmentForm patients={patients} providers={providers} />);
+
+		const card = container.querySelector('form > div');
+		expect(card).toHaveClass('border-border', 'bg-surface');
+		expect(card).toContainElement(screen.getByRole('heading', {level: 1, name: 'Schedule appointment'}));
+		expect(card).toContainElement(screen.getByRole('button', {name: 'Schedule appointment'}));
+		expect(screen.getByLabelText('Patient')).toHaveClass('border-input', 'bg-surface');
+		expect(screen.getByLabelText('Notes')).toHaveClass('border-input', 'bg-surface');
+	});
+
 	it('prefills a patient from the profile link', () => {
 		render(<AppointmentForm patients={patients} providers={providers} prefilledPatientId="demo-patient-002" />);
 
