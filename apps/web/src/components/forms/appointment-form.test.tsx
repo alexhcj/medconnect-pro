@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {AppointmentForm} from '@/components/forms/appointment-form';
+import {chooseOption, getSelect} from '@/test/select';
 import {ApiError} from '@/lib/api/http';
 import {Patient} from '@/types/medical/patient';
 import {Provider} from '@/types/medical/provider';
@@ -51,15 +52,15 @@ const patients: Patient[] = [
 ];
 
 async function fillCreateForm(user: ReturnType<typeof userEvent.setup>) {
-	await user.selectOptions(screen.getByLabelText('Patient'), 'demo-patient-002');
-	await user.selectOptions(screen.getByLabelText('Provider'), 'demo-provider-001');
+	await chooseOption(user, 'Patient', 'Jordan Brooks');
+	await chooseOption(user, 'Provider', 'Dr. Jordan Ellis');
 	await user.type(screen.getByLabelText('Start date'), '10202026');
 	await user.type(screen.getByRole('combobox', {name: 'Start time'}), '10:00 am');
 	await user.tab();
 	await user.clear(screen.getByRole('combobox', {name: 'End time'}));
 	await user.type(screen.getByRole('combobox', {name: 'End time'}), '11:00 am');
 	await user.tab();
-	await user.selectOptions(screen.getByLabelText('Type'), 'office_visit');
+	await chooseOption(user, 'Type', 'Office visit');
 }
 
 describe('AppointmentForm', () => {
@@ -74,7 +75,7 @@ describe('AppointmentForm', () => {
 
 		await user.click(screen.getByRole('button', {name: 'Schedule appointment'}));
 
-		const patient = screen.getByLabelText('Patient');
+		const patient = getSelect('Patient');
 		expect(patient).toHaveAttribute('aria-invalid', 'true');
 		expect(patient).toHaveFocus();
 		expect(document.getElementById('patientId-error')).toHaveTextContent('Select a patient');
@@ -90,14 +91,14 @@ describe('AppointmentForm', () => {
 		expect(card).toHaveClass('border-border', 'bg-surface');
 		expect(card).toContainElement(screen.getByRole('heading', {level: 1, name: 'Schedule appointment'}));
 		expect(card).toContainElement(screen.getByRole('button', {name: 'Schedule appointment'}));
-		expect(screen.getByLabelText('Patient')).toHaveClass('border-input', 'bg-surface');
+		expect(getSelect('Patient')).toHaveClass('border-input', 'bg-surface', 'h-10');
 		expect(screen.getByLabelText('Notes')).toHaveClass('border-input', 'bg-surface');
 	});
 
 	it('prefills a patient from the profile link', () => {
 		render(<AppointmentForm patients={patients} providers={providers} prefilledPatientId="demo-patient-002" />);
 
-		expect(screen.getByLabelText('Patient')).toHaveValue('demo-patient-002');
+		expect(getSelect('Patient')).toHaveTextContent('Jordan Brooks');
 	});
 
 	it('fills End 30 minutes after Start and keeps a valid End', async () => {

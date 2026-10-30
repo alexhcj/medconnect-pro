@@ -1,6 +1,7 @@
 import {render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {PatientList} from '@/components/patients/patient-list';
+import {chooseOption} from '@/test/select';
 import {DEFAULT_ROLE_PERMISSIONS} from '@/types/auth/permissions';
 import {Patient} from '@/types/medical/patient';
 
@@ -196,10 +197,10 @@ describe('PatientList', () => {
 		const user = userEvent.setup();
 
 		render(<PatientList />);
-		await user.selectOptions(screen.getByLabelText('Status'), 'inactive');
+		await chooseOption(user, 'Status', 'Inactive');
 		expect(setFilters).toHaveBeenLastCalledWith({q: '', status: 'inactive', sort: undefined});
 
-		await user.selectOptions(screen.getByLabelText('Sort by name'), 'name-desc');
+		await chooseOption(user, 'Sort by name', 'Last name Z–A');
 		// The URL has not committed yet, so the earlier status change must not be lost.
 		expect(setFilters).toHaveBeenLastCalledWith({q: '', status: 'inactive', sort: 'name-desc'});
 	});

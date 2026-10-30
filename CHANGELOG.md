@@ -6,6 +6,35 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.102.0] - 2026-10-30
+
+### Added
+
+- FE-058: `SelectField` (`components/ui/select-field.tsx`): design-system select list on the
+  Headless UI listbox. 40 px trigger in the shared field style, chevron that turns when open,
+  anchored option list the width of the trigger (flips near the viewport bottom, opens outside
+  tables), check on the selected option, 44 px option rows below 640 px. Keyboard: Enter, Space and
+  Alt+Down open; arrows, Home/End and type-ahead move; Escape returns focus; Enter on a closed list
+  no longer submits the form. Error and status text are linked to the trigger.
+- An ESLint rule bans native `<select>` in `apps/web/src`.
+
+### Changed
+
+- Every native select uses `SelectField`: admin audit, security, user and billing filters, the
+  user-table role select (compact; saving, saved and error states kept), the patient and
+  appointment forms, and the patient list status and sort. Values, form schemas and URL filter
+  parameters are unchanged; a URL filter value outside the curated list still shows as selected.
+- One control height and style for every input type: text, search, select, date and time fields
+  are 40 px (`h-10`, Figma `size/control`) on a white field with the same hover, focus, placeholder
+  and disabled tokens. This covers `Input` (was 44 px, transparent), the login and MFA inputs (were
+  about 38 px), the admin filters and the patient-list filters. Date and time field icon buttons stay
+  inside the field on mobile. The user-table Search and Clear filters buttons use the default
+  40 px size.
+- Touched form, patient-list and user-role files use design tokens in place of `gray-*` and
+  `red-600` classes (same colours).
+
+No API or contract change.
+
 ## [0.101.0] - 2026-10-30
 
 ### Added

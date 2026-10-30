@@ -1,6 +1,7 @@
 import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {UserRoleList} from '@/components/admin/user-role-list';
+import {chooseOption, getSelect, optionNames} from '@/test/select';
 import {ApiError} from '@/lib/api/http';
 import type {PracticeUser} from '@/types/admin/practice-user';
 
@@ -86,24 +87,23 @@ describe('UserRoleList', () => {
 
 		const list = screen.getByRole('table', {name: 'Practice users'});
 		expect(list).toHaveTextContent('practice.admin@example.test');
-		const select = screen.getByRole('combobox', {name: 'Role for practice.admin@example.test'});
-		expect(select).toHaveValue('PRACTICE_ADMIN');
+		expect(getSelect('Role for practice.admin@example.test')).toHaveTextContent('PRACTICE_ADMIN');
 		expect(
 			screen.getByText('Synthetic practice directory. Change a membership role for this practice.'),
 		).toBeInTheDocument();
 	});
 
-	it('omits SUPER_ADMIN from grant options unless it is the current role', () => {
+	it('omits SUPER_ADMIN from grant options unless it is the current role', async () => {
 		mockUsers({data: pageOf([sampleProvider, sampleSuperAdmin])});
+		const user = userEvent.setup();
 		render(<UserRoleList />);
 
-		const providerSelect = screen.getByRole('combobox', {name: 'Role for provider@example.test'});
-		expect(providerSelect).not.toHaveTextContent('SUPER_ADMIN');
-		expect(providerSelect).toHaveTextContent('NURSE');
+		const providerOptions = await optionNames(user, 'Role for provider@example.test');
+		expect(providerOptions).not.toContain('SUPER_ADMIN');
+		expect(providerOptions).toContain('NURSE');
 
-		const superSelect = screen.getByRole('combobox', {name: 'Role for super.admin@example.test'});
-		expect(superSelect).toHaveValue('SUPER_ADMIN');
-		expect(superSelect).toHaveTextContent('SUPER_ADMIN');
+		expect(getSelect('Role for super.admin@example.test')).toHaveTextContent('SUPER_ADMIN');
+		expect(await optionNames(user, 'Role for super.admin@example.test')).toContain('SUPER_ADMIN');
 	});
 
 	it('assigns a new role from the keyboard-accessible select and shows success', async () => {
@@ -118,12 +118,16 @@ describe('UserRoleList', () => {
 		);
 		render(<UserRoleList />);
 
-		const select = screen.getByRole('combobox', {name: 'Role for provider@example.test'});
-		expect(select).toHaveValue('NURSE');
-		expect(screen.getByRole('status')).toHaveTextContent('Role updated');
+		const select = getSelect('Role for provider@example.test');
+		expect(select).toHaveTextContent('NURSE');
+		const status = screen.getByRole('status');
+		expect(status).toHaveTextContent('Role updated');
+		expect(select.getAttribute('aria-describedby')).toContain(status.id);
 
 		const user = userEvent.setup();
-		await user.selectOptions(select, 'PROVIDER');
+		select.focus();
+		await user.keyboard('{Enter}');
+		await user.click(screen.getByRole('option', {name: 'PROVIDER'}));
 		expect(mutate).toHaveBeenCalledWith({userId: sampleProvider.id, role: 'PROVIDER'});
 	});
 
@@ -143,9 +147,8 @@ describe('UserRoleList', () => {
 		expect(screen.getByRole('alert')).toHaveTextContent(
 			'You do not have permission to perform this action',
 		);
-		expect(screen.getByRole('combobox', {name: 'Role for provider@example.test'})).toHaveValue(
-			'PROVIDER',
-		);
+		expect(getSelect('Role for provider@example.test')).toHaveTextContent('PROVIDER');
+		expect(getSelect('Role for provider@example.test')).toHaveAttribute('aria-invalid', 'true');
 		expect(screen.queryByRole('status')).not.toBeInTheDocument();
 	});
 
@@ -159,7 +162,8 @@ describe('UserRoleList', () => {
 		);
 		render(<UserRoleList />);
 
-		expect(screen.getByRole('combobox', {name: 'Role for provider@example.test'})).toBeDisabled();
+		expect(getSelect('Role for provider@example.test')).toBeDisabled();
+		expect(getSelect('Role for provider@example.test')).toHaveAttribute('aria-busy', 'true');
 		expect(screen.getByText('Saving role')).toBeInTheDocument();
 	});
 
@@ -228,7 +232,7 @@ describe('UserRoleList', () => {
 		render(<UserRoleList />);
 
 		expect(screen.getByRole('searchbox', {name: 'Search users'})).toHaveValue('nurse');
-		await user.selectOptions(screen.getByRole('combobox', {name: 'Role'}), 'PROVIDER');
+		await chooseOption(user, 'Role', 'PROVIDER');
 		expect(push).toHaveBeenLastCalledWith('/dashboard/admin?usersQ=nurse&usersRole=PROVIDER', {
 			scroll: false,
 		});

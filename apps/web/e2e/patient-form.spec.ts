@@ -1,5 +1,6 @@
 import {expect, test, type Page} from '@playwright/test';
 import {fillDateField} from './helpers/date-fields';
+import {chooseSelectOption} from './helpers/select-fields';
 import {signIn, signInAsPracticeAdmin} from './helpers/mock-auth';
 
 async function openPatients(page: Page) {
@@ -12,7 +13,7 @@ async function fillNewPatient(page: Page) {
 	await page.getByLabel('First name').fill('Quinn');
 	await page.getByLabel('Last name').fill('Harlow');
 	await fillDateField(page, 'Date of birth', '1991-03-04');
-	await page.getByLabel('Gender').selectOption('non-binary');
+	await chooseSelectOption(page, 'Gender', 'Non-binary');
 	await page.getByLabel('Phone', {exact: true}).fill('+1-555-010-4242');
 	await page.getByLabel('Email').fill('quinn.harlow@example.test');
 	await page.getByLabel('Street').fill('42 Demo Lane');
@@ -25,7 +26,7 @@ async function fillNewPatient(page: Page) {
 	await page.getByLabel('Insurance provider').fill('Demo Health Partners');
 	await page.getByLabel('Policy number').fill('DEM-424242');
 	await page.getByLabel('Group number').fill('GRP-DEMO-42');
-	await page.getByLabel('Assigned provider').selectOption('demo-provider-001');
+	await chooseSelectOption(page, 'Assigned provider', 'Dr. Jordan Ellis');
 }
 
 test.describe('Patient create and edit', () => {

@@ -1,6 +1,7 @@
-import {render, screen, within} from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {SecurityEventViewer} from '@/components/admin/security-event-viewer';
+import {optionNames} from '@/test/select';
 import {ApiError} from '@/lib/api/http';
 import type {PagedResult} from '@/types/admin/admin-list';
 import type {AuditEvent} from '@/types/admin/audit-event';
@@ -75,15 +76,15 @@ describe('SecurityEventViewer', () => {
 		expect(table).not.toHaveTextContent('@example.test');
 	});
 
-	it('requests one page and offers only auth actions as filters', () => {
+	it('requests one page and offers only auth actions as filters', async () => {
 		mockEvents();
+		const user = userEvent.setup();
 		render(<SecurityEventViewer />);
 
 		expect(useSecurityEvents).toHaveBeenCalledWith(expect.objectContaining({page: 1}));
-		const options = within(screen.getByRole('combobox', {name: 'Action'}))
-			.getAllByRole('option')
-			.map((option) => option.getAttribute('value'));
-		expect(options.filter(Boolean).every((value) => value?.startsWith('auth.'))).toBe(true);
+		const options = await optionNames(user, 'Action');
+		expect(options[0]).toBe('All actions');
+		expect(options.slice(1).every((name) => name.startsWith('auth.'))).toBe(true);
 	});
 
 	it('uses its own URL keys so the other lists keep their position', async () => {

@@ -208,7 +208,7 @@ export function DateField({
 					disabled={disabled}
 					aria-label={buttonName}
 					onClick={openMonth}
-					className="absolute right-1 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-md text-foreground-secondary hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:text-foreground-placeholder disabled:hover:bg-transparent max-sm:size-11"
+					className="absolute right-1 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-md text-foreground-secondary hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:text-foreground-placeholder disabled:hover:bg-transparent"
 				>
 					<CalendarIcon aria-hidden="true" className="size-[18px]" />
 				</PopoverButton>

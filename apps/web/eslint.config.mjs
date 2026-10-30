@@ -26,6 +26,11 @@ export default defineConfig([
 					selector: "CallExpression[callee.property.name=/^toLocale(Date|Time)?String$/]",
 					message: 'Use the shared formatters in @/lib/format/date (fixed en-US) instead of toLocale*String.',
 				},
+				// FE-058: select lists use the design-system listbox, never the browser's native picker.
+				{
+					selector: "JSXOpeningElement[name.name='select']",
+					message: 'Use SelectField from @/components/ui/select-field instead of a native <select>.',
+				},
 			],
 		},
 	},

@@ -1,5 +1,6 @@
 import {expect, test, type Page} from '@playwright/test';
 import {fillDateTimeField} from './helpers/date-fields';
+import {chooseSelectOption} from './helpers/select-fields';
 import {signInAsNurse, signInAsPracticeAdmin} from './helpers/mock-auth';
 
 function toDatetimeLocalValue(iso: string) {
@@ -16,13 +17,13 @@ async function openAppointments(page: Page) {
 
 async function fillAppointment(
 	page: Page,
-	values: {patientId: string; providerId: string; start: string; end: string; type: string},
+	values: {patient: string; provider: string; start: string; end: string; type: string},
 ) {
-	await page.getByLabel('Patient').selectOption(values.patientId);
-	await page.getByLabel('Provider').selectOption(values.providerId);
+	await chooseSelectOption(page, 'Patient', values.patient);
+	await chooseSelectOption(page, 'Provider', values.provider);
 	await fillDateTimeField(page, 'Start', values.start);
 	await fillDateTimeField(page, 'End', values.end);
-	await page.getByLabel('Type').selectOption(values.type);
+	await chooseSelectOption(page, 'Type', values.type);
 }
 
 test.describe('Appointment creation', () => {
@@ -40,11 +41,11 @@ test.describe('Appointment creation', () => {
 		await expect(page).toHaveURL(/\/dashboard\/appointments\/new$/);
 
 		await fillAppointment(page, {
-			patientId: 'demo-patient-002',
-			providerId: 'demo-provider-001',
+			patient: 'Jordan Brooks',
+			provider: 'Dr. Jordan Ellis',
 			start: '2026-10-20T10:00',
 			end: '2026-10-20T11:00',
-			type: 'office_visit',
+			type: 'Office visit',
 		});
 		await page.getByRole('button', {name: 'Schedule appointment'}).click();
 
@@ -64,11 +65,11 @@ test.describe('Appointment creation', () => {
 		const conflictStart = toDatetimeLocalValue('2026-10-15T14:00:00.000Z');
 		const conflictEnd = toDatetimeLocalValue('2026-10-15T15:00:00.000Z');
 		await fillAppointment(page, {
-			patientId: 'demo-patient-002',
-			providerId: 'demo-provider-001',
+			patient: 'Jordan Brooks',
+			provider: 'Dr. Jordan Ellis',
 			start: conflictStart,
 			end: conflictEnd,
-			type: 'follow_up',
+			type: 'Follow-up',
 		});
 		await page.getByRole('button', {name: 'Schedule appointment'}).click();
 

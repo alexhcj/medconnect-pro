@@ -8,6 +8,7 @@ import {Button} from '@/components/ui/button';
 import {useVerifyMfa} from '@/lib/hooks/use-session';
 import {ApiError, RateLimitedError, rateLimitMessage} from '@/lib/api/http';
 import {DEMO_MFA_CODE} from '@/lib/auth/demo-accounts';
+import {formControlClassName} from '@/components/forms/form-field-styles';
 
 const mfaCodeSchema = z.object({
 	code: z.string().regex(/^\d{6}$/, 'Enter the 6-digit demo code'),
@@ -120,7 +121,7 @@ export function MfaChallengeForm({
 						autoComplete="one-time-code"
 						autoFocus
 						disabled={verifyMfa.isPending || expired}
-						className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+						className={formControlClassName}
 						{...codeField}
 						ref={(element) => {
 							codeField.ref(element);

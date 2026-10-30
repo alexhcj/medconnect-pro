@@ -18,6 +18,7 @@ import {isMockMode} from '@/lib/api/mocks/runtime';
 import {OAuthProviderButton} from '@/components/auth/oauth-provider-button';
 import {ApiStatusIndicator} from '@/components/auth/api-status-indicator';
 import {ApiStatusProvider, useApiStatusContext} from '@/components/auth/api-status-provider';
+import {formControlClassName} from '@/components/forms/form-field-styles';
 import {
 	configuredOAuthProvider,
 	LOGIN_REASON_MESSAGES,
@@ -253,7 +254,7 @@ function LoginFormContent() {
 						id="email"
 						type="email"
 						autoComplete="username"
-						className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						className={formControlClassName}
 						{...register('email')}
 					/>
 					{errors.email && (
@@ -271,7 +272,7 @@ function LoginFormContent() {
 						id="password"
 						type="password"
 						autoComplete="current-password"
-						className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						className={formControlClassName}
 						{...register('password')}
 					/>
 					{errors.password && (

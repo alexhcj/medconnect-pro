@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {PatientForm} from '@/components/forms/patient-form';
+import {chooseOption, getSelect} from '@/test/select';
 import {ApiError} from '@/lib/api/http';
 import {Patient} from '@/types/medical/patient';
 import {Provider} from '@/types/medical/provider';
@@ -54,7 +55,7 @@ async function fillCreateForm(user: ReturnType<typeof userEvent.setup>) {
 	await user.type(screen.getByLabelText('First name'), 'Quinn');
 	await user.type(screen.getByLabelText('Last name'), 'Harlow');
 	await user.type(screen.getByLabelText('Date of birth'), '03041991');
-	await user.selectOptions(screen.getByLabelText('Gender'), 'non-binary');
+	await chooseOption(user, 'Gender', 'Non-binary');
 	await user.type(screen.getByLabelText('Phone'), '+1-555-010-4242');
 	await user.type(screen.getByLabelText('Email'), 'quinn.harlow@example.test');
 	await user.type(screen.getByLabelText('Street'), '42 Demo Lane');
@@ -67,7 +68,7 @@ async function fillCreateForm(user: ReturnType<typeof userEvent.setup>) {
 	await user.type(screen.getByLabelText('Insurance provider'), 'Demo Health Partners');
 	await user.type(screen.getByLabelText('Policy number'), 'DEM-424242');
 	await user.type(screen.getByLabelText('Group number'), 'GRP-DEMO-42');
-	await user.selectOptions(screen.getByLabelText('Assigned provider'), 'demo-provider-001');
+	await chooseOption(user, 'Assigned provider', 'Dr. Jordan Ellis');
 }
 
 describe('PatientForm', () => {
@@ -100,7 +101,7 @@ describe('PatientForm', () => {
 		expect(card).toContainElement(screen.getByRole('heading', {level: 1, name: 'Add patient'}));
 		expect(card).toContainElement(screen.getByRole('button', {name: 'Create patient'}));
 		expect(screen.getByLabelText('First name')).toHaveClass('border-input', 'bg-surface');
-		expect(screen.getByLabelText('Gender')).toHaveClass('border-input', 'bg-surface');
+		expect(getSelect('Gender')).toHaveClass('border-input', 'bg-surface', 'h-10');
 	});
 
 	it('loads edit values from the patient record', () => {
@@ -110,7 +111,7 @@ describe('PatientForm', () => {
 		expect(screen.getByLabelText('First name')).toHaveValue('Avery');
 		expect(screen.getByLabelText('Email')).toHaveValue('patient001@example.test');
 		expect(screen.getByLabelText('Date of birth')).toHaveValue('01/01/1970');
-		expect(screen.getByLabelText('Assigned provider')).toHaveValue('demo-provider-001');
+		expect(getSelect('Assigned provider')).toHaveTextContent('Dr. Jordan Ellis');
 		expect(screen.getByText('Synthetic demo data. Not a real medical record.')).toBeInTheDocument();
 	});
 

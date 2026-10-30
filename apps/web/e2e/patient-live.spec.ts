@@ -1,5 +1,6 @@
 import {expect, test, type Page} from '@playwright/test';
 import {fillDateField} from './helpers/date-fields';
+import {chooseSelectOption} from './helpers/select-fields';
 import {ADMIN_STATE, openDashboard} from './helpers/live-session';
 
 async function openPatients(page: Page) {
@@ -27,7 +28,7 @@ test.describe('Live patient list and create', () => {
 		await page.getByLabel('First name').fill('Quinn');
 		await page.getByLabel('Last name').fill(`Harlow${suffix}`);
 		await fillDateField(page, 'Date of birth', '1991-03-04');
-		await page.getByLabel('Gender').selectOption('non-binary');
+		await chooseSelectOption(page, 'Gender', 'Non-binary');
 		await page.getByLabel('Phone', {exact: true}).fill('555-0142');
 		await page.getByLabel('Email').fill(`quinn.harlow.${suffix}@synthetic.example`);
 		await page.getByLabel('Street').fill('42 Demo Lane');
@@ -40,7 +41,7 @@ test.describe('Live patient list and create', () => {
 		await page.getByLabel('Insurance provider').fill('Demo Health Partners');
 		await page.getByLabel('Policy number').fill(`DEM-${suffix}`);
 		await page.getByLabel('Group number').fill('GRP-DEMO');
-		await page.getByLabel('Assigned provider').selectOption({label: 'Dr. Jordan Ellis'});
+		await chooseSelectOption(page, 'Assigned provider', 'Dr. Jordan Ellis');
 		await page.getByRole('button', {name: 'Create patient'}).click();
 
 		await expect(page).toHaveURL(/\/dashboard\/patients\/[0-9a-f-]{36}$/);

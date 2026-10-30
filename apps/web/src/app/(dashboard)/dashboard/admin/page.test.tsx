@@ -1,5 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import AdministrationPage from '@/app/(dashboard)/dashboard/admin/page';
+import {getSelect} from '@/test/select';
 import type {AuditEvent} from '@/types/admin/audit-event';
 import type {PracticeUser} from '@/types/admin/practice-user';
 
@@ -108,9 +109,7 @@ describe('AdministrationPage', () => {
 		expect(screen.getByRole('table', {name: 'Practice users'})).toHaveTextContent(
 			'practice.admin@example.test',
 		);
-		expect(screen.getByRole('combobox', {name: 'Role for practice.admin@example.test'})).toHaveValue(
-			'PRACTICE_ADMIN',
-		);
+		expect(getSelect('Role for practice.admin@example.test')).toHaveTextContent('PRACTICE_ADMIN');
 		expect(screen.getByRole('table', {name: 'Audit events'})).toHaveTextContent('auth.login.succeeded');
 		expect(screen.getByRole('table', {name: 'Security events'})).toHaveTextContent(
 			'auth.login.failed',

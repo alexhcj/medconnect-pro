@@ -1,12 +1,13 @@
 'use client';
 
-import {ChangeEvent, FormEvent, useEffect, useId, useState} from 'react';
+import {FormEvent, useEffect, useId, useState} from 'react';
 import {
 	ListNotice,
 	ListSkeleton,
 	useFocusHeadingOnPageChange,
 } from '@/components/admin/admin-list-states';
-import {SelectField} from '@/components/admin/list-filter-fields';
+import {SelectField as FilterSelectField} from '@/components/admin/list-filter-fields';
+import {SelectField} from '@/components/ui/select-field';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
 import {Input} from '@/components/ui/input';
@@ -52,11 +53,11 @@ export function UserRoleList() {
 				<h2
 					ref={headingRef}
 					tabIndex={-1}
-					className="text-lg font-semibold text-gray-900 focus:outline-none"
+					className="text-lg font-semibold text-foreground focus:outline-none"
 				>
 					Users
 				</h2>
-				<p className="text-sm text-gray-600">
+				<p className="text-sm text-foreground-secondary">
 					Synthetic practice directory. Change a membership role for this practice.
 				</p>
 			</CardHeader>
@@ -86,11 +87,11 @@ export function UserRoleList() {
 									onChange={(event) => setSearchDraft(event.target.value)}
 								/>
 							</div>
-							<Button type="submit" size="lg" className="md:mt-6" disabled={users.isPending}>
+							<Button type="submit" size="default" className="md:mt-6" disabled={users.isPending}>
 								Search
 							</Button>
 						</form>
-						<SelectField
+						<FilterSelectField
 							label="Role"
 							value={role ?? ''}
 							options={ROLES}
@@ -103,7 +104,7 @@ export function UserRoleList() {
 							<Button
 								type="button"
 								variant="ghost"
-								size="lg"
+								size="default"
 								className="md:mt-6"
 								onClick={() => setFilters({})}
 							>
@@ -138,28 +139,28 @@ export function UserRoleList() {
 
 				{!users.isPending && !users.isError && data && data.items.length > 0 && (
 					<>
-						<p aria-live="polite" className="text-sm text-gray-600">
+						<p aria-live="polite" className="text-sm text-foreground-secondary">
 							Showing {pageRange(page, data.items.length).first}–
 							{pageRange(page, data.items.length).last} of {data.total} users
 						</p>
 						<div
-							className={`md:overflow-hidden md:rounded-lg md:border md:border-gray-200 ${isBusy ? 'opacity-50' : ''}`}
+							className={`md:overflow-hidden md:rounded-lg md:border md:border-border ${isBusy ? 'opacity-50' : ''}`}
 							aria-busy={isBusy || undefined}
 						>
 							<table aria-label="Practice users" role="table" className="block w-full md:table">
 								<thead role="rowgroup" className="sr-only md:not-sr-only md:table-header-group">
-									<tr role="row" className="bg-gray-50">
+									<tr role="row" className="bg-muted">
 										<th
 											role="columnheader"
 											scope="col"
-											className="px-4 py-2 text-left text-sm font-medium text-gray-700"
+											className="px-4 py-2 text-left text-sm font-medium text-foreground-label"
 										>
 											User
 										</th>
 										<th
 											role="columnheader"
 											scope="col"
-											className="px-4 py-2 text-left text-sm font-medium text-gray-700 md:w-72"
+											className="px-4 py-2 text-left text-sm font-medium text-foreground-label md:w-72"
 										>
 											Role
 										</th>
@@ -212,13 +213,9 @@ function UserRoleRow({
 	onRoleChange: (role: Role) => void;
 }) {
 	const selectId = `role-${user.id}`;
-	const errorId = `${selectId}-error`;
-	const statusId = `${selectId}-status`;
 	const options = roleSelectOptions(user.role);
-	const describedBy = error ? errorId : isSuccess ? statusId : undefined;
 
-	function handleChange(event: ChangeEvent<HTMLSelectElement>) {
-		const next = event.target.value;
+	function handleChange(next: string) {
 		if (!isRole(next) || next === user.role) {
 			return;
 		}
@@ -229,50 +226,34 @@ function UserRoleRow({
 		<tr
 			role="row"
 			aria-busy={isPending || undefined}
-			className="block rounded-lg border border-gray-200 p-4 md:table-row md:rounded-none md:border-0 md:p-0"
+			className="block rounded-lg border border-border p-4 md:table-row md:rounded-none md:border-0 md:p-0"
 		>
 			<td
 				role="cell"
-				className="block md:table-cell md:border-t md:border-gray-200 md:px-4 md:py-3"
+				className="block md:table-cell md:border-t md:border-border md:px-4 md:py-3"
 			>
-				<p className="break-all font-medium text-gray-900">{user.email}</p>
-				<p className="mt-1 break-all text-sm text-gray-600">{user.id}</p>
+				<p className="break-all font-medium text-foreground">{user.email}</p>
+				<p className="mt-1 break-all text-sm text-foreground-secondary">{user.id}</p>
 			</td>
 			<td
 				role="cell"
-				className="mt-3 block md:mt-0 md:table-cell md:border-t md:border-gray-200 md:px-4 md:py-3 md:align-top"
+				className="mt-3 block md:mt-0 md:table-cell md:border-t md:border-border md:px-4 md:py-3 md:align-top"
 			>
 				<div className="flex flex-col gap-1">
-					<label htmlFor={selectId} className="break-all text-xs text-gray-500 md:sr-only">
-						Role for {user.email}
-					</label>
-					<select
+					<SelectField
 						id={selectId}
+						label={`Role for ${user.email}`}
+						labelClassName="break-all text-xs font-normal text-foreground-muted md:sr-only"
+						size="compact"
 						value={user.role}
+						options={options.map((option) => ({value: option, label: option}))}
 						disabled={isPending}
-						aria-invalid={error ? true : undefined}
-						aria-describedby={describedBy}
 						aria-busy={isPending || undefined}
+						error={error}
+						status={isSuccess ? 'Role updated' : null}
 						onChange={handleChange}
-						className="h-11 w-full rounded-md border border-input bg-surface px-3 text-sm font-medium text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{options.map((option) => (
-							<option key={option} value={option}>
-								{option}
-							</option>
-						))}
-					</select>
+					/>
 					{isPending && <span className="sr-only">Saving role</span>}
-					{error && (
-						<p id={errorId} className="text-sm text-danger" role="alert">
-							{error}
-						</p>
-					)}
-					{isSuccess && !error && (
-						<p id={statusId} className="text-sm text-gray-600" role="status">
-							Role updated
-						</p>
-					)}
 				</div>
 			</td>
 		</tr>
