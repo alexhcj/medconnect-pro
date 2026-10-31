@@ -16,7 +16,7 @@ related_docs:
     ../../roadmap/release-roadmap.md,
   ]
 implementation:
-  status: completed
+  status: complete
 validation:
   responsive: false
   accessibility: false

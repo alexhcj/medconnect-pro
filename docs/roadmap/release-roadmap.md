@@ -173,7 +173,7 @@ Separate from M8. **PAUSED / BLOCKED** — AWS account setup unavailable. Close 
 missing task IDs; M9 is **not closed** and **not cancelled**. Tasks: INFRA-004–INFRA-012
 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused). Do not treat
 Terraform/workflows as a hosted demo. Do not pull AWS work into M10. Since 2026-10-28 INFRA-013
-is the post-1.0 AWS production release (1.x); the 1.0.0 demo release is INFRA-021 (standalone, after M21).
+is the post-1.0 AWS production release (1.x); the 1.0.0 demo release is INFRA-021 (standalone, after M20 and M21 close).
 
 ### M10 — Product Analytics, Notifications & Role Administration
 

@@ -154,10 +154,11 @@ hosted on AWS.
 
 ## Development status
 
-Application version **0.103.6**. Milestones and sequencing:
+Application version **0.103.7**. Milestones and sequencing:
 [`docs/roadmap/release-roadmap.md`](./docs/roadmap/release-roadmap.md). Next: the 1.0.0 Render
 demo release
-([INFRA-021](./docs/tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)), after M20 closes.
+([INFRA-021](./docs/tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)), after a GO from the
+`/release-check` pre-release check.
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).
 - **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** — AWS account setup
@@ -179,8 +180,8 @@ demo release
   does not wait on AWS.
 - **M19 — Polish and list normalization** closed at 0.96.3: paged and bounded lists for
   patients, invoices, claims, users, audit and security events, plus billing design parity.
-- **M20 — PR previews and delivery lanes** is in progress: manual Render PR previews for the
-  marketing site and web app are shipped; QA-010 is pending.
+- **M20 — PR previews and delivery lanes** closed at 0.103.7: manual Render PR previews for the
+  marketing site and web app, `main` deploys after `ci`, and a preview lanes pilot (QA-010).
 - **M21 — Marketing and web app design refresh** closed at 0.103.1: refreshed marketing pages
   (including `/architecture` and the `/about` roadmap board), app form-surface parity, US date
   format with an accessible date picker, design-system select lists, a one-tap demo account
