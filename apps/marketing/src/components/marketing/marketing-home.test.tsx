@@ -91,6 +91,9 @@ describe('MarketingHome', () => {
 			'RBAC and tenant isolation',
 			'Synthetic data only',
 		]);
+		for (const chip of within(chips).getAllByRole('listitem')) {
+			expect(chip).toHaveClass('flex');
+		}
 	});
 
 	it('points hero and demo CTAs at /platform and /demo', () => {

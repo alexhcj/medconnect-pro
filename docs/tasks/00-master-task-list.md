@@ -245,6 +245,7 @@ the web app's forms, dates, select lists and inputs in line with the same design
 - FE-057 — US date format and accessible date picker (shipped at 0.101.0; one `en-US` date/time format app-wide, design-system date field and calendar)
 - FE-058 — Design-system select list and input parity (shipped at 0.102.0; `SelectField` replaces native selects, one 40 px style for every input type)
 - FE-059 — Demo account picker (shipped at 0.103.0; one-tap fill of the sign-in form, visible copy feedback, MFA "Fill code")
+- FE-060 — Hero chip fit, appointments screenshot, two-row calendar event (shipped at 0.103.1)
 - INFRA-021 — 1.0.0 demo release
 
 ## Standalone (no milestone)

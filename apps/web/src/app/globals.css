@@ -55,6 +55,44 @@
 	min-height: 2.5rem;
 }
 
+/* Same fixed gutter above and below; react-big-calendar sizes the header gutter from a one-time measurement. */
+.appointment-calendar .rbc-time-gutter,
+.appointment-calendar .rbc-time-header-gutter {
+	flex: none;
+	width: 5.25rem !important;
+	min-width: 5.25rem !important;
+}
+
+/* All-day strip: keep its column lines on the day header lines (the strip was 1px narrower per edge). */
+.appointment-calendar .rbc-time-header-content > .rbc-allday-cell {
+	box-sizing: content-box;
+	margin-right: -1px;
+}
+
+.appointment-calendar .rbc-allday-cell .rbc-row-bg {
+	left: 0;
+	right: 0;
+	width: auto;
+}
+
+/* Week/day blocks: time on row 1, "patient · provider · state" on row 2 (ellipsis). */
+.appointment-calendar .rbc-day-slot .rbc-event {
+	flex-flow: column nowrap;
+	overflow: hidden;
+}
+
+.appointment-calendar .rbc-day-slot .rbc-event-label {
+	width: 100%;
+	padding-right: 0;
+}
+
+.appointment-calendar .rbc-day-slot .rbc-event-content {
+	flex: 1 1 auto;
+	min-height: 0;
+	width: 100%;
+	overflow: hidden;
+}
+
 .appointment-calendar-event--cancelled,
 .appointment-calendar .appointment-calendar-event--cancelled {
 	background-color: var(--color-bg-secondary-hover);

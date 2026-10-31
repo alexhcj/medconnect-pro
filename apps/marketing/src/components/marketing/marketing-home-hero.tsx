@@ -53,7 +53,7 @@ export function MarketingHomeHero() {
 						<li
 							key={chip}
 							className={cn(
-								'absolute rounded-full border border-border bg-surface p-1 shadow-md',
+								'absolute flex rounded-full border border-border bg-surface p-1 shadow-md',
 								CHIP_POSITION_CLASS_NAME[index],
 							)}
 						>

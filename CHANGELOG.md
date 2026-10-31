@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.103.1] - 2026-10-31
+
+### Fixed
+
+- FE-060: homepage hero chips hug their badge (30 px, even padding) as in the Figma hero frame.
+- FE-060: week and day calendar events show the time on row 1 and "patient · provider · state" on row 2 (ellipsis), instead of wrapping sideways.
+- FE-060: calendar header, all-day strip and body share one fixed time gutter, so column lines line up; appointments screenshot retaken.
+
 ## [0.103.0] - 2026-10-31
 
 ### Added
