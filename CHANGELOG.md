@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.103.6] - 2026-10-31
+
+### Fixed
+
+- Date picker (FE-057): opening the calendar with Enter or Space now shows the field's month and
+  focuses its date; before, only a mouse click did, and the keyboard always opened on today.
+- Date picker (FE-057): today's cell carries `aria-current="date"`.
+- Date picker (FE-057): at 200% zoom the height-limited popover scrolls itself (never the page) so
+  the focused day stays visible.
+- Admin audit and security event filters: each calendar button has its own name (for example
+  "Choose audit events from date") instead of four "Choose date" buttons.
+
 ## [0.103.5] - 2026-10-31
 
 ### Fixed

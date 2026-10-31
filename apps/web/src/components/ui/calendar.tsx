@@ -23,21 +23,43 @@ export function dateToDay(date: Date): string {
 }
 
 /**
+ * Scrolls only the calendar's panel (never the page) so `element` sits inside its visible area. The
+ * anchored popover gets a max-height on short viewports (200% zoom), which can hide the focused day.
+ */
+function revealInPanel(element: HTMLElement | null) {
+	const panel = element?.closest<HTMLElement>('[role="dialog"]');
+	if (!element || !panel || panel.scrollHeight <= panel.clientHeight) {
+		return;
+	}
+	const top = panel.getBoundingClientRect().top + panel.clientTop;
+	const target = element.getBoundingClientRect();
+	const margin = 8;
+	if (target.top < top + margin) {
+		panel.scrollTop -= top + margin - target.top;
+	} else if (target.bottom > top + panel.clientHeight - margin) {
+		panel.scrollTop += target.bottom - (top + panel.clientHeight - margin);
+	}
+}
+
+/**
  * Lets the grid's roving focus (arrows, PageUp/PageDown, Home/End) move DOM focus to the day.
  * `preventScroll`: on open the panel is focused before its anchor position is applied, so a plain
- * `focus()` scrolls the page to where the panel briefly sits (the top of a long page).
+ * `focus()` scrolls the page to where the panel briefly sits (the top of a long page). The panel
+ * itself is scrolled instead, so a clipped popover still shows the focused day.
  */
 function CalendarDayButton({day, modifiers, className, ...props}: DayButtonProps) {
 	const ref = useRef<HTMLButtonElement>(null);
 	useEffect(() => {
 		if (modifiers.focused) {
 			ref.current?.focus({preventScroll: true});
+			revealInPanel(ref.current);
 		}
 	}, [modifiers.focused]);
 	return (
 		<button
 			ref={ref}
 			{...props}
+			aria-current={modifiers.today ? 'date' : undefined}
 			data-day={dateToDay(day.date)}
 			className={cn(
 				'relative flex size-10 items-center justify-center rounded-full text-sm text-foreground max-sm:size-11',
@@ -71,8 +93,11 @@ interface CalendarProps {
 	/** Selected day, `YYYY-MM-DD`; empty for none. */
 	value: string;
 	onSelect: (day: string) => void;
-	month: Date;
-	onMonthChange: (month: Date) => void;
+	/**
+	 * Month shown when the grid mounts. The panel mounts on every open, so this is read on open
+	 * whether the button was clicked or pressed with Enter/Space.
+	 */
+	defaultMonth: Date;
 	/** Earliest and latest selectable day, `YYYY-MM-DD`. */
 	min?: string;
 	max?: string;
@@ -82,46 +107,65 @@ interface CalendarProps {
  * Month grid for `DateField` (react-day-picker v9, bundled, styled with design tokens). Keyboard:
  * arrows move by day/week, PageUp/PageDown by month (Shift: year), Home/End to the week edge.
  */
-export function Calendar({value, onSelect, month, onMonthChange, min, max}: CalendarProps) {
+export function Calendar({value, onSelect, defaultMonth, min, max}: CalendarProps) {
+	const rootRef = useRef<HTMLDivElement>(null);
 	const selected = dayToDate(value);
 	const minDate = min ? dayToDate(min) : undefined;
 	const maxDate = max ? dayToDate(max) : undefined;
+
+	// The day is focused before the popover gets its max-height; reveal it once the panel resizes.
+	useEffect(() => {
+		const panel = rootRef.current?.closest<HTMLElement>('[role="dialog"]');
+		if (!panel || typeof ResizeObserver === 'undefined') {
+			return;
+		}
+		const observer = new ResizeObserver(() => {
+			const active = document.activeElement;
+			if (active instanceof HTMLElement && panel.contains(active)) {
+				revealInPanel(active);
+			}
+		});
+		observer.observe(panel);
+		return () => observer.disconnect();
+	}, []);
+
 	return (
-		<DayPicker
-			mode="single"
-			required
-			autoFocus
-			locale={enUS}
-			weekStartsOn={0}
-			fixedWeeks
-			showOutsideDays
-			navLayout="around"
-			selected={selected}
-			onSelect={(date) => date && onSelect(dateToDay(date))}
-			month={month}
-			onMonthChange={onMonthChange}
-			startMonth={minDate ?? new Date(1900, 0)}
-			endMonth={maxDate ?? new Date(2100, 11)}
-			disabled={[...(minDate ? [{before: minDate}] : []), ...(maxDate ? [{after: maxDate}] : [])]}
-			labels={{
-				labelPrevious: () => 'Previous month',
-				labelNext: () => 'Next month',
-			}}
-			components={{DayButton: CalendarDayButton, Chevron: CalendarChevron}}
-			classNames={{
-				root: 'w-full',
-				months: 'w-full',
-				month: 'grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-2',
-				month_caption: 'flex items-center justify-center',
-				caption_label: 'text-sm font-semibold text-foreground',
-				button_previous: navButton,
-				button_next: navButton,
-				month_grid: 'col-span-3 w-full border-collapse',
-				weekday: 'h-6 text-center text-xs font-medium text-foreground-muted',
-				week: '',
-				day: 'p-0 text-center',
-				day_button: '',
-			}}
-		/>
+		<div ref={rootRef}>
+			<DayPicker
+				mode="single"
+				required
+				autoFocus
+				locale={enUS}
+				weekStartsOn={0}
+				fixedWeeks
+				showOutsideDays
+				navLayout="around"
+				selected={selected}
+				onSelect={(date) => date && onSelect(dateToDay(date))}
+				defaultMonth={defaultMonth}
+				startMonth={minDate ?? new Date(1900, 0)}
+				endMonth={maxDate ?? new Date(2100, 11)}
+				disabled={[...(minDate ? [{before: minDate}] : []), ...(maxDate ? [{after: maxDate}] : [])]}
+				labels={{
+					labelPrevious: () => 'Previous month',
+					labelNext: () => 'Next month',
+				}}
+				components={{DayButton: CalendarDayButton, Chevron: CalendarChevron}}
+				classNames={{
+					root: 'w-full',
+					months: 'w-full',
+					month: 'grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-2',
+					month_caption: 'flex items-center justify-center',
+					caption_label: 'text-sm font-semibold text-foreground',
+					button_previous: navButton,
+					button_next: navButton,
+					month_grid: 'col-span-3 w-full border-collapse',
+					weekday: 'h-6 text-center text-xs font-medium text-foreground-muted',
+					week: '',
+					day: 'p-0 text-center',
+					day_button: '',
+				}}
+			/>
+		</div>
 	);
 }

@@ -184,6 +184,14 @@ describe('AuditEventViewer', () => {
 		expect(push).not.toHaveBeenCalled();
 	});
 
+	it('names each date filter calendar button for its list and field', () => {
+		mockEvents();
+		render(<AuditEventViewer />);
+
+		expect(screen.getByRole('button', {name: 'Choose audit events from date'})).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Choose audit events to date'})).toBeInTheDocument();
+	});
+
 	it('clears every filter and returns to page 1', async () => {
 		searchParams.current = new URLSearchParams('auditPage=3&auditAction=role_changed&usersQ=nurse');
 		mockEvents();

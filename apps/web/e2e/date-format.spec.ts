@@ -97,6 +97,24 @@ test.describe('Date field and calendar', () => {
 		await expect(page.getByLabel('Date of birth')).toHaveValue('03/04/1991');
 	});
 
+	test('opens on the typed month from the keyboard and marks today', async ({page}) => {
+		await open(page, '/dashboard/patients/new');
+		const dob = page.getByLabel('Date of birth');
+		await dob.fill('03/04/1991');
+		await dob.press('Tab');
+		await expect(page.getByRole('button', {name: 'Choose date, selected date is March 4, 1991'})).toBeFocused();
+		await page.keyboard.press('Enter');
+
+		const dialog = page.getByRole('dialog', {name: 'Choose date of birth'});
+		await expect(dialog.getByRole('status')).toHaveText('March 1991');
+		await expect(dialog.getByRole('button', {name: /March 4th, 1991, selected/})).toBeFocused();
+
+		await page.keyboard.press('Escape');
+		await dob.fill('');
+		await page.getByRole('button', {name: 'Choose date'}).press('Enter');
+		await expect(dialog.locator('[aria-current="date"]')).toHaveAccessibleName(/^Today, /);
+	});
+
 	test('selects a day with Enter and writes it into the field', async ({page}) => {
 		await open(page, '/dashboard/patients/new');
 		await fillDateField(page, 'Date of birth', '1991-03-04');
@@ -192,6 +210,30 @@ test.describe('Admin date filters', () => {
 		await page.getByLabel('To', {exact: true}).first().fill('10/01/2026');
 		await expect(page.getByRole('alert').filter({hasText: 'The end date must be on or after the start date.'})).toBeVisible();
 		await expect(page).not.toHaveURL(/auditTo=/);
+	});
+});
+
+test.describe('Date fields at 200% zoom', () => {
+	// A 1280×800 window at 200%: the anchored popover is height-limited and scrolls inside.
+	test.use({viewport: {width: 640, height: 400}, deviceScaleFactor: 2});
+
+	test('keeps the focused day visible inside the clipped popover', async ({page}) => {
+		await open(page, '/dashboard/patients/new');
+		await page.getByRole('button', {name: 'Choose date'}).click();
+		const dialog = page.getByRole('dialog', {name: 'Choose date of birth'});
+		const today = dialog.locator('[aria-current="date"]');
+		await expect(today).toBeFocused();
+
+		await expect
+			.poll(() =>
+				today.evaluate((day) => {
+					const panel = day.closest('[role="dialog"]') as HTMLElement;
+					const box = panel.getBoundingClientRect();
+					const target = day.getBoundingClientRect();
+					return target.top >= box.top && target.bottom <= box.top + panel.clientHeight && target.bottom <= innerHeight;
+				}),
+			)
+			.toBe(true);
 	});
 });
 

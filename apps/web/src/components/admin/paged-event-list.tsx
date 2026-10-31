@@ -115,6 +115,7 @@ export function PagedEventList({
 						/>
 						<DateField
 							label="From"
+							chooseLabel={`Choose ${title.toLowerCase()} from date`}
 							value={fromDraft}
 							disabled={query.isPending}
 							className="md:w-44"
@@ -127,6 +128,7 @@ export function PagedEventList({
 						/>
 						<DateField
 							label="To"
+							chooseLabel={`Choose ${title.toLowerCase()} to date`}
 							value={toDraft}
 							disabled={query.isPending}
 							error={rangeError}

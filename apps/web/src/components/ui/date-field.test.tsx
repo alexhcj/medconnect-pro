@@ -126,6 +126,44 @@ describe('DateField', () => {
 		expect(within(dialog).getByRole('status')).toHaveTextContent('August 2026');
 	});
 
+	it.each([
+		['Enter', '{Enter}'],
+		['Space', ' '],
+	])('opens on the selected month from the keyboard (%s)', async (_, key) => {
+		const user = userEvent.setup();
+		render(<Harness initial="1991-03-04" />);
+		screen.getByRole('button', {name: /Choose date/}).focus();
+
+		await user.keyboard(key);
+
+		const dialog = await screen.findByRole('dialog', {name: 'Choose date of birth'});
+		expect(within(dialog).getByRole('status')).toHaveTextContent('March 1991');
+		expect(within(dialog).getByRole('button', {name: /March 4th, 1991/})).toHaveFocus();
+	});
+
+	it('opens on a date typed just before opening', async () => {
+		const user = userEvent.setup();
+		render(<Harness />);
+
+		await user.type(input(), '03041991');
+		await user.tab();
+		await user.keyboard('{Enter}');
+
+		const dialog = await screen.findByRole('dialog');
+		expect(within(dialog).getByRole('status')).toHaveTextContent('March 1991');
+	});
+
+	it('marks today with aria-current="date"', async () => {
+		const user = userEvent.setup();
+		render(<Harness />);
+		await user.click(screen.getByRole('button', {name: /Choose date/}));
+		const dialog = await screen.findByRole('dialog');
+
+		const current = dialog.querySelectorAll('[aria-current="date"]');
+		expect(current).toHaveLength(1);
+		expect(current[0]).toHaveAccessibleName(/^Today, /);
+	});
+
 	it('focuses the day without scrolling the page', async () => {
 		const focus = vi.spyOn(HTMLElement.prototype, 'focus');
 		const user = userEvent.setup();
