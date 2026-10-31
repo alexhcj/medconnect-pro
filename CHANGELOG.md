@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.103.4] - 2026-10-31
+
+### Fixed
+
+- SEC-012: production audit advisories published after SEC-011 cleared. `follow-redirects`
+  1.16.1 -> 1.16.2 (lockfile only, via web `axios`); a root override scoped to `typeorm` pins
+  `glob` 14.0.3, which also moves `minimatch` 9.0.9 -> 11.0.3. `typeorm` stays at 0.3.31.
+  `npm audit --omit=dev` exits 0 again.
+
 ## [0.103.3] - 2026-10-31
 
 ### Changed

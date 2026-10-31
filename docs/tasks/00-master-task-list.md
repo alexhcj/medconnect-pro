@@ -255,3 +255,4 @@ the web app's forms, dates, select lists and inputs in line with the same design
 - FE-061 — Input border contrast token (after 1.0.0; FE-056 follow-up)
 - QA-013 — M21 verification sweep: date locales, picker e2e, manual accessibility (after 1.0.0; test only)
 - INFRA-022 — Architecture overview, request lifecycle and ADR index (shipped; docs only, no version bump)
+- SEC-012 — Resolve glob and follow-redirects audit findings (shipped at 0.103.4)
