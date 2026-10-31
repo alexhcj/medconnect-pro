@@ -237,6 +237,9 @@ Plan decisions, approved by the user on 2026-10-30 (recommended options accepted
   scrolls itself, never the page). Admin filter calendar buttons got distinct names. All other
   keyboard, labelling, live-region, focus-ring (3.68:1), target-size and axe checks passed. The user
   confirmed the Figma match.
+- Scroll fix (0.103.5): opening the calendar no longer scrolls the page to the top. The day button
+  took focus before the popover was positioned, which jumped long pages such as the admin audit and
+  security event filters; it now focuses with `preventScroll`.
 
 ## Roadmap
 

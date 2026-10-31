@@ -27,6 +27,32 @@
     Full production smoke is
     [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md).
 
+`/release-check [version]` (`.claude/skills/release-check/`) runs the local and read-only parts
+of steps 1–12 plus the Render smoke and ends with a GO / NO-GO report. It does not fix, bump, tag
+or deploy.
+
+## When to run the release check
+
+There is no `dev` branch: `main` is the release line, Render deploys it after `ci`, and PR previews
+are the only pre-merge environment. So the check runs against the commit that `main` will release,
+twice:
+
+1. **Pre-bump, after the last feature merge.** All milestone and fix PRs are merged, `ci` on `main`
+   is green, and the release task (for 1.0.0, INFRA-021) has not started. Run
+   `/release-check <target>` from an up-to-date `main` (or the release branch cut from it). NO-GO
+   means fix tasks first, merged through their own PRs, then run it again. The release task starts
+   only after a GO or a GO with manual items you accept. Running it before the release task means
+   any fix lands before the version, notes and trackers are written.
+2. **Post-bump, before the tag.** The release task bumps the version, writes the CHANGELOG, notes
+   and trackers on a release branch. Run `/release-check <target>` again: the target now equals
+   the current version, so it checks that every tracker says the target and re-runs only what the
+   bump can change (code checks are skipped when the code is unchanged). Merge the release PR, wait
+   for `ci` on `main`, and tag that `main` commit.
+
+The check compares against the previous release tag. Before 1.0.0 there is no usable tag (the last
+one is `v0.8.1`), so it reports a NOTE and compares against `origin/main` instead. From `v1.0.0`
+on, every release is tagged on `main` and the next check diffs against it.
+
 Do not deploy production from a feature branch. Do not add a second Amplify publisher in GitHub
 Actions.
 

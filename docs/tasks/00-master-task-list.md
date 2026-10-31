@@ -215,7 +215,7 @@ Polish and list normalization. Does not close M9 or reopen M17/M18; see the rele
 - QA-008 — Live e2e suite green (shipped; test and docs only, no version bump)
 - QA-009 — Live paging specs (shipped; test only, no version bump)
 
-## Product (M20, in progress)
+## Product (M20, closed at 0.103.7)
 
 PR previews and delivery lanes on the Render demo. Frontend previews only, web in mock mode
 (ADR-019). Does not close M9 or add a preview API or database.
@@ -227,7 +227,7 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 - SEC-011 — Resolve production audit regressions (shipped at 0.97.4)
 - INFRA-020 — Checks-gated deploys and PR workflow (shipped at 0.97.3; branch protection is an operator step)
 - FE-048 — Preview environment banner (optional; shipped at 0.97.2)
-- QA-010 — Preview lanes pilot
+- QA-010 — Preview lanes pilot (shipped; test and docs only, no version bump)
 
 ## Product (M21, closed at 0.103.1)
 
@@ -256,3 +256,4 @@ the web app's forms, dates, select lists and inputs in line with the same design
 - QA-013 — M21 verification sweep: date locales, picker e2e, manual accessibility (after 1.0.0; test only)
 - INFRA-022 — Architecture overview, request lifecycle and ADR index (shipped; docs only, no version bump)
 - SEC-012 — Resolve glob and follow-redirects audit findings (shipped at 0.103.4)
+- INFRA-023 — Render usage and preview build-filter follow-ups (QA-010 mismatches; does not block 1.0.0)
