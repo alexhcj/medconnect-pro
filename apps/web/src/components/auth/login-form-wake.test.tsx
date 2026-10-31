@@ -125,6 +125,27 @@ describe('LoginForm API wake (FE-049)', () => {
 		expect(screen.queryByText('Server is waking up, see the status indicator')).not.toBeInTheDocument();
 	});
 
+	it('disables the demo role buttons while a sign-in is queued (FE-059)', async () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		const u = user();
+		apiAwake = false;
+		login.mockResolvedValue(session);
+		renderLogin();
+		// The fill focuses Sign in inside the form, which starts the wake probe.
+		await u.click(screen.getByRole('button', {name: 'Fill sign-in as Provider'}));
+		await advance(0);
+		await u.click(screen.getByRole('button', {name: /^sign in$/i}));
+		await advance(0);
+
+		expect(login).not.toHaveBeenCalled();
+		expect(screen.getByRole('button', {name: /signing in when ready/i})).toBeEnabled();
+		expect(screen.getByRole('button', {name: 'Fill sign-in as Patient'})).toBeDisabled();
+
+		await u.click(screen.getByRole('button', {name: 'Cancel'}));
+		expect(screen.getByRole('button', {name: 'Fill sign-in as Patient'})).toBeEnabled();
+		vi.unstubAllEnvs();
+	});
+
 	it('opens the waking card on focus and queues a submit without sending it while asleep', async () => {
 		const u = user();
 		apiAwake = false;

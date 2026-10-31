@@ -88,21 +88,105 @@ describe('LoginForm', () => {
 		}
 	});
 
-	it('lists the four live demo accounts when the flag is true', () => {
+	it('shows the four role buttons when the flag is true, without filling the form', () => {
 		setDemoFlag('true');
 		renderLogin();
-		expect(screen.getByText('Practice admin')).toBeInTheDocument();
-		expect(screen.getByText('Provider')).toBeInTheDocument();
-		expect(screen.getByText('MFA nurse')).toBeInTheDocument();
-		expect(screen.getByText('Patient')).toBeInTheDocument();
+		for (const label of ['Practice admin', 'Provider', 'MFA nurse', 'Patient']) {
+			expect(screen.getByRole('button', {name: `Fill sign-in as ${label}`})).toHaveAttribute('aria-pressed', 'false');
+		}
 		expect(screen.getByText('practice.admin@example.test')).toBeInTheDocument();
-		expect(screen.getByText('jordan.ellis@synthetic.example')).toBeInTheDocument();
-		expect(screen.getByText('mfa.nurse@example.test')).toBeInTheDocument();
-		expect(screen.getByText('avery.quinn@synthetic.example')).toBeInTheDocument();
 		expect(screen.queryByText('provider@example.test')).toBeNull();
 		expect(screen.queryByText('nurse@example.test')).toBeNull();
 		expect(screen.getByText(/MFA nurse code:/)).toHaveTextContent('135790');
-		expect(screen.getByLabelText('Password')).not.toHaveValue('135790');
+		expect(screen.getByLabelText('Email')).toHaveValue('');
+		expect(screen.getByLabelText('Password')).toHaveValue('');
+	});
+
+	it('fills both fields with one tap, shows the status line and focuses Sign in', async () => {
+		setDemoFlag('true');
+		const user = userEvent.setup();
+		renderLogin();
+
+		await user.click(screen.getByRole('button', {name: 'Fill sign-in as Provider'}));
+
+		expect(screen.getByLabelText('Email')).toHaveValue('jordan.ellis@synthetic.example');
+		expect(screen.getByLabelText('Password')).toHaveValue('Demo-Provider-1');
+		expect(screen.getByRole('button', {name: 'Fill sign-in as Provider'})).toHaveAttribute('aria-pressed', 'true');
+		expect(screen.getByText('Filled as Provider. Press Sign in.')).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Sign in'})).toHaveFocus();
+		expect(push).not.toHaveBeenCalled();
+	});
+
+	it('reaches the dashboard by pressing Sign in after a fill, without typing', async () => {
+		setDemoFlag('true');
+		const user = userEvent.setup();
+		renderLogin();
+
+		await user.click(screen.getByRole('button', {name: 'Fill sign-in as Practice admin'}));
+		await user.keyboard('{Enter}');
+
+		await vi.waitFor(() => {
+			expect(push).toHaveBeenCalledWith('/dashboard');
+		});
+	});
+
+	it('reaches the mock MFA challenge after filling as the MFA nurse', async () => {
+		setDemoFlag('true');
+		const user = userEvent.setup();
+		const login = vi.spyOn(sessionMockAPI, 'login').mockResolvedValue({
+			kind: 'mfa',
+			mfaToken: 'opaque-mfa',
+			expiresIn: 300,
+		});
+		renderLogin();
+
+		await user.click(screen.getByRole('button', {name: 'Fill sign-in as MFA nurse'}));
+		await user.click(screen.getByRole('button', {name: 'Sign in'}));
+
+		expect(await screen.findByRole('heading', {name: 'Verify mock MFA'})).toBeInTheDocument();
+		expect(login).toHaveBeenCalledWith('mfa.nurse@example.test', 'Demo-Mfa-1');
+	});
+
+	it('clears the selected role when a filled field is edited', async () => {
+		setDemoFlag('true');
+		const user = userEvent.setup();
+		renderLogin();
+
+		await user.click(screen.getByRole('button', {name: 'Fill sign-in as Patient'}));
+		await user.type(screen.getByLabelText('Password'), 'x');
+
+		expect(screen.getByRole('button', {name: 'Fill sign-in as Patient'})).toHaveAttribute('aria-pressed', 'false');
+		expect(screen.queryByText('Filled as Patient. Press Sign in.')).toBeNull();
+		expect(screen.getByText('Preview: Practice admin. Tap a role to fill the sign-in form.')).toBeInTheDocument();
+	});
+
+	it('clears a previous sign-in error when a role is tapped', async () => {
+		setDemoFlag('true');
+		const user = userEvent.setup();
+		renderLogin();
+
+		await user.type(screen.getByLabelText('Email'), 'nobody@example.test');
+		await user.type(screen.getByLabelText('Password'), 'not-the-demo');
+		await user.click(screen.getByRole('button', {name: 'Sign in'}));
+		expect(await screen.findByText('Invalid email or password.')).toBeInTheDocument();
+
+		await user.click(screen.getByRole('button', {name: 'Fill sign-in as Provider'}));
+		expect(screen.queryByText('Invalid email or password.')).toBeNull();
+	});
+
+	it('disables the role buttons while a sign-in is in flight', async () => {
+		setDemoFlag('true');
+		const user = userEvent.setup();
+		vi.spyOn(sessionMockAPI, 'login').mockReturnValue(new Promise(() => {}));
+		renderLogin();
+
+		await user.click(screen.getByRole('button', {name: 'Fill sign-in as Provider'}));
+		await user.click(screen.getByRole('button', {name: 'Sign in'}));
+
+		await vi.waitFor(() => {
+			expect(screen.getByRole('button', {name: 'Fill sign-in as Patient'})).toBeDisabled();
+		});
+		expect(screen.getByRole('button', {name: 'Copy email for Provider'})).toBeEnabled();
 	});
 
 	it.each([undefined, 'false', '1', ''])(

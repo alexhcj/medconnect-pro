@@ -44,6 +44,36 @@ describe('MfaChallengeForm', () => {
 		expect(screen.getByRole('button', {name: 'Back to sign in'})).toBeInTheDocument();
 	});
 
+	it.each([undefined, 'false', '1', ''])('hides Fill code when the demo flag is %s', (value) => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', value as string);
+		renderChallenge();
+		expect(screen.queryByRole('button', {name: 'Fill code'})).toBeNull();
+		vi.unstubAllEnvs();
+	});
+
+	it('fills the demo code and focuses Verify when the flag is on, without submitting', async () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		const user = userEvent.setup();
+		const verify = vi.spyOn(sessionMockAPI, 'verifyMfa');
+		renderChallenge();
+
+		const fill = screen.getByRole('button', {name: 'Fill code'});
+		expect(fill).toHaveClass('min-h-11');
+		await user.click(fill);
+
+		expect(screen.getByLabelText('Verification code')).toHaveValue('135790');
+		expect(screen.getByRole('button', {name: 'Verify'})).toHaveFocus();
+		expect(verify).not.toHaveBeenCalled();
+		vi.unstubAllEnvs();
+	});
+
+	it('disables Fill code once the challenge has expired', () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		renderChallenge(0);
+		expect(screen.getByRole('button', {name: 'Fill code'})).toBeDisabled();
+		vi.unstubAllEnvs();
+	});
+
 	it('focuses the code field on first paint and tabs to verify', async () => {
 		const user = userEvent.setup();
 		renderChallenge();

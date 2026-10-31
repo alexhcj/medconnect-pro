@@ -6,6 +6,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.103.0] - 2026-10-31
+
+### Added
+
+- FE-059: one-tap demo account picker on `/login`. Four 44 px role buttons (Practice admin,
+  Provider, MFA nurse, Patient) in a 2×2 grid fill email and password through React Hook Form
+  `setValue` (validate + dirty), clear any sign-in error, and move focus to Sign in. No auto-submit.
+  A role shows as pressed (`aria-pressed`) only while both fields hold its credentials; a status line
+  reads "Filled as {role}. Press Sign in." Role buttons are disabled while a sign-in is in flight or
+  queued behind the API wake (FE-049).
+- "Fill code" on the mock MFA challenge fills the demo code and focuses Verify. Shown only when
+  `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS` is exactly `true`.
+
+### Changed
+
+- The demo account panel shows one account's credentials (Practice admin as a preview until a role
+  is picked) with 36 px icon copy buttons instead of eight stacked text buttons; about 270 px tall
+  on a 375 px screen instead of about 500 px. The MFA nurse code moves into the panel header.
+- Copy feedback is visible: the icon turns into a check with "Copied" for about 2 s. A missing or
+  rejected clipboard (for example a LAN IP over plain HTTP) shows "Copy blocked. Select the text
+  instead." and highlights the value, which selects in one tap (`select-all`). Both are announced.
+- The mock MFA card uses the sign-in card padding on mobile (`px-4 py-6`, `sm:p-8`), matching Figma.
+
+No API, contract, fixture or flag change. Server sign-in, rate limiting and audit are unchanged.
+
 ## [0.102.0] - 2026-10-30
 
 ### Added
