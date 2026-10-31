@@ -1,6 +1,7 @@
 import {expect, test, type Page} from '@playwright/test';
 import {LIVE_PROVIDER_EMAIL} from './helpers/mock-auth';
 import {ADMIN_STATE, openDashboard} from './helpers/live-session';
+import {chooseSelectOption, selectField} from './helpers/select-fields';
 
 async function openAdministration(page: Page) {
 	await page.getByRole('button', {name: 'Open navigation'}).click();
@@ -38,9 +39,7 @@ test.describe('Live administration users and audit', () => {
 
 		await page.goto(`${USERS}${LIVE_PROVIDER_EMAIL}`);
 		await expect(users).toContainText(LIVE_PROVIDER_EMAIL);
-		await expect(
-			page.getByRole('combobox', {name: `Role for ${LIVE_PROVIDER_EMAIL}`}),
-		).toHaveValue('PROVIDER');
+		await expect(selectField(page, `Role for ${LIVE_PROVIDER_EMAIL}`)).toHaveText('PROVIDER');
 
 		await page.goto(`/dashboard/admin?${AUDIT_LOGIN}&${SECURITY_LOGIN}`);
 		const events = page.getByRole('table', {name: 'Audit events'});
@@ -56,16 +55,16 @@ test.describe('Live administration users and audit', () => {
 	test('practice admin changes the seeded provider role and restores it', async ({page}) => {
 		await page.goto(`${USERS}${LIVE_PROVIDER_EMAIL}`);
 
-		const select = page.getByRole('combobox', {name: `Role for ${LIVE_PROVIDER_EMAIL}`});
-		await expect(select).toHaveValue('PROVIDER');
+		const label = `Role for ${LIVE_PROVIDER_EMAIL}`;
+		const select = selectField(page, label);
+		await expect(select).toHaveText('PROVIDER');
 
 		try {
-			await select.selectOption('NURSE');
-			await expect(select).toHaveValue('NURSE');
+			await chooseSelectOption(page, label, 'NURSE');
 			await expect(page.getByRole('status').filter({hasText: 'Role updated'})).toBeVisible();
 		} finally {
-			await select.selectOption('PROVIDER');
-			await expect(select).toHaveValue('PROVIDER');
+			await expect(select).toBeEnabled();
+			await chooseSelectOption(page, label, 'PROVIDER');
 		}
 	});
 });

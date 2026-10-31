@@ -11,19 +11,11 @@ import {JoinTelehealthVisitControl} from '@/components/telehealth/join-telehealt
 import {canViewPatientProfile} from '@/lib/auth/patient-profile-access';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
+import {formatDateTimeRange} from '@/lib/format/date';
 import {isJoinableTelehealthAppointment, isWithinTelehealthJoinWindow} from '@/lib/telehealth/joinable';
 import {Appointment} from '@/types/medical/appointment';
 import type {Permission} from '@/types/auth/permissions';
 import type {Role} from '@/types/auth/roles';
-
-function formatRange(start: string, end: string) {
-	const startDate = new Date(start);
-	const endDate = new Date(end);
-	if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-		return `${start} – ${end}`;
-	}
-	return `${startDate.toLocaleString()} – ${endDate.toLocaleTimeString()}`;
-}
 
 interface AppointmentEventDialogProps {
 	appointment: Appointment | null;
@@ -64,7 +56,7 @@ export function AppointmentEventDialog({
 						</p>
 						<p>
 							<span className="font-medium text-gray-900">Time:</span>{' '}
-							{formatRange(appointment.start, appointment.end)}
+							{formatDateTimeRange(appointment.start, appointment.end)}
 						</p>
 						<p>
 							<span className="font-medium text-gray-900">Type:</span>{' '}

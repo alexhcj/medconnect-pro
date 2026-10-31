@@ -7,7 +7,8 @@ import {z} from 'zod';
 import {Button} from '@/components/ui/button';
 import {useVerifyMfa} from '@/lib/hooks/use-session';
 import {ApiError, RateLimitedError, rateLimitMessage} from '@/lib/api/http';
-import {DEMO_MFA_CODE} from '@/lib/auth/demo-accounts';
+import {DEMO_MFA_CODE, showDemoAccounts} from '@/lib/auth/demo-accounts';
+import {formControlClassName} from '@/components/forms/form-field-styles';
 
 const mfaCodeSchema = z.object({
 	code: z.string().regex(/^\d{6}$/, 'Enter the 6-digit demo code'),
@@ -39,11 +40,13 @@ export function MfaChallengeForm({
 	const [remaining, setRemaining] = useState(() => Math.max(0, Math.floor(expiresIn)));
 	const expiresAtRef = useRef(Date.now() + expiresIn * 1000);
 	const codeInputRef = useRef<HTMLInputElement | null>(null);
+	const verifyRef = useRef<HTMLButtonElement | null>(null);
 	const expired = remaining === 0;
 
 	const {
 		register,
 		handleSubmit,
+		setValue,
 		formState: {errors},
 	} = useForm<MfaCodeFormData>({
 		resolver: zodResolver(mfaCodeSchema),
@@ -91,7 +94,7 @@ export function MfaChallengeForm({
 	};
 
 	return (
-		<div className="w-full max-w-md space-y-4 rounded-xl border border-border bg-surface p-8 shadow-sm">
+		<div className="w-full max-w-md space-y-4 rounded-xl border border-border bg-surface px-4 py-6 shadow-sm sm:p-8">
 			<h1 className="text-2xl font-bold text-foreground">Verify mock MFA</h1>
 			<p className="text-sm text-foreground-secondary">
 				Enter the demo verification code to finish signing in as the MFA nurse.
@@ -109,30 +112,46 @@ export function MfaChallengeForm({
 			</div>
 
 			<form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-				<div>
-					<label htmlFor="mfa-code" className="block text-sm font-medium text-foreground-label">
-						Verification code
-					</label>
-					<input
-						id="mfa-code"
-						type="text"
-						inputMode="numeric"
-						autoComplete="one-time-code"
-						autoFocus
-						disabled={verifyMfa.isPending || expired}
-						className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-						{...codeField}
-						ref={(element) => {
-							codeField.ref(element);
-							codeInputRef.current = element;
-						}}
-					/>
-					{errors.code ? (
-						<p className="mt-1 text-sm text-danger" role="alert">
-							{errors.code.message}
-						</p>
-					) : (
-						<p className="mt-1 text-sm text-foreground-muted">6-digit demo code</p>
+				<div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+					<div className="min-w-0 flex-1">
+						<label htmlFor="mfa-code" className="block text-sm font-medium text-foreground-label">
+							Verification code
+						</label>
+						<input
+							id="mfa-code"
+							type="text"
+							inputMode="numeric"
+							autoComplete="one-time-code"
+							autoFocus
+							disabled={verifyMfa.isPending || expired}
+							className={formControlClassName}
+							{...codeField}
+							ref={(element) => {
+								codeField.ref(element);
+								codeInputRef.current = element;
+							}}
+						/>
+						{errors.code ? (
+							<p className="mt-1 text-sm text-danger" role="alert">
+								{errors.code.message}
+							</p>
+						) : (
+							<p className="mt-1 text-sm text-foreground-muted">6-digit demo code</p>
+						)}
+					</div>
+					{showDemoAccounts() && (
+						<Button
+							type="button"
+							variant="outline"
+							className="min-h-11 w-full sm:mt-6 sm:min-h-0 sm:w-auto"
+							disabled={verifyMfa.isPending || expired}
+							onClick={() => {
+								setValue('code', DEMO_MFA_CODE, {shouldValidate: true, shouldDirty: true});
+								verifyRef.current?.focus();
+							}}
+						>
+							Fill code
+						</Button>
 					)}
 				</div>
 
@@ -150,6 +169,7 @@ export function MfaChallengeForm({
 				)}
 
 				<Button
+					ref={verifyRef}
 					type="submit"
 					className="w-full"
 					disabled={verifyMfa.isPending || expired}

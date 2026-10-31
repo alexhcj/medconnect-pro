@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {PatientForm} from '@/components/forms/patient-form';
+import {chooseOption, getSelect} from '@/test/select';
 import {ApiError} from '@/lib/api/http';
 import {Patient} from '@/types/medical/patient';
 import {Provider} from '@/types/medical/provider';
@@ -53,8 +54,8 @@ const samplePatient: Patient = {
 async function fillCreateForm(user: ReturnType<typeof userEvent.setup>) {
 	await user.type(screen.getByLabelText('First name'), 'Quinn');
 	await user.type(screen.getByLabelText('Last name'), 'Harlow');
-	await user.type(screen.getByLabelText('Date of birth'), '1991-03-04');
-	await user.selectOptions(screen.getByLabelText('Gender'), 'non-binary');
+	await user.type(screen.getByLabelText('Date of birth'), '03041991');
+	await chooseOption(user, 'Gender', 'Non-binary');
 	await user.type(screen.getByLabelText('Phone'), '+1-555-010-4242');
 	await user.type(screen.getByLabelText('Email'), 'quinn.harlow@example.test');
 	await user.type(screen.getByLabelText('Street'), '42 Demo Lane');
@@ -67,7 +68,7 @@ async function fillCreateForm(user: ReturnType<typeof userEvent.setup>) {
 	await user.type(screen.getByLabelText('Insurance provider'), 'Demo Health Partners');
 	await user.type(screen.getByLabelText('Policy number'), 'DEM-424242');
 	await user.type(screen.getByLabelText('Group number'), 'GRP-DEMO-42');
-	await user.selectOptions(screen.getByLabelText('Assigned provider'), 'demo-provider-001');
+	await chooseOption(user, 'Assigned provider', 'Dr. Jordan Ellis');
 }
 
 describe('PatientForm', () => {
@@ -92,14 +93,54 @@ describe('PatientForm', () => {
 		expect(createMutate).not.toHaveBeenCalled();
 	});
 
+	it('renders the form inside a white bordered card with white fields', () => {
+		const {container} = render(<PatientForm mode="create" providers={providers} />);
+
+		const card = container.querySelector('form > div');
+		expect(card).toHaveClass('border-border', 'bg-surface');
+		expect(card).toContainElement(screen.getByRole('heading', {level: 1, name: 'Add patient'}));
+		expect(card).toContainElement(screen.getByRole('button', {name: 'Create patient'}));
+		expect(screen.getByLabelText('First name')).toHaveClass('border-input', 'bg-surface');
+		expect(getSelect('Gender')).toHaveClass('border-input', 'bg-surface', 'h-10');
+	});
+
 	it('loads edit values from the patient record', () => {
 		render(<PatientForm mode="edit" patient={samplePatient} providers={providers} />);
 
 		expect(screen.getByRole('heading', {name: 'Edit patient'})).toBeInTheDocument();
 		expect(screen.getByLabelText('First name')).toHaveValue('Avery');
 		expect(screen.getByLabelText('Email')).toHaveValue('patient001@example.test');
-		expect(screen.getByLabelText('Assigned provider')).toHaveValue('demo-provider-001');
+		expect(screen.getByLabelText('Date of birth')).toHaveValue('01/01/1970');
+		expect(getSelect('Assigned provider')).toHaveTextContent('Dr. Jordan Ellis');
 		expect(screen.getByText('Synthetic demo data. Not a real medical record.')).toBeInTheDocument();
+	});
+
+	it('takes date of birth as typed MM/DD/YYYY and sends YYYY-MM-DD', async () => {
+		const user = userEvent.setup({delay: null});
+		createMutate.mockResolvedValue({id: 'demo-patient-new'});
+		render(<PatientForm mode="create" providers={providers} />);
+		await fillCreateForm(user);
+		await user.click(screen.getByRole('button', {name: 'Create patient'}));
+
+		expect(screen.getByLabelText('Date of birth')).toHaveValue('03/04/1991');
+		expect(screen.getByLabelText('Date of birth')).toHaveAttribute('autocomplete', 'bday');
+		expect(createMutate).toHaveBeenCalledWith(expect.objectContaining({dateOfBirth: '1991-03-04'}));
+	});
+
+	it('says what is wrong with a date of birth that is incomplete or in the future', async () => {
+		const user = userEvent.setup({delay: null});
+		render(<PatientForm mode="create" providers={providers} />);
+		const dob = screen.getByLabelText('Date of birth');
+
+		await user.type(dob, '0304');
+		await user.tab();
+		expect(screen.getByText('Enter a full date as MM/DD/YYYY')).toHaveAttribute('role', 'alert');
+		expect(dob).toHaveAttribute('aria-invalid', 'true');
+
+		await user.clear(dob);
+		await user.type(dob, '01012999');
+		expect(screen.getByText(/^Date must be on or before \d{2}\/\d{2}\/\d{4}$/)).toBeInTheDocument();
+		expect(createMutate).not.toHaveBeenCalled();
 	});
 
 	it('maps server field details onto the matching input', async () => {

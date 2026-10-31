@@ -5,7 +5,6 @@ import {
 	MARKETING_ABOUT_CTA,
 	MARKETING_ABOUT_HERO,
 	MARKETING_ABOUT_PURPOSE,
-	MARKETING_ABOUT_STACK,
 	MARKETING_ABOUT_STATE,
 } from '@/components/marketing/marketing-about-copy';
 
@@ -27,9 +26,7 @@ describe('MarketingAbout', () => {
 		expect(
 			screen.getByRole('heading', {level: 2, name: MARKETING_ABOUT_STATE.heading}),
 		).toBeInTheDocument();
-		expect(
-			screen.getByRole('heading', {level: 2, name: MARKETING_ABOUT_STACK.heading}),
-		).toBeInTheDocument();
+		expect(screen.queryByRole('heading', {level: 2, name: /current .*vs planned/i})).toBeNull();
 		expect(
 			screen.getByRole('heading', {level: 2, name: MARKETING_ABOUT_CTA.heading}),
 		).toBeInTheDocument();
@@ -67,14 +64,51 @@ describe('MarketingAbout', () => {
 		}
 	});
 
-	it('keeps portfolio and stack claims honest', () => {
+	it('shows implementation state as Shipped, In progress and Up next lists plus a Paused line', () => {
+		render(<MarketingAbout />);
+
+		const section = screen.getByRole('region', {name: MARKETING_ABOUT_STATE.heading});
+		const columnHeadings = within(section).getAllByRole('heading', {level: 3});
+		expect(columnHeadings.map((heading) => heading.textContent)).toEqual([
+			'Shipped',
+			'In progress',
+			'Up next',
+		]);
+
+		for (const column of MARKETING_ABOUT_STATE.columns) {
+			const list = within(section).getByRole('list', {name: column.label});
+			const items = within(list).getAllByRole('listitem');
+			expect(items).toHaveLength(column.items.length);
+			column.items.forEach((item, index) => {
+				expect(items[index]).toHaveTextContent(item.title);
+			});
+		}
+
+		const shipped = within(section).getByRole('list', {name: 'Shipped'});
+		expect(within(shipped).queryByText(/1\.0\.0/)).not.toBeInTheDocument();
+		const upNext = within(section).getByRole('list', {name: 'Up next'});
+		expect(within(upNext).getByText('1.0.0 demo release')).toBeInTheDocument();
+
+		const paused = within(section).getByText(MARKETING_ABOUT_STATE.paused.text);
+		expect(paused.parentElement).toHaveTextContent(MARKETING_ABOUT_STATE.paused.label);
+		expect(section).not.toHaveTextContent(/\b(FE|BE|SEC|QA|DATA|INFRA)-\d+/);
+	});
+
+	it('links the architecture section to /architecture', () => {
+		render(<MarketingAbout />);
+
+		const section = screen.getByRole('region', {name: MARKETING_ABOUT_ARCHITECTURE.heading});
+		expect(
+			within(section).getByRole('link', {name: new RegExp(MARKETING_ABOUT_ARCHITECTURE.link.title)}),
+		).toHaveAttribute('href', '/architecture');
+	});
+
+	it('keeps portfolio claims honest', () => {
 		render(<MarketingAbout />);
 
 		expect(screen.getByText(/is not HIPAA certified/)).toBeInTheDocument();
 		expect(screen.getByText(MARKETING_ABOUT_ARCHITECTURE.note)).toBeInTheDocument();
-		expect(screen.getByText(MARKETING_ABOUT_STACK.planned.title)).toBeInTheDocument();
-		expect(screen.getByText(/Do not present them as current/)).toBeInTheDocument();
-		expect(screen.getByText(/Do not claim a hosted production/)).toBeInTheDocument();
+		expect(screen.getByText(MARKETING_ABOUT_STATE.paused.text)).toBeInTheDocument();
 		expect(screen.queryByText(/HIPAA compliant/i)).not.toBeInTheDocument();
 		expect(screen.queryByText(/live video visits/i)).not.toBeInTheDocument();
 		expect(screen.queryByText(/accept payments/i)).not.toBeInTheDocument();

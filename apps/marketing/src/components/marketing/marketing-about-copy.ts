@@ -1,5 +1,4 @@
 import {MARKETING_HOME_ROLES} from '@/components/marketing/marketing-home-copy';
-
 export const MARKETING_ABOUT_HERO = {
 	eyebrow: 'About',
 	heading: 'A portfolio demonstration of a multi-tenant healthcare SaaS',
@@ -13,13 +12,18 @@ export const MARKETING_ABOUT_PURPOSE = {
 	heading: 'Purpose and audience',
 	headingId: 'purpose-and-audience',
 	body: 'MedConnect Pro is a portfolio and interview demonstration of how a senior engineering team could design a multi-tenant healthcare SaaS product. It is production-oriented in architecture, not a deployed clinical service. All patient information is synthetic.',
-	roles: MARKETING_HOME_ROLES.items,
+	roles: MARKETING_HOME_ROLES.items.map((role) => role.label),
 } as const;
 
 export const MARKETING_ABOUT_ARCHITECTURE = {
 	heading: 'Architecture',
 	headingId: 'architecture',
 	note: 'This is a modular monolith in an npm workspace. Do not treat domains as independently deployed microservices.',
+	link: {
+		title: 'View architecture',
+		description: 'System map, request and authorization flow, and current vs planned.',
+		href: '/architecture',
+	},
 	items: [
 		{
 			title: 'Next.js frontend',
@@ -48,47 +52,62 @@ export const MARKETING_ABOUT_ARCHITECTURE = {
 export const MARKETING_ABOUT_STATE = {
 	heading: 'Implementation state',
 	headingId: 'implementation-state',
-	items: [
+	columns: [
 		{
-			title: 'Application demo',
-			description:
-				'Mock identity with labeled mock MFA, patients, appointments, clinical lists, telehealth, invoices, analytics, notifications, and administration, with demo rate limiting and concurrent-session review.',
-			detail: 'Live Nest mode with HttpOnly cookie sessions runs alongside the mock-first frontend.',
-			status: 'Shipped',
+			label: 'Shipped',
+			items: [
+				{
+					title: 'Application demo',
+					description:
+						'Mock identity with labeled mock MFA, patients, scheduling, clinical lists, telehealth, billing and admin.',
+				},
+				{
+					title: 'Security patterns',
+					description:
+						'RBAC, tenant isolation with PostgreSQL RLS, resource-level authorization and audit events.',
+				},
+				{
+					title: 'PR previews and delivery lanes',
+					description:
+						'GitHub Actions quality gates and manual PR previews for this site and the web app.',
+				},
+				{
+					title: 'Interim demo hosting',
+					description: 'A synthetic demo is hosted on Render.',
+				},
+				{
+					title: 'Design refresh',
+					description:
+						'A refreshed homepage, status badges, an architecture page, and consistent forms, dates and select lists in the web app.',
+				},
+			],
 		},
 		{
-			title: 'Security patterns',
-			description:
-				'RBAC, tenant isolation, resource-level authorization, audit events, and a tenant-scoped security-events viewer.',
-			detail: 'Demo OIDC with PKCE uses a Google or Fake adapter. It is not a production IdP.',
-			status: 'Shipped',
+			label: 'In progress',
+			items: [
+				{
+					title: 'Preview lanes pilot',
+					description: 'One real pull request per delivery lane to confirm that previews stay isolated.',
+				},
+			],
 		},
 		{
-			title: 'Delivery pipeline',
-			description:
-				'GitHub Actions quality gates and manual PR previews run for this site and the web app. An interim synthetic demo is hosted on Render.',
-			detail: 'AWS infrastructure code exists, but it has not been applied as a hosted production.',
-			status: 'Partial',
-		},
-		{
-			title: 'Production hosting on AWS',
-			description: 'Hosted AWS production is paused until an AWS account is available.',
-			detail: 'Do not claim a hosted production.',
-			status: 'Paused',
+			label: 'Up next',
+			items: [
+				{
+					title: '1.0.0 demo release',
+					description: 'The first tagged demo release on Render, after the preview lanes pilot.',
+				},
+				{
+					title: 'Accessibility follow-ups',
+					description: 'Higher-contrast input borders and wider browser and screen-reader checks, after 1.0.0.',
+				},
+			],
 		},
 	],
-} as const;
-
-export const MARKETING_ABOUT_STACK = {
-	heading: 'Current stack vs planned',
-	headingId: 'current-stack-vs-planned',
-	current: {
-		title: 'Current',
-		body: 'Next.js, React, TypeScript, Tailwind, NestJS 12, PostgreSQL, REST/OpenAPI, mock IdP sessions, GitHub Actions, and Terraform definitions. Daily call-object media is in the demo when configured.',
-	},
-	planned: {
-		title: 'Planned — not shipped',
-		body: 'Redis, S3/KMS document storage, and an applied AWS production environment remain planned. Do not present them as current.',
+	paused: {
+		label: 'Paused',
+		text: 'Production hosting on AWS is paused until an AWS account is available. No hosted production is claimed.',
 	},
 } as const;
 

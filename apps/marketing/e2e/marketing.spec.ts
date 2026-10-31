@@ -47,6 +47,17 @@ test.describe('Marketing public navigation', () => {
 		).toBeVisible();
 		await expect(page).toHaveTitle(/About/);
 
+		await primaryNav.getByRole('link', {name: 'Architecture'}).click();
+		await expect(page).toHaveURL(/\/architecture\/?$/);
+		await expect(
+			page.getByRole('heading', {level: 1, name: 'How MedConnect Pro fits together'}),
+		).toBeVisible();
+		await expect(page).toHaveTitle(/Architecture/);
+		await expect(primaryNav.getByRole('link', {name: 'Architecture'})).toHaveAttribute(
+			'aria-current',
+			'page',
+		);
+
 		await primaryNav.getByRole('link', {name: 'Demo'}).click();
 		await expect(page).toHaveURL(/\/demo\/?$/);
 		await expect(
@@ -82,8 +93,8 @@ test.describe('Marketing public navigation', () => {
 		);
 	});
 
-	test('security, about, and demo copy does not over-claim', async ({page}) => {
-		const routes = ['/security', '/about', '/demo'] as const;
+	test('security, about, architecture, and demo copy does not over-claim', async ({page}) => {
+		const routes = ['/security', '/about', '/architecture', '/demo'] as const;
 
 		for (const route of routes) {
 			await page.goto(route);
@@ -97,6 +108,42 @@ test.describe('Marketing public navigation', () => {
 		await expect(signInLinks).toHaveCount(2);
 		await expect(signInLinks.nth(0)).toHaveAttribute('href', 'http://localhost:3000/login');
 		await expect(signInLinks.nth(1)).toHaveAttribute('href', 'http://localhost:3000/login');
+	});
+
+	test('About, Security and the footer link into /architecture', async ({page}) => {
+		const heading = page.getByRole('heading', {level: 1, name: 'How MedConnect Pro fits together'});
+		const detail = page.locator('#architecture-detail');
+
+		await page.goto('/about');
+		await page.getByRole('link', {name: /View architecture/}).click();
+		await expect(page).toHaveURL(/\/architecture\/?$/);
+		await expect(heading).toBeVisible();
+
+		await page.goto('/security');
+		await page.getByRole('link', {name: "Where it's enforced: Tenant isolation"}).click();
+		await expect(page).toHaveURL(/\/architecture\/?#database$/);
+		await expect(detail.getByRole('heading', {level: 3})).toHaveText('Database');
+		await expect(page.getByRole('button', {name: /Database/, pressed: true})).toBeVisible();
+
+		await page.goto('/');
+		await page
+			.getByRole('navigation', {name: 'Footer'})
+			.getByRole('link', {name: 'Architecture'})
+			.click();
+		await expect(page).toHaveURL(/\/architecture\/?$/);
+		await expect(heading).toBeVisible();
+	});
+
+	test('architecture nodes open by keyboard', async ({page}) => {
+		await page.goto('/architecture');
+		const detail = page.locator('#architecture-detail');
+		await expect(detail.getByRole('heading', {level: 3})).toHaveText('API');
+
+		await page.getByRole('button', {name: /Sign-in/}).focus();
+		await page.keyboard.press('Enter');
+		await expect(detail.getByRole('heading', {level: 3})).toHaveText('Sign-in');
+		await expect(detail).toContainText('not production OAuth');
+
 	});
 
 	test('platform overview exposes sitemap module links', async ({page}) => {
@@ -146,7 +193,7 @@ test.describe('Marketing public navigation', () => {
 			},
 			{
 				href: '/platform/administration',
-				heading: 'Users and audit viewer',
+				heading: 'Users, roles, and audit viewer',
 			},
 		];
 
@@ -158,5 +205,22 @@ test.describe('Marketing public navigation', () => {
 				page.getByRole('heading', {level: 1, name: featurePage.heading}),
 			).toBeVisible();
 		}
+	});
+});
+
+test.describe('Marketing architecture on a touch phone', () => {
+	test.use({viewport: {width: 390, height: 844}, hasTouch: true, isMobile: true});
+
+	test('the list replaces the map and nodes open by tap', async ({page}) => {
+		await page.goto('/architecture');
+
+		await expect(page.getByRole('img', {name: /MedConnect Pro system map/})).toBeHidden();
+		const list = page.getByRole('list', {name: 'Planned — not shipped'});
+		await expect(list).toBeVisible();
+		const cache = list.getByRole('button', {name: /Cache and queues/});
+		await cache.tap();
+		await expect(cache).toHaveAttribute('aria-expanded', 'true');
+		await expect(list).toContainText('rate limits use PostgreSQL today');
+		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 	});
 });

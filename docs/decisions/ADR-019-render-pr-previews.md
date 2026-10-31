@@ -3,7 +3,7 @@
 ## Status
 
 Accepted. Implemented by INFRA-019 (service previews) and INFRA-020 (`checksPass` deploys, PR
-comment); until those ship, `main` deploys on push and no hosted preview exists.
+comment); both have shipped.
 
 ## Decision
 

@@ -1,5 +1,6 @@
 import {expect, test, type Page} from '@playwright/test';
 import {signInAsPatient, signInAsPracticeAdmin} from './helpers/mock-auth';
+import {chooseSelectOption} from './helpers/select-fields';
 
 async function openBilling(page: Page) {
 	await page.getByRole('button', {name: 'Open navigation'}).click();
@@ -139,7 +140,7 @@ test.describe('Billing dashboard', () => {
 		await page.getByRole('navigation', {name: 'Claims envelopes pagination'}).getByRole('button', {name: 'Next page'}).click();
 		await expect(page).toHaveURL(/invoicesPage=2/);
 
-		await page.getByLabel('Status').selectOption('overdue');
+		await chooseSelectOption(page, 'Status', 'Overdue');
 		await expect(page).toHaveURL(/invoicesStatus=overdue/);
 		await expect(page).not.toHaveURL(/invoicesPage=/);
 		await expect(page).toHaveURL(/claimsPage=2/);
@@ -148,7 +149,7 @@ test.describe('Billing dashboard', () => {
 		await expect(invoices.getByText('Overdue', {exact: true})).toHaveCount(10);
 		await expect(page.getByRole('navigation', {name: 'Invoices pagination'})).toBeVisible();
 
-		await page.getByLabel('Sort').selectOption('issued-asc');
+		await chooseSelectOption(page, 'Sort', 'Oldest issued first');
 		await expect(page).toHaveURL(/invoicesSort=issued-asc/);
 		await expect(page.getByText(/Showing 1–10 of 11 invoices/)).toContainText('oldest first');
 

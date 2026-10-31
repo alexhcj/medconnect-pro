@@ -48,6 +48,10 @@ E2E runs against mock mode with `NEXT_PUBLIC_MOCK_DELAY=0` and `NEXT_PUBLIC_MOCK
 - Start or reuse the Next.js app through Playwright `webServer` (deterministic mocks).
 - Prefer roles and names over CSS selectors.
 - Authenticated dashboard flows must sign in through the mock IdP (see `e2e/helpers/mock-auth.ts`).
+- `npm run screenshots:marketing` (QA-012) uses `playwright.capture.config.ts` to serve a production
+  mock build on port 3100 and rewrite the 8 PNGs in `apps/marketing/public/marketing/`. It asserts
+  no devtools are present before each shot. `e2e:mocks` ignores `e2e/capture/`. Stop `next dev`
+  first: the build overwrites `.next`.
 
 ## Live e2e (`npm run e2e:live`)
 

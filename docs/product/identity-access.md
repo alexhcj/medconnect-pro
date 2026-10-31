@@ -59,7 +59,7 @@ capabilities:
   - id: identity-access.demo-account-panel
     name: Demo account panel
     status: shipped
-    demo: "Four synthetic accounts (practice admin, provider, MFA nurse, Avery Quinn) with role labels, copy actions, and the MFA nurse code, only when NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS is exactly true. Render sets the flag. Production leaves it unset."
+    demo: "Four synthetic accounts (practice admin, provider, MFA nurse, Avery Quinn) with role labels, fill and copy actions, and the MFA nurse code, only when NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS is exactly true. Render sets the flag. Production leaves it unset."
     public: no
     related_tasks: [FE-037, DATA-005]
 ---
@@ -86,4 +86,4 @@ not a marketing `/sign-in` route.
 | `identity-access.auth-rate-limiting` | Demo auth and sensitive-route rate limiting | shipped | Nest 429 `RATE_LIMITED` on login (including account-wide failures), MFA, refresh, OAuth, telehealth create/join/media-token, document download, payments; `auth.rate_limited` security event; "too many attempts" on login and MFA (with N seconds when known) and on the OAuth landing ("later") | qualified |
 | `identity-access.concurrent-sessions` | Concurrent session review | shipped | Live dialog lists and revokes other Nest sessions; live rows omit IP and location; mock location and IP stay labeled demo data; not a session-policy editor or production session manager | qualified |
 | `identity-access.patient-demo-sign-in` | Patient demo sign-in | shipped | one synthetic PATIENT linked to Avery Quinn; no MFA; listed on the demo account panel when the sign-in flag is on | no |
-| `identity-access.demo-account-panel` | Demo account panel | shipped | four synthetic accounts on `/login` when the demo flag is exactly true; copy actions and the MFA nurse code; production leaves the flag unset | no |
+| `identity-access.demo-account-panel` | Demo account panel | shipped | four synthetic accounts on `/login` when the demo flag is exactly true; fill and copy actions and the MFA nurse code; production leaves the flag unset | no |

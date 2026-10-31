@@ -1,5 +1,6 @@
 import {expect, test} from '@playwright/test';
 import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {chooseSelectOption} from './helpers/select-fields';
 
 test.describe('Patient list', () => {
 	test.use({viewport: {width: 768, height: 1024}});
@@ -26,17 +27,17 @@ test.describe('Patient list', () => {
 		await expect(page.getByText('No patients match your search.')).toBeVisible();
 
 		await page.getByLabel('Search patients').fill('');
-		await page.getByLabel('Status').selectOption('inactive');
+		await chooseSelectOption(page, 'Status', 'Inactive');
 		await expect(page.getByText('Taylor Bennett')).toBeVisible();
 		await expect(page.getByText('Avery Carter')).toHaveCount(0);
 		await expect(page.getByRole('navigation', {name: 'Patients pagination'})).toHaveCount(0);
 
-		await page.getByLabel('Status').selectOption('all');
-		await page.getByLabel('Sort by name').selectOption('name-desc');
+		await chooseSelectOption(page, 'Status', 'All statuses');
+		await chooseSelectOption(page, 'Sort by name', 'Last name Z–A');
 		await expect(page.getByText('Skyler Ward')).toBeVisible();
 		await expect(page.getByText('Avery Carter')).toHaveCount(0);
 
-		await page.getByLabel('Sort by name').selectOption('name-asc');
+		await chooseSelectOption(page, 'Sort by name', 'Last name A–Z');
 		await expect(page.getByRole('list', {name: 'Patients'}).getByRole('listitem')).toHaveCount(10);
 		await expect(page.getByTestId('pagination-status')).toHaveText(/Showing 1–10/);
 	});
@@ -59,7 +60,7 @@ test.describe('Patient list', () => {
 		await expect(page).toHaveURL(/patientsPage=2/);
 		await expect(page.getByText('Morgan Morgan')).toBeVisible();
 
-		await page.getByLabel('Status').selectOption('active');
+		await chooseSelectOption(page, 'Status', 'Active');
 		await expect(page).not.toHaveURL(/patientsPage=/);
 
 		await page.goBack();

@@ -27,6 +27,12 @@ While `MAJOR` is `0`, the public demo API is not treated as stable:
 After `1.0.0`, standard SemVer applies: breaking → MAJOR, compatible features → MINOR, compatible
 fixes → PATCH.
 
+**1.0.0 target (amended 2026-10-28, user decision).** The first stable demo release is the
+feature-complete synthetic demo on Render, released by
+[INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md) after M20 and M21 close. It
+no longer waits for AWS production; [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
+becomes a later 1.x release. The explicit human request rule above still applies to the bump itself.
+
 ## Scope
 
 This version is the **application/demo artifact**, not HTTP API URL versioning (for example `/v1`).

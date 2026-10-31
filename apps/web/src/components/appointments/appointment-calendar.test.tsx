@@ -78,6 +78,19 @@ describe('AppointmentCalendar', () => {
 		);
 	});
 
+	it('renders the time and the appointment summary as separate event rows', () => {
+		mockAppointments();
+		const {container} = render(<AppointmentCalendar />);
+
+		const event = screen.getByRole('button', {name: /Avery Carter · Dr\. Jordan Ellis · Scheduled/});
+		const label = event.querySelector('.rbc-event-label');
+		const content = event.querySelector('.rbc-event-content');
+		expect(label).toHaveTextContent(/\d{1,2}:\d{2}\s?[AP]M/);
+		expect(content).toHaveTextContent('Avery Carter · Dr. Jordan Ellis · Scheduled');
+		expect(label).not.toContainElement(content as HTMLElement);
+		expect(container.querySelector('.appointment-calendar')).toBeInTheDocument();
+	});
+
 	it('switches month, week, and day views', async () => {
 		mockAppointments();
 		const user = userEvent.setup();

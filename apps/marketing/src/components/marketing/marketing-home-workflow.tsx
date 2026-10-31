@@ -15,13 +15,13 @@ export function MarketingHomeWorkflow() {
 				{MARKETING_HOME_WORKFLOW.steps.map((step, index) => (
 					<li key={step.title}>
 						<Card className="h-full">
-							<CardHeader>
+							<CardHeader className="p-4 md:p-6">
 								<p className="text-2xl font-semibold text-brand" aria-hidden>
 									{index + 1}
 								</p>
 								<CardTitle className="pt-2">{step.title}</CardTitle>
 							</CardHeader>
-							<CardContent>
+							<CardContent className="p-4 pt-0 md:p-6 md:pt-0">
 								<p className="text-sm leading-relaxed text-foreground-secondary">
 									{step.description}
 								</p>

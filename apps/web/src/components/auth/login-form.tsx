@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {CircleAlert, Clock, Info, LoaderCircle} from 'lucide-react';
-import {useForm} from 'react-hook-form';
+import {useForm, useWatch} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
 import Link from 'next/link';
@@ -11,13 +11,14 @@ import {Button} from '@/components/ui/button';
 import {DemoAccountPanel} from '@/components/auth/demo-account-panel';
 import {MfaChallengeForm} from '@/components/auth/mfa-challenge-form';
 import {useLogin} from '@/lib/hooks/use-session';
-import {showDemoAccounts} from '@/lib/auth/demo-accounts';
+import {demoPanelAccounts, showDemoAccounts, type DemoPanelAccount} from '@/lib/auth/demo-accounts';
 import {DASHBOARD_PATH} from '@/lib/auth/paths';
 import {ApiError, RateLimitedError, rateLimitMessage, ServiceWakingError} from '@/lib/api/http';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {OAuthProviderButton} from '@/components/auth/oauth-provider-button';
 import {ApiStatusIndicator} from '@/components/auth/api-status-indicator';
 import {ApiStatusProvider, useApiStatusContext} from '@/components/auth/api-status-provider';
+import {formControlClassName} from '@/components/forms/form-field-styles';
 import {
 	configuredOAuthProvider,
 	LOGIN_REASON_MESSAGES,
@@ -87,9 +88,13 @@ function LoginFormContent() {
 	const [formError, setFormError] = useState<string | null>(null);
 	const [challenge, setChallenge] = useState<MfaChallengeState | null>(null);
 
+	const signInRef = useRef<HTMLButtonElement | null>(null);
+
 	const {
 		register,
 		handleSubmit,
+		setValue,
+		control,
 		formState: {errors},
 	} = useForm<LoginFormData>({
 		resolver: zodResolver(loginSchema),
@@ -99,6 +104,21 @@ function LoginFormContent() {
 			password: '',
 		},
 	});
+
+	const [watchedEmail, watchedPassword] = useWatch({control, name: ['email', 'password']});
+	// A role reads as selected only while both fields still hold that account's credentials.
+	const selectedEmail = showDemoAccounts()
+		? (demoPanelAccounts().find(
+				(account) => account.email === watchedEmail && account.password === watchedPassword,
+			)?.email ?? null)
+		: null;
+
+	const fillDemoAccount = (account: DemoPanelAccount) => {
+		setValue('email', account.email, {shouldValidate: true, shouldDirty: true});
+		setValue('password', account.password, {shouldValidate: true, shouldDirty: true});
+		setFormError(null);
+		signInRef.current?.focus();
+	};
 
 	const clearQueue = () => {
 		queuedData.current = null;
@@ -232,7 +252,13 @@ function LoginFormContent() {
 				</p>
 			)}
 
-			{showDemoAccounts() && <DemoAccountPanel />}
+			{showDemoAccounts() && (
+				<DemoAccountPanel
+					onSelect={fillDemoAccount}
+					disabled={login.isPending || queued}
+					selectedEmail={selectedEmail}
+				/>
+			)}
 
 			<form
 					className="mt-6 space-y-4"
@@ -253,7 +279,7 @@ function LoginFormContent() {
 						id="email"
 						type="email"
 						autoComplete="username"
-						className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						className={formControlClassName}
 						{...register('email')}
 					/>
 					{errors.email && (
@@ -271,7 +297,7 @@ function LoginFormContent() {
 						id="password"
 						type="password"
 						autoComplete="current-password"
-						className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						className={formControlClassName}
 						{...register('password')}
 					/>
 					{errors.password && (
@@ -288,6 +314,7 @@ function LoginFormContent() {
 				)}
 
 				<Button
+					ref={signInRef}
 					type="submit"
 					className="w-full"
 					disabled={login.isPending && !queued}

@@ -1,4 +1,6 @@
 import {expect, test, type Page} from '@playwright/test';
+import {fillDateTimeField} from './helpers/date-fields';
+import {chooseSelectOption} from './helpers/select-fields';
 import {ADMIN_STATE, openDashboard} from './helpers/live-session';
 
 function pad(value: number) {
@@ -41,11 +43,11 @@ test.describe('Live appointment calendar and create', () => {
 		await expect(page).toHaveURL(/\/dashboard\/appointments\/new$/);
 
 		const slot = uniqueSlot();
-		await page.getByLabel('Patient').selectOption({label: 'Blake Chen'});
-		await page.getByLabel('Provider').selectOption({label: 'Dr. Jordan Ellis'});
-		await page.getByLabel('Start').fill(slot.start);
-		await page.getByLabel('End').fill(slot.end);
-		await page.getByLabel('Type').selectOption('office_visit');
+		await chooseSelectOption(page, 'Patient', 'Blake Chen');
+		await chooseSelectOption(page, 'Provider', 'Dr. Jordan Ellis');
+		await fillDateTimeField(page, 'Start', slot.start);
+		await fillDateTimeField(page, 'End', slot.end);
+		await chooseSelectOption(page, 'Type', 'Office visit');
 		await page.getByRole('button', {name: 'Schedule appointment'}).click();
 
 		await expect(page).toHaveURL(/\/dashboard\/appointments$/);

@@ -46,6 +46,7 @@ export function MarketingSecurity() {
 									description={item.description}
 									detail={item.detail}
 									status={item.status}
+									link={item.link}
 								/>
 							</li>
 						))}
@@ -104,7 +105,7 @@ export function MarketingSecurity() {
 					body={MARKETING_SECURITY_CTA.body}
 					primaryCta={MARKETING_SECURITY_CTA.primaryCta}
 					secondaryCta={MARKETING_SECURITY_CTA.secondaryCta}
-					stackUntilLg
+					rowFrom="lg"
 				/>
 			</div>
 		</div>

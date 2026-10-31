@@ -28,16 +28,22 @@ plane:
   identifier: MEDCONNECT-69
 ---
 
-# INFRA-013 — v1.0.0 production release readiness
+# INFRA-013 — AWS production release readiness (post-1.0)
+
+> **Retargeted 2026-10-28 (user decision).** 1.0.0 is now the Render demo release,
+> [INFRA-021](INFRA-021-v1.0.0-demo-release.md) (standalone, after M21). This task becomes the later 1.x release
+> that brings up AWS production. Read "1.0.0" below as "the AWS production release": bump as a
+> MINOR per ADR-007, use the INFRA-012 notes template, and keep the filename and Plane id.
 
 ## Objective
 
 Prove AWS production is up, run smoke checks, fill the GitHub release notes, and — with the
-explicit human approval recorded in the M9 brief — tag and record **1.0.0**.
+explicit human approval recorded in the M9 brief — tag and record the AWS production release.
 
 ## Context
 
-Why this task exists: M9 ends at `main` → AWS production → `v1.0.0`.
+Why this task exists: M9 ends at `main` → AWS production. Originally this was `v1.0.0`; see the
+note above.
 [ADR-007](../../decisions/ADR-007-semantic-versioning.md) forbids a silent major bump. This
 task is the explicit request.
 

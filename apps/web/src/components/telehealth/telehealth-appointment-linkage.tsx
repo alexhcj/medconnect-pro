@@ -1,15 +1,11 @@
 import {APPOINTMENT_TYPE_LABELS} from '@/components/forms/appointment-form-schema';
+import {formatDateTimeRange} from '@/lib/format/date';
 import {TelehealthSession} from '@/types/medical/telehealth-session';
 
 export const TELEHEALTH_DEMO_NOTICE = 'Synthetic demo. Not a production telehealth deployment.';
 
 export function formatTelehealthRange(start: string, end: string) {
-	const startDate = new Date(start);
-	const endDate = new Date(end);
-	if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-		return `${start} – ${end}`;
-	}
-	return `${startDate.toLocaleString()} – ${endDate.toLocaleTimeString()}`;
+	return formatDateTimeRange(start, end);
 }
 
 export function TelehealthAppointmentLinkage({session}: {session: TelehealthSession}) {

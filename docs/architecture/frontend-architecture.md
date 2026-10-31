@@ -52,6 +52,23 @@ React Hook Form owns complex form state.
 
 Zod provides schema validation.
 
+### Dates and times
+
+Every displayed date or time goes through `apps/web/src/lib/format/date.ts`, fixed to `en-US`
+(`08/10/2026`, `7:00 PM`, viewer-local zone label such as `PDT`), never the browser or OS
+language; an ESLint rule bans `toLocale*String` in `apps/web/src`. Date-only values
+(`YYYY-MM-DD`) format from their parts, without a UTC conversion. Inputs use `DateField` and
+`DateTimeField` (`components/ui/`, FE-057) instead of native date inputs; form values keep their
+existing `YYYY-MM-DD` and local `YYYY-MM-DDTHH:mm` formats, so schemas and the API are unchanged.
+
+### Form controls
+
+Every text, search, select, date and time control is 40 px high (`h-10`, Figma `size/control`)
+and shares `formControlClassName` (`components/forms/form-field-styles.ts`). Select lists use
+`SelectField` (`components/ui/`, FE-058) on the Headless UI listbox, never a native `<select>`
+(ESLint rule in `apps/web`); forms bind it with React Hook Form `Controller`, list filters with
+controlled values.
+
 ### Client state
 
 Use local React state for local UI concerns.

@@ -12,18 +12,10 @@ import {canWriteAppointments} from '@/lib/auth/appointment-access';
 import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {isJoinableTelehealthAppointment, isWithinTelehealthJoinWindow} from '@/lib/telehealth/joinable';
+import {formatDateTimeRange} from '@/lib/format/date';
 import {useAppointments} from '@/lib/hooks/use-medical';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {Appointment} from '@/types/medical/appointment';
-
-function formatRange(start: string, end: string) {
-	const startDate = new Date(start);
-	const endDate = new Date(end);
-	if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-		return `${start} – ${end}`;
-	}
-	return `${startDate.toLocaleString()} – ${endDate.toLocaleTimeString()}`;
-}
 
 function typeLabel(type: Appointment['type']) {
 	return APPOINTMENT_TYPE_LABELS[type] ?? type;
@@ -86,7 +78,7 @@ const AppointmentList = () => {
 									<p className="font-medium text-gray-900">
 										{appointment.patientName} · {appointment.providerName}
 									</p>
-									<p className="mt-1 text-sm text-gray-700">{formatRange(appointment.start, appointment.end)}</p>
+									<p className="mt-1 text-sm text-gray-700">{formatDateTimeRange(appointment.start, appointment.end)}</p>
 								</div>
 								<div className="flex flex-col items-start gap-2 md:items-end">
 									<p className="text-sm text-gray-600">

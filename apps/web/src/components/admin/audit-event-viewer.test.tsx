@@ -1,6 +1,7 @@
 import {fireEvent, render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {AuditEventViewer} from '@/components/admin/audit-event-viewer';
+import {chooseOption, getSelect, querySelect} from '@/test/select';
 import {resetPendingListUrlPush} from '@/lib/admin/use-list-url-state';
 import {ApiError} from '@/lib/api/http';
 import type {PagedResult} from '@/types/admin/admin-list';
@@ -124,7 +125,7 @@ describe('AuditEventViewer', () => {
 			from: '2026-10-01',
 			to: '2026-10-05',
 		});
-		expect(screen.getByRole('combobox', {name: 'Action'})).toHaveValue('role_changed');
+		expect(getSelect('Action')).toHaveTextContent('role_changed');
 	});
 
 	it('goes to the next, previous and numbered page while keeping filters', async () => {
@@ -160,7 +161,7 @@ describe('AuditEventViewer', () => {
 		const user = userEvent.setup();
 		render(<AuditEventViewer />);
 
-		await user.selectOptions(screen.getByRole('combobox', {name: 'Action'}), 'access.denied');
+		await chooseOption(user, 'Action', 'access.denied');
 		expect(push).toHaveBeenLastCalledWith('/dashboard/admin?auditAction=access.denied', {
 			scroll: false,
 		});
@@ -170,11 +171,12 @@ describe('AuditEventViewer', () => {
 		mockEvents();
 		render(<AuditEventViewer />);
 
-		fireEvent.change(screen.getByLabelText('From'), {target: {value: '2026-10-05'}});
+		fireEvent.change(screen.getByLabelText('From'), {target: {value: '10/05/2026'}});
+		expect(screen.getByLabelText('From')).toHaveValue('10/05/2026');
 		expect(push).toHaveBeenLastCalledWith('/dashboard/admin?auditFrom=2026-10-05', {scroll: false});
 
 		push.mockClear();
-		fireEvent.change(screen.getByLabelText('To'), {target: {value: '2026-10-01'}});
+		fireEvent.change(screen.getByLabelText('To'), {target: {value: '10/01/2026'}});
 		expect(screen.getByRole('alert')).toHaveTextContent(
 			'The end date must be on or after the start date.',
 		);
@@ -218,7 +220,7 @@ describe('AuditEventViewer', () => {
 
 		expect(screen.getByText('Loading audit events')).toBeInTheDocument();
 		expect(screen.queryByRole('table')).not.toBeInTheDocument();
-		expect(screen.getByRole('combobox', {name: 'Action'})).toBeDisabled();
+		expect(getSelect('Action')).toBeDisabled();
 	});
 
 	it('shows an error alert and retries', async () => {
@@ -252,7 +254,7 @@ describe('AuditEventViewer', () => {
 		render(<AuditEventViewer />);
 
 		expect(screen.getByText('No audit events to display.')).toBeInTheDocument();
-		expect(screen.queryByRole('combobox', {name: 'Action'})).not.toBeInTheDocument();
+		expect(querySelect('Action')).toBeNull();
 		expect(screen.queryByRole('navigation', {name: 'Audit events pagination'})).not.toBeInTheDocument();
 	});
 
@@ -262,7 +264,7 @@ describe('AuditEventViewer', () => {
 		render(<AuditEventViewer />);
 
 		expect(screen.getByText('No events match these filters.')).toBeInTheDocument();
-		expect(screen.getByRole('combobox', {name: 'Action'})).toHaveValue('role_changed');
+		expect(getSelect('Action')).toHaveTextContent('role_changed');
 		expect(screen.getByRole('button', {name: 'Clear filters'})).toBeInTheDocument();
 	});
 
