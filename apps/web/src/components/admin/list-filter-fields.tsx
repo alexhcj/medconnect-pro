@@ -48,13 +48,16 @@ interface DateFieldProps {
 	disabled?: boolean;
 	error?: string | null;
 	className?: string;
+	/** Calendar button name; a page with several date filters needs one per field. */
+	chooseLabel?: string;
 }
 
 /** Admin list date filter: the shared `DateField` (typed `MM/DD/YYYY` or calendar). */
-export function DateField({label, value, onChange, disabled, error, className}: DateFieldProps) {
+export function DateField({label, value, onChange, disabled, error, className, chooseLabel}: DateFieldProps) {
 	return (
 		<UiDateField
 			label={label}
+			chooseLabel={chooseLabel}
 			value={value}
 			onChange={onChange}
 			disabled={disabled}

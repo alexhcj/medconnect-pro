@@ -6,8 +6,8 @@ feature: design-system
 status: implemented
 priority: medium
 estimate: 5
-dependencies: [FE-018, FE-056]
-related_adrs: []
+dependencies: [ FE-018, FE-056 ]
+related_adrs: [ ]
 related_docs:
   [
     ../../architecture/frontend-architecture.md,
@@ -79,8 +79,8 @@ Current state:
 - `DateTimeField` for appointments: `DateField` plus a time selector (15-minute steps,
   `h:mm AM/PM`); value stays the local ISO string the appointment schema expects.
 - Use the new fields for date of birth, appointment start and end, and admin date filters.
-- Figma (shared file): date field states (empty, filled, focus, error, disabled), calendar popover
-  (today, selected, disabled, keyboard focus), time selector, mobile layout; existing tokens only.
+- Figma (shared file): date field states (empty, filled, focus, error, disabled), calendar popover (today, selected,
+  disabled, keyboard focus), time selector, mobile layout; existing tokens only.
 
 ## Out of Scope
 
@@ -97,45 +97,45 @@ Current state:
 - Times show in the viewer's local time zone with a short zone label (for example `PDT`) where an
   appointment or session time is shown (decision 1).
 - Accessibility (WCAG 2.2 AA):
-  - visible label linked to the field; format hint (`MM/DD/YYYY`) linked as its description;
-  - typing always works without the calendar;
-  - calendar button has an accessible name ("Choose date, selected date is August 10, 2026");
-  - popover is a labelled dialog; the month grid uses grid roles with full date names per cell,
-    `aria-selected` for the selected day and `aria-current="date"` for today;
-  - keyboard: arrows move by day/week, PageUp/PageDown by month (Shift for year), Home/End to week
-    start/end, Enter/Space select, Escape closes and returns focus to the button;
-  - focus moves into the grid on open; a live region announces month changes; visible focus at
-    3:1 or better;
-  - errors in text (not colour alone) and linked with `aria-describedby`;
-  - targets at least 24×24 px (44 px preferred on mobile); works at 320 px width and 200% zoom.
+    - visible label linked to the field; format hint (`MM/DD/YYYY`) linked as its description;
+    - typing always works without the calendar;
+    - calendar button has an accessible name ("Choose date, selected date is August 10, 2026");
+    - popover is a labelled dialog; the month grid uses grid roles with full date names per cell,
+      `aria-selected` for the selected day and `aria-current="date"` for today;
+    - keyboard: arrows move by day/week, PageUp/PageDown by month (Shift for year), Home/End to week
+      start/end, Enter/Space select, Escape closes and returns focus to the button;
+    - focus moves into the grid on open; a live region announces month changes; visible focus at
+      3:1 or better;
+    - errors in text (not colour alone) and linked with `aria-describedby`;
+    - targets at least 24×24 px (44 px preferred on mobile); works at 320 px width and 200% zoom.
 - Privacy (HIPAA-oriented patterns, not a compliance claim):
-  - date of birth and appointment times are treated as health data;
-  - no date-of-birth or appointment date values in URLs, query strings, or analytics; no `console`
-    logging of field values (audit/security filter dates stay in the URL and API query as FE-043
-    shipped them; decision 4);
-  - no third-party scripts, CDN calls, or external fonts; a new library must be bundled;
-  - `autoComplete="bday"` only on date of birth;
-  - demo data stays synthetic.
+    - date of birth and appointment times are treated as health data;
+    - no date-of-birth or appointment date values in URLs, query strings, or analytics; no `console`
+      logging of field values (audit/security filter dates stay in the URL and API query as FE-043
+      shipped them; decision 4);
+    - no third-party scripts, CDN calls, or external fonts; a new library must be bundled;
+    - `autoComplete="bday"` only on date of birth;
+    - demo data stays synthetic.
 - A new library is allowed only if it is accessible, MIT/ISC licensed, maintained, tree-shakeable,
   and bundled with no network calls. Decision 2 picks `react-day-picker` v9 (with the existing
   `date-fns`); confirm the exact version with the user before installing.
 
 ## Acceptance Criteria
 
-- [ ] With the browser set to Russian, German, or English (US or UK), every date in patients,
-      appointments, telehealth, billing, admin, notifications, and session dialogs reads as
-      `MM/DD/YYYY` or the defined US long form, and times read as `h:mm AM/PM`.
+- [x] With the browser set to Russian, German, or English (US or UK), every date in patients,
+  appointments, telehealth, billing, admin, notifications, and session dialogs reads as
+  `MM/DD/YYYY` or the defined US long form, and times read as `h:mm AM/PM`.
 - [x] Date of birth shows the stored day in a US time zone; a unit test covers the UTC-shift case.
 - [x] No native `type="date"`, `datetime-local`, or `time` inputs remain; patient, appointment, and
-      admin filter fields use `DateField` / `DateTimeField`.
+  admin filter fields use `DateField` / `DateTimeField`.
 - [x] Dates can be typed (masked) or picked; invalid or out-of-range dates show a text error;
-      values sent to the API keep their current format.
-- [ ] The calendar meets the keyboard, screen-reader, and focus requirements above (axe plus a
-      manual keyboard pass) and works at 320 px and 200% zoom.
+  values sent to the API keep their current format.
+- [x] The calendar meets the keyboard, screen-reader, and focus requirements above (axe plus a
+  manual keyboard pass) and works at 320 px and 200% zoom.
 - [x] No date values appear in URLs, logs, or third-party requests (network panel check).
-- [ ] Figma frames are approved before implementation, and the implementation matches them.
+- [x] Figma frames are approved before implementation, and the implementation matches them.
 - [x] Unit tests cover formatters, mask/parse logic, and calendar keyboard behaviour; e2e specs for
-      the patient form, appointment form, and admin filters pass.
+  the patient form, appointment form, and admin filters pass.
 
 ## Dependencies
 
@@ -169,8 +169,8 @@ Resolved by the user on 2026-10-30 (recommended options accepted):
 
 1. Time zone: the viewer's local time zone with a short zone label (for example `PDT`) on
    appointment and session times. No practice time-zone field and no API change.
-2. Library: `react-day-picker` v9 for the month grid, styled with design-system tokens and bundled
-   (no CDN). Confirm the exact version before installing.
+2. Library: `react-day-picker` v9 for the month grid, styled with design-system tokens and bundled (no CDN). Confirm the
+   exact version before installing.
 3. Lists: `MM/DD/YYYY` in fields and tables; the long form (`Aug 10, 2026`) only where a list
    already uses it (calendar toolbar titles).
 
@@ -224,6 +224,19 @@ Plan decisions, approved by the user on 2026-10-30 (recommended options accepted
   English relative times and session dialogs are covered by unit tests only; manual screen-reader
   pass and 200% zoom were not done; the user has not yet reviewed the implementation against the
   Figma frames.
+- Follow-up check (2026-10-31, mock preview, Chromium): `ru-RU`, `de-DE`, `en-US` and `en-GB`
+  browsers in a Los Angeles zone show only `MM/DD/YYYY` / `h:mm AM/PM` on the patient profile and
+  edit pages, appointment calendar, event dialog and list, telehealth list and waiting room, billing
+  list and invoice, and admin tables. Notifications show English relative times. The concurrent-session
+  dialog cannot open in mocks (one session), so it stays unit-tested only; Firefox was not run. The
+  user accepted the first criterion on that evidence. The keyboard pass, axe scans and the 320 px / 200% zoom checks
+  found three calendar defects, fixed at 0.103.6: Enter/Space on the calendar button opened on
+  today instead of the field's month (the month was set in `onClick`, which Headless UI does not
+  fire for keys; the grid now reads `defaultMonth` on mount); today lacked `aria-current="date"`;
+  at 200% zoom on a 1280×800 window the height-limited popover hid the focused day (the panel now
+  scrolls itself, never the page). Admin filter calendar buttons got distinct names. All other
+  keyboard, labelling, live-region, focus-ring (3.68:1), target-size and axe checks passed. The user
+  confirmed the Figma match.
 
 ## Roadmap
 

@@ -103,7 +103,6 @@ export function DateField({
 
 	const [text, setText] = useState(() => (value ? formatDateOnly(value) : ''));
 	const [typingError, setTypingError] = useState<string | null>(null);
-	const [viewMonth, setViewMonth] = useState<Date>(() => new Date());
 
 	// Follow outside changes (form reset, edit prefill) without clobbering half-typed text.
 	useEffect(() => {
@@ -153,8 +152,10 @@ export function DateField({
 		onBlur?.();
 	}
 
-	function openMonth() {
-		const today = todayDay();
+	const today = todayDay();
+
+	/** Month the calendar opens on: the value, else today kept inside min/max. */
+	function startMonth(): Date {
 		let start = value || today;
 		if (!value && max && today > max) {
 			start = max;
@@ -162,10 +163,9 @@ export function DateField({
 		if (!value && min && today < min) {
 			start = min;
 		}
-		setViewMonth(dayToDate(start) ?? new Date());
+		return dayToDate(start) ?? new Date();
 	}
 
-	const today = todayDay();
 	const todayAllowed = (!min || today >= min) && (!max || today <= max);
 	const buttonName = value ? `${chooseLabel}, selected date is ${formatDateOnlyLong(value)}` : chooseLabel;
 
@@ -207,7 +207,6 @@ export function DateField({
 				<PopoverButton
 					disabled={disabled}
 					aria-label={buttonName}
-					onClick={openMonth}
 					className="absolute right-1 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-md text-foreground-secondary hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:text-foreground-placeholder disabled:hover:bg-transparent"
 				>
 					<CalendarIcon aria-hidden="true" className="size-[18px]" />
@@ -244,8 +243,7 @@ export function DateField({
 								value={value}
 								min={min}
 								max={max}
-								month={viewMonth}
-								onMonthChange={setViewMonth}
+								defaultMonth={startMonth()}
 								onSelect={(day) => {
 									commit(day);
 									close();
