@@ -154,7 +154,7 @@ hosted on AWS.
 
 ## Development status
 
-Application version **0.103.4**. Milestones and sequencing:
+Application version **0.103.5**. Milestones and sequencing:
 [`docs/roadmap/release-roadmap.md`](./docs/roadmap/release-roadmap.md). Next: the 1.0.0 Render
 demo release
 ([INFRA-021](./docs/tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)), after M20 closes.

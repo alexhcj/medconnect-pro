@@ -126,6 +126,21 @@ describe('DateField', () => {
 		expect(within(dialog).getByRole('status')).toHaveTextContent('August 2026');
 	});
 
+	it('focuses the day without scrolling the page', async () => {
+		const focus = vi.spyOn(HTMLElement.prototype, 'focus');
+		const user = userEvent.setup();
+		render(<Harness initial="2026-08-10" />);
+
+		await user.click(screen.getByRole('button', {name: /Choose date/}));
+		const dialog = await screen.findByRole('dialog', {name: 'Choose date of birth'});
+		const selected = within(dialog).getByRole('button', {name: /August 10th, 2026|August 10, 2026/});
+
+		const dayCalls = focus.mock.calls.filter((_, index) => focus.mock.contexts[index] === selected);
+		expect(dayCalls.length).toBeGreaterThan(0);
+		expect(dayCalls.every(([options]) => options?.preventScroll === true)).toBe(true);
+		focus.mockRestore();
+	});
+
 	it('picks a day with the keyboard and returns focus to the calendar button', async () => {
 		const onValue = vi.fn();
 		const user = userEvent.setup();

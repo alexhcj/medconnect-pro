@@ -22,12 +22,16 @@ export function dateToDay(date: Date): string {
 	return `${String(date.getFullYear()).padStart(4, '0')}-${month}-${day}`;
 }
 
-/** Lets the grid's roving focus (arrows, PageUp/PageDown, Home/End) move DOM focus to the day. */
+/**
+ * Lets the grid's roving focus (arrows, PageUp/PageDown, Home/End) move DOM focus to the day.
+ * `preventScroll`: on open the panel is focused before its anchor position is applied, so a plain
+ * `focus()` scrolls the page to where the panel briefly sits (the top of a long page).
+ */
 function CalendarDayButton({day, modifiers, className, ...props}: DayButtonProps) {
 	const ref = useRef<HTMLButtonElement>(null);
 	useEffect(() => {
 		if (modifiers.focused) {
-			ref.current?.focus();
+			ref.current?.focus({preventScroll: true});
 		}
 	}, [modifiers.focused]);
 	return (

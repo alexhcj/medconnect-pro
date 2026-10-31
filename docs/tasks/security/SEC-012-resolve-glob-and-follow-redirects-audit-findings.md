@@ -69,7 +69,7 @@ findings in packages that PR did not touch:
 - [x] `npm run lint:api`, `type-check:api`, `type-check:web`, `type-check:marketing` pass
 - [x] `npm run test:api` passes against the local compose Postgres
 - [x] `npm run test:web` passes
-- [ ] The `ci` workflow is green on PR #10
+- [x] The `ci` workflow is green on PR #10
 
 ## Dependencies
 
@@ -103,4 +103,4 @@ Runtime dependency change with no contract change: PATCH bump (0.103.3 -> 0.103.
   `lint:api`, `type-check:api`, `type-check:web`, `type-check:marketing` pass; `test:api` 73 files,
   616 tests (local compose Postgres, migration apply and revert included); `test:web` 111 files,
   743 tests. `npm run docs:marketing-sync` passed.
-- CI: pending the PR #10 run after push.
+- CI: `ci` green on PR #10 after the push (owner, 2026-10-31).

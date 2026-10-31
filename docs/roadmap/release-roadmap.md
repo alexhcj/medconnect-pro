@@ -98,8 +98,9 @@ feedback on sign-in) shipped at 0.103.0;
 screenshot, two-row calendar event) shipped at 0.103.1. The M21 close-out (About board copy, four
 recaptured screenshots) shipped at 0.103.2; README and marketing security/workflow card sync shipped at 0.103.3.
 [SEC-012](../tasks/security/SEC-012-resolve-glob-and-follow-redirects-audit-findings.md) (production
-audit findings in `glob`, `minimatch` and `follow-redirects`) shipped at 0.103.4 as a standalone task
-(latest release 0.103.4).
+audit findings in `glob`, `minimatch` and `follow-redirects`) shipped at 0.103.4 as a standalone task.
+The date picker scroll fix (opening the calendar no longer jumps long pages to the top) shipped at
+0.103.5 (latest release 0.103.5).
 [INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md) moved out of M21 on 2026-10-31 and is
 pending as the standalone 1.0.0 release step;
 [FE-061](../tasks/frontend/FE-061-input-border-contrast-token.md) and

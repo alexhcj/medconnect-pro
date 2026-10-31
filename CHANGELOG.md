@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.103.5] - 2026-10-31
+
+### Fixed
+
+- Date picker (FE-057): opening the calendar no longer scrolls the page to the top. The day button
+  took focus before the popover was positioned, which jumped long pages such as the audit and
+  security event filters on `/dashboard/admin`; it now focuses with `preventScroll`.
+
 ## [0.103.4] - 2026-10-31
 
 ### Fixed
