@@ -139,8 +139,11 @@ flowchart LR
 ```
 
 `npm run dev:mocks` runs the web app on mock fixtures with no API. `dev:real` runs
-it against Nest and PostgreSQL. Detail: [`docs/architecture/`](./docs/architecture/) (frontend,
-backend, API, data, security, infrastructure) and [`docs/decisions/`](./docs/decisions/) (ADRs).
+it against Nest and PostgreSQL. Detail: the [architecture overview](./docs/architecture/README.md)
+(system map, current vs planned, links to the frontend, backend, API, data, security and
+infrastructure docs), the [request lifecycle](./docs/architecture/request-lifecycle.md) (one
+request from browser to database and back), and the [ADR index](./docs/decisions/README.md)
+(each decision and its main tradeoff).
 
 Amplify Hosting and ECS/Fargate exist as infrastructure-as-code for a later operator apply
 ([INFRA-014](./docs/tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)).
@@ -385,8 +388,8 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | [`docs/00-project-spec.md`](./docs/00-project-spec.md) | Project identity, goals, and constraints |
 | [`docs/product/`](./docs/product/README.md) | Statused capability catalog (what the demo is today) |
 | [`docs/marketing/capability-matrix.md`](./docs/marketing/capability-matrix.md) | Public-claim ceiling |
-| [`docs/architecture/`](./docs/architecture/) | System structure |
-| [`docs/decisions/`](./docs/decisions/) | Architectural decision records |
+| [`docs/architecture/`](./docs/architecture/README.md) | System overview, request lifecycle, area docs |
+| [`docs/decisions/`](./docs/decisions/README.md) | Architectural decision records and index |
 | [`docs/contracts/`](./docs/contracts/) | API, identity, and environment contracts |
 | [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot (historical) |
 | [`docs/roadmap/release-roadmap.md`](./docs/roadmap/release-roadmap.md) | Milestones, current position, and 1.0.0 plan |

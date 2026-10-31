@@ -254,3 +254,4 @@ the web app's forms, dates, select lists and inputs in line with the same design
 - INFRA-021 — 1.0.0 demo release (moved out of M21 on 2026-10-31; runs after M20 and M21 close)
 - FE-061 — Input border contrast token (after 1.0.0; FE-056 follow-up)
 - QA-013 — M21 verification sweep: date locales, picker e2e, manual accessibility (after 1.0.0; test only)
+- INFRA-022 — Architecture overview, request lifecycle and ADR index (shipped; docs only, no version bump)
