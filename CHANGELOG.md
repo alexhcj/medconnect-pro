@@ -6,6 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.103.2] - 2026-10-31
+
+### Changed
+
+- M21 closed at 0.103.1. The `/about` implementation-state board moves the design refresh to
+  Shipped, shows the preview lanes pilot as In progress, and lists post-1.0 accessibility
+  follow-ups under Up next after the 1.0.0 demo release.
+- Marketing screenshots `patients.png`, `admin.png`, `billing.png` and `telehealth.png` recaptured
+  with `npm run screenshots:marketing` to show the M21 select lists, 40 px inputs and US date/time
+  format. The other four images were unchanged.
+- INFRA-021 (1.0.0 demo release) moved out of M21 as a standalone release step. FE-061 (input border
+  contrast token) and QA-013 (M21 verification sweep) added as standalone tasks after 1.0.0.
+
 ## [0.103.1] - 2026-10-31
 
 ### Fixed

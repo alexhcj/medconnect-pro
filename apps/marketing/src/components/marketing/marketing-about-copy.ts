@@ -75,14 +75,19 @@ export const MARKETING_ABOUT_STATE = {
 					title: 'Interim demo hosting',
 					description: 'A synthetic demo is hosted on Render.',
 				},
+				{
+					title: 'Design refresh',
+					description:
+						'A refreshed homepage, status badges, an architecture page, and consistent forms, dates and select lists in the web app.',
+				},
 			],
 		},
 		{
 			label: 'In progress',
 			items: [
 				{
-					title: 'Marketing design refresh',
-					description: 'A refreshed homepage, status badges and page layouts for this site.',
+					title: 'Preview lanes pilot',
+					description: 'One real pull request per delivery lane to confirm that previews stay isolated.',
 				},
 			],
 		},
@@ -91,7 +96,11 @@ export const MARKETING_ABOUT_STATE = {
 			items: [
 				{
 					title: '1.0.0 demo release',
-					description: 'The first tagged demo release on Render, after the marketing refresh.',
+					description: 'The first tagged demo release on Render, after the preview lanes pilot.',
+				},
+				{
+					title: 'Accessibility follow-ups',
+					description: 'Higher-contrast input borders and wider browser and screen-reader checks, after 1.0.0.',
 				},
 			],
 		},

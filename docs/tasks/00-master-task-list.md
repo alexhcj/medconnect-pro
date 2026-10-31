@@ -120,7 +120,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - INFRA-011 — Production delivery workflow and rollback
 - INFRA-012 — GitHub v1.0.0 release-notes template
 - INFRA-014 — AWS account setup and hosted first-apply
-- INFRA-013 — AWS production release readiness (post-1.0; retargeted 2026-10-28, 1.0.0 is INFRA-021)
+- INFRA-013 — AWS production release readiness (post-1.0; retargeted 2026-10-28, 1.0.0 is INFRA-021, standalone)
 - INFRA-015 — Interim Render public demo (does not close M9)
 - INFRA-016 — Render marketing static site (does not close M9)
 - INFRA-017 — Demo presentation pack (M18; does not close M9)
@@ -229,7 +229,7 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 - FE-048 — Preview environment banner (optional; shipped at 0.97.2)
 - QA-010 — Preview lanes pilot
 
-## Product (M21, in progress)
+## Product (M21, closed at 0.103.1)
 
 Marketing and web app design refresh, the last design pass before 1.0.0. Then 1.0.0 ships as the Render demo;
 AWS production (INFRA-013) moves to a later 1.x release. Does not close M9. FE-056, FE-057 and FE-058 bring
@@ -246,9 +246,11 @@ the web app's forms, dates, select lists and inputs in line with the same design
 - FE-058 — Design-system select list and input parity (shipped at 0.102.0; `SelectField` replaces native selects, one 40 px style for every input type)
 - FE-059 — Demo account picker (shipped at 0.103.0; one-tap fill of the sign-in form, visible copy feedback, MFA "Fill code")
 - FE-060 — Hero chip fit, appointments screenshot, two-row calendar event (shipped at 0.103.1)
-- INFRA-021 — 1.0.0 demo release
 
 ## Standalone (no milestone)
 
 - FE-049 — API status indicator (shipped at 0.98.0; wakes the sleeping free-tier API and shows live status on `/login`)
 - FE-050 — Auth pages marketing logo link (shipped at 0.99.0; logo link back to the marketing site on sign-in, register, and email-verification)
+- INFRA-021 — 1.0.0 demo release (moved out of M21 on 2026-10-31; runs after M20 and M21 close)
+- FE-061 — Input border contrast token (after 1.0.0; FE-056 follow-up)
+- QA-013 — M21 verification sweep: date locales, picker e2e, manual accessibility (after 1.0.0; test only)

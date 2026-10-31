@@ -31,7 +31,7 @@ plane:
 # INFRA-013 — AWS production release readiness (post-1.0)
 
 > **Retargeted 2026-10-28 (user decision).** 1.0.0 is now the Render demo release,
-> [INFRA-021](INFRA-021-v1.0.0-demo-release.md) (M21). This task becomes the later 1.x release
+> [INFRA-021](INFRA-021-v1.0.0-demo-release.md) (standalone, after M21). This task becomes the later 1.x release
 > that brings up AWS production. Read "1.0.0" below as "the AWS production release": bump as a
 > MINOR per ADR-007, use the INFRA-012 notes template, and keep the filename and Plane id.
 

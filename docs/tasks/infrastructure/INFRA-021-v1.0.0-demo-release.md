@@ -79,3 +79,8 @@ release and no longer gates 1.0.0.
 
 Run `npm run docs:marketing-sync`, confirm `ci` is green, and run the smoke checks against the
 Render demo.
+
+## Roadmap
+
+Standalone release step. Moved out of M21 by the M21 close audit on 2026-10-31: it runs after M20
+and M21 are closed, so it cannot close inside M21. FE-061 and QA-013 follow it.

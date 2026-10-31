@@ -8,7 +8,7 @@ matrix.
 This file is a **claim view** of the registry plus infrastructure rows that are not product
 modules (CI, hosted deploy). If a row and its catalog file disagree, fix both.
 
-Last synced release: 0.103.1
+Last synced release: 0.103.2
 
 Keep the line above equal to the root `package.json` version whenever a task ships or a milestone
 closes. `npm run docs:marketing-sync` fails when it drifts. After a claim-affecting release, also
@@ -50,9 +50,10 @@ stay dashed and labelled "Planned" until their rows change.
 
 The `/about` "Implementation state" board (`MARKETING_ABOUT_STATE`, FE-054) lists Shipped, In
 progress and Up next items plus one Paused line. **Shipped** items must be allowed by a row above
-(Application demo, Security patterns, PR previews and delivery lanes, interim Render demo hosting).
+(Application demo, Security patterns, PR previews and delivery lanes, interim Render demo hosting,
+and the design refresh: marketing pages plus web-app forms, dates and select lists, shipped in M21).
 **In progress** and **Up next** may name roadmap work that is not a capability row, such as the
-marketing design refresh and the 1.0.0 demo release, from
+preview lanes pilot, the 1.0.0 demo release and post-1.0 accessibility follow-ups, from
 [release-roadmap.md](../roadmap/release-roadmap.md). Those items are not shipped claims. Never
 move one to Shipped before it ships, and never use task IDs. AWS production hosting stays on the
 Paused line until the Cloud deploy row changes.
