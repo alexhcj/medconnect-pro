@@ -91,7 +91,7 @@ describe('MarketingSecurity', () => {
 		render(<MarketingSecurity />);
 
 		expect(screen.getByText(/It is not HIPAA certified/)).toBeInTheDocument();
-		expect(screen.getByText(/Not production OAuth or OIDC/)).toBeInTheDocument();
+		expect(screen.getByText(/Demo OIDC \+ PKCE \(Google or Fake\)\. Not a production IdP\./)).toBeInTheDocument();
 		expect(screen.getByText(MARKETING_SECURITY_AUTHORIZATION.note)).toBeInTheDocument();
 		expect(screen.getByText(/Do not describe mock identity as production OAuth/)).toBeInTheDocument();
 		expect(screen.getByText(/no HIPAA certification claim/)).toBeInTheDocument();

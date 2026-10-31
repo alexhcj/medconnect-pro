@@ -57,7 +57,8 @@ export const MARKETING_HOME_WORKFLOW = {
 	steps: [
 		{
 			title: 'Sign in with mock identity',
-			description: 'Use the existing /login mock IdP. Not production OAuth.',
+			description:
+				'Pick a synthetic demo account on /login and sign in through the mock IdP. Not production OAuth.',
 		},
 		{
 			title: 'Work a patient chart',
@@ -70,7 +71,7 @@ export const MARKETING_HOME_WORKFLOW = {
 		{
 			title: 'Review invoices and audit',
 			description:
-				'Billing invoices are real demo data; demo payments use an in-process adapter.',
+				'Synthetic invoices with demo payments through an in-process adapter. Admins check the audit viewer and security events.',
 		},
 	],
 } as const;
@@ -120,10 +121,7 @@ export const MARKETING_HOME_SECURITY_PRINCIPLES = {
 	intro: MARKETING_SECURITY_HERO.body,
 	link: {label: 'Security', href: '/security'},
 	items: [
-		{
-			title: 'Mock identity',
-			description: 'Demo sessions via the existing mock IdP. Not production OAuth or OIDC.',
-		},
+		securityControl('Mock identity'),
 		{
 			title: 'RBAC and tenant isolation',
 			description: 'Role and resource checks as implemented engineering patterns.',

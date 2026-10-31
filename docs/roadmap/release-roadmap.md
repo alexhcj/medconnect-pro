@@ -96,7 +96,7 @@ and one 40 px input style) shipped at 0.102.0;
 feedback on sign-in) shipped at 0.103.0;
 [FE-060](../tasks/frontend/FE-060-hero-screenshot-and-calendar-event-polish.md) (hero chip fit, appointments
 screenshot, two-row calendar event) shipped at 0.103.1. The M21 close-out (About board copy, four
-recaptured screenshots) shipped at 0.103.2 (latest release 0.103.2).
+recaptured screenshots) shipped at 0.103.2; README and marketing security/workflow card sync shipped at 0.103.3 (latest release 0.103.3).
 [INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md) moved out of M21 on 2026-10-31 and is
 pending as the standalone 1.0.0 release step;
 [FE-061](../tasks/frontend/FE-061-input-border-contrast-token.md) and

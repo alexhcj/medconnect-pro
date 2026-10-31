@@ -25,8 +25,8 @@ export const MARKETING_SECURITY_CONTROLS = {
 		{
 			title: 'Mock identity',
 			description:
-				'Demo sessions via the existing mock IdP, with opaque bearer sessions. Not production OAuth or OIDC.',
-			detail: 'Refresh-token rotation and idle expiry are in the demo session model.',
+				'Mock IdP sessions with a labeled mock MFA challenge. Demo OIDC + PKCE (Google or Fake). Not a production IdP.',
+			detail: 'Refresh-token rotation, idle expiry, demo rate limits on sign-in, and review of your other sessions.',
 			status: 'Implemented pattern',
 			link: enforcedIn('sign-in'),
 		},

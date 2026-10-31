@@ -6,6 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.103.3] - 2026-10-31
+
+### Changed
+
+- Marketing "Mock identity" control on `/security` and the homepage (now shared copy) names the
+  labeled mock MFA and demo OIDC + PKCE (Google or Fake) instead of "Not production OAuth or OIDC".
+  Its detail adds demo sign-in rate limits and review of other sessions.
+- Homepage workflow cards: step 1 mentions picking a synthetic demo account on `/login`; step 4
+  now covers the audit viewer and security events, not only invoices.
+- README: development status brought from 0.91.0 to 0.103.3 (M18 to M21, 1.0.0 next), architecture
+  diagram adds demo OIDC and Daily plus mock versus live mode, deployment text no longer contradicts
+  the Render demo, and the documentation table links the release roadmap.
+
 ## [0.103.2] - 2026-10-31
 
 ### Changed
