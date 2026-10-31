@@ -49,8 +49,8 @@ this fits). CI mirror: `.github/workflows/ci.yml`. Hosted smoke: `docs/workflows
 2. **Version and docs lockstep**: these must name the same version: root `package.json`, the
    `package-lock.json` root, the top `CHANGELOG.md` entry (read the top entry only), the
    `docs/marketing/capability-matrix.md` "Last synced release" line, the
-   `docs/roadmap/release-roadmap.md` **Current position** paragraph and the `AGENTS.md` "Current:"
-   line. Pre-bump: the target must be one valid increment from the current version
+   `docs/roadmap/release-roadmap.md` **Current position** paragraph, the `AGENTS.md` "Current:"
+   line and the `README.md` "Development status" section (version and milestone states). Pre-bump: the target must be one valid increment from the current version
    (`.claude/rules/versioning.md`); `1.0.0` is MANUAL "needs your explicit approval" (ADR-007,
    INFRA-021). Post-bump: every tracker must already say the target. List pending tasks in
    `docs/tasks/00-master-task-list.md` that block the target (for 1.0.0: INFRA-021 dependencies,
