@@ -80,7 +80,7 @@ export function MarketingDemo() {
 					body={MARKETING_DEMO_CTA.body}
 					primaryCta={MARKETING_DEMO_CTA.primaryCta}
 					secondaryCta={MARKETING_DEMO_CTA.secondaryCta}
-					stackUntilLg
+					rowFrom="lg"
 				/>
 			</div>
 		</div>

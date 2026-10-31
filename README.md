@@ -125,14 +125,25 @@ flowchart LR
   Web["Next.js application"]
   Api["NestJS API"]
   Pg["PostgreSQL plus RLS"]
+  Idp["Demo OIDC: Google or Fake (off on the public demo)"]
+  Daily["Daily media (when configured)"]
   Ci["GitHub Actions CI"]
   Marketing -->|"Sign-in link"| Web
-  Web --> Api
+  Web -->|"HttpOnly session cookie"| Api
   Api --> Pg
+  Api -->|"Authorization Code + PKCE"| Idp
+  Api -->|"Media token"| Daily
   Ci --> Marketing
   Ci --> Web
   Ci --> Api
 ```
+
+`npm run dev:mocks` runs the web app on mock fixtures with no API. `dev:real` runs
+it against Nest and PostgreSQL. Detail: the [architecture overview](./docs/architecture/README.md)
+(system map, current vs planned, links to the frontend, backend, API, data, security and
+infrastructure docs), the [request lifecycle](./docs/architecture/request-lifecycle.md) (one
+request from browser to database and back), and the [ADR index](./docs/decisions/README.md)
+(each decision and its main tradeoff).
 
 Amplify Hosting and ECS/Fargate exist as infrastructure-as-code for a later operator apply
 ([INFRA-014](./docs/tasks/infrastructure/INFRA-014-aws-account-setup-and-hosted-first-apply.md)).
@@ -143,8 +154,10 @@ hosted on AWS.
 
 ## Development status
 
-Application version **0.91.0**. Snapshot:
-[`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md).
+Application version **0.103.5**. Milestones and sequencing:
+[`docs/roadmap/release-roadmap.md`](./docs/roadmap/release-roadmap.md). Next: the 1.0.0 Render
+demo release
+([INFRA-021](./docs/tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)), after M20 closes.
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).
 - **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** — AWS account setup
@@ -161,13 +174,21 @@ Application version **0.91.0**. Snapshot:
   [FE-032](./docs/tasks/frontend/FE-032-claims-envelope-list.md)). Hosted Stripe/ACH, claims
   submission / EDI 837, and invoice-create UI remain later.
 - **M14–M17 shipped** (OAuth/OIDC demo, API rate limiting, live telehealth workflow, and security
-  maturity through QA-005). **M18 — Interview Demo Readiness** is next and **pending** (QA-006,
-  DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017 shipped; QA-007 pending). It does not close M9.
-  Local product work does not wait on AWS.
+  maturity through QA-005).
+- **M18 — Interview Demo Readiness** closed at 0.91.0. It does not close M9. Local product work
+  does not wait on AWS.
+- **M19 — Polish and list normalization** closed at 0.96.3: paged and bounded lists for
+  patients, invoices, claims, users, audit and security events, plus billing design parity.
+- **M20 — PR previews and delivery lanes** is in progress: manual Render PR previews for the
+  marketing site and web app are shipped; QA-010 is pending.
+- **M21 — Marketing and web app design refresh** closed at 0.103.1: refreshed marketing pages
+  (including `/architecture` and the `/about` roadmap board), app form-surface parity, US date
+  format with an accessible date picker, design-system select lists, a one-tap demo account
+  picker on `/login`, and repeatable screenshot capture (`npm run screenshots:marketing`).
 
-Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, Render PR
-previews, in-session
-chat/recording, hosted payments and claims, Redis, and HIPAA certification (out of scope for this demo).
+Deferred relative to the complete-product vision: production OAuth 2.0 / OIDC + PKCE, in-session
+chat/recording, hosted payments and claims, Redis, AWS production hosting, and HIPAA certification
+(out of scope for this demo).
 
 ## Deployment / demo
 
@@ -204,9 +225,10 @@ Local development stays available:
 - Live Nest: Compose PostgreSQL, migrations, `seed:mock-identity`, `dev:api`, `dev:real`.
   Commands are in [Getting started](#getting-started).
 
-CI quality gates already run on pull requests and `main`. Preview/production topology is
-[ADR-012](./docs/decisions/ADR-012-deployment-topology.md). Operator AWS first-apply, Amplify
-console connect, and the GitHub `production` environment remain required before a hosted demo
+CI quality gates run on pull requests and `main`. Manual Render PR previews are described in
+[ADR-019](./docs/decisions/ADR-019-render-pr-previews.md). The AWS topology
+([ADR-012](./docs/decisions/ADR-012-deployment-topology.md)) still needs an operator first apply,
+Amplify console connect, and the GitHub `production` environment before an AWS-hosted environment
 exists. All environments, if applied later, stay synthetic/demo only.
 
 ## Repository layout
@@ -366,10 +388,11 @@ API contracts and Postman: [docs/workflows/api-contract-workflow.md](./docs/work
 | [`docs/00-project-spec.md`](./docs/00-project-spec.md) | Project identity, goals, and constraints |
 | [`docs/product/`](./docs/product/README.md) | Statused capability catalog (what the demo is today) |
 | [`docs/marketing/capability-matrix.md`](./docs/marketing/capability-matrix.md) | Public-claim ceiling |
-| [`docs/architecture/`](./docs/architecture/) | System structure |
-| [`docs/decisions/`](./docs/decisions/) | Architectural decision records |
+| [`docs/architecture/`](./docs/architecture/README.md) | System overview, request lifecycle, area docs |
+| [`docs/decisions/`](./docs/decisions/README.md) | Architectural decision records and index |
 | [`docs/contracts/`](./docs/contracts/) | API, identity, and environment contracts |
-| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot; M9 paused; M10–M17 shipped; M18 pending |
+| [`docs/roadmap/post-mvp-baseline.md`](./docs/roadmap/post-mvp-baseline.md) | M0–M8 shipped snapshot (historical) |
+| [`docs/roadmap/release-roadmap.md`](./docs/roadmap/release-roadmap.md) | Milestones, current position, and 1.0.0 plan |
 
 Process prompts, tasks, and remaining workflows are linked from
 [`docs/README.md`](./docs/README.md). Plane can mirror task metadata; Git remains canonical for

@@ -120,7 +120,7 @@ Milestone mapping lives in [docs/roadmap/release-roadmap.md](../roadmap/release-
 - INFRA-011 — Production delivery workflow and rollback
 - INFRA-012 — GitHub v1.0.0 release-notes template
 - INFRA-014 — AWS account setup and hosted first-apply
-- INFRA-013 — v1.0.0 production release readiness
+- INFRA-013 — AWS production release readiness (post-1.0; retargeted 2026-10-28, 1.0.0 is INFRA-021, standalone)
 - INFRA-015 — Interim Render public demo (does not close M9)
 - INFRA-016 — Render marketing static site (does not close M9)
 - INFRA-017 — Demo presentation pack (M18; does not close M9)
@@ -229,7 +229,30 @@ PR previews and delivery lanes on the Render demo. Frontend previews only, web i
 - FE-048 — Preview environment banner (optional; shipped at 0.97.2)
 - QA-010 — Preview lanes pilot
 
+## Product (M21, closed at 0.103.1)
+
+Marketing and web app design refresh, the last design pass before 1.0.0. Then 1.0.0 ships as the Render demo;
+AWS production (INFRA-013) moves to a later 1.x release. Does not close M9. FE-056, FE-057 and FE-058 bring
+the web app's forms, dates, select lists and inputs in line with the same design system.
+
+- QA-012 — Repeatable marketing screenshot capture (shipped at 0.99.2; `npm run screenshots:marketing`)
+- FE-051 — Marketing design-system extension (shipped at 0.99.3; Badge, MarketingBand, MarketingSplitSection, MarketingLinkCard)
+- FE-052 — Homepage refresh (shipped at 0.99.4; homepage bands, hero visual, module links, slider, security and role cards)
+- FE-053 — Status vs link affordance (shipped at 0.99.5; tone-mapped status badges, whole-card `/demo` route links)
+- FE-054 — About: implementation state as a roadmap board (shipped at 0.99.6; Shipped / In progress / Up next lists and a Paused line)
+- FE-055 — Architecture page (shipped at 0.100.0; system map with list fallback, request flow, current vs planned, sixth top-nav item)
+- FE-056 — App page surface parity (shipped at 0.100.1; patient and appointment forms, waiting room, and invoice detail on the white bordered card)
+- FE-057 — US date format and accessible date picker (shipped at 0.101.0; one `en-US` date/time format app-wide, design-system date field and calendar)
+- FE-058 — Design-system select list and input parity (shipped at 0.102.0; `SelectField` replaces native selects, one 40 px style for every input type)
+- FE-059 — Demo account picker (shipped at 0.103.0; one-tap fill of the sign-in form, visible copy feedback, MFA "Fill code")
+- FE-060 — Hero chip fit, appointments screenshot, two-row calendar event (shipped at 0.103.1)
+
 ## Standalone (no milestone)
 
 - FE-049 — API status indicator (shipped at 0.98.0; wakes the sleeping free-tier API and shows live status on `/login`)
 - FE-050 — Auth pages marketing logo link (shipped at 0.99.0; logo link back to the marketing site on sign-in, register, and email-verification)
+- INFRA-021 — 1.0.0 demo release (moved out of M21 on 2026-10-31; runs after M20 and M21 close)
+- FE-061 — Input border contrast token (after 1.0.0; FE-056 follow-up)
+- QA-013 — M21 verification sweep: date locales, picker e2e, manual accessibility (after 1.0.0; test only)
+- INFRA-022 — Architecture overview, request lifecycle and ADR index (shipped; docs only, no version bump)
+- SEC-012 — Resolve glob and follow-redirects audit findings (shipped at 0.103.4)

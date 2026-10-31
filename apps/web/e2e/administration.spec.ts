@@ -1,5 +1,6 @@
 import {expect, test, type Page} from '@playwright/test';
 import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {selectField} from './helpers/select-fields';
 
 async function openAdministration(page: Page) {
 	await page.getByRole('button', {name: 'Open navigation'}).click();
@@ -25,9 +26,7 @@ test.describe('Administration', () => {
 		await expect(users).toContainText('practice.admin@example.test');
 		await expect(users).toContainText('PRACTICE_ADMIN');
 		await expect(users).toContainText('provider@example.test');
-		await expect(
-			page.getByRole('combobox', {name: 'Role for provider@example.test'}),
-		).toHaveValue('PROVIDER');
+		await expect(selectField(page, 'Role for provider@example.test')).toHaveText('PROVIDER');
 
 		const events = page.getByRole('table', {name: 'Audit events'});
 		await expect(events).toContainText('auth.login.succeeded');
@@ -61,7 +60,8 @@ test.describe('Administration', () => {
 		await page.reload();
 		await expect(page.getByText(/Showing 26–50 of \d+ events/)).toBeVisible();
 
-		await page.getByRole('combobox', {name: 'Action'}).first().selectOption('patient.accessed');
+		await selectField(page, 'Action').first().click();
+		await page.getByRole('listbox').getByRole('option', {name: 'patient.accessed', exact: true}).click();
 		await expect(page).toHaveURL(/auditAction=patient\.accessed/);
 		await expect(page).not.toHaveURL(/auditPage=/);
 		await expect(page.getByText(/Showing 1–\d+ of \d+ events/).first()).toBeVisible();

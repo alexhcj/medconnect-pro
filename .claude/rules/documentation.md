@@ -45,7 +45,9 @@ When a task ships (or a milestone changes state), update all of these in the sam
 5. `CHANGELOG.md` and the root version (see versioning rules).
 6. `docs/marketing/capability-matrix.md` "Last synced release" line (equal to the root version), plus
    the matrix rows, `docs/product/` rows and `apps/marketing/src/components/marketing/*-copy.ts` when
-   a public claim changed. Run `npm run docs:marketing-sync`.
+   a public claim changed. When a milestone changes state, also update the `/about` roadmap board
+   (`MARKETING_ABOUT_STATE` in `marketing-about-copy.ts`: Shipped / In progress / Up next items and
+   the Paused line; capability-level names, never task IDs). Run `npm run docs:marketing-sync`.
 
 Milestone states are proposed, in progress, shipped, closed. Only the user declares a milestone
 closed. `docs-sync-checker` verifies these at the end of `/implement-task`.

@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {InvoiceList} from '@/components/billing/invoice-list';
+import {chooseOption, getSelect} from '@/test/select';
 import {Invoice} from '@/types/billing/invoice';
 
 const {useInvoices, useListUrlState, setPage, setFilters} = vi.hoisted(() => ({
@@ -108,8 +109,8 @@ describe('InvoiceList', () => {
 		render(<InvoiceList />);
 
 		expect(useInvoices).toHaveBeenLastCalledWith({page: 2, status: 'overdue', sort: 'issued-asc'});
-		expect(screen.getByLabelText('Status')).toHaveValue('overdue');
-		expect(screen.getByLabelText('Sort')).toHaveValue('issued-asc');
+		expect(getSelect('Status')).toHaveTextContent('Overdue');
+		expect(getSelect('Sort')).toHaveTextContent('Oldest issued first');
 	});
 
 	it('ignores unknown status and sort values from the URL', () => {
@@ -142,10 +143,10 @@ describe('InvoiceList', () => {
 		const user = userEvent.setup();
 		render(<InvoiceList />);
 
-		await user.selectOptions(screen.getByLabelText('Status'), 'overdue');
+		await chooseOption(user, 'Status', 'Overdue');
 		expect(setFilters).toHaveBeenLastCalledWith({status: 'overdue', sort: undefined});
 
-		await user.selectOptions(screen.getByLabelText('Sort'), 'issued-asc');
+		await chooseOption(user, 'Sort', 'Oldest issued first');
 		expect(setFilters).toHaveBeenLastCalledWith({status: 'paid', sort: 'issued-asc'});
 		expect(setPage).not.toHaveBeenCalled();
 	});

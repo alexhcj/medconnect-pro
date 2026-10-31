@@ -69,11 +69,14 @@ describe('MarketingDemo', () => {
 	it('wires walkthrough cards to /platform/* and keeps claims honest', () => {
 		render(<MarketingDemo />);
 
+		const walkthrough = screen.getByRole('region', {name: MARKETING_DEMO_WALKTHROUGH.heading});
+		expect(within(walkthrough).getAllByRole('link')).toHaveLength(
+			MARKETING_DEMO_WALKTHROUGH.items.length,
+		);
 		for (const item of MARKETING_DEMO_WALKTHROUGH.items) {
-			expect(screen.getByRole('link', {name: item.status.label})).toHaveAttribute(
-				'href',
-				item.status.href,
-			);
+			const link = within(walkthrough).getByRole('link', {name: new RegExp(item.title)});
+			expect(link).toHaveAttribute('href', item.status.href);
+			expect(link).toHaveTextContent(item.status.label);
 		}
 
 		expect(screen.getByText(/Demo Daily media when configured/)).toBeInTheDocument();

@@ -1,13 +1,15 @@
+import {Server} from 'lucide-react';
 import {
 	MARKETING_ABOUT_ARCHITECTURE,
 	MARKETING_ABOUT_CTA,
 	MARKETING_ABOUT_HERO,
 	MARKETING_ABOUT_PURPOSE,
-	MARKETING_ABOUT_STACK,
 	MARKETING_ABOUT_STATE,
 } from '@/components/marketing/marketing-about-copy';
 import {MarketingCtaBand} from '@/components/marketing/marketing-cta-band';
 import {MarketingHero} from '@/components/marketing/marketing-hero';
+import {MarketingLinkCard} from '@/components/marketing/marketing-link-card';
+import {MarketingRoadmapBoard} from '@/components/marketing/marketing-roadmap-board';
 import {
 	MarketingSection,
 	marketingSectionGridClassName,
@@ -58,48 +60,23 @@ export function MarketingAbout() {
 					<p className="mt-6 text-base leading-relaxed text-foreground-secondary">
 						{MARKETING_ABOUT_ARCHITECTURE.note}
 					</p>
+					<MarketingLinkCard
+						className="mt-6"
+						href={MARKETING_ABOUT_ARCHITECTURE.link.href}
+						title={MARKETING_ABOUT_ARCHITECTURE.link.title}
+						description={MARKETING_ABOUT_ARCHITECTURE.link.description}
+						icon={Server}
+					/>
 				</MarketingSection>
 
 				<MarketingSection
 					headingId={MARKETING_ABOUT_STATE.headingId}
 					title={MARKETING_ABOUT_STATE.heading}
 				>
-					<ul className={marketingSectionGridClassName(3)}>
-						{MARKETING_ABOUT_STATE.items.map((item) => (
-							<li key={item.title}>
-								<MarketingStatusCard
-									title={item.title}
-									description={item.description}
-									detail={item.detail}
-									status={item.status}
-								/>
-							</li>
-						))}
-					</ul>
-				</MarketingSection>
-
-				<MarketingSection
-					headingId={MARKETING_ABOUT_STACK.headingId}
-					title={MARKETING_ABOUT_STACK.heading}
-				>
-					<div className="grid gap-4 md:grid-cols-2">
-						<div className="rounded-md border border-border bg-surface p-6">
-							<p className="text-lg font-semibold text-brand">
-								{MARKETING_ABOUT_STACK.current.title}
-							</p>
-							<p className="mt-2 text-sm leading-relaxed text-foreground-secondary">
-								{MARKETING_ABOUT_STACK.current.body}
-							</p>
-						</div>
-						<div className="rounded-md bg-subtle p-6">
-							<p className="text-lg font-semibold text-foreground">
-								{MARKETING_ABOUT_STACK.planned.title}
-							</p>
-							<p className="mt-2 text-sm leading-relaxed text-foreground-secondary">
-								{MARKETING_ABOUT_STACK.planned.body}
-							</p>
-						</div>
-					</div>
+					<MarketingRoadmapBoard
+						columns={MARKETING_ABOUT_STATE.columns}
+						paused={MARKETING_ABOUT_STATE.paused}
+					/>
 				</MarketingSection>
 
 				<MarketingCtaBand
@@ -108,7 +85,7 @@ export function MarketingAbout() {
 					body={MARKETING_ABOUT_CTA.body}
 					primaryCta={MARKETING_ABOUT_CTA.primaryCta}
 					secondaryCta={MARKETING_ABOUT_CTA.secondaryCta}
-					stackUntilLg
+					rowFrom="lg"
 				/>
 			</div>
 		</div>

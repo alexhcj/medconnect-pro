@@ -32,15 +32,17 @@ Next.js
   ↓
 API client
   ↓
-HTTP request
+HTTP request (via the /mcp-api proxy on hosted web)
   ↓
-NestJS Controller
+Guards: AuthGuard (identity, tenant) → RateLimitGuard → PermissionsGuard
+  ↓
+Interceptors (tenant RLS scope, denied-access audit)
   ↓
 DTO validation
   ↓
-Authorization
+NestJS Controller
   ↓
-Application service
+Application service (resource authorization)
   ↓
 Repository / integration
   ↓
@@ -51,6 +53,8 @@ Response DTO
   ↓
 Frontend
 ```
+
+Step-by-step trace with code links: [request-lifecycle.md](request-lifecycle.md).
 
 M15 ([ADR-015](../decisions/ADR-015-rate-limiting-and-api-protection.md)): opt-in routes
 (`@RateLimit(policy)`) run the global `RateLimitGuard`, registered after `AuthGuard` (a no-op on

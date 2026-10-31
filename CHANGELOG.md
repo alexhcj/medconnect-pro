@@ -6,6 +6,288 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.103.5] - 2026-10-31
+
+### Fixed
+
+- Date picker (FE-057): opening the calendar no longer scrolls the page to the top. The day button
+  took focus before the popover was positioned, which jumped long pages such as the audit and
+  security event filters on `/dashboard/admin`; it now focuses with `preventScroll`.
+
+## [0.103.4] - 2026-10-31
+
+### Fixed
+
+- SEC-012: production audit advisories published after SEC-011 cleared. `follow-redirects`
+  1.16.1 -> 1.16.2 (lockfile only, via web `axios`); a root override scoped to `typeorm` pins
+  `glob` 14.0.3, which also moves `minimatch` 9.0.9 -> 11.0.3. `typeorm` stays at 0.3.31.
+  `npm audit --omit=dev` exits 0 again.
+
+## [0.103.3] - 2026-10-31
+
+### Changed
+
+- Marketing "Mock identity" control on `/security` and the homepage (now shared copy) names the
+  labeled mock MFA and demo OIDC + PKCE (Google or Fake) instead of "Not production OAuth or OIDC".
+  Its detail adds demo sign-in rate limits and review of other sessions.
+- Homepage workflow cards: step 1 mentions picking a synthetic demo account on `/login`; step 4
+  now covers the audit viewer and security events, not only invoices.
+- README: development status brought from 0.91.0 to 0.103.3 (M18 to M21, 1.0.0 next), architecture
+  diagram adds demo OIDC and Daily plus mock versus live mode, deployment text no longer contradicts
+  the Render demo, and the documentation table links the release roadmap.
+
+## [0.103.2] - 2026-10-31
+
+### Changed
+
+- M21 closed at 0.103.1. The `/about` implementation-state board moves the design refresh to
+  Shipped, shows the preview lanes pilot as In progress, and lists post-1.0 accessibility
+  follow-ups under Up next after the 1.0.0 demo release.
+- Marketing screenshots `patients.png`, `admin.png`, `billing.png` and `telehealth.png` recaptured
+  with `npm run screenshots:marketing` to show the M21 select lists, 40 px inputs and US date/time
+  format. The other four images were unchanged.
+- INFRA-021 (1.0.0 demo release) moved out of M21 as a standalone release step. FE-061 (input border
+  contrast token) and QA-013 (M21 verification sweep) added as standalone tasks after 1.0.0.
+
+## [0.103.1] - 2026-10-31
+
+### Fixed
+
+- FE-060: homepage hero chips hug their badge (30 px, even padding) as in the Figma hero frame.
+- FE-060: week and day calendar events show the time on row 1 and "patient · provider · state" on row 2 (ellipsis), instead of wrapping sideways.
+- FE-060: calendar header, all-day strip and body share one fixed time gutter, so column lines line up; appointments screenshot retaken.
+
+## [0.103.0] - 2026-10-31
+
+### Added
+
+- FE-059: one-tap demo account picker on `/login`. Four 44 px role buttons (Practice admin,
+  Provider, MFA nurse, Patient) in a 2×2 grid fill email and password through React Hook Form
+  `setValue` (validate + dirty), clear any sign-in error, and move focus to Sign in. No auto-submit.
+  A role shows as pressed (`aria-pressed`) only while both fields hold its credentials; a status line
+  reads "Filled as {role}. Press Sign in." Role buttons are disabled while a sign-in is in flight or
+  queued behind the API wake (FE-049).
+- "Fill code" on the mock MFA challenge fills the demo code and focuses Verify. Shown only when
+  `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS` is exactly `true`.
+
+### Changed
+
+- The demo account panel shows one account's credentials (Practice admin as a preview until a role
+  is picked) with 36 px icon copy buttons instead of eight stacked text buttons; about 270 px tall
+  on a 375 px screen instead of about 500 px. The MFA nurse code moves into the panel header.
+- Copy feedback is visible: the icon turns into a check with "Copied" for about 2 s. A missing or
+  rejected clipboard (for example a LAN IP over plain HTTP) shows "Copy blocked. Select the text
+  instead." and highlights the value, which selects in one tap (`select-all`). Both are announced.
+- The mock MFA card uses the sign-in card padding on mobile (`px-4 py-6`, `sm:p-8`), matching Figma.
+
+No API, contract, fixture or flag change. Server sign-in, rate limiting and audit are unchanged.
+
+## [0.102.0] - 2026-10-30
+
+### Added
+
+- FE-058: `SelectField` (`components/ui/select-field.tsx`): design-system select list on the
+  Headless UI listbox. 40 px trigger in the shared field style, chevron that turns when open,
+  anchored option list the width of the trigger (flips near the viewport bottom, opens outside
+  tables), check on the selected option, 44 px option rows below 640 px. Keyboard: Enter, Space and
+  Alt+Down open; arrows, Home/End and type-ahead move; Escape returns focus; Enter on a closed list
+  no longer submits the form. Error and status text are linked to the trigger.
+- An ESLint rule bans native `<select>` in `apps/web/src`.
+
+### Changed
+
+- Every native select uses `SelectField`: admin audit, security, user and billing filters, the
+  user-table role select (compact; saving, saved and error states kept), the patient and
+  appointment forms, and the patient list status and sort. Values, form schemas and URL filter
+  parameters are unchanged; a URL filter value outside the curated list still shows as selected.
+- One control height and style for every input type: text, search, select, date and time fields
+  are 40 px (`h-10`, Figma `size/control`) on a white field with the same hover, focus, placeholder
+  and disabled tokens. This covers `Input` (was 44 px, transparent), the login and MFA inputs (were
+  about 38 px), the admin filters and the patient-list filters. Date and time field icon buttons stay
+  inside the field on mobile. The user-table Search and Clear filters buttons use the default
+  40 px size.
+- Touched form, patient-list and user-role files use design tokens in place of `gray-*` and
+  `red-600` classes (same colours).
+
+No API or contract change.
+
+## [0.101.0] - 2026-10-30
+
+### Added
+
+- FE-057: `DateField` (`components/ui/date-field.tsx`): masked `MM/DD/YYYY` text input with a
+  calendar popover (react-day-picker 9.14.0, bundled, token-styled; bottom sheet below 640 px).
+  Typing always works without the calendar; min/max, disabled and text error states; the value
+  stays `YYYY-MM-DD`. Keyboard: arrows, PageUp/PageDown (Shift: year), Home/End, Enter, Escape
+  returns focus to the calendar button; the month heading is a polite live region.
+- `DateTimeField` and `TimeField`: a date plus a typeable 15-minute time combobox (`h:mm AM/PM`)
+  and the viewer's zone label (`PDT`). The value stays the local `YYYY-MM-DDTHH:mm` string the
+  appointment schema expects.
+- Shared formatters in `lib/format/date.ts`, fixed to `en-US`: `08/10/2026`, `7:00 PM`,
+  `08/10/2026, 7:00 PM – 7:30 PM PDT`. An ESLint rule bans `toLocale*String` in `apps/web/src`.
+
+### Changed
+
+- Every date and time in the web app is US English, whatever the browser or OS language:
+  appointment list and event dialog, telehealth visit range, admin audit/security timestamps,
+  invoice dates, session dialog, and patient date of birth (was raw ISO).
+- Patient date of birth, appointment start/end and admin date filters use the new fields; no
+  native `date`, `datetime-local` or `time` inputs remain. Appointment End fills to Start + 30 min
+  when it is empty or not after Start.
+
+### Fixed
+
+- Invoice issued/due dates (stored as UTC midnight) no longer show the previous day in US time
+  zones. Date of birth formats from its parts, so it never shifts a day.
+
+No API or contract change.
+
+## [0.100.1] - 2026-10-30
+
+### Fixed
+
+- FE-056: Add patient, Edit patient and Schedule appointment now render inside the shared white
+  bordered `Card` (16 px padding on mobile, 24 px from `sm`), matching the patient list and
+  profile. Form controls use one shared style (`components/forms/form-field-styles.ts`,
+  `border-input bg-surface`) instead of transparent fields on the gray canvas.
+- The telehealth waiting room panel moves from gray to the white `Card` used by the lobby; the
+  invoice detail sections use `Card` too. No behaviour, copy, API or contract change.
+
+## [0.100.0] - 2026-10-29
+
+### Added
+
+- FE-055: new static `/architecture` marketing page. A system map shows the public site, web app,
+  NestJS API (nine domain modules) and PostgreSQL as Current; Daily, the sign-in adapter (mock IdP
+  today) and Render demo hosting as External; Redis, S3/KMS and AWS production as Planned (dashed,
+  `bg-warning-subtle`, "Planned" badge). From `md` the map is an SVG (title and description) with
+  node buttons (`aria-pressed`) and a polite live detail panel; below `md` a grouped accordion list
+  replaces it. `/architecture#<node>` preselects a node. The page also draws the five-step
+  authorization flow with where each step is enforced, and the current vs planned stack.
+- Architecture is the sixth top-nav item (header, mobile menu and footer) and is in the sitemap.
+- Each `/security` implemented control has a "Where it's enforced" link to its node.
+  `MarketingStatusCard` takes an optional inline `link` beside the static Badge.
+
+### Changed
+
+- `/about` drops "Current stack vs planned" (moved to `/architecture`) and links to the new page
+  from the Architecture section. The status tone map adds `External` (neutral).
+- `sitemap.md`, the FE-055 spec and `capability-matrix.md` (new "Architecture page" note) match.
+  Figma page "FE-055 Architecture" holds the 1440, 768 and 390 frames.
+
+## [0.99.6] - 2026-10-29
+
+### Changed
+
+- FE-054: the `/about` "Implementation state" section is a roadmap board. Three columns
+  (Shipped, In progress, Up next), each a list under an h3 `Badge` heading, plus one full-width
+  Paused line for AWS production hosting. Columns stack below `lg` and sit three-up from `lg`, so
+  no card is alone on a row. Items are capability-level, never task IDs. Figma About frames and
+  the `Roadmap item` / `Roadmap paused row` components match.
+- `MARKETING_ABOUT_STATE` holds `columns` and `paused` instead of four status cards. The status
+  tone map adds `Up next` (neutral).
+- `.claude/rules/documentation.md` progress trackers: update the About roadmap board when a
+  milestone changes state. `capability-matrix.md` adds an "About roadmap board" note on what each
+  column may claim.
+
+## [0.99.5] - 2026-10-29
+
+### Changed
+
+- FE-053: status labels on the `/security`, `/about` and `/demo` cards render as a `Badge`. The
+  tone comes from one typed map (`marketing-status-tones.ts`): Implemented pattern, Shipped and
+  Current are success; In progress is accent; Not shipped and Planned are neutral; Partial, Paused
+  and Must not claim are warning. Badges are static and not focusable.
+- The `/demo` "What you can walk through" cards are whole-card links (one focus stop each). The
+  route text stays in the footer next to an ArrowRight icon, with hover (stronger border and
+  shadow, arrow nudge) and focus-visible ring states. Figma Card `Variant=Route` matches.
+- The Patient management and Appointments walk-through descriptions drop the duplicated
+  "Link: /platform/..." text.
+
+## [0.99.4] - 2026-10-29
+
+### Added
+
+- FE-052: homepage hero visual. From `lg` the hero is two columns, with the dashboard screenshot
+  and two claim chips ("RBAC and tenant isolation", "Synthetic data only"). At `md` the image sits
+  alone under the CTAs, and below `md` it is hidden.
+- Homepage "Who it is for" role cards: an intro and six cards (icon, role, scope line), with the
+  copy approved in the FE-052 spec and covered by a unit test. Below `md` they are 2-column
+  icon-and-name tiles. About keeps its role tags.
+- Homepage Security principles add "PostgreSQL RLS" and "Document ACL", reused verbatim from
+  `/security`.
+
+### Changed
+
+- The homepage uses `MarketingBand` sections in a fixed order:
+  - Hero, Practice modules, Product UI, UX principles and Who it is for on surface.
+  - Connected workflow and Security principles on canvas.
+  - The CTA keeps its rounded brand card.
+
+  A band that follows another of the same tone drops its top padding (Hero → Modules excepted).
+- Practice module cards are `MarketingLinkCard`s to `/platform/<slug>`, with the app sidebar's
+  icons.
+- The Product UI slider:
+  - shows one full-width slide;
+  - has module chips (`aria-current`) and a disabled-at-the-ends prev/next with an "n / 6"
+    counter;
+  - labels each slide "n of 6: Module";
+  - announces user-driven changes in a polite live region;
+  - turns smooth scrolling off under `prefers-reduced-motion`;
+  - ignores scroll sync while a requested move is in flight.
+- Security principles use `MarketingSplitSection` (the `/security` intro and link) with five icon
+  cards. UX principles keep text-only cards in a 3 / 2 / 1-column grid.
+- Below `md`, cards use 16px padding (`p-4`), matching the approved Figma 390 frame.
+- `telehealth.png` re-captured with the QA-012 signed-in capture.
+- `docs/marketing/requirements.md`: super admin is described as scoped to the signed-in practice
+  (ADR-016).
+- Marketing copy aligned with the homepage:
+  - `/about` Security patterns now names PostgreSQL RLS and document ACL.
+  - The `/security` authorization model's Role step reads "Six roles; super admin stays in the
+    session practice" instead of "Practice and platform roles".
+- Capability matrix, Authentication row: the "no patient portal" rule now allows a Patient
+  role-scope line that matches the app's role nav and the identity contract. It still rules out
+  portal products, portal features and patient sign-up.
+
+### Fixed
+
+- The marketing e2e expects the current Administration feature-page heading ("Users, roles, and
+  audit viewer"). It had been stale since the 0.99.1 copy sync.
+
+## [0.99.3] - 2026-10-28
+
+### Added
+
+- FE-051: marketing building blocks for M21.
+  - `Badge`: a static status label with `success`, `accent`, `neutral` and `warning` tones,
+    using existing tokens only.
+  - `MarketingBand`: a full-bleed section background (`surface`, `canvas` or `brand`).
+  - `MarketingSplitSection`: a two-column lead and items layout with `reverse`.
+  - `MarketingLinkCard`: a card that is a single link, with an arrow, a hover state and a
+    focus ring.
+- Matching Figma components on the Components page: `Card` variants Default, Icon, Link and
+  Status; `Badge`; `Section band`; `Split section`.
+
+### Changed
+
+- Marketing grids: 3 items now go from 1 to 3 columns at `md`, so no card is left on its own at
+  640–767 px. 4 items show 2 columns from `sm` before 4 at `lg`.
+- `MarketingCtaBand` takes `rowFrom` (`sm`, `md` or `lg`) instead of `stackUntilLg`.
+- The homepage CTA renders through `MarketingCtaBand` with unchanged copy; the duplicate
+  component is removed.
+
+## [0.99.2] - 2026-10-28
+
+### Added
+
+- QA-012: `npm run screenshots:marketing` regenerates the 8 marketing and README screenshots (`apps/web/playwright.capture.config.ts`, `apps/web/e2e/capture/marketing-screenshots.spec.ts`). It serves a production mock build on port 3100 and asserts that no TanStack Query or Next.js devtools are present before each shot. Fixed 1440 px viewport, device scale factor 1, light scheme, animations off.
+
+### Changed
+
+- All marketing screenshots were recaptured with the new command. `login.png` now shows the FE-050 logo header. Filenames and alt text are unchanged.
+- `playwright.config.ts` ignores `e2e/capture/`, so `npm run e2e:mocks` does not run the capture.
+- The milestone-close prompt's "Screenshot refresh" step and `frontend-testing.md` now point at the command.
+
 ## [0.99.1] - 2026-10-27
 
 ### Changed

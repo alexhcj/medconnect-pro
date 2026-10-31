@@ -49,10 +49,10 @@ changed surface.
 ## Acceptance criteria
 
 - [ ] Each lane behaves as `delivery-lanes.md` says
-- [ ] Web preview: demo-account sign-in works on mocks; `/mcp-api/health` returns 503
+- [x] Web preview: demo-account sign-in works on mocks; `/mcp-api/health` returns 503
   - [x] `/mcp-api/health` returns 503 (PR #8 preview, 2026-10-26; see Completion)
-  - [ ] demo-account sign-in works on mocks
-- [ ] Interviewer API logs show no requests from preview hosts during the pilot
+  - [x] demo-account sign-in works on mocks (PR #10 preview, all four demo accounts, owner, 2026-10-31)
+- [x] Interviewer API logs show no requests from preview hosts during the pilot (owner, 2026-10-31)
 - [ ] Free instance hours used by previews during the pilot are recorded
 - [ ] Any mismatch becomes a doc fix or a new task, listed in Completion
 
@@ -87,10 +87,11 @@ Test and docs only. No version bump.
     `apps/web`) built a preview at `https://medconnect-web-pr-8.onrender.com`. Evidence recorded
     2026-10-26 (owner): `GET /mcp-api/health` on that preview returns 503 with
     `{"error":{"code":"SERVICE_UNAVAILABLE","message":"API proxy is not configured"}}`, as
-    expected for a preview with no `API_BASE_URL`. Still to record: demo-account sign-in on mocks,
-    and the `main` deploy after merge.
-  - **Isolation evidence (pending):** interviewer API logs showing no requests from preview hosts,
-    and the free instance hours used by previews. The hours are not available through the Render
+    expected for a preview with no `API_BASE_URL`. Demo-account sign-in on mocks works for all four
+    accounts on the PR #10 (M21) web preview (owner, 2026-10-31). Still to record: the `main`
+    deploy after merge.
+  - **Isolation evidence (partly recorded):** the owner confirmed on 2026-10-31 that the interviewer
+    API logs show no requests from preview hosts during the pilot. Still pending: the free instance hours used by previews. The hours are not available through the Render
     workspace API used here; read them from the dashboard (baseline below). Take the log excerpt
     from the API service logs.
   - **Baselines before the marketing and web PRs (2026-10-26, owner, Render dashboard):**
@@ -122,4 +123,5 @@ Test and docs only. No version bump.
     the marketing and web merges add `main` pushes to compare against Render deploys. The empty
     commit `1eb0f5c` on `main` matches no build filter, so it is not evidence for the marketing or
     web lanes.
-  - Acceptance criteria stay unticked until all three lanes and the evidence above exist.
+  - Criteria 2 and 3 are ticked on owner evidence (2026-10-31); the rest stay unticked until all
+    three lanes and the evidence above exist.

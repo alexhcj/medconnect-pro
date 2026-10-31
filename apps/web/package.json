@@ -21,6 +21,7 @@
     "e2e:mocks": "playwright test",
     "e2e:live": "playwright test --config=playwright.live.config.ts",
     "e2e:ui": "playwright test --ui",
+    "screenshots:marketing": "playwright test --config=playwright.capture.config.ts",
     "clean": "rm -rf .next out dist coverage test-results playwright-report"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "react": "19.3.0",
     "react-big-calendar": "^1.20.0",
     "react-datepicker": "^9.1.0",
+    "react-day-picker": "9.14.0",
     "react-dom": "19.3.0",
     "react-dropzone": "^20.1.1",
     "react-hook-form": "^7.88.0",

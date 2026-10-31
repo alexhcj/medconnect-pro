@@ -23,7 +23,9 @@ implementation tasks, roadmaps and development workflows.
 - `01-product-requirements.md` — functional/non-functional product requirements (vision).
 - `product/` — [capability registry](product/README.md): statused user-facing catalog.
   Public-claim ceiling remains [capability-matrix.md](marketing/capability-matrix.md).
-- `architecture/` — system structure.
+- `architecture/` — system structure. Start at the [overview](architecture/README.md) (system map,
+  mock vs live, current vs planned); [request lifecycle](architecture/request-lifecycle.md) traces
+  one request end to end.
 - `security/` — [demo vs production identity/session](security/README.md) (not HIPAA certified;
   not production OAuth). Not the permission catalog or deploy runbook.
 - `compliance/` — [HIPAA readiness](compliance/hipaa-readiness.md) (not certified) and
@@ -35,7 +37,8 @@ implementation tasks, roadmaps and development workflows.
   metadata on new tasks (see [tasks/README.md](tasks/README.md)).
 - `roadmap/` — sequencing and delivery milestones, including the
   [post-MVP baseline](roadmap/post-mvp-baseline.md).
-- `decisions/` — ADRs, including [ADR-009](decisions/ADR-009-npm-workspace-monorepo.md) for the
+- `decisions/` — ADRs; the [ADR index](decisions/README.md) lists every decision with its status
+  and main tradeoff. Key ADRs include [ADR-009](decisions/ADR-009-npm-workspace-monorepo.md) for the
   npm workspace layout, [ADR-010](decisions/ADR-010-postgresql-typeorm.md) for PostgreSQL and
   TypeORM, [ADR-011](decisions/ADR-011-figma-canonical-visual-source.md) for Figma as the
   canonical visual source, [ADR-012](decisions/ADR-012-deployment-topology.md) for Amplify +

@@ -57,7 +57,7 @@ The M19 close audit added one more, [QA-009](../tasks/qa/QA-009-live-paging-spec
 page 2 of each list; shipped, test only, no version bump). Latest release: 0.96.3.
 **M20 — PR previews and delivery lanes** is in progress: INFRA-018 is shipped (ADR-019 accepted,
 workflow docs point at the lanes doc; docs only, no version bump); INFRA-019 is shipped at
-0.97.0 (manual Render previews for marketing and web); QA-011 is shipped (API type-check fix; test only, no version bump); SEC-010 is shipped at 0.97.1 (production audit findings cleared); FE-048 is shipped at 0.97.2 (PR preview banner on web and marketing); INFRA-020 is shipped at 0.97.3 (`checksPass` deploys, Render-aware PR comment, PR template; branch protection on `main` applied 2026-10-23 and recorded in the task); SEC-011 is shipped at 0.97.4 (new production audit advisories cleared); standalone FE-049 is shipped at 0.98.0 and FE-050 at 0.99.0 (latest release 0.99.1);
+0.97.0 (manual Render previews for marketing and web); QA-011 is shipped (API type-check fix; test only, no version bump); SEC-010 is shipped at 0.97.1 (production audit findings cleared); FE-048 is shipped at 0.97.2 (PR preview banner on web and marketing); INFRA-020 is shipped at 0.97.3 (`checksPass` deploys, Render-aware PR comment, PR template; branch protection on `main` applied 2026-10-23 and recorded in the task); SEC-011 is shipped at 0.97.4 (new production audit advisories cleared); standalone FE-049 is shipped at 0.98.0 and FE-050 at 0.99.0;
 QA-010 is pending
 ([INFRA-018](../tasks/infrastructure/INFRA-018-render-pr-preview-decision-and-delivery-lanes.md),
 [INFRA-019](../tasks/infrastructure/INFRA-019-render-frontend-service-previews.md),
@@ -73,6 +73,43 @@ QA-010 is pending
 standalone task outside any milestone, shipped at 0.98.0 (Figma frames approved; web indicator, wake ping, queued sign-in; real Render sleep test still to record).
 [FE-050](../tasks/frontend/FE-050-auth-pages-marketing-logo-link.md) (logo link back to the marketing
 site on the auth pages) is a standalone task outside any milestone, shipped at 0.99.0 (header and back link via `NEXT_PUBLIC_MARKETING_URL`; Figma frames approved). The untasked marketing copy sync (`/about` state, security-events wording, matrix "Last synced release" line, `docs:marketing-sync` drift check in CI) shipped at 0.99.1.
+**M21 — Marketing and web app design refresh** is **closed** at 0.103.1 (user, 2026-10-31): [QA-012](../tasks/qa/QA-012-marketing-screenshot-capture.md)
+(repeatable screenshot capture) shipped at 0.99.2;
+[FE-051](../tasks/frontend/FE-051-marketing-design-system-extension.md) (badge, section band,
+split section, link card; Figma variants) shipped at 0.99.3;
+[FE-052](../tasks/frontend/FE-052-homepage-refresh.md) (homepage bands, hero visual, module links,
+slider, security and role cards) shipped at 0.99.4;
+[FE-053](../tasks/frontend/FE-053-status-and-link-affordance.md) (status badges vs whole-card
+route links) shipped at 0.99.5;
+[FE-054](../tasks/frontend/FE-054-about-roadmap-board.md) (About shipped / in progress / up next
+board) shipped at 0.99.6;
+[FE-055](../tasks/frontend/FE-055-architecture-page.md) (`/architecture` system map, request flow,
+current vs planned; sixth top-nav item) shipped at 0.100.0;
+[FE-056](../tasks/frontend/FE-056-app-form-pages-surface-parity.md) (app page surface parity: patient and
+appointment forms, telehealth waiting room, and invoice detail on the white bordered `Card`) shipped
+at 0.100.1;
+[FE-057](../tasks/frontend/FE-057-us-date-format-and-date-picker.md) (one US date/time format and an
+accessible design-system date picker) shipped at 0.101.0;
+[FE-058](../tasks/frontend/FE-058-design-system-select-and-input-parity.md) (design-system select list
+and one 40 px input style) shipped at 0.102.0;
+[FE-059](../tasks/frontend/FE-059-demo-account-picker.md) (one-tap demo account picker and visible copy
+feedback on sign-in) shipped at 0.103.0;
+[FE-060](../tasks/frontend/FE-060-hero-screenshot-and-calendar-event-polish.md) (hero chip fit, appointments
+screenshot, two-row calendar event) shipped at 0.103.1. The M21 close-out (About board copy, four
+recaptured screenshots) shipped at 0.103.2; README and marketing security/workflow card sync shipped at 0.103.3.
+[SEC-012](../tasks/security/SEC-012-resolve-glob-and-follow-redirects-audit-findings.md) (production
+audit findings in `glob`, `minimatch` and `follow-redirects`) shipped at 0.103.4 as a standalone task.
+The date picker scroll fix (opening the calendar no longer jumps long pages to the top) shipped at
+0.103.5 (latest release 0.103.5).
+[INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md) moved out of M21 on 2026-10-31 and is
+pending as the standalone 1.0.0 release step;
+[FE-061](../tasks/frontend/FE-061-input-border-contrast-token.md) and
+[QA-013](../tasks/qa/QA-013-m21-verification-sweep.md) are pending standalone tasks after 1.0.0.
+[INFRA-022](../tasks/infrastructure/INFRA-022-architecture-overview-and-adr-index.md) (architecture
+overview, request lifecycle and ADR index) shipped as a standalone task (docs only, no version bump).
+**1.0.0** is redefined (user decision, 2026-10-28) as the feature-complete synthetic demo on Render,
+released by INFRA-021 after M20 and M21 close. AWS production (INFRA-014, INFRA-013) becomes a later
+1.x release and no longer gates 1.0.0.
 Real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and
 Redis stay deferred. Local product work does not wait on AWS. Resume M9 when the AWS account can
 be configured. Preview/production hosting remains M9, not M8, M10, M11, or M18.
@@ -128,7 +165,8 @@ local / preview / production demo databases, and the `v1.0.0` production-release
 Separate from M8. **PAUSED / BLOCKED** — AWS account setup unavailable. Close audit found no
 missing task IDs; M9 is **not closed** and **not cancelled**. Tasks: INFRA-004–INFRA-012
 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused). Do not treat
-Terraform/workflows as a hosted demo. Do not pull AWS work into M10.
+Terraform/workflows as a hosted demo. Do not pull AWS work into M10. Since 2026-10-28 INFRA-013
+is the post-1.0 AWS production release (1.x); the 1.0.0 demo release is INFRA-021 (standalone, after M21).
 
 ### M10 — Product Analytics, Notifications & Role Administration
 
@@ -276,6 +314,36 @@ Order: INFRA-018 first; INFRA-019 after it; QA-011, then SEC-010, before INFRA-0
 `ci` would stop `checksPass` deploys); FE-048 after INFRA-019; QA-010 last.
 Deferred: a paid shared preview API and database (live web previews), a docs-only CI fast lane.
 
+### M21 — Marketing and web app design refresh (closed)
+
+The last design pass before 1.0.0. Section bands and responsive fixes on the homepage, a hero
+product visual, module icons and links, a clearer slider, status badges distinct from links, an
+About roadmap board, and a new `/architecture` page. Copy stays except where a new surface needs
+it; Figma and code ship together (ADR-011). FE-056 and FE-057 (added 2026-10-30) apply the same
+design pass to the web app: one white bordered form surface, and one US date/time format with an
+accessible date picker. FE-058 (added 2026-10-30) replaces native select lists with a
+design-system select and aligns text inputs. FE-059 (added 2026-10-30) turns the sign-in demo account panel into a one-tap role picker. FE-060 (added 2026-10-31) fixes the hero chip fit, the appointments screenshot, and the calendar event layout. No new dependencies, except the date picker library FE-057 added
+(`react-day-picker` 9.14.0, user approved 2026-10-30). Does not close M9.
+Tasks:
+[QA-012](../tasks/qa/QA-012-marketing-screenshot-capture.md) (repeatable screenshot capture without devtools icons),
+[FE-051](../tasks/frontend/FE-051-marketing-design-system-extension.md) (badge, section band, split section, link card; Figma variants),
+[FE-052](../tasks/frontend/FE-052-homepage-refresh.md) (homepage bands, hero visual, module icons and links, slider, principles),
+[FE-053](../tasks/frontend/FE-053-status-and-link-affordance.md) (status badges vs link cards),
+[FE-054](../tasks/frontend/FE-054-about-roadmap-board.md) (About shipped / in progress / up next board),
+[FE-055](../tasks/frontend/FE-055-architecture-page.md) (`/architecture` page with system map),
+[FE-056](../tasks/frontend/FE-056-app-form-pages-surface-parity.md) (app form pages surface parity),
+[FE-057](../tasks/frontend/FE-057-us-date-format-and-date-picker.md) (US date format and date picker),
+[FE-058](../tasks/frontend/FE-058-design-system-select-and-input-parity.md) (design-system select list and input parity),
+[FE-059](../tasks/frontend/FE-059-demo-account-picker.md) (demo account picker: one-tap fill and visible copy feedback),
+[FE-060](../tasks/frontend/FE-060-hero-screenshot-and-calendar-event-polish.md) (hero chip fit, appointments screenshot, two-row calendar event).
+Order: QA-012 and FE-051 first; FE-052–FE-055 after FE-051; FE-057 after FE-056; FE-058 after FE-057; FE-059 after FE-058; FE-060 after FE-052, QA-012 and FE-057.
+Shipped: QA-012 (0.99.2), FE-051 (0.99.3), FE-052 (0.99.4), FE-053 (0.99.5), FE-054 (0.99.6), FE-055 (0.100.0), FE-056 (0.100.1), FE-057 (0.101.0), FE-058 (0.102.0), FE-059 (0.103.0), FE-060 (0.103.1). **Closed** at 0.103.1 (user, 2026-10-31); close-out copy and screenshot sync at 0.103.2.
+Close audit (2026-10-31): [INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)
+moved out of M21 as the standalone 1.0.0 release step (it runs after M20 and M21 close).
+[FE-061](../tasks/frontend/FE-061-input-border-contrast-token.md) (input border contrast token, the
+FE-056 follow-up) and [QA-013](../tasks/qa/QA-013-m21-verification-sweep.md) (date locales, picker
+e2e, manual accessibility for FE-057 and FE-059) were logged as standalone tasks after 1.0.0.
+
 ## Milestone crosswalk
 
 A milestone may be **demonstrable on frontend mocks** before the matching NestJS surface exists. A
@@ -293,7 +361,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M6 Billing | FE-008, BE-007, FE-015 | Frontend billing mocks may start after FE-010. Billing API waits on BE-009. FE-015 connects the shipped dashboard to that API. |
 | M7 Administration | FE-009, FE-016, BE-010, SEC-002, SEC-004, QA-004, BE-008 as needed | User directory HTTP plus admin UI on Nest. Isolation hardening and authorization matrix remain. BE-008 is the notifications domain, not admin UI. **Closed** at 0.44.0. |
 | M8 Marketing website and visual language | FE-017–FE-023 (shipped) | Public marketing site and shared visual language. Deploy/preview is M9. **Closed** at 0.51.1. |
-| M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. INFRA-015 is an interim Render demo and is not part of this AWS close. INFRA-016 adds the marketing static site on that demo and does not close M9. |
+| M9 Deployment / preview infrastructure | INFRA-004–INFRA-012 (shipped), INFRA-014 (pending; blocks INFRA-013), INFRA-013 (pending, paused) | **PAUSED / BLOCKED** — AWS account unavailable. GitHub Actions quality gates, secrets/OIDC bootstrap, preview/production demo databases, ECS/Fargate, Amplify, PR previews, production ECS delivery, GitHub `1.0.0` notes template, hosted first-apply, `v1.0.0` gate. Close audit found no missing IDs; M9 is not closed and not cancelled. Do not pull into M8 or M10. INFRA-015 is an interim Render demo and is not part of this AWS close. INFRA-016 adds the marketing static site on that demo and does not close M9. Since 2026-10-28 INFRA-013 is the post-1.0 AWS production release (1.x); 1.0.0 is INFRA-021 (standalone, after M20 and M21). |
 | M10 Product Analytics, Notifications & Role Administration | DATA-002, BE-011, FE-024, BE-012, FE-025, BE-013, FE-026 (shipped) | Live overview API and UI, notification producers + UI, role PATCH + UI. Bounded seed, Nest overview API, live dashboard cards, appointment producers, in-app notification center, and role assignment HTTP/UI shipped. No Redis, OAuth, Daily, Stripe, or AWS. |
 | M11 Application Security & Session Hardening | BE-014, FE-027, FE-028, BE-015, FE-029, SEC-005 (shipped) | Nest HttpOnly cookies, live cookie client, mock MFA UI, security-events HTTP/UI, production-gap docs. Not OAuth, production MFA, rate limiting, Redis, or AWS. |
 | M12 Telehealth Media Maturity | BE-016, FE-030 (shipped) | Daily media token HTTP plus Daily call-object UI on the shipped session shell. Fake adapter when `DAILY_API_KEY` is unset. Not chat, recording, Socket.IO, Stripe, or AWS. |
@@ -305,7 +373,8 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M18 Interview Demo Readiness | QA-006, DATA-005, BE-024, FE-037, FE-038, FE-039, INFRA-017, QA-007 (all shipped; closed at 0.91.0) | Render interviewer path: smoke, one patient portal login, open-session lookup, demo account panel, participant entry, hide unconfigured OAuth, presentation pack, two-browser close. Does not close M9 or reopen M17. PR previews, real Google OAuth, chat/recording/Socket.IO, hosted Stripe, and Redis stay deferred. |
 | M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046 (shipped, 0.96.2); FE-047 (shipped, 0.96.3); QA-008 (shipped, no version bump); QA-009 (shipped, no version bump) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Time column no-wrap with `patient-form.test.tsx` timeout fix, live seed volume for paging and event filter options parity shipped. QA-008 (live e2e suite green) and QA-009 (live paging specs) shipped. **Closed** at 0.96.3. Does not close M9 or reopen M17/M18. |
 | M20 PR previews and delivery lanes | INFRA-018 (shipped, docs only), INFRA-019 (shipped at 0.97.0), QA-011 (shipped, test only), SEC-010 (shipped at 0.97.1), SEC-011 (shipped at 0.97.4), FE-048 (optional; shipped at 0.97.2), INFRA-020 (shipped at 0.97.3); QA-010 (pending) | Render service previews for marketing and web only; web previews on frontend mocks; no API or database preview; `main` deploys after `ci`; PR-only flow. No paid resources. Does not close M9 or change the AWS topology (ADR-012, INFRA-010). |
-| Standalone (no milestone) | FE-049 (shipped at 0.98.0); FE-050 (shipped at 0.99.0) | API status indicator on `/login` and a gesture-gated wake ping for the sleeping Render Free API (ADR-017). Not part of M20. No paid resources, keep-alive pinger, or API change. FE-050: logo link to the marketing site on the auth pages via `NEXT_PUBLIC_MARKETING_URL`; no API or auth change. |
+| M21 Marketing and web app design refresh | QA-012, FE-051–FE-060 (shipped) | **Closed** at 0.103.1. Homepage bands and responsive fixes, hero visual, module icons and links, slider, status badges vs links, About roadmap board, `/architecture` page, repeatable screenshots. App forms on the white bordered `Card` (FE-056); one US date/time format and an accessible date picker (FE-057); design-system select lists and inputs (FE-058); one-tap demo account picker on sign-in (FE-059); hero image, appointments screenshot and calendar event polish (FE-060). INFRA-021 moved out (2026-10-31) as the standalone 1.0.0 release; AWS production (INFRA-013) moves to 1.x. Does not close M9. |
+| Standalone (no milestone) | FE-049 (shipped at 0.98.0); FE-050 (shipped at 0.99.0); INFRA-021 (pending; 1.0.0); FE-061, QA-013 (pending; after 1.0.0); INFRA-022 (shipped; docs only); SEC-012 (shipped at 0.103.4) | API status indicator on `/login` and a gesture-gated wake ping for the sleeping Render Free API (ADR-017). Not part of M20. No paid resources, keep-alive pinger, or API change. FE-050: logo link to the marketing site on the auth pages via `NEXT_PUBLIC_MARKETING_URL`; no API or auth change. INFRA-021 releases 1.0.0 as the Render demo after M20 and M21 close. FE-061 (input border contrast token) and QA-013 (M21 verification sweep) run after 1.0.0. INFRA-022 adds the architecture overview, request-lifecycle doc and ADR index; docs only, no version bump, no ADR edits. SEC-012 clears the `glob`, `minimatch` and `follow-redirects` production audit findings (scoped `typeorm` override; no `typeorm` upgrade). |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

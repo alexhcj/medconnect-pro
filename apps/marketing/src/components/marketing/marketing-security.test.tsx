@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import {MarketingSecurity} from '@/components/marketing/marketing-security';
 import {
 	MARKETING_SECURITY_AUTHORIZATION,
@@ -64,11 +64,34 @@ describe('MarketingSecurity', () => {
 		).toHaveAttribute('href', '/platform/administration');
 	});
 
+	it('links each implemented control to where it is enforced on /architecture', () => {
+		render(<MarketingSecurity />);
+
+		const section = screen.getByRole('region', {name: MARKETING_SECURITY_CONTROLS.heading});
+		const links = within(section).getAllByRole('link', {name: /Where it's enforced/});
+		expect(links).toHaveLength(MARKETING_SECURITY_CONTROLS.items.length);
+		expect(links.map((link) => link.getAttribute('href'))).toEqual([
+			'/architecture#sign-in',
+			'/architecture#api',
+			'/architecture#database',
+			'/architecture#api',
+			'/architecture#database',
+			'/architecture#api',
+		]);
+		MARKETING_SECURITY_CONTROLS.items.forEach((item, index) => {
+			expect(links[index]).toHaveAccessibleName(`Where it's enforced: ${item.title}`);
+			expect(within(links[index].closest('li')!).getByText(item.status)).toBeInTheDocument();
+		});
+
+		const notInDemo = screen.getByRole('region', {name: MARKETING_SECURITY_NOT_IN_DEMO.heading});
+		expect(within(notInDemo).queryByRole('link')).toBeNull();
+	});
+
 	it('keeps capability-qualified security copy', () => {
 		render(<MarketingSecurity />);
 
 		expect(screen.getByText(/It is not HIPAA certified/)).toBeInTheDocument();
-		expect(screen.getByText(/Not production OAuth or OIDC/)).toBeInTheDocument();
+		expect(screen.getByText(/Demo OIDC \+ PKCE \(Google or Fake\)\. Not a production IdP\./)).toBeInTheDocument();
 		expect(screen.getByText(MARKETING_SECURITY_AUTHORIZATION.note)).toBeInTheDocument();
 		expect(screen.getByText(/Do not describe mock identity as production OAuth/)).toBeInTheDocument();
 		expect(screen.getByText(/no HIPAA certification claim/)).toBeInTheDocument();

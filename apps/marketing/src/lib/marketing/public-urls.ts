@@ -47,6 +47,7 @@ export const MARKETING_PATHS = [
 	'/platform/administration',
 	'/security',
 	'/about',
+	'/architecture',
 	'/demo',
 ] as const;
 

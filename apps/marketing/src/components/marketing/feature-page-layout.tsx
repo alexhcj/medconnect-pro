@@ -167,7 +167,7 @@ export function FeaturePageLayout({
 					body={cta.body}
 					primaryCta={cta.primaryCta}
 					secondaryCta={cta.secondaryCta}
-					stackUntilLg
+					rowFrom="lg"
 				/>
 			</div>
 		</div>

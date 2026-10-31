@@ -1,8 +1,5 @@
 import {Card, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
-import {
-	MarketingSection,
-	marketingSectionGridClassName,
-} from '@/components/marketing/marketing-section';
+import {MarketingSection} from '@/components/marketing/marketing-section';
 
 interface PrincipleItem {
 	title: string;
@@ -15,14 +12,15 @@ interface MarketingHomePrinciplesProps {
 	items: readonly PrincipleItem[];
 }
 
+/** Text-only principle cards: 3 columns from `lg`, 2 from `md` (an odd card sits alone), 1 below. */
 export function MarketingHomePrinciples({headingId, title, items}: MarketingHomePrinciplesProps) {
 	return (
 		<MarketingSection headingId={headingId} title={title}>
-			<ul className={marketingSectionGridClassName(3)}>
+			<ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 				{items.map((item) => (
 					<li key={item.title}>
 						<Card className="h-full">
-							<CardHeader>
+							<CardHeader className="p-4 md:p-6">
 								<CardTitle>{item.title}</CardTitle>
 								<CardDescription className="text-base leading-relaxed">
 									{item.description}

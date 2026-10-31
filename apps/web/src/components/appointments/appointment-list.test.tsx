@@ -55,6 +55,15 @@ describe('AppointmentList', () => {
 		});
 	});
 
+	it('shows the range in US format with a zone label, not the browser default', () => {
+		mockAppointments();
+		render(<AppointmentList />);
+
+		expect(
+			screen.getByText(/^\d{2}\/\d{2}\/\d{4}, \d{1,2}:\d{2} (AM|PM) – \d{1,2}:\d{2} (AM|PM) \S+$/),
+		).toBeInTheDocument();
+	});
+
 	it('renders appointment rows and a schedule link', () => {
 		mockAppointments();
 		render(<AppointmentList />);

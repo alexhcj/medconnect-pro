@@ -17,8 +17,11 @@ or `(dashboard)`.
 | `/security` | Implemented controls and design principles | FE-022 |
 | `/about` | Project, architecture, portfolio context | FE-022 |
 | `/demo` | Safe demo entry; links to existing `/login` | FE-022 |
+| `/architecture` | Visual system map, request and authorization flow, current vs planned | FE-055 |
 
-Top-level marketing nav stays Home, Platform, Security, About, Demo unless this sitemap changes.
+Top-level marketing nav is Home, Platform, Security, About, Architecture, Demo unless this sitemap
+changes. `/architecture` is also reached from the footer, About › Architecture, and each Security
+implemented control.
 
 ## Platform feature pages
 
@@ -59,6 +62,7 @@ apps/marketing/src/app/(marketing)/
   platform/administration/
   security/page.tsx
   about/page.tsx
+  architecture/page.tsx
   demo/page.tsx
 ```
 

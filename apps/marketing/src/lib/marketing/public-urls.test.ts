@@ -3,6 +3,7 @@ import {
 	appLoginHref,
 	appOrigin,
 	absoluteMarketingUrl,
+	MARKETING_PATHS,
 	siteUrl,
 } from '@/lib/marketing/public-urls';
 
@@ -29,5 +30,9 @@ describe('public marketing URLs', () => {
 	it('builds a trailing-slash canonical on the marketing origin', () => {
 		expect(absoluteMarketingUrl('/')).toBe('http://localhost:3002/');
 		expect(absoluteMarketingUrl('/platform')).toBe('http://localhost:3002/platform/');
+	});
+
+	it('lists /architecture in the sitemap paths', () => {
+		expect(MARKETING_PATHS).toContain('/architecture');
 	});
 });

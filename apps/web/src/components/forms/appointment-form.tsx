@@ -2,10 +2,14 @@
 
 import {ReactNode, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {FieldPath, UseFormRegisterReturn, useForm} from 'react-hook-form';
+import {Control, Controller, FieldPath, useForm, useWatch} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Button} from '@/components/ui/button';
+import {Card, CardContent} from '@/components/ui/card';
+import {DateTimeField} from '@/components/ui/date-time-field';
+import {SelectField as UiSelectField, type SelectOption} from '@/components/ui/select-field';
 import {ApiError} from '@/lib/api/http';
+import {addMinutesLocal} from '@/lib/format/date-input';
 import {useCreateAppointment} from '@/lib/hooks/use-medical';
 import {Patient} from '@/types/medical/patient';
 import {Provider} from '@/types/medical/provider';
@@ -18,9 +22,10 @@ import {
 	emptyAppointmentFormValues,
 	isAppointmentFieldPath,
 } from '@/components/forms/appointment-form-schema';
-
-const inputClassName =
-	'mt-1 flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500';
+import {
+	formCardContentClassName,
+	formControlBaseClassName,
+} from '@/components/forms/form-field-styles';
 
 interface AppointmentFormProps {
 	patients: Patient[];
@@ -42,12 +47,12 @@ function FieldFrame({
 	const errorId = `${id}-error`;
 	return (
 		<div>
-			<label htmlFor={id} className="block text-sm font-medium text-gray-700">
+			<label htmlFor={id} className="block text-sm font-medium text-foreground-label">
 				{label}
 			</label>
 			{children}
 			{error && (
-				<p id={errorId} className="mt-1 text-sm text-red-600" role="alert">
+				<p id={errorId} className="mt-1 text-sm text-danger" role="alert">
 					{error}
 				</p>
 			)}
@@ -68,8 +73,11 @@ export function AppointmentForm({patients, providers, prefilledPatientId}: Appoi
 		register,
 		handleSubmit,
 		setError,
+		getValues,
+		setValue,
 		formState: {errors},
 	} = form;
+	const start = useWatch({control: form.control, name: 'start'});
 	const [formError, setFormError] = useState<string | null>(null);
 
 	const onSubmit = async (data: AppointmentFormValues) => {
@@ -97,154 +105,156 @@ export function AppointmentForm({patients, providers, prefilledPatientId}: Appoi
 	};
 
 	return (
-		<form className="space-y-8" onSubmit={handleSubmit(onSubmit)} noValidate>
-			<div>
-				<h1 className="text-2xl font-bold text-gray-900">Schedule appointment</h1>
-				<p className="mt-2 text-sm text-gray-600">Synthetic demo data. Not a real medical record.</p>
-			</div>
+		<form onSubmit={handleSubmit(onSubmit)} noValidate>
+			<Card>
+				<CardContent className={formCardContentClassName}>
+					<div>
+						<h1 className="text-2xl font-bold text-foreground">Schedule appointment</h1>
+						<p className="mt-2 text-sm text-foreground-secondary">Synthetic demo data. Not a real medical record.</p>
+					</div>
 
-			{formError && (
-				<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
-					<p className="text-sm text-gray-700">{formError}</p>
-				</div>
-			)}
+					{formError && (
+						<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
+							<p className="text-sm text-foreground-label">{formError}</p>
+						</div>
+					)}
 
-			<section className="space-y-4" aria-labelledby="appointment-details-heading">
-				<h2 id="appointment-details-heading" className="text-lg font-semibold text-gray-900">
-					Appointment details
-				</h2>
-				<div className="grid gap-4 sm:grid-cols-2">
-					<SelectField
-						id="patientId"
-						label="Patient"
-						error={errors.patientId?.message}
-						register={register('patientId')}
-						placeholder="Choose a patient"
-						options={patients.map((patient) => ({
-							value: patient.id,
-							label: `${patient.firstName} ${patient.lastName}`,
-						}))}
-					/>
-					<SelectField
-						id="providerId"
-						label="Provider"
-						error={errors.providerId?.message}
-						register={register('providerId')}
-						placeholder="Choose a provider"
-						options={providers.map((provider) => ({value: provider.id, label: provider.displayName}))}
-					/>
-					<TextField
-						id="start"
-						label="Start"
-						type="datetime-local"
-						error={errors.start?.message}
-						register={register('start')}
-					/>
-					<TextField
-						id="end"
-						label="End"
-						type="datetime-local"
-						error={errors.end?.message}
-						register={register('end')}
-					/>
-					<SelectField
-						id="type"
-						label="Type"
-						error={errors.type?.message}
-						register={register('type')}
-						placeholder="Choose a type"
-						options={Object.entries(APPOINTMENT_TYPE_LABELS).map(([value, label]) => ({value, label}))}
-					/>
-					<SelectField
-						id="state"
-						label="State"
-						error={errors.state?.message}
-						register={register('state')}
-						options={[
-							{value: 'scheduled', label: APPOINTMENT_STATE_LABELS.scheduled},
-							{value: 'confirmed', label: APPOINTMENT_STATE_LABELS.confirmed},
-						]}
-					/>
-				</div>
-				<FieldFrame id="notes" label="Notes" error={errors.notes?.message}>
-					<textarea
-						id="notes"
-						rows={3}
-						aria-invalid={errors.notes?.message ? true : undefined}
-						aria-describedby={errors.notes?.message ? 'notes-error' : undefined}
-						className="mt-1 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-						{...register('notes')}
-					/>
-				</FieldFrame>
-			</section>
+					<section className="space-y-4" aria-labelledby="appointment-details-heading">
+						<h2 id="appointment-details-heading" className="text-lg font-semibold text-foreground">
+							Appointment details
+						</h2>
+						<div className="grid gap-4 sm:grid-cols-2">
+							<SelectField
+								id="patientId"
+								label="Patient"
+								name="patientId"
+								control={form.control}
+								placeholder="Choose a patient"
+								options={patients.map((patient) => ({
+									value: patient.id,
+									label: `${patient.firstName} ${patient.lastName}`,
+								}))}
+							/>
+							<SelectField
+								id="providerId"
+								label="Provider"
+								name="providerId"
+								control={form.control}
+								placeholder="Choose a provider"
+								options={providers.map((provider) => ({value: provider.id, label: provider.displayName}))}
+							/>
+							<Controller
+								control={form.control}
+								name="start"
+								render={({field, fieldState}) => (
+									<DateTimeField
+										id="start"
+										legend="Start"
+										name={field.name}
+										value={field.value}
+										onChange={(next) => {
+											field.onChange(next);
+											// Offer a 30-minute visit: fill End only when it is empty or no longer after Start.
+											const end = getValues('end');
+											if (next && (!end || new Date(end) <= new Date(next))) {
+												setValue('end', addMinutesLocal(next, 30));
+											}
+										}}
+										onBlur={field.onBlur}
+										inputRef={field.ref}
+										error={fieldState.error?.message}
+									/>
+								)}
+							/>
+							<Controller
+								control={form.control}
+								name="end"
+								render={({field, fieldState}) => (
+									<DateTimeField
+										id="end"
+										legend="End"
+										name={field.name}
+										value={field.value}
+										minValue={start}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										inputRef={field.ref}
+										error={fieldState.error?.message}
+									/>
+								)}
+							/>
+							<SelectField
+								id="type"
+								label="Type"
+								name="type"
+								control={form.control}
+								placeholder="Choose a type"
+								options={Object.entries(APPOINTMENT_TYPE_LABELS).map(([value, label]) => ({value, label}))}
+							/>
+							<SelectField
+								id="state"
+								label="State"
+								name="state"
+								control={form.control}
+								options={[
+									{value: 'scheduled', label: APPOINTMENT_STATE_LABELS.scheduled},
+									{value: 'confirmed', label: APPOINTMENT_STATE_LABELS.confirmed},
+								]}
+							/>
+						</div>
+						<FieldFrame id="notes" label="Notes" error={errors.notes?.message}>
+							<textarea
+								id="notes"
+								rows={3}
+								aria-invalid={errors.notes?.message ? true : undefined}
+								aria-describedby={errors.notes?.message ? 'notes-error' : undefined}
+								className={formControlBaseClassName}
+								{...register('notes')}
+							/>
+						</FieldFrame>
+					</section>
 
-			<Button type="submit" disabled={createAppointment.isPending}>
-				{createAppointment.isPending ? 'Scheduling appointment' : 'Schedule appointment'}
-			</Button>
+					<Button type="submit" disabled={createAppointment.isPending}>
+						{createAppointment.isPending ? 'Scheduling appointment' : 'Schedule appointment'}
+					</Button>
+				</CardContent>
+			</Card>
 		</form>
-	);
-}
-
-function TextField({
-	id,
-	label,
-	type = 'text',
-	error,
-	register,
-}: {
-	id: string;
-	label: string;
-	type?: string;
-	error?: string;
-	register: UseFormRegisterReturn;
-}) {
-	const errorId = `${id}-error`;
-	return (
-		<FieldFrame id={id} label={label} error={error}>
-			<input
-				id={id}
-				type={type}
-				aria-invalid={error ? true : undefined}
-				aria-describedby={error ? errorId : undefined}
-				className={inputClassName}
-				{...register}
-			/>
-		</FieldFrame>
 	);
 }
 
 function SelectField({
 	id,
 	label,
-	error,
-	register,
+	name,
+	control,
 	options,
 	placeholder,
 }: {
 	id: string;
 	label: string;
-	error?: string;
-	register: UseFormRegisterReturn;
-	options: Array<{value: string; label: string}>;
+	name: 'patientId' | 'providerId' | 'type' | 'state';
+	control: Control<AppointmentFormValues>;
+	options: SelectOption[];
 	placeholder?: string;
 }) {
-	const errorId = `${id}-error`;
 	return (
-		<FieldFrame id={id} label={label} error={error}>
-			<select
-				id={id}
-				aria-invalid={error ? true : undefined}
-				aria-describedby={error ? errorId : undefined}
-				className={inputClassName}
-				{...register}
-			>
-				{placeholder && <option value="">{placeholder}</option>}
-				{options.map((option) => (
-					<option key={option.value} value={option.value}>
-						{option.label}
-					</option>
-				))}
-			</select>
-		</FieldFrame>
+		<Controller
+			control={control}
+			name={name}
+			render={({field, fieldState}) => (
+				<UiSelectField
+					id={id}
+					label={label}
+					value={field.value ?? ''}
+					onChange={field.onChange}
+					onBlur={field.onBlur}
+					buttonRef={field.ref}
+					error={fieldState.error?.message}
+					options={options}
+					placeholder={placeholder}
+				/>
+			)}
+		/>
 	);
 }

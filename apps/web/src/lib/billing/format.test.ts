@@ -68,9 +68,7 @@ describe('invoice format helpers', () => {
 		expect(claimProcessorLabel('edi837')).toBe('EDI 837 (labeled)');
 	});
 
-	it('formats an ISO date with the locale date string', () => {
-		expect(formatInvoiceDate('2026-09-15T00:00:00.000Z')).toBe(
-			new Date('2026-09-15T00:00:00.000Z').toLocaleDateString(),
-		);
+	it('formats a UTC-midnight date as that calendar day in MM/DD/YYYY', () => {
+		expect(formatInvoiceDate('2026-09-15T00:00:00.000Z')).toBe('09/15/2026');
 	});
 });

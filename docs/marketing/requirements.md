@@ -24,7 +24,8 @@ potential-client conversations. It is not a certified production healthcare syst
 - What MedConnect Pro is (portfolio/demo SaaS, synthetic data only).
 - Which practice workflows it supports and how modules connect.
 - Who it is for (practice roles in the demo: practice admin, provider, nurse, receptionist,
-  patient; plus super-admin as a platform role).
+  patient; plus super admin, which the demo scopes to the signed-in practice per
+  [ADR-016](../decisions/ADR-016-super-admin-session-tenant-scope.md)).
 - UX direction: professional healthcare SaaS, restrained visual language, trust, clarity.
 - Security- and privacy-oriented engineering patterns used in the demo.
 - How a visitor enters the existing mock demo (`/demo` → `/login`).
