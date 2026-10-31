@@ -60,7 +60,8 @@ HTML comments like this one are stripped before Claude sees the file.
 ## Skills in this repo
 
 `/plan-task <ID>` · `/new-task <description>` · `/implement-task <ID>` ·
-`/open-pr [ID]` · `/design-brief <ID>` · `/create-html-preview <ID>` · `/close-milestone <M#>` · `/plane-sync [IDs]` · `/commit-tasks`
+`/open-pr [ID]` · `/design-brief <ID>` · `/create-html-preview <ID>` · `/close-milestone <M#>` · `/plane-sync [IDs]` · `/commit-tasks` ·
+`/release-check [version]`
 
 ## Compact instructions
 

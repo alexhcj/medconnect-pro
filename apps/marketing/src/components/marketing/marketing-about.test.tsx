@@ -86,8 +86,8 @@ describe('MarketingAbout', () => {
 
 		const shipped = within(section).getByRole('list', {name: 'Shipped'});
 		expect(within(shipped).queryByText(/1\.0\.0/)).not.toBeInTheDocument();
-		const upNext = within(section).getByRole('list', {name: 'Up next'});
-		expect(within(upNext).getByText('1.0.0 demo release')).toBeInTheDocument();
+		const inProgress = within(section).getByRole('list', {name: 'In progress'});
+		expect(within(inProgress).getByText('1.0.0 demo release')).toBeInTheDocument();
 
 		const paused = within(section).getByText(MARKETING_ABOUT_STATE.paused.text);
 		expect(paused.parentElement).toHaveTextContent(MARKETING_ABOUT_STATE.paused.label);

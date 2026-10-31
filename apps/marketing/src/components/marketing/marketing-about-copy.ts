@@ -86,18 +86,14 @@ export const MARKETING_ABOUT_STATE = {
 			label: 'In progress',
 			items: [
 				{
-					title: 'Preview lanes pilot',
-					description: 'One real pull request per delivery lane to confirm that previews stay isolated.',
+					title: '1.0.0 demo release',
+					description: 'The first tagged demo release on Render, after a full pre-release check.',
 				},
 			],
 		},
 		{
 			label: 'Up next',
 			items: [
-				{
-					title: '1.0.0 demo release',
-					description: 'The first tagged demo release on Render, after the preview lanes pilot.',
-				},
 				{
 					title: 'Accessibility follow-ups',
 					description: 'Higher-contrast input borders and wider browser and screen-reader checks, after 1.0.0.',

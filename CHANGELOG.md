@@ -6,6 +6,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [0.103.7] - 2026-10-31
+
+### Added
+
+- `/release-check` skill (`.claude/skills/release-check/`): a read-only pre-release run of the CI
+  gates, API tests, builds, audit, mock e2e, docs and version lockstep, a local browser
+  walkthrough and the live Render smoke, ending in a GO / NO-GO report. `release.md` says when to
+  run it.
+- INFRA-023: follow-up task for the Render usage and preview build-filter mismatches QA-010 found.
+
+### Changed
+
+- `/about` board: the preview lanes pilot (QA-010) is finished, so the 1.0.0 demo release moves to
+  In progress.
+- QA-010 shipped with evidence for every lane; M20 (PR previews and delivery lanes) is closed. INFRA-021 now requires a
+  `/release-check` GO before the 1.0.0 bump and a post-bump run before the tag.
+
 ## [0.103.6] - 2026-10-31
 
 ### Fixed
