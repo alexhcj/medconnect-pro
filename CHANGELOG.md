@@ -6,6 +6,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.0.0] - 2026-10-31
+
+The first stable release: the feature-complete synthetic demo on Render (M0–M8 and M10–M21). This MAJOR bump
+was made at the user's explicit request (ADR-007, INFRA-021). Production hosting on AWS stays a
+later 1.x release (INFRA-013). Not HIPAA certified; synthetic data only.
+
+### Added
+
+- 1.0.0 release notes for the Render demo: `docs/releases/v1.0.0-release-notes.md`.
+
+### Changed
+
+- `/about` board: the 1.0.0 demo release moves to Shipped, the accessibility follow-ups move to In
+  progress, and Telehealth 2.0 is Up next.
+- Release docs: `release.md` and the release-notes template now point 1.0.0 at the Render notes;
+  the template serves the later AWS production release (INFRA-013).
+- Roadmap, `AGENTS.md`, README, master task list and capability matrix record 1.0.0 (INFRA-021).
+- Render smoke (`deploy-render.md`, `/release-check`): documents are uploaded through the API (the
+  web app only downloads), the client-address check is marked not observable (the API does not log
+  addresses), and the API start log must say "No migrations are pending".
+
 ## [0.103.7] - 2026-10-31
 
 ### Added

@@ -56,12 +56,17 @@ on, every release is tagged on `main` and the next check diffs against it.
 Do not deploy production from a feature branch. Do not add a second Amplify publisher in GitHub
 Actions.
 
-## GitHub `1.0.0` notes
+## GitHub release notes
 
-Paste [github-release-notes-template.md](../releases/github-release-notes-template.md) into the
-GitHub Releases UI. [INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md)
-fills every `[INFRA-013: …]` token after production smoke. Do not auto-publish a GitHub release
-from CI. Do not bump to `1.0.0` in this workflow until INFRA-013 records explicit human approval.
+`1.0.0` is the Render demo release
+([INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md), ADR-007 amended
+2026-10-28). Its notes are [v1.0.0-release-notes.md](../releases/v1.0.0-release-notes.md); pass
+that file to `gh release create --notes-file` or paste it into the GitHub Releases UI.
+
+[github-release-notes-template.md](../releases/github-release-notes-template.md) serves the later
+AWS production release (1.x).
+[INFRA-013](../tasks/infrastructure/INFRA-013-v1.0.0-production-release-readiness.md) fills every
+`[INFRA-013: …]` token after production smoke. Do not auto-publish a GitHub release from CI.
 
 ## Failure and rollback
 

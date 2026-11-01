@@ -99,7 +99,11 @@ this fits). CI mirror: `.github/workflows/ci.yml`. Hosted smoke: `docs/workflows
      (`document.documentElement.scrollWidth` equals the viewport width). Reset the viewport after.
    - MANUAL (the skill does not enter credentials on the live demo): sign in as
      `practice.admin@example.test`, reload and open a patient list; change one synthetic record;
-     upload and download a document; client IP in the API logs; Render free-instance hours.
+     upload a document through the API and download it in the app (no upload UI); Render
+     free-instance hours (read before the monthly reset). The API does not log client IPs, so there
+     is no log check for them (`deploy-render.md` "Smoke").
+   - Migrations applied: Render logs for `medconnect-api` around the last deploy (Render MCP
+     `list_logs`, text `*igration*`) show "No migrations are pending" (PASS), otherwise MANUAL.
 9. **Release-only items**, all MANUAL: review migrations changed since the base ref
    (`git diff --name-only <base>..HEAD -- apps/api/src/persistence/migrations`) for rollback
    implications (none changed: PASS instead); review the lane's Render preview; release notes from

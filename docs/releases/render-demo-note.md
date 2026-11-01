@@ -1,6 +1,7 @@
 # Render demo note
 
-Interim public demo for interviews. This is not a `1.0.0` release and it does not close M9 or M18.
+Interim public demo for interviews. This note is the 0.91.0 snapshot; it does not close M9 or M18.
+The `1.0.0` release on Render has its own notes: [v1.0.0-release-notes.md](v1.0.0-release-notes.md).
 
 ## Verified deploy
 
