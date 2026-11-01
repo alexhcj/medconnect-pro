@@ -75,7 +75,7 @@ release and no longer gates 1.0.0.
 - [x] The root version and lockfile are 1.0.0, with a CHANGELOG entry.
 - [x] The release notes follow the INFRA-012 template and state the hosting limits.
 - [x] Every progress tracker shows 1.0.0, and `npm run docs:marketing-sync` passes.
-- [ ] A pre-bump `/release-check 1.0.0` GO and a post-bump run with no FAIL are recorded in
+- [x] A pre-bump `/release-check 1.0.0` GO and a post-bump run with no FAIL are recorded in
   Completion.
 - [ ] The tag and GitHub release are created only after the user approves.
 
@@ -91,7 +91,7 @@ Render demo.
 
 ## Completion
 
-- Implementation: complete (2026-10-31) on `release/v1.0.0`. Version 0.103.7 → 1.0.0 (MAJOR on the
+- Implementation: complete (2026-11-01) on `release/v1.0.0`. Version 0.103.7 → 1.0.0 (MAJOR on the
   user's explicit approval of the INFRA-021 plan; ADR-007).
 - Release notes: [v1.0.0-release-notes.md](../../releases/v1.0.0-release-notes.md), in the INFRA-012
   template's section order, rewritten for Render (hosting limits, Free Postgres expiry 2026-11-13,
@@ -119,7 +119,12 @@ Render demo.
     rollback needs no `migration:revert`.
   - Free instance hours: the monthly counter reset on 2026-11-01 before it was read (2.63 h / 750 h
     that day); October's total was not captured. Custom domains read 4 / 2 (INFRA-023).
-- Post-bump `/release-check 1.0.0`: not run yet (needs the pushed branch and `ci`).
+- Post-bump `/release-check 1.0.0 --skip ci,db,build,e2e,browser` on `release/v1.0.0` `3443e12`
+  (2026-11-01): **GO with manual items**, no FAIL. Every tracker says 1.0.0; `docs:marketing-sync`
+  and the release-wide docs check pass; live smoke (health, ready, `/api/docs` 404, `/` → `/login`
+  with 4 demo accounts, marketing 200 with no cookie, 320 px on 5 pages) PASS; API start log "No
+  migrations are pending"; no migration changed since `origin/main`. Manual: `ci` on the PR (it runs
+  only on pull requests and `main`), the `render-preview` check of `/about`, and the tag.
 - Tag and GitHub release: not created; the user runs them after the merge.
 
 ## Roadmap

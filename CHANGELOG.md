@@ -6,7 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
-## [1.0.0] - 2026-10-31
+## [1.0.0] - 2026-11-01
 
 The first stable release: the feature-complete synthetic demo on Render (M0–M8 and M10–M21). This MAJOR bump
 was made at the user's explicit request (ADR-007, INFRA-021). Production hosting on AWS stays a

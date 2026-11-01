@@ -103,7 +103,7 @@ The date picker scroll fix (opening the calendar no longer jumps long pages to t
 0.103.5. The date picker keyboard and zoom fix (keyboard open lands on the field's month, today marked
 for screen readers, focused day kept visible at 200% zoom) shipped at 0.103.6. The `/about` board
 update for the finished preview lanes pilot (1.0.0 moves to In progress) shipped at 0.103.7.
-**1.0.0 is released** (2026-10-31): [INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)
+**1.0.0 is released** (2026-11-01): [INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)
 shipped the first stable demo release on Render after a `/release-check` GO, with
 [release notes](../releases/v1.0.0-release-notes.md) (latest release 1.0.0). No milestone is active.
 Next: [FE-061](../tasks/frontend/FE-061-input-border-contrast-token.md) and
