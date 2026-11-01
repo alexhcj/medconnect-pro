@@ -78,7 +78,9 @@ describe('AccountLoginLimiter on PostgreSQL (shared across instances)', () => {
 	});
 
 	it('counts concurrent failures from separate limiter instances atomically', async () => {
-		const clock: Clock = {now: () => new Date()};
+		// Frozen 1 s into the current window so the concurrent burst cannot straddle a boundary.
+		const windowStart = new Date(Math.floor(Date.now() / windowMs) * windowMs + 1_000);
+		const clock: Clock = {now: () => windowStart};
 		const email = `race.${randomUUID()}@synthetic.example`;
 		const instances = [limiter(store, clock), limiter(store, clock), limiter(store, clock)];
 		const results = await Promise.all(

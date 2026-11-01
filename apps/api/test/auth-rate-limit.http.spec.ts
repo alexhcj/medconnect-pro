@@ -28,6 +28,12 @@ const RATE_LIMITED = `${DEFAULT_LOCAL_WEB_ORIGIN}/login?reason=rate_limited`;
 
 type SecurityEventBody = {action: string; actorUserId: string; resourceType: string; resourceId: string | null};
 
+/**
+ * Every policy window is a multiple of this, so a 5-minute boundary is also a window start for
+ * each policy. The shift stays under the Fake OIDC id_token lifetime, which uses real time.
+ */
+const WINDOW_ALIGN_MS = 5 * 60 * 1000;
+
 describe('auth and sensitive-route rate limits (HTTP)', () => {
 	let app: INestApplication;
 	let dataSource: DataSource;
@@ -54,6 +60,9 @@ describe('auth and sensitive-route rate limits (HTTP)', () => {
 	}
 
 	beforeAll(async () => {
+		for (const policy of Object.values(RATE_LIMIT_POLICIES)) {
+			expect(policy.windowMs % WINDOW_ALIGN_MS, policy.name).toBe(0);
+		}
 		const catalog: MockIdpAccount[] = [
 			{email: adminEmail, password, role: 'PRACTICE_ADMIN'},
 			{email: providerEmail, password, role: 'PROVIDER'},
@@ -113,7 +122,9 @@ describe('auth and sensitive-route rate limits (HTTP)', () => {
 
 	beforeEach(() => {
 		testRateLimitStore.reset();
-		clockOffsetMs = 0;
+		// Start each test 1 s into a fixed window so no burst straddles a window boundary.
+		const nowMs = Date.now();
+		clockOffsetMs = Math.floor(nowMs / WINDOW_ALIGN_MS) * WINDOW_ALIGN_MS + 1_000 - nowMs;
 	});
 
 	afterEach(() => {
