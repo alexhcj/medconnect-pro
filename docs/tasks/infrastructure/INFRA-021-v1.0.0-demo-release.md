@@ -77,7 +77,7 @@ release and no longer gates 1.0.0.
 - [x] Every progress tracker shows 1.0.0, and `npm run docs:marketing-sync` passes.
 - [x] A pre-bump `/release-check 1.0.0` GO and a post-bump run with no FAIL are recorded in
   Completion.
-- [ ] The tag and GitHub release are created only after the user approves.
+- [x] The tag and GitHub release are created only after the user approves.
 
 ## Dependencies
 
@@ -125,7 +125,13 @@ Render demo.
   with 4 demo accounts, marketing 200 with no cookie, 320 px on 5 pages) PASS; API start log "No
   migrations are pending"; no migration changed since `origin/main`. Manual: `ci` on the PR (it runs
   only on pull requests and `main`), the `render-preview` check of `/about`, and the tag.
-- Tag and GitHub release: not created; the user runs them after the merge.
+- Release (2026-11-01): PR #14 squash-merged as `92d68e4`; `ci` on `main` passed on that commit, and
+  Render deployed it to api, web and marketing (05:37–05:40 UTC). The user created the annotated tag
+  `v1.0.0` and the GitHub release "MedConnect Pro 1.0.0" from
+  `docs/releases/v1.0.0-release-notes.md`. The first tag pointed at `71a62d4` (0.103.7); the user
+  deleted that release and tag and recreated both on `92d68e4` (release published 05:48:38 UTC).
+  Verified: `v1.0.0^{commit}` is `92d68e4` with `package.json` 1.0.0, and the live `/about` shows
+  "1.0.0 demo release" under Shipped.
 
 ## Roadmap
 
