@@ -182,8 +182,10 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		practiceId: practiceA.id,
 		patientId: assignedPatient.id,
 		providerUserId: provider.id,
-		startAt: new Date('2026-11-01T14:00:00.000Z'),
-		endAt: new Date('2026-11-01T15:00:00.000Z'),
+		// Relative to now and clear of the join and create-session slots below (now-20m to now+3h):
+		// a fixed date overlaps them on that day and trips appointments_provider_during_excl.
+		startAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+		endAt: new Date(Date.now() + 25 * 60 * 60 * 1000),
 		type: 'office_visit',
 		state: 'scheduled',
 		notes: null,
