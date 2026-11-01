@@ -154,11 +154,12 @@ hosted on AWS.
 
 ## Development status
 
-Application version **0.103.7**. Milestones and sequencing:
-[`docs/roadmap/release-roadmap.md`](./docs/roadmap/release-roadmap.md). Next: the 1.0.0 Render
-demo release
-([INFRA-021](./docs/tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)), after a GO from the
-`/release-check` pre-release check.
+Application version **1.0.0**, the first stable release of the synthetic demo on Render
+([release notes](./docs/releases/v1.0.0-release-notes.md),
+[INFRA-021](./docs/tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)). Milestones and sequencing:
+[`docs/roadmap/release-roadmap.md`](./docs/roadmap/release-roadmap.md). Next: accessibility
+follow-ups (FE-061, QA-013), then Telehealth 2.0 (proposed for 1.1.0). AWS production hosting is a
+later 1.x release.
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).
 - **M9 — Deployment / preview infrastructure** is **PAUSED / BLOCKED** — AWS account setup

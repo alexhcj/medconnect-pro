@@ -80,14 +80,18 @@ export const MARKETING_ABOUT_STATE = {
 					description:
 						'A refreshed homepage, status badges, an architecture page, and consistent forms, dates and select lists in the web app.',
 				},
+				{
+					title: '1.0.0 demo release',
+					description: 'The first stable demo release on Render, after a full pre-release check.',
+				},
 			],
 		},
 		{
 			label: 'In progress',
 			items: [
 				{
-					title: '1.0.0 demo release',
-					description: 'The first tagged demo release on Render, after a full pre-release check.',
+					title: 'Accessibility follow-ups',
+					description: 'Higher-contrast input borders and wider browser and screen-reader checks.',
 				},
 			],
 		},
@@ -95,8 +99,9 @@ export const MARKETING_ABOUT_STATE = {
 			label: 'Up next',
 			items: [
 				{
-					title: 'Accessibility follow-ups',
-					description: 'Higher-contrast input borders and wider browser and screen-reader checks, after 1.0.0.',
+					title: 'Telehealth 2.0',
+					description:
+						'Planned: device pickers with a camera preview, a provider admit step and a call layout for three people.',
 				},
 			],
 		},

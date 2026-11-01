@@ -1,5 +1,9 @@
 # GitHub v1.0.0 release-notes template
 
+> **1.0.0 shipped on Render** with its own notes, [v1.0.0-release-notes.md](v1.0.0-release-notes.md)
+> (INFRA-021). This template now serves the later AWS production release (1.x, INFRA-013): read
+> "1.0.0" below as that release.
+
 Paste the body below into the GitHub Releases UI for MedConnect Pro **1.0.0**. This is a
 product-story outline, not a Keep a Changelog dump.
 

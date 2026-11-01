@@ -103,13 +103,21 @@ After the first deploy is live:
   Practice. Session cookies stay on the application host.
 - Change one synthetic record (mark a notification read, or record a demo payment) and confirm it
   succeeds.
-- Upload a document in that same session and download it. The file is gone after the free API
-  service sleeps, restarts, or redeploys. Seeded document bytes written during start are not
-  on the service disk after the next spin-down.
-- In the API logs, confirm the client address is the browser address you expect. `TRUST_PROXY=1`
-  matches one Render hop. The proxy sends only the last `X-Forwarded-For` address that Render
-  reported to the web service. If every user shares the web service address, the hop count is
-  wrong; change the env var, and do not raise it above the real hop count.
+- Upload a document through the API and download it in the app. The web app has no upload
+  control: sign in with `POST /auth/login` (for example from Postman), send
+  `POST /patients/:id/documents` with `Authorization: Bearer <access token>` and a multipart `file`
+  (PDF, PNG or JPEG, up to 5 MiB) plus `category` (`intake`, `insurance` or `clinical`), then open
+  that patient's profile and use Download. The file is gone after the free API service sleeps,
+  restarts, or redeploys. Seeded document bytes written during start are not on the service disk
+  after the next spin-down.
+- Client address: not observable from logs. The API does not log client addresses; it uses them
+  only as rate-limit keys. `TRUST_PROXY=1` matches one Render hop, and the proxy sends only the
+  last `X-Forwarded-For` address that Render reported to the web service. If the hop count is
+  wrong, every user shares the web service address, so the address-keyed rate limits count all
+  users together and return 429 to everyone at once. Then change the env var, and do not raise it
+  above the real hop count.
+- Confirm the API start log for the deploy says "No migrations are pending" (the API runs
+  `migration:run` on every start; the database has no public listener).
 - Watch the workspace free-instance hours. The pool is 750 hours per month and is shared with
   every free web service in the workspace. Sleeping services should stay inside it.
 - The first sign-in after the API sleeps takes 45–60 s to wake it. FE-049 softens that: a trusted
