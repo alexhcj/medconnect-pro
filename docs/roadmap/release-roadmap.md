@@ -105,9 +105,11 @@ for screen readers, focused day kept visible at 200% zoom) shipped at 0.103.6. T
 update for the finished preview lanes pilot (1.0.0 moves to In progress) shipped at 0.103.7.
 **1.0.0 is released** (2026-11-01): [INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)
 shipped the first stable demo release on Render after a `/release-check` GO, with
-[release notes](../releases/v1.0.0-release-notes.md) (latest release 1.0.0). No milestone is active.
-Next: [FE-061](../tasks/frontend/FE-061-input-border-contrast-token.md) and
-[QA-013](../tasks/qa/QA-013-m21-verification-sweep.md) (pending standalone tasks), then Telehealth 2.0
+[release notes](../releases/v1.0.0-release-notes.md). No milestone is active.
+[FE-061](../tasks/frontend/FE-061-input-border-contrast-token.md) (input border contrast token,
+soft gray-450 default and a gray-500 hover token, disabled borders stepped down) shipped at 1.0.1 (latest
+release 1.0.1). Next: [QA-013](../tasks/qa/QA-013-m21-verification-sweep.md) (pending standalone
+task), then Telehealth 2.0
 (proposed as the 1.1.0 headline: device pickers with a camera preview, a provider admit step, a call
 layout for three people; no milestone or task specs yet).
 [INFRA-022](../tasks/infrastructure/INFRA-022-architecture-overview-and-adr-index.md) (architecture
@@ -353,8 +355,9 @@ Shipped: QA-012 (0.99.2), FE-051 (0.99.3), FE-052 (0.99.4), FE-053 (0.99.5), FE-
 Close audit (2026-10-31): [INFRA-021](../tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)
 moved out of M21 as the standalone 1.0.0 release step (it runs after M20 and M21 close).
 [FE-061](../tasks/frontend/FE-061-input-border-contrast-token.md) (input border contrast token, the
-FE-056 follow-up) and [QA-013](../tasks/qa/QA-013-m21-verification-sweep.md) (date locales, picker
-e2e, manual accessibility for FE-057 and FE-059) were logged as standalone tasks after 1.0.0.
+FE-056 follow-up; shipped at 1.0.1) and [QA-013](../tasks/qa/QA-013-m21-verification-sweep.md) (date
+locales, picker e2e, manual accessibility for FE-057 and FE-059) were logged as standalone tasks after
+1.0.0.
 
 ## Milestone crosswalk
 
@@ -386,7 +389,7 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046 (shipped, 0.96.2); FE-047 (shipped, 0.96.3); QA-008 (shipped, no version bump); QA-009 (shipped, no version bump) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Time column no-wrap with `patient-form.test.tsx` timeout fix, live seed volume for paging and event filter options parity shipped. QA-008 (live e2e suite green) and QA-009 (live paging specs) shipped. **Closed** at 0.96.3. Does not close M9 or reopen M17/M18. |
 | M20 PR previews and delivery lanes | INFRA-018 (shipped, docs only), INFRA-019 (shipped at 0.97.0), QA-011 (shipped, test only), SEC-010 (shipped at 0.97.1), SEC-011 (shipped at 0.97.4), FE-048 (optional; shipped at 0.97.2), INFRA-020 (shipped at 0.97.3); QA-010 (shipped, test and docs only) | **Closed** at 0.103.7. Render service previews for marketing and web only; web previews on frontend mocks; no API or database preview; `main` deploys after `ci`; PR-only flow. Previews add no paid resource (the only charge today is two extra custom domains, INFRA-023). Does not close M9 or change the AWS topology (ADR-012, INFRA-010). |
 | M21 Marketing and web app design refresh | QA-012, FE-051–FE-060 (shipped) | **Closed** at 0.103.1. Homepage bands and responsive fixes, hero visual, module icons and links, slider, status badges vs links, About roadmap board, `/architecture` page, repeatable screenshots. App forms on the white bordered `Card` (FE-056); one US date/time format and an accessible date picker (FE-057); design-system select lists and inputs (FE-058); one-tap demo account picker on sign-in (FE-059); hero image, appointments screenshot and calendar event polish (FE-060). INFRA-021 moved out (2026-10-31) as the standalone 1.0.0 release; AWS production (INFRA-013) moves to 1.x. Does not close M9. |
-| Standalone (no milestone) | FE-049 (shipped at 0.98.0); FE-050 (shipped at 0.99.0); INFRA-021 (shipped at 1.0.0); FE-061, QA-013 (pending; after 1.0.0); INFRA-022 (shipped; docs only); SEC-012 (shipped at 0.103.4); INFRA-023 (in progress; docs only; hours reading 2026-11-09 to 2026-11-16) | API status indicator on `/login` and a gesture-gated wake ping for the sleeping Render Free API (ADR-017). Not part of M20. FE-049 adds no paid resources, keep-alive pinger, or API change. FE-050: logo link to the marketing site on the auth pages via `NEXT_PUBLIC_MARKETING_URL`; no API or auth change. INFRA-021 released 1.0.0 as the Render demo after M20 and M21 closed. FE-061 (input border contrast token) and QA-013 (M21 verification sweep) run after 1.0.0. INFRA-022 adds the architecture overview, request-lifecycle doc and ADR index; docs only, no version bump, no ADR edits. SEC-012 clears the `glob`, `minimatch` and `follow-redirects` production audit findings (scoped `typeorm` override; no `typeorm` upgrade). INFRA-023 follows up the QA-010 mismatches: custom-domain cost, version-bump preview builds and the preview-link limitation are documented, and a cost policy is recorded (free where possible; crucial paid items documented); the hours explanation waits for a November dashboard reading. |
+| Standalone (no milestone) | FE-049 (shipped at 0.98.0); FE-050 (shipped at 0.99.0); INFRA-021 (shipped at 1.0.0); FE-061 (shipped at 1.0.1); QA-013 (pending; after 1.0.0); INFRA-022 (shipped; docs only); SEC-012 (shipped at 0.103.4); INFRA-023 (in progress; docs only; hours reading 2026-11-09 to 2026-11-16) | API status indicator on `/login` and a gesture-gated wake ping for the sleeping Render Free API (ADR-017). Not part of M20. FE-049 adds no paid resources, keep-alive pinger, or API change. FE-050: logo link to the marketing site on the auth pages via `NEXT_PUBLIC_MARKETING_URL`; no API or auth change. INFRA-021 released 1.0.0 as the Render demo after M20 and M21 closed. FE-061 (input border contrast token) shipped at 1.0.1 and QA-013 (M21 verification sweep) runs after 1.0.0. INFRA-022 adds the architecture overview, request-lifecycle doc and ADR index; docs only, no version bump, no ADR edits. SEC-012 clears the `glob`, `minimatch` and `follow-redirects` production audit findings (scoped `typeorm` override; no `typeorm` upgrade). INFRA-023 follows up the QA-010 mismatches: custom-domain cost, version-bump preview builds and the preview-link limitation are documented, and a cost policy is recorded (free where possible; crucial paid items documented); the hours explanation waits for a November dashboard reading. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,
 and so on). [Backend roadmap](backend-roadmap.md) numbered items are domain order, not the

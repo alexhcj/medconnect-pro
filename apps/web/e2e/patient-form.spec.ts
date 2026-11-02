@@ -1,5 +1,6 @@
 import {expect, test, type Page} from '@playwright/test';
 import {fillDateField} from './helpers/date-fields';
+import {expectNoAxeViolations} from './helpers/axe';
 import {chooseSelectOption} from './helpers/select-fields';
 import {signIn, signInAsPracticeAdmin} from './helpers/mock-auth';
 
@@ -31,6 +32,13 @@ async function fillNewPatient(page: Page) {
 
 test.describe('Patient create and edit', () => {
 	test.use({viewport: {width: 768, height: 1024}});
+
+	test('has no axe violations on the add patient form', async ({page}) => {
+		await signInAsPracticeAdmin(page);
+		await page.goto('/dashboard/patients/new');
+		await expect(page.getByRole('heading', {level: 1, name: 'Add patient'})).toBeVisible();
+		await expectNoAxeViolations(page, ['form']);
+	});
 
 	test('blocks an empty create, then saves and edits a patient', async ({page}) => {
 		await signInAsPracticeAdmin(page);

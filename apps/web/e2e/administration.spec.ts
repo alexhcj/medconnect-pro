@@ -1,4 +1,5 @@
 import {expect, test, type Page} from '@playwright/test';
+import {expectNoAxeViolations} from './helpers/axe';
 import {signInAsPracticeAdmin} from './helpers/mock-auth';
 import {selectField} from './helpers/select-fields';
 
@@ -10,6 +11,14 @@ async function openAdministration(page: Page) {
 
 test.describe('Administration', () => {
 	test.use({viewport: {width: 768, height: 1024}});
+
+	test('has no axe violations on the filters and role selects', async ({page}) => {
+		await signInAsPracticeAdmin(page);
+		await openAdministration(page);
+		await expect(page.getByRole('heading', {level: 1, name: 'Administration'})).toBeVisible();
+		await expect(page.getByRole('table', {name: 'Audit events'})).toBeVisible();
+		await expectNoAxeViolations(page, ['main']);
+	});
 
 	test('lists synthetic users and audit events', async ({page}) => {
 		await signInAsPracticeAdmin(page);

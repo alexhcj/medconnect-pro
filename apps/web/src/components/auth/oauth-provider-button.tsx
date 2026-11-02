@@ -35,11 +35,11 @@ export function OAuthProviderButton({provider, available}: OAuthProviderButtonPr
 				aria-busy={redirecting || undefined}
 				aria-describedby={available ? undefined : HELPER_ID}
 				className={cn(
-					'flex h-11 w-full items-center justify-center gap-3 rounded-md border border-input px-4 text-sm font-medium',
+					'flex h-11 w-full items-center justify-center gap-3 rounded-md border px-4 text-sm font-medium',
 					'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
 					available
-						? 'bg-surface text-foreground hover:bg-subtle disabled:cursor-wait'
-						: 'cursor-not-allowed bg-subtle text-foreground-muted opacity-60',
+						? 'border-input bg-surface text-foreground hover:border-input-hover hover:bg-subtle disabled:cursor-wait disabled:border-border'
+						: 'cursor-not-allowed border-border bg-subtle text-foreground-muted opacity-60',
 				)}
 			>
 				{redirecting ? (
