@@ -66,7 +66,7 @@ the Render demo. Work currently lands by direct push.
 
 ## Acceptance criteria
 
-- [ ] A commit to `main` with failing `ci` does not deploy any Render service
+- [x] A commit to `main` with failing `ci` does not deploy any Render service
 - [x] A commit to `main` with passing `ci` deploys only the services its build filters match
 - [x] A PR shows one project comment that matches the Render setup when `AMPLIFY_APP_ID` is unset
 - [x] `npm run test:preview-delivery` passes with the updated workflow
@@ -148,15 +148,13 @@ INFRA-019's MINOR if they ship together.
   ```
   `origin/main` stayed at `1eb0f5c` and no `ci` run started for the rejected push. The
   rejected commit exists only locally and was dropped. Criterion 6 is met.
-  Criterion 1 stays open on purpose, with a one-week observation window (2026-10-26 to
-  2026-11-02). With admin enforcement on, a red `ci` cannot be merged to `main`, so the case is
-  watched, not forced: each `main` push whose `ci` run is red or cancelled (the cancelled run for
-  `1eb0f5c` is one such case, but that commit matches no build filter) is compared with the Render
-  deploy list of `medconnect-api`, `-web` and `-marketing`. If no service deploys for any
-  such commit by 2026-11-02, record the commits and tick the criterion; if one does, open a fix task.
-  Until then the supporting evidence is the deploy timing above (deploys are created when `ci`
-  finishes, not at push) and `autoDeployTrigger: checksPass` on all three services.
-  **Not yet verified:** criterion 1 (no `main` commit with a red `ci` has occurred since
-  `checksPass` took effect; the red `main` run on 2026-10-23 09:05 pre-dates it and did deploy),
-  and criterion 6 (a
-  non-admin direct push shown rejected; with `enforce_admins: false` the owner can still push).
+  Criterion 1, forced on 2026-11-02 (owner-approved real test, no setting changed). A probe test
+  (`apps/web/src/lib/ci-gate-probe.test.ts`) passes on pull requests and fails only on the
+  push-to-main `ci` run, so it merged through a normal PR with a green required check:
+  - Red: PR #17 merged as `2e9772f` (matches the web filter `apps/web/**`). `ci` run `41459384521`
+    failed at 14:13:04Z in `Test web` (749 passed, 1 failed: the probe). `medconnect-web` has no
+    deploy for `2e9772f`; its latest deploy stayed `92d68e4` (live, 2026-11-01). Nothing deployed.
+  - Green: revert PR #18 merged as `d6dd0bb`. `ci` run `41463286348` succeeded at 14:40:55Z and
+    `medconnect-web` deploy `dep-dbka1urncjis73ef1r30` was created at 14:40:59Z (about 4 s later,
+    trigger `new_commit`), so the same filter deploys once `ci` is green.
+  The probe is reverted; `main` has no probe file. Criterion 1 is met.
