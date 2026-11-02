@@ -7,14 +7,21 @@ const US_DATE = /\d{2}\/\d{2}\/\d{4}/;
 const US_TIME = /\b\d{1,2}:\d{2} (AM|PM)\b/;
 // A Russian browser and a US time zone: the case FE-057 fixes (native fields showed дд.мм.гггг).
 const RUSSIAN_BROWSER = {locale: 'ru-RU', timezoneId: 'America/Los_Angeles'} as const;
+// QA-013: the format checks also run in a German browser in a non-US zone and a UK English browser.
+const FORMAT_BROWSERS = [
+	{name: 'Russian', ...RUSSIAN_BROWSER},
+	{name: 'German (Berlin)', locale: 'de-DE', timezoneId: 'Europe/Berlin'},
+	{name: 'English (UK)', locale: 'en-GB', timezoneId: 'America/Los_Angeles'},
+] as const;
 
 async function open(page: Page, path: string) {
 	await signInAsPracticeAdmin(page);
 	await page.goto(path);
 }
 
-test.describe('US date format in a Russian browser', () => {
-	test.use({...RUSSIAN_BROWSER, viewport: {width: 1280, height: 900}});
+for (const {name, locale, timezoneId} of FORMAT_BROWSERS)
+test.describe(`US date format in a ${name} browser`, () => {
+	test.use({locale, timezoneId, viewport: {width: 1280, height: 900}});
 
 	test('patient profile shows date of birth as MM/DD/YYYY, not ISO or dd.mm.yyyy', async ({page}) => {
 		await open(page, '/dashboard/patients/demo-patient-001');

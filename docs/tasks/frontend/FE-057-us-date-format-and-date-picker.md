@@ -240,6 +240,9 @@ Plan decisions, approved by the user on 2026-10-30 (recommended options accepted
 - Scroll fix (0.103.5): opening the calendar no longer scrolls the page to the top. The day button
   took focus before the popover was positioned, which jumped long pages such as the admin audit and
   security event filters; it now focuses with `preventScroll`.
+- QA-013 follow-up (2026-11-02): German and English (UK) browsers now run in `date-format.spec.ts`
+  (format checks), the whole date spec passed in Playwright Firefox, and a Narrator pass found no
+  defect. No criteria changed; see [QA-013](../qa/QA-013-m21-verification-sweep.md).
 
 ## Roadmap
 

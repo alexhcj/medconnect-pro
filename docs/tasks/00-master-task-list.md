@@ -253,7 +253,7 @@ the web app's forms, dates, select lists and inputs in line with the same design
 - FE-050 — Auth pages marketing logo link (shipped at 0.99.0; logo link back to the marketing site on sign-in, register, and email-verification)
 - INFRA-021 — 1.0.0 demo release (shipped at 1.0.0; moved out of M21 on 2026-10-31)
 - FE-061 — Input border contrast token (shipped at 1.0.1; FE-056 follow-up)
-- QA-013 — M21 verification sweep: date locales, picker e2e, manual accessibility (after 1.0.0; test only)
+- QA-013 — M21 verification sweep: date locales, picker e2e, manual accessibility (shipped; test only, no version bump)
 - INFRA-022 — Architecture overview, request lifecycle and ADR index (shipped; docs only, no version bump)
 - SEC-012 — Resolve glob and follow-redirects audit findings (shipped at 0.103.4)
 - INFRA-023 — Render usage and preview build-filter follow-ups (in progress; docs only; hours reading 2026-11-09 to 2026-11-16)

@@ -13,7 +13,10 @@ test.describe('Live mock MFA challenge', () => {
 
 		await expect(page.getByRole('heading', {name: 'Verify mock MFA'})).toBeVisible();
 		await expect(page.getByLabel('Verification code')).toBeFocused();
-		await page.getByLabel('Verification code').fill(MFA_NURSE_CODE);
+		// QA-013: "Fill code" (demo flag) fills the fixture code and moves focus to Verify.
+		await page.getByRole('button', {name: 'Fill code'}).click();
+		await expect(page.getByLabel('Verification code')).toHaveValue(MFA_NURSE_CODE);
+		await expect(page.getByRole('button', {name: 'Verify'})).toBeFocused();
 		await page.getByRole('button', {name: 'Verify'}).click();
 
 		await expect(page).toHaveURL(/\/dashboard$/);
