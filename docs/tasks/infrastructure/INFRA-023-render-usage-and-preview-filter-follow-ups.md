@@ -15,7 +15,7 @@ related_docs:
     ../qa/QA-010-preview-lanes-pilot.md,
   ]
 implementation:
-  status: not_started
+  status: in_progress
 validation:
   responsive: false
   accessibility: false
@@ -53,8 +53,9 @@ need a decision, not a quick doc edit:
 ## Scope
 
 - Read the Render billing and usage pages and explain the hours figures (wall clock vs billed, per
-  service vs workspace). Record the explanation and the preview-hours difference against the QA-010
-  baseline in `deploy-render.md`.
+  service vs workspace). Record the explanation in `deploy-render.md`. The monthly counter reset on
+  2026-11-01 before October was read, so the pilot's difference against the QA-010 baseline cannot
+  be measured; QA-010's upper bound (about 5.0 h) is the record (amended 2026-11-02, owner).
 - Check the billing page for a custom-domain charge. Then either change the "no paid resources"
   wording in `deploy-render.md` (and the M20 text in the roadmap) to name the domain charge, or
   record that no charge applies.
@@ -76,12 +77,13 @@ need a decision, not a quick doc edit:
 
 ## Acceptance Criteria
 
-- [ ] `deploy-render.md` explains the free instance hours figures and records the pilot's preview
-  hours against the QA-010 baseline.
-- [ ] The custom-domain cost is stated correctly wherever the docs say "no paid resources".
-- [ ] `delivery-lanes.md` (or `render.yaml` plus its spec) matches what a marketing-lane PR with a
+- [ ] `deploy-render.md` explains the free instance hours figures from a November reading, and
+  records that October's difference was not captured (QA-010's about 5.0 h upper bound stands).
+  Amended 2026-11-02 (owner); read and tick between 2026-11-09 and 2026-11-16.
+- [x] The custom-domain cost is stated correctly wherever the docs say "no paid resources".
+- [x] `delivery-lanes.md` (or `render.yaml` plus its spec) matches what a marketing-lane PR with a
   version bump builds.
-- [ ] Preview-to-preview links are listed as a known limitation.
+- [x] Preview-to-preview links are listed as a known limitation.
 
 ## Dependencies
 
@@ -106,3 +108,30 @@ Docs only: no version bump. A `render.yaml` change is an infra change: bump per 
 
 Standalone (no milestone). Logged by the QA-010 close on 2026-10-31. Can run before or after the
 1.0.0 demo release.
+
+## Completion
+
+In progress (2026-11-02). Criteria 2 to 4 are done; criterion 1 waits for the owner's November
+reading of the Render billing page.
+
+- **Owner decisions (2026-11-02):**
+  - Cost policy: the demo stays on free resources where it can. A paid item is acceptable when it
+    is a crucial improvement, and it is documented with its cost and reason. Recorded in
+    `deploy-render.md` (runbook and roadmap only; ADR-019 and ADR-017 are not edited).
+  - Custom domains: keep all four hostnames. The October domain charge was paid (about $0.50, two
+    names above the two included at about $0.25 each). The docs name the apex and `www` as the
+    core names and `marketing` and `api` as the billed extras.
+  - Hours criterion amended (see Acceptance Criteria); tick after the reading.
+- **Version-bump builds:** documented, `render.yaml` unchanged. `package.json` and
+  `package-lock.json` stay in the web and marketing build filters (`render.yaml:86-91`,
+  `render.yaml:122-128`), so a root dependency change still rebuilds web. A marketing-lane PR that
+  bumps the version also builds `medconnect-web-pr-N`, and the merge redeploys all three services.
+  `npm run test:render-previews` not needed (no `render.yaml` change).
+- **Docs changed:** `docs/workflows/deploy-render.md` (cost policy, custom-domain cost, hours
+  note, preview cost, known limitation), `docs/workflows/delivery-lanes.md` (Marketing row and
+  example step), `docs/roadmap/release-roadmap.md` (M20 text, crosswalk rows, current position),
+  `AGENTS.md`, `docs/tasks/00-master-task-list.md`. Docs only: no version bump.
+- **Remaining:** between 2026-11-09 and 2026-11-16, read the billing page (per-service hours for
+  `medconnect-api` and `medconnect-web`, the workspace "Monthly included usage" card, the date
+  and page used), write the explanation into the `deploy-render.md` hours note, tick criterion 1,
+  and mark the task shipped in the trackers.
