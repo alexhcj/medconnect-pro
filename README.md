@@ -158,8 +158,8 @@ Application version **1.0.1**. 1.0.0 was the first stable release of the synthet
 ([release notes](./docs/releases/v1.0.0-release-notes.md),
 [INFRA-021](./docs/tasks/infrastructure/INFRA-021-v1.0.0-demo-release.md)); 1.0.1 raises form control
 borders to WCAG 3:1 contrast (FE-061). Milestones and sequencing:
-[`docs/roadmap/release-roadmap.md`](./docs/roadmap/release-roadmap.md). Next: accessibility
-follow-up QA-013, then Telehealth 2.0 (proposed for 1.1.0). AWS production hosting is a
+[`docs/roadmap/release-roadmap.md`](./docs/roadmap/release-roadmap.md). Next: Telehealth 2.0
+(proposed for 1.1.0). AWS production hosting is a
 later 1.x release.
 
 - **M0–M8 shipped**, including the public marketing site (FE-017–FE-023).

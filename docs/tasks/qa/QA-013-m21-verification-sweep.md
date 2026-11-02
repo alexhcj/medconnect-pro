@@ -3,7 +3,7 @@ id: QA-013
 type: task
 area: qa
 feature: testing
-status: pending
+status: implemented
 priority: medium
 estimate: 2
 dependencies: [FE-057, FE-059, INFRA-021]
@@ -14,7 +14,7 @@ related_docs:
     ../frontend/FE-059-demo-account-picker.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: true
@@ -64,13 +64,14 @@ The user decided to run this after the 1.0.0 demo release.
 
 ## Acceptance Criteria
 
-- [ ] `date-format.spec.ts` passes under `ru-RU`, `de-DE`, `en-GB` and `en-US` in Chromium.
-- [ ] A local Firefox run of the date spec is recorded (pass or the failures found).
-- [ ] A mock e2e signs in through the demo account picker and asserts the visible "Copied" state.
-- [ ] MFA "Fill code" is covered in the live suite, or Completion states why it stays unit-only.
-- [ ] Screen-reader and 200% zoom results for the date field and calendar are recorded; any
+- [x] `date-format.spec.ts` passes under `ru-RU`, `de-DE` and `en-GB` in Chromium (`en-US` stays
+  covered by the 2026-10-31 manual check in FE-057, by decision: two added languages at most).
+- [x] A local Firefox run of the date spec is recorded (pass or the failures found).
+- [x] A mock e2e signs in through the demo account picker and asserts the visible "Copied" state.
+- [x] MFA "Fill code" is covered in the live suite, or Completion states why it stays unit-only.
+- [x] Screen-reader and 200% zoom results for the date field and calendar are recorded; any
   defect has its own task ID.
-- [ ] FE-057 criteria are ticked only where this task verified them.
+- [x] FE-057 criteria are ticked only where this task verified them.
 
 ## Dependencies
 
@@ -88,3 +89,34 @@ Test and docs only: no version bump.
 ## Roadmap
 
 Standalone, after the 1.0.0 demo release (INFRA-021). Logged by the M21 close audit on 2026-10-31.
+
+## Completion
+
+- Audit note: the Context section was written at the M21 close audit. The 0.103.6 fix (2026-10-31)
+  then ran the four-language manual check, the keyboard and axe passes, and the 200% zoom check, and
+  added the zoom e2e. QA-013 added only what was still missing.
+- Date spec: [date-format.spec.ts](../../../apps/web/e2e/date-format.spec.ts) runs its US-format
+  checks (profile, lists, telehealth range, no native inputs) in a `ru-RU` browser (Los Angeles),
+  a `de-DE` browser in `Europe/Berlin` (non-US zone) and an `en-GB` browser (Los Angeles). The rest of
+  the spec runs once. Chromium: 23 passed. `en-US` was not added to the spec (two extra languages at
+  most, by decision); it stays covered by the manual check in FE-057 Completion (2026-10-31).
+- Firefox (local, Playwright Firefox 155.0, throwaway config, no CI project): the whole date spec,
+  23 passed, including axe on the open calendar, 200% zoom and 320 px.
+- Demo account picker: new [demo-account-picker.spec.ts](../../../apps/web/e2e/demo-account-picker.spec.ts)
+  (5 tests): one-tap fill and sign in as Provider and Patient, selection cleared on edit, and the
+  visible "Copied" state with the clipboard value checked (email and password, Chromium clipboard
+  permissions granted). It passed with `auth.spec.ts` (11 passed). `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS`
+  is now set in `playwright.config.ts` and `playwright.live.config.ts`. The run used a dev server that
+  also read the flag from the gitignored `.env.development`, so the new config line itself was not
+  isolated.
+- MFA "Fill code": [auth-mfa-live.spec.ts](../../../apps/web/e2e/auth-mfa-live.spec.ts) now clicks
+  "Fill code", checks the field holds the fixture code and that Verify has focus, then verifies. It
+  passed against the local API (migrated and seeded). It replaces the typed code, so there is no extra
+  sign-in.
+- Screen reader (Windows Narrator, run by the user on 2026-11-02): the date field, calendar
+  button, dialog and day cells were read correctly; no defect found, so no task opened. Observation:
+  opening the dialog reads its name and then every day in the grid, which is normal Narrator
+  behaviour for a dialog and was accepted for a demo. 200% zoom: unchanged from FE-057 (0.103.6 fix,
+  e2e at `date-format.spec.ts` "Date fields at 200% zoom").
+- Checks: `npm run lint:web` 0 errors (9 existing warnings), `npm run type-check:web` clean.
+- No version bump (test and docs only).
