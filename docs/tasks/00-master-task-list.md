@@ -256,4 +256,4 @@ the web app's forms, dates, select lists and inputs in line with the same design
 - QA-013 — M21 verification sweep: date locales, picker e2e, manual accessibility (after 1.0.0; test only)
 - INFRA-022 — Architecture overview, request lifecycle and ADR index (shipped; docs only, no version bump)
 - SEC-012 — Resolve glob and follow-redirects audit findings (shipped at 0.103.4)
-- INFRA-023 — Render usage and preview build-filter follow-ups (QA-010 mismatches; does not block 1.0.0)
+- INFRA-023 — Render usage and preview build-filter follow-ups (in progress; docs only; hours reading 2026-11-09 to 2026-11-16)

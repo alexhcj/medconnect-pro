@@ -57,7 +57,7 @@ Pick the lane from the paths the PR changes. If a PR spans lanes, use the strict
 | Lane | Typical paths | Branch + PR | CI | Render preview | Review on | Version (ADR-007) |
 | --- | --- | --- | --- | --- | --- | --- |
 | **Docs** | `docs/**`, `*.md`, `.claude/**` | Yes. Batch small doc fixes into one PR. | Full `ci` (fast enough; no path filter yet) | None | Diff | None |
-| **Marketing** | `apps/marketing/**`, `apps/web/src/styles/tokens.css` | Yes | Full `ci` | Marketing static site (free) | Preview URL, desktop + 320 px | PATCH or MINOR |
+| **Marketing** | `apps/marketing/**`, `apps/web/src/styles/tokens.css` | Yes | Full `ci` | Marketing static site (free); a root version bump also builds a web preview | Preview URL, desktop + 320 px | PATCH or MINOR |
 | **Web UI** | `apps/web/**` (no contract change) | Yes | Full `ci`, plus `e2e:mocks` locally | Web, mock mode | Preview URL with demo accounts (mock fixtures) | PATCH or MINOR |
 | **API / data / security** | `apps/api/**`, migrations, `docs/contracts/**` | Yes | Full `ci` (API tests on throwaway Postgres) | None | Diff, CI, local `e2e:live` | MINOR for contract or security changes; docs + changelog in the same PR |
 | **Infra / CI** | `render.yaml`, `.github/**`, `infra/**`, `scripts/infra/**` | Yes, and ask before editing | Full `ci` | Only if the change is a preview setting | Diff, Render dashboard after merge | Per change |
@@ -116,7 +116,10 @@ merged deploy.
    `design.status: approved`.
 3. `/plan-task`, approve, branch `fe-0xx-landing-sections`, `/implement-task`.
 4. PR titled `FE-0xx …` with label `render-preview`. Marketing lane: Render builds the static
-   preview only.
+   preview. When the PR also bumps the root version (`package.json`, `package-lock.json`), it
+   builds a web preview too, because both files are in the web and marketing build filters
+   ([deploy-render.md](deploy-render.md) "PR previews"). Ignore that web preview. After merge, the
+   same files redeploy the API, web and marketing services.
 5. Review the preview against the Figma frame at desktop and 320 px. Merge when `ci` is green.
 
 ## Later

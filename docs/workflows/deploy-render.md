@@ -4,8 +4,12 @@ Interim host for the synthetic demo ([ADR-017](../decisions/ADR-017-interim-rend
 [ADR-018](../decisions/ADR-018-render-marketing-static-site.md),
 [INFRA-015](../tasks/infrastructure/INFRA-015-render-public-demo.md),
 [INFRA-016](../tasks/infrastructure/INFRA-016-render-marketing-static-site.md)). AWS steps stay in
-[deploy.md](deploy.md). This runbook does not create paid resources. The committed Blueprint
-uses Render’s Free web services and one Free Postgres database.
+[deploy.md](deploy.md). The committed Blueprint uses Render’s Free web services and one Free
+Postgres database. The only paid item in use today is two custom domains above the Hobby allowance (see
+"Custom domains").
+
+**Cost policy:** keep the demo on free resources where possible. Pay for something only when it
+is a crucial improvement, and record the item, its cost and the reason in this runbook.
 
 Catalog: [environment-configuration.md](../contracts/environment-configuration.md).
 Placeholders: `apps/api/.env.render.example`, `apps/web/.env.render.example`, and
@@ -79,8 +83,13 @@ After `medconnectpro.app` is purchased:
 - `marketing`: `CNAME` to the static site’s `onrender.com` name.
 - `api`: `CNAME` to the API service’s `onrender.com` name.
 
-Then verify each name in the Render dashboard. Do not use a wildcard. Hobby includes two custom
-domains; extra names are a small monthly charge. Confirm the count before expecting $0.
+Then verify each name in the Render dashboard. Do not use a wildcard.
+
+**Cost (paid item):** the Blueprint declares four names, and Hobby includes two. The apex and
+`www` are the core names for the application. `marketing` and `api` are the two extras, at about
+$0.25 per month each (about $0.50 per month; first billed for October 2026). They are kept because
+they give the marketing site and the API stable hostnames under the demo domain. Dropping one
+needs a `render.yaml` change (Infra / CI lane) and a dashboard change.
 
 ## Smoke
 
@@ -119,7 +128,13 @@ After the first deploy is live:
 - Confirm the API start log for the deploy says "No migrations are pending" (the API runs
   `migration:run` on every start; the database has no public listener).
 - Watch the workspace free-instance hours. The pool is 750 hours per month and is shared with
-  every free web service in the workspace. Sleeping services should stay inside it.
+  every free web service in the workspace, including services outside this project. Sleeping
+  services should stay inside it. The Render API does not expose instance hours, so read them on
+  the dashboard and note the date and the page. The billing page's per-service figures can exceed
+  the workspace "Monthly included usage" card (QA-010 saw 292.45 h for `medconnect-api` and for
+  `medconnect-web` against 253.37 h for the workspace); the explanation is pending a November
+  reading (INFRA-023). The QA-010 pilot's web previews used at most about 5.0 h (preview lifetimes);
+  the October total was not captured before the counter reset on 2026-11-01.
 - The first sign-in after the API sleeps takes 45–60 s to wake it. FE-049 softens that: a trusted
   click, hover or focus on a marketing sign-in link, and the first focus of the `/login` form, send
   one unauthenticated `GET /health`, and `/login` shows an API status indicator while it waits.
@@ -154,7 +169,9 @@ Postgres get no preview, and there is no root-level `previews`.
 
 **Request one:** add the label `render-preview` to the PR, or put `[render preview]` in its title.
 Without either, Render builds nothing. Render deletes the preview when the PR closes or merges.
-A build filter also gates preview builds: a docs-only PR does not build a preview.
+A build filter also gates preview builds: a docs-only PR does not build a preview. Root
+`package.json` and `package-lock.json` are in both filters, so a PR that bumps the root version
+builds a web preview as well as a marketing one.
 
 **What you get:**
 
@@ -168,16 +185,18 @@ A build filter also gates preview builds: a docs-only PR does not build a previe
   branch are not documented to apply to it. A new `NEXT_PUBLIC_*` var (for example
   `NEXT_PUBLIC_MARKETING_URL`, FE-050) is therefore missing from that PR's preview. To see its
   effect, add the var on the preview instance in the dashboard and rebuild: it is inlined at build
-  time. Preview-to-preview links (marketing sign-in to the web preview, web logo to the marketing
-  preview) are not wired. Render documents `previewValue` for web services only, not static sites,
-  and does not document `fromService` across preview instances.
+  time.
+- Known limitation: preview-to-preview links (marketing sign-in to the web preview, web logo to
+  the marketing preview) are not wired. Render documents `previewValue` for web services only, not
+  static sites, and does not document `fromService` across preview instances. Preview links point
+  at the production hosts.
 - Fail closed: live mode needs a non-PR build on branch `main`. If Render stops exposing those
   variables, previews and the demo both build in mock mode, which is visible on `/login`.
 
-**Cost:** no paid resource. Static previews are free. A web preview uses the Free plan, shares the
-workspace's 750 free instance hours with the demo, and spins down after about 15 minutes, so the
-first load takes about a minute. Manual trigger and auto-delete keep the usage small; check the
-hours during the pilot.
+**Cost:** previews add no paid resource and no custom domain. Static previews are free. A web
+preview uses the Free plan, shares the workspace's 750 free instance hours with the demo, and
+spins down after about 15 minutes, so the first load takes about a minute. Manual trigger and
+auto-delete keep the usage small (the QA-010 pilot used at most about 5.0 h).
 
 **Check one:** the build log prints `render-web: mode=mocks reason=IS_PULL_REQUEST`; the preview's
 `/mcp-api/health` returns 503 with `{"error":{"code":"SERVICE_UNAVAILABLE","message":"API proxy is not configured"}}`; the dashboard lists no preview for `medconnect-api` or
