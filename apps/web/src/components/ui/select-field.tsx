@@ -95,9 +95,9 @@ export function SelectField({
 					aria-busy={ariaBusy}
 					className={cn(
 						'group flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-surface px-3 text-left text-sm text-foreground',
-						'hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+						'hover:border-input-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
 						'data-open:ring-2 data-open:ring-ring',
-						'disabled:cursor-not-allowed disabled:bg-muted disabled:text-foreground-muted',
+						'disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-foreground-muted',
 						error && 'border-danger focus-visible:ring-ring-danger data-open:ring-ring-danger',
 						size === 'compact' && 'font-medium',
 					)}

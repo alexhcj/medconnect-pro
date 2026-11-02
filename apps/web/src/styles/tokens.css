@@ -48,7 +48,8 @@
 	--color-border-strong: #d1d5db;
 	--color-border-brand: #2563eb;
 	--color-border-danger: #ef4444;
-	--color-border-input: #d1d5db;
+	--color-border-input: #808896; /* gray-450, 3.57:1 on white, 3.42:1 on canvas; control boundary (FE-061) */
+	--color-border-input-hover: #6b7280; /* gray-500, 4.83:1 on white (FE-061) */
 
 	/* Focus */
 	--color-focus-brand: #3b82f6;
@@ -144,6 +145,7 @@
 	--color-border-brand: var(--color-border-brand);
 	--color-border-danger: var(--color-border-danger);
 	--color-input: var(--color-border-input);
+	--color-input-hover: var(--color-border-input-hover);
 
 	--color-ring: var(--color-focus-brand);
 	--color-ring-danger: var(--color-focus-danger);

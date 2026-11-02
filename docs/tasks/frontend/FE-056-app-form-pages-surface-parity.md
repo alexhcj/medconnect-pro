@@ -99,8 +99,9 @@ overview), not only on the three reported pages.
       the white bordered surface (no gray-on-gray content panels). Existing white bordered
       loading / error / no-access panels may stay hand-built and are listed in Completion;
       intentional non-surface fills are named there too.
-- [ ] Layout holds at 375, 768, and 1280 px with no horizontal scroll; text, borders, and focus
-      rings meet WCAG AA contrast.
+- [x] Layout holds at 375, 768, and 1280 px with no horizontal scroll; text, borders, and focus
+      rings meet WCAG AA contrast. (Border contrast closed by
+      [FE-061](FE-061-input-border-contrast-token.md) at 1.0.1.)
 - [x] Existing form and page tests pass; a test asserts the patient and appointment forms render
       inside the card surface.
 
@@ -163,10 +164,11 @@ overview), not only on the three reported pages.
   `telehealth-session-shell.tsx`, `admin-list-states.tsx`). Intentional non-surface fills kept:
   telehealth media tiles (`daily-media-session.tsx`, `media-placeholders.tsx`) and gray skeleton
   loaders. The shell canvas stays `bg-gray-50` (same value as `--color-bg-canvas`).
-- Not met / deviation: the responsive and AA criterion stays unticked. Text and the blue focus ring
-  pass on white, but `--color-border-input` (#d1d5db) is about 1.5:1 on white, below the 3:1 non-text
-  target. Leaving the token unchanged was an approved design decision (it affects every input in
-  the app); raise it as a follow-up token task.
+- Deviation, closed: the responsive and AA criterion was left unticked at 0.100.1. Text and the blue
+  focus ring passed on white, but `--color-border-input` (#d1d5db) was about 1.5:1 on white, below
+  the 3:1 non-text target. Leaving the token unchanged was an approved design decision (it affects
+  every input in the app). [FE-061](FE-061-input-border-contrast-token.md) raised the token at 1.0.1
+  and the criterion is now ticked.
 
 ## Roadmap
 

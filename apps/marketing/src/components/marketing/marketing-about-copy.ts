@@ -91,7 +91,7 @@ export const MARKETING_ABOUT_STATE = {
 			items: [
 				{
 					title: 'Accessibility follow-ups',
-					description: 'Higher-contrast input borders and wider browser and screen-reader checks.',
+					description: 'Wider browser and screen-reader checks. Higher-contrast input borders shipped at 1.0.1.',
 				},
 			],
 		},

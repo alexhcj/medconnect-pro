@@ -245,7 +245,7 @@ export function ConcurrentSessionDialog() {
 																checked={selectedSessions.includes(session.sessionId)}
 																onChange={() => toggleSession(session.sessionId)}
 																aria-label={terminateLabel(session.device, lastActive)}
-																className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+																className="h-4 w-4 text-red-600 focus:ring-red-500 border-input rounded"
 															/>
 															<span className="ml-2 text-xs text-gray-600">Terminate</span>
 														</label>
@@ -271,7 +271,7 @@ export function ConcurrentSessionDialog() {
 									<div className="flex flex-col gap-3 sm:flex-row">
 										<button
 											type="button"
-											className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+											className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-input hover:border-input-hover disabled:border-border shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
 											onClick={handleContinueHere}
 											disabled={terminateSessions.isPending || logoutEverywhere.isPending}
 										>

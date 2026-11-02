@@ -9,7 +9,7 @@ const buttonVariants = cva(
 			variant: {
 				default: "bg-brand text-inverse hover:bg-brand-hover focus-visible:ring-ring",
 				destructive: "bg-destructive text-inverse hover:bg-destructive-hover focus-visible:ring-ring-danger",
-				outline: "border border-input bg-surface hover:bg-subtle focus-visible:ring-ring-neutral",
+				outline: "border border-input bg-surface hover:border-input-hover hover:bg-subtle disabled:border-border focus-visible:ring-ring-neutral",
 				secondary: "bg-secondary text-foreground hover:bg-secondary-hover focus-visible:ring-ring-neutral",
 				ghost: "hover:bg-subtle hover:text-foreground focus-visible:ring-ring-neutral",
 				link: "text-brand underline-offset-4 hover:underline focus-visible:ring-ring"

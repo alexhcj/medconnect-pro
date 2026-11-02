@@ -6,6 +6,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.0.1] - 2026-11-02
+
+### Changed
+
+- FE-061: form control borders meet the WCAG 2.1 AA 3:1 non-text contrast target. `--color-border-input`
+  is gray-450 `#808896` (3.57:1 on white, 3.42:1 on the canvas; a soft gray that stays above 3:1); new `--color-border-input-hover`
+  gray-500 `#6b7280` gives hover a visible step. Disabled controls step down to
+  `--color-border-default`. Applies to input, textarea, select, date, time and date-time fields, the
+  outline button, the OAuth provider button and the session dialog controls.
+
+### Added
+
+- Tests: token contrast ratios, a per-control border test, and axe checks on the patient form,
+  appointment form and administration page.
+
+### Fixed
+
+- Closes the FE-056 responsive and AA criterion (border contrast).
+
 ## [1.0.0] - 2026-11-01
 
 The first stable release: the feature-complete synthetic demo on Render (M0–M8 and M10–M21). This MAJOR bump
