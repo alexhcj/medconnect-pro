@@ -89,6 +89,7 @@ emails and IP-only keys produce no practice row. No IP, email, or key hash is st
 | `POST /telehealth/sessions`                                           | 20    | 5 min  | session user                 | fail open     |
 | `POST /telehealth/sessions/:id/join`                                  | 30    | 5 min  | session user                 | fail open     |
 | `POST /telehealth/sessions/:id/media-token`                           | 30    | 5 min  | session user                 | fail open     |
+| `POST /telehealth/sessions/:id/heartbeat`                             | 10    | 5 min  | session user                 | fail open     |
 | `GET /patients/:id/documents/:documentId/content` (document download) | 60    | 5 min  | session user                 | fail open     |
 | `POST /billing/payments`                                              | 10    | 5 min  | session user                 | fail open     |
 | `GET /auth/sessions`                                                  | 60    | 5 min  | session user                 | fail open     |
@@ -150,6 +151,15 @@ so store failure remains fail open. The list and revoke responses must not retur
 a raw user-agent; the rate-limit key is the HMAC of the session user, same as other session-user
 rows. Limits are code constants BE-023 adds to the policy table and may be tuned there without a
 new ADR. This amendment does not replace the limiter.
+
+### Amendment (SEC-013, 2026-11-04): telehealth heartbeat
+
+M22 adds a fail-open session-user limit on `POST /telehealth/sessions/:id/heartbeat` (10 / 5 min).
+The client sends about one heartbeat a minute while joined to a visit, so the limit leaves room for
+reconnects and tab restores. The route only refreshes idle activity for a visit participant of an
+`in_session` visit ([identity-and-access.md](../contracts/identity-and-access.md)); it is not an
+auth route, so store failure remains fail open. Limits are code constants in the policy table and
+may be tuned there without a new ADR. This amendment does not replace the limiter.
 
 ### Amendment (FE-034, 2026-10-10): OAuth callback landing reason
 

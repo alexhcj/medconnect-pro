@@ -128,6 +128,9 @@ be configured. Preview/production hosting remains M9, not M8, M10, M11, or M18.
 demo (free web services and Free Postgres). It does not close M9, INFRA-014, or INFRA-013, and it
 does not replace the AWS topology.
 
+**Next (2026-11-04):** **M22 — Telehealth 2.0: Visit experience** is in progress; its contract
+[SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md) is shipped (docs only). **M23 — Telehealth 2.0: Clinical controls** is planned.
+
 ## Demo milestones
 
 ### M0 — Foundation
@@ -359,6 +362,25 @@ FE-056 follow-up; shipped at 1.0.1) and [QA-013](../tasks/qa/QA-013-m21-verifica
 locales, picker e2e, manual accessibility for FE-057 and FE-059) were logged as standalone tasks after
 1.0.0.
 
+### M22 — Telehealth 2.0: Visit experience (in progress)
+
+Rebuilds the live visit on the shipped M16 workflow: a pre-join green room (preview, device pickers,
+mic level, test sound, connectivity check, background effects, blocked-permission recovery), a
+full-screen dark call stage for one to three participants with server-sourced identity per tile,
+call states and wrap-up, a room-expiry notice, and a demo persona camera. Security changes: End
+visit is host-only (appointment provider or practice admin), background polls stop refreshing the
+idle timeout, and one bounded in-visit heartbeat keeps a live visit signed in. Contract:
+[SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md) (shipped, docs only, no version bump). Design: Figma page
+`Telehealth 2.0 · working copies`. The data, backend, frontend and QA task specs are written one
+at a time as each starts; M22 closes at 1.1.0. No new dependencies. Not chat, recording,
+transcription, admission, lock or remove (M23), not consent (M24), not AWS. Does not close M9.
+
+### M23 — Telehealth 2.0: Clinical controls (planned)
+
+Nest-managed admission (lobby and admit), lock and remove, owner tokens, ephemeral in-call chat,
+Daily webhooks into the audit log, and a role-scoped clinical side panel with an identity and
+location check. Gets its own contract task before code. Planned release 1.2.0.
+
 ## Milestone crosswalk
 
 A milestone may be **demonstrable on frontend mocks** before the matching NestJS surface exists. A
@@ -389,6 +411,8 @@ backend domain task is not done until authorization uses the Identity HTTP modul
 | M19 Polish and list normalization | FE-040–FE-045, BE-025, BE-026 (shipped, 0.96.0); DATA-006 (shipped, 0.96.1); FE-046 (shipped, 0.96.2); FE-047 (shipped, 0.96.3); QA-008 (shipped, no version bump); QA-009 (shipped, no version bump) | Header logo and RoleTag parity, billing design sync, mock role scoping and status colours, paged invoices/claims/users, bounded audit, security-event and patient lists. Time column no-wrap with `patient-form.test.tsx` timeout fix, live seed volume for paging and event filter options parity shipped. QA-008 (live e2e suite green) and QA-009 (live paging specs) shipped. **Closed** at 0.96.3. Does not close M9 or reopen M17/M18. |
 | M20 PR previews and delivery lanes | INFRA-018 (shipped, docs only), INFRA-019 (shipped at 0.97.0), QA-011 (shipped, test only), SEC-010 (shipped at 0.97.1), SEC-011 (shipped at 0.97.4), FE-048 (optional; shipped at 0.97.2), INFRA-020 (shipped at 0.97.3); QA-010 (shipped, test and docs only) | **Closed** at 0.103.7. Render service previews for marketing and web only; web previews on frontend mocks; no API or database preview; `main` deploys after `ci`; PR-only flow. Previews add no paid resource (the only charge today is two extra custom domains, INFRA-023). Does not close M9 or change the AWS topology (ADR-012, INFRA-010). |
 | M21 Marketing and web app design refresh | QA-012, FE-051–FE-060 (shipped) | **Closed** at 0.103.1. Homepage bands and responsive fixes, hero visual, module icons and links, slider, status badges vs links, About roadmap board, `/architecture` page, repeatable screenshots. App forms on the white bordered `Card` (FE-056); one US date/time format and an accessible date picker (FE-057); design-system select lists and inputs (FE-058); one-tap demo account picker on sign-in (FE-059); hero image, appointments screenshot and calendar event polish (FE-060). INFRA-021 moved out (2026-10-31) as the standalone 1.0.0 release; AWS production (INFRA-013) moves to 1.x. Does not close M9. |
+| M22 Telehealth 2.0: Visit experience | SEC-013 (shipped, docs only); further tasks specified as they start | **In progress.** Green room, full-screen call stage (1–3 participants), call states and wrap-up, room-expiry notice, demo persona camera. Host-only End visit, passive background polls, in-visit heartbeat. Closes at 1.1.0. Not M23 controls, consent, or AWS. |
+| M23 Telehealth 2.0: Clinical controls | (contract task to come) | **Planned.** Admission, lock/remove, owner tokens, ephemeral chat, Daily webhooks to audit, clinical side panel. Planned 1.2.0. |
 | Standalone (no milestone) | FE-049 (shipped at 0.98.0); FE-050 (shipped at 0.99.0); INFRA-021 (shipped at 1.0.0); FE-061 (shipped at 1.0.1); QA-013 (shipped; test and docs only); INFRA-022 (shipped; docs only); SEC-012 (shipped at 0.103.4); INFRA-023 (in progress; docs only; hours reading 2026-11-09 to 2026-11-16) | API status indicator on `/login` and a gesture-gated wake ping for the sleeping Render Free API (ADR-017). Not part of M20. FE-049 adds no paid resources, keep-alive pinger, or API change. FE-050: logo link to the marketing site on the auth pages via `NEXT_PUBLIC_MARKETING_URL`; no API or auth change. INFRA-021 released 1.0.0 as the Render demo after M20 and M21 closed. FE-061 (input border contrast token) shipped at 1.0.1 and QA-013 (M21 verification sweep) shipped after 1.0.0 (test and docs only, no version bump). INFRA-022 adds the architecture overview, request-lifecycle doc and ADR index; docs only, no version bump, no ADR edits. SEC-012 clears the `glob`, `minimatch` and `follow-redirects` production audit findings (scoped `typeorm` override; no `typeorm` upgrade). INFRA-023 follows up the QA-010 mismatches: custom-domain cost, version-bump preview builds and the preview-link limitation are documented, and a cost policy is recorded (free where possible; crucial paid items documented); the hours explanation waits for a November dashboard reading. |
 
 [Frontend roadmap](frontend-roadmap.md) slices map onto these milestones (auth → M1, patients → M2,

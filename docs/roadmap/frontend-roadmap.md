@@ -167,3 +167,12 @@ Shipped and closed at 0.96.3; QA-009 (live paging specs) shipped. Does not reope
 - Paging is demonstrable on the live stack since [DATA-006](../tasks/backend/DATA-006-live-seed-for-list-paging.md)
   (shipped at 0.96.1). [QA-008](../tasks/qa/QA-008-live-e2e-suite-green.md) made `e2e:live` green;
   [QA-009](../tasks/qa/QA-009-live-paging-specs.md) (shipped) adds live specs that reach page 2.
+
+## Slice 22 — Telehealth 2.0 visit experience (M22)
+
+- Contract: [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md) (shipped, docs only). Pre-join green room, full-screen dark call
+  stage (1–3 tiles, per-participant mic and camera state, identity from the session `participants`
+  list), devices modal, call states, room-expiry notice, wrap-up, session keep-alive while in a
+  visit, and the demo persona camera behind `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS`. Design: Figma page
+  `Telehealth 2.0 · working copies`; frames are approved on each FE task (ADR-011). Task specs are
+  written as each starts. M23 (admission, lock/remove, chat, side panel) follows.

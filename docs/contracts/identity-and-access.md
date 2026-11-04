@@ -143,7 +143,14 @@ confirming whether the id exists (no resource oracle).
 Telehealth session HTTP ([BE-006](../tasks/backend/BE-006-telehealth-session-api.md)) maps onto this
 catalog without new permission strings:
 
-- **Create / end:** `write:appointments`, and the linked appointment must be visible to the caller.
+- **Create:** `write:appointments`, and the linked appointment must be visible to the caller.
+- **End** (host rule from M22, [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)): `write:appointments` **and** the caller is the
+  appointment's provider or a PRACTICE_ADMIN (SUPER_ADMIN within the session practice, ADR-016).
+  Receptionists create and get but do not end. Other callers receive the forbidden envelope;
+  unknown and cross-tenant ids keep the same not-found. This is a resource-ownership check, not a
+  new permission string. Lazy-end is unchanged.
+- **Heartbeat** (M22): the same visit-participant rule as join, plus Nest state `in_session` and
+  an eligible appointment. See the idle policy below.
 - **Get:** the same read scope as the linked appointment (`write:appointments` practice-wide,
   `read:assigned_patients` for nurses, `read:own_patient` for portal users). Get re-checks
   appointment eligibility and lazily ends the session when the appointment is cancelled,
@@ -336,6 +343,7 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
 - Session user (fail open): `POST /telehealth/sessions` 20 per 5 min,
   `POST /telehealth/sessions/:id/join` 30 per 5 min,
   `POST /telehealth/sessions/:id/media-token` 30 per 5 min,
+  `POST /telehealth/sessions/:id/heartbeat` 10 per 5 min (M22),
   `GET /patients/:id/documents/:documentId/content` 60 per 5 min, `POST /billing/payments` 10 per
   5 min, `GET /auth/sessions` 60 per 5 min, `POST /auth/sessions/:id/revoke` 30 per 5 min.
   The two session-inventory limits are M17 policy in ADR-015. BE-023 enforces them. Store failure
@@ -350,9 +358,21 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
 
 ### Idle, absolute, and concurrent policy
 
-- **Idle timeout:** 15 minutes without activity. The existing warning/extend UX may prompt before
-  expiry; extension must be granted by the session authority, not by rewriting expiry only in the
-  client.
+- **Idle timeout:** 15 minutes without **user-initiated** activity. The existing warning/extend UX
+  may prompt before expiry; extension must be granted by the session authority, not by rewriting
+  expiry only in the client.
+- **Passive requests** (M22, [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)): background polls the user did not trigger (today
+  `GET /auth/sessions` from the concurrent-session dialog) send a passive-activity request header
+  and the server does not refresh `lastActivityAt` for them. The marker is client-cooperative: a
+  client that omits it only keeps its own session alive. The control targets an unattended screen,
+  not a hostile client, and the absolute cap still holds. If the API is ever called cross-origin,
+  CORS must allow the header.
+- **In-visit keep-alive** (M22): `POST /telehealth/sessions/:id/heartbeat` is the one explicit
+  keep-alive. A visit participant of an `in_session` session whose appointment is still eligible
+  may send it (about once a minute while joined to Daily). It refreshes `lastActivityAt` only and
+  never moves `absoluteExpiresAt`. Ended, ineligible or past-grace sessions reject it, so the
+  keep-alive is bounded by the join window (appointment end plus 15 minutes). No audit row per
+  heartbeat. After the call the normal idle rule applies.
 - **Absolute cap:** 24 hours from session start (matches the current mock session length). Idle
   extension cannot pass this cap.
 - **Concurrent sessions:** detectable; the user may terminate other sessions without ending the
@@ -363,8 +383,8 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
   `isCurrent` (optional device class). It does not invent IP, location, or browser strings.
   Terminating other sessions calls `POST /auth/sessions/:id/revoke` and keeps the current live
   session. Logout everywhere calls `POST /auth/logout-all`
-  ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md)). Do not add an activity
-  keep-alive.
+  ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md)). The inventory poll is a
+  passive request (above). Do not add a keep-alive other than the in-visit heartbeat.
   Idle timeout stays 15 minutes. Extension cannot pass the absolute cap.
 
 ### Session inventory (BE-023)

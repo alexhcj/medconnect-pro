@@ -97,10 +97,36 @@ Audit sensitive actions such as:
 - telehealth session create, join, media-token mint, room delete, and end (including lazy-end
   on get, join, mint, or a participant open-session lookup when the appointment is cancelled,
   completed, or past grace); meeting tokens and `DAILY_API_KEY` must not appear in the audit row;
+  the M22 in-visit heartbeat is not audited per request;
 - billing changes;
 - notification preference updates (no title or body in the audit row);
 - administrative security changes, including `auth.session.revoked` for selective session revoke
   ([BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md); no tokens and no IP).
+
+## Telehealth media data (M22)
+
+Recorded by [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md). Not HIPAA certified; synthetic data only.
+
+- **Device, network and effect data stay in the browser.** Device labels, device ids, network
+  statistics, and the background choice are not sent to Nest, logged, or audited. The browser may
+  remember last-used device ids in local storage as a convenience. Device enumeration is UX, not a
+  security control.
+- **Background effects:** None, Blur, and a fixed set of built-in images in all environments.
+  Images are first-party static assets; no upload and no URL input. Daily's in-browser processor
+  works on the local camera track. The web app sets no Content-Security-Policy today; a future CSP
+  must allow Daily's processor assets.
+- **Demo persona camera:** only when `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true`. An illustrated persona
+  drawn on a canvas is sent as a custom video track. The persona is the signed-in membership's
+  `personaKey`; it never changes the displayed name and is never applied to anyone else's video.
+  Always labeled "Demo · synthetic camera". No face tracking, overlays, AI generation, or gender
+  mapping.
+- **Minimum necessary toward Daily:** tokens carry the opaque `user_id` only; no names, email, role,
+  or appointment details go to Daily.
+- **Identity in the call** comes from Nest (`participants` keyed by token `user_id`), not from a
+  client-set Daily name.
+- **Claims:** "Encrypted connection" and "This visit is not recorded". Daily media is encrypted in
+  transit to Daily's infrastructure; it is not end-to-end encrypted. Do not say "secure",
+  "private", "end-to-end", or "HIPAA".
 
 ## API protection
 
@@ -109,7 +135,8 @@ Not production DDoS protection, account lockout, or WAF.
 
 - Opt-in per-route fixed-window rate limits (custom guard + `@RateLimit` decorator) on a
   PostgreSQL `rate_limit_buckets` store. No Redis. M16 adds session-user fail-open limits on
-  telehealth create (20 / 5 min) and join (30 / 5 min); media-token stays 30 / 5 min. M17 policy
+  telehealth create (20 / 5 min) and join (30 / 5 min); media-token stays 30 / 5 min; M22 adds the
+  in-visit heartbeat (10 / 5 min, fail open). M17 policy
   adds session-user fail-open limits on `GET /auth/sessions` (60 / 5 min) and
   `POST /auth/sessions/:id/revoke` (30 / 5 min). BE-023 enforces both; store failure stays fail open.
 - Client IP from `TRUST_PROXY` hop count (default `0`, `X-Forwarded-For` ignored).

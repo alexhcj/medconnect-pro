@@ -45,6 +45,30 @@ capabilities:
     demo: not in the demo
     public: no
     related_tasks: []
+  - id: telehealth.prejoin-devices
+    name: Pre-join green room
+    status: planned
+    demo: not in the demo yet (M22)
+    public: no
+    related_tasks: [SEC-013]
+  - id: telehealth.call-controls
+    name: Full-screen call stage and controls
+    status: planned
+    demo: not in the demo yet (M22)
+    public: no
+    related_tasks: [SEC-013]
+  - id: telehealth.in-visit-keepalive
+    name: Stay signed in during a live visit
+    status: planned
+    demo: not in the demo yet (M22)
+    public: no
+    related_tasks: [SEC-013]
+  - id: telehealth.demo-persona
+    name: Demo persona camera
+    status: planned
+    demo: not in the demo yet (M22); demo builds only
+    public: no
+    related_tasks: [SEC-013]
 ---
 
 # Telehealth
@@ -63,3 +87,7 @@ or recording.
 | `telehealth.live-media` | Live video, camera, and screen sharing | shipped | Daily call object when configured; leave vs end | qualified |
 | `telehealth.participant-entry` | Second participant enters an open visit | shipped | lookup, then the existing waiting-room join | qualified |
 | `telehealth.chat-recording` | In-session chat, recording, and transcription | planned | not in the demo | no |
+| `telehealth.prejoin-devices` | Pre-join green room | planned | not in the demo yet (M22) | no |
+| `telehealth.call-controls` | Full-screen call stage and controls | planned | not in the demo yet (M22) | no |
+| `telehealth.in-visit-keepalive` | Stay signed in during a live visit | planned | not in the demo yet (M22) | no |
+| `telehealth.demo-persona` | Demo persona camera | planned | not in the demo yet (M22); demo builds only | no |

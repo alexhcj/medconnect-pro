@@ -52,7 +52,10 @@ observability and cloud (M9).
 ## Maturity
 
 M12 Daily media is shipped (qualified). **M16** live visit workflow is shipped (eligibility,
-leave versus end, pre-join). Remaining telehealth after M16 is chat, recording, and Socket.IO.
+leave versus end, pre-join). Remaining telehealth after M16 is chat, recording, and Socket.IO. **M22** (Telehealth 2.0:
+Visit experience, in progress; contract [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)) rebuilds the visit UI and fixes
+idle-timeout semantics; **M23** (planned) adds admission, lock/remove, and ephemeral chat. Recording
+and transcription stay out.
 **M17** is application-level security and compliance maturity (audit, session inventory,
 authorization regression).
 

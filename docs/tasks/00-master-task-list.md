@@ -247,6 +247,19 @@ the web app's forms, dates, select lists and inputs in line with the same design
 - FE-059 — Demo account picker (shipped at 0.103.0; one-tap fill of the sign-in form, visible copy feedback, MFA "Fill code")
 - FE-060 — Hero chip fit, appointments screenshot, two-row calendar event (shipped at 0.103.1)
 
+## Product (M22, in progress)
+
+Telehealth 2.0: Visit experience. Green room, full-screen call stage, call states and wrap-up,
+demo persona camera, host-only End visit, passive background polls and an in-visit heartbeat.
+Further task specs are written as each task starts. Closes at 1.1.0.
+
+- SEC-013 — Telehealth 2.0 visit-experience contract (shipped; docs only, no version bump)
+
+## Product (M23, planned)
+
+Telehealth 2.0: Clinical controls (admission, lock/remove, ephemeral chat, Daily webhooks, clinical
+side panel). Contract task to come. Planned 1.2.0.
+
 ## Standalone (no milestone)
 
 - FE-049 — API status indicator (shipped at 0.98.0; wakes the sleeping free-tier API and shows live status on `/login`)
