@@ -5,10 +5,12 @@ import {
 	ApiConflictResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
+	ApiTooManyRequestsResponse,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {ApiSessionAuth} from '../identity/auth.decorators.js';
@@ -122,12 +124,30 @@ export class TelehealthSessionController {
 		return this.sessions.mintMediaToken(params.id);
 	}
 
+	@Post(':id/heartbeat')
+	@HttpCode(204)
+	@RateLimit(RATE_LIMIT_POLICIES.telehealthHeartbeat)
+	@ApiOperation({
+		summary: 'Keep the signed-in session alive during a live visit',
+		description:
+			'Visit participants only: the appointment provider, the portal patient, or an assigned nurse (same rule as join). The Nest session must be in_session and the appointment still eligible and inside the join window; otherwise the join conflict code is returned. The request counts as user activity for the idle timeout and does nothing else: it never extends the absolute session cap and writes no audit row. Intended about once a minute while joined to Daily. Rate limited to 10 per 5 minutes per session user (fails open).',
+	})
+	@ApiNoContentResponse({description: 'Idle activity refreshed.'})
+	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})
+	@ApiConflictResponse({type: ErrorEnvelopeRdo})
+	@ApiTooManyRequestsResponse({type: ErrorEnvelopeRdo})
+	heartbeat(
+		@Param({schema: telehealthSessionIdParamsSchema}) params: TelehealthSessionIdParams,
+	): Promise<void> {
+		return this.sessions.heartbeat(params.id);
+	}
+
 	@Post(':id/end')
 	@HttpCode(200)
 	@ApiOperation({
 		summary: 'End a telehealth session',
 		description:
-			'Requires write:appointments. Closes the application visit for all participants. Idempotent when the session is already ended. Best-effort deletes the Daily room; Nest ended remains source of truth if Daily fails.',
+			'Host only: requires write:appointments and the caller must be the appointment provider or a practice admin (super admin within the session practice). Receptionists, nurses, patients and other providers receive the forbidden envelope. Unknown and cross-tenant ids return not-found. Closes the application visit for all participants. Idempotent when the session is already ended. Best-effort deletes the Daily room; Nest ended remains source of truth if Daily fails.',
 	})
 	@ApiOkResponse({type: TelehealthSessionRdo})
 	@ApiNotFoundResponse({type: ErrorEnvelopeRdo})

@@ -89,13 +89,13 @@ Response concepts:
 - session identity (server-generated UUID)
 - linked appointment identity and window
 - authorized participant names
-- `participants` (M22, [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)): `{userId, displayName, role}` for the appointment
+- `participants` (shipped in 1.2.0, BE-027; [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)): `{userId, displayName, role}` for the appointment
   provider, the portal patient, and each assigned nurse, sourced by Nest. Call tiles resolve name
   and role by matching the Daily participant `user_id` (set by Nest in the meeting token) to this
   list, never from a client-chosen Daily `user_name`
-- `mediaExpiresAt` (M22): when the Daily room and meeting token expire (appointment end plus 15
+- `mediaExpiresAt` (shipped in 1.2.0): when the Daily room and meeting token expire (appointment end plus 15
   minutes), so the client can warn 5 minutes before. M22 does not extend rooms
-- `viewerCanEnd` (M22): UX hint computed by Nest from the end host rule; `POST .../end` still
+- `viewerCanEnd` (shipped in 1.2.0): UX hint computed by Nest from the end host rule; `POST .../end` still
   enforces it
 - session state
 - waiting/join/end timestamps

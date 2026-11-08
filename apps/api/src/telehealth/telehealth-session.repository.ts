@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {QueryFailedError, Repository} from 'typeorm';
+import {PatientAssignment} from '../persistence/entities/patient-assignment.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {
 	TelehealthSession,
@@ -49,6 +50,22 @@ export class TelehealthSessionRepository {
 			relations: APPOINTMENT_RELATIONS,
 		});
 		return this.withProviderMembership(row);
+	}
+
+	/** Nurse memberships assigned to the patient in the session practice (call participants). */
+	async listAssignedNurses(patientId: string): Promise<PracticeMembership[]> {
+		const {practiceId} = this.tenant.require();
+		return this.rows.manager
+			.createQueryBuilder(PracticeMembership, 'membership')
+			.innerJoin(
+				PatientAssignment,
+				'assignment',
+				'assignment.userId = membership.userId AND assignment.practiceId = membership.practiceId',
+			)
+			.where('membership.practiceId = :practiceId', {practiceId})
+			.andWhere('membership.role = :role', {role: 'NURSE'})
+			.andWhere('assignment.patientId = :patientId', {patientId})
+			.getMany();
 	}
 
 	/** Attach the provider's membership in the session practice so RDOs can show a display name. */

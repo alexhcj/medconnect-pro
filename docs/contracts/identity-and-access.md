@@ -361,13 +361,13 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
 - **Idle timeout:** 15 minutes without **user-initiated** activity. The existing warning/extend UX
   may prompt before expiry; extension must be granted by the session authority, not by rewriting
   expiry only in the client.
-- **Passive requests** (M22, [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)): background polls the user did not trigger (today
+- **Passive requests** (shipped in 1.2.0 by BE-027; header `X-MCP-Activity: passive`, allowed by CORS; [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)): background polls the user did not trigger (today
   `GET /auth/sessions` from the concurrent-session dialog) send a passive-activity request header
   and the server does not refresh `lastActivityAt` for them. The marker is client-cooperative: a
   client that omits it only keeps its own session alive. The control targets an unattended screen,
   not a hostile client, and the absolute cap still holds. If the API is ever called cross-origin,
   CORS must allow the header.
-- **In-visit keep-alive** (M22): `POST /telehealth/sessions/:id/heartbeat` is the one explicit
+- **In-visit keep-alive** (shipped in 1.2.0): `POST /telehealth/sessions/:id/heartbeat` is the one explicit
   keep-alive. A visit participant of an `in_session` session whose appointment is still eligible
   may send it (about once a minute while joined to Daily). It refreshes `lastActivityAt` only and
   never moves `absoluteExpiresAt`. Ended, ineligible or past-grace sessions reject it, so the

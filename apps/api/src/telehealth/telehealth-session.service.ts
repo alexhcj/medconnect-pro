@@ -12,6 +12,7 @@ import {TenantContext} from '../tenancy/tenant-context.js';
 import {DAILY_MEDIA_PORT, type DailyMediaPort} from './daily-media-port.js';
 import {
 	canCreateOrEndTelehealthSession,
+	canEndTelehealthVisit,
 	isVisitJoinParticipant,
 	resolveTelehealthReadScope,
 } from './telehealth-access.js';
@@ -21,7 +22,12 @@ import {
 	SessionNotJoinableError,
 	TelehealthSessionNotFoundError,
 } from './telehealth-session.errors.js';
-import type {TelehealthMediaTokenRdo, TelehealthSessionRdo} from './telehealth-session.rdo.js';
+import type {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
+import type {
+	TelehealthMediaTokenRdo,
+	TelehealthParticipantRdo,
+	TelehealthSessionRdo,
+} from './telehealth-session.rdo.js';
 import {resolveDisplayName} from '../identity/display-name.js';
 import type {TelehealthSessionCreateBody} from './telehealth-session.schema.js';
 import {
@@ -60,7 +66,7 @@ export class TelehealthSessionService {
 			if (current.state === 'ended') {
 				throw new SessionAlreadyEndedError();
 			}
-			return toSessionRdo(current, appointment);
+			return this.toRdo(current, appointment);
 		}
 
 		const now = new Date();
@@ -71,7 +77,7 @@ export class TelehealthSessionService {
 				waitingStartedAt: now,
 			});
 			await this.recordAudit('telehealth_session.created', row.id);
-			return toSessionRdo(row, appointment);
+			return this.toRdo(row, appointment);
 		} catch (error) {
 			if (error instanceof TelehealthSessionUniqueConstraintError) {
 				const raced = await this.sessions.getByAppointmentId(appointment.id);
@@ -82,7 +88,7 @@ export class TelehealthSessionService {
 				if (current.state === 'ended') {
 					throw new SessionAlreadyEndedError();
 				}
-				return toSessionRdo(current, appointment);
+				return this.toRdo(current, appointment);
 			}
 			throw error;
 		}
@@ -90,7 +96,7 @@ export class TelehealthSessionService {
 
 	async get(id: string): Promise<TelehealthSessionRdo> {
 		const {session, appointment} = await this.loadVisible(id);
-		return toSessionRdo(session, appointment);
+		return this.toRdo(session, appointment);
 	}
 
 	async findOpenByAppointment(appointmentId: string): Promise<TelehealthSessionRdo> {
@@ -106,7 +112,7 @@ export class TelehealthSessionService {
 		if (current.state === 'ended') {
 			throw new TelehealthSessionNotFoundError();
 		}
-		return toSessionRdo(current, appointment);
+		return this.toRdo(current, appointment);
 	}
 
 	async join(id: string): Promise<TelehealthSessionRdo> {
@@ -119,7 +125,7 @@ export class TelehealthSessionService {
 			throw new SessionNotJoinableError();
 		}
 		if (session.state === 'in_session') {
-			return toSessionRdo(session, appointment);
+			return this.toRdo(session, appointment);
 		}
 
 		const joinedAt = new Date();
@@ -129,10 +135,10 @@ export class TelehealthSessionService {
 			if (!raced || raced.state === 'ended') {
 				throw new SessionNotJoinableError();
 			}
-			return toSessionRdo(raced, appointment);
+			return this.toRdo(raced, appointment);
 		}
 		await this.recordAudit('telehealth_session.joined', saved.id);
-		return toSessionRdo(saved, appointment);
+		return this.toRdo(saved, appointment);
 	}
 
 	async mintMediaToken(id: string): Promise<TelehealthMediaTokenRdo> {
@@ -165,14 +171,53 @@ export class TelehealthSessionService {
 		return {roomUrl: room.roomUrl, token: minted.token};
 	}
 
+	/**
+	 * In-visit keep-alive (SEC-013). Authorization matches join. The request itself refreshes the
+	 * auth session's idle activity; this method neither writes nor audits, and it never touches the
+	 * absolute session cap.
+	 */
+	async heartbeat(id: string): Promise<void> {
+		const {session, appointment} = await this.loadVisible(id);
+		await this.assertCanJoin(appointment);
+		if (session.state !== 'in_session') {
+			throw new SessionNotJoinableError();
+		}
+		if (!isWithinJoinWindow(appointment.startAt, appointment.endAt)) {
+			throw new SessionNotJoinableError();
+		}
+	}
+
 	async end(id: string): Promise<TelehealthSessionRdo> {
 		this.assertCanWrite();
 		const {session, appointment} = await this.loadVisible(id);
+		if (!this.viewerCanEnd(appointment)) {
+			throw new PermissionDeniedError();
+		}
 		if (session.state === 'ended') {
-			return toSessionRdo(session, appointment);
+			return this.toRdo(session, appointment);
 		}
 		const saved = await this.markEnded(session);
-		return toSessionRdo(saved, appointment);
+		return this.toRdo(saved, appointment);
+	}
+
+	private async toRdo(
+		session: TelehealthSession,
+		appointment: Appointment,
+	): Promise<TelehealthSessionRdo> {
+		const nurses = await this.sessions.listAssignedNurses(appointment.patientId);
+		return toSessionRdo(session, appointment, {
+			participants: buildParticipants(appointment, nurses),
+			viewerCanEnd: this.viewerCanEnd(appointment),
+		});
+	}
+
+	private viewerCanEnd(appointment: Appointment): boolean {
+		const scope = this.tenant.require();
+		return canEndTelehealthVisit({
+			role: scope.role,
+			actorUserId: scope.actorUserId,
+			providerUserId: appointment.providerUserId,
+		});
 	}
 
 	private assertCanWrite(): void {
@@ -283,8 +328,47 @@ export class TelehealthSessionService {
 	}
 }
 
-export function toSessionRdo(session: TelehealthSession, appointment: Appointment): TelehealthSessionRdo {
+type SessionRdoExtras = Pick<TelehealthSessionRdo, 'participants' | 'viewerCanEnd'>;
+
+/** Provider, portal patient, then assigned nurses (SEC-013). Names never fall back to email. */
+export function buildParticipants(
+	appointment: Appointment,
+	nurses: readonly PracticeMembership[],
+): TelehealthParticipantRdo[] {
+	const participants: TelehealthParticipantRdo[] = [
+		{
+			userId: appointment.providerUserId,
+			displayName: resolveDisplayName(appointment.providerMembership ?? {role: 'PROVIDER'}),
+			role: 'PROVIDER',
+		},
+	];
+	const portalUserId = appointment.patient?.portalUserId;
+	if (portalUserId) {
+		participants.push({
+			userId: portalUserId,
+			displayName: resolveDisplayName({role: 'PATIENT'}, appointment.patient),
+			role: 'PATIENT',
+		});
+	}
+	const nurseParticipants = nurses
+		.map((nurse) => ({
+			userId: nurse.userId,
+			displayName: resolveDisplayName(nurse),
+			role: 'NURSE' as const,
+		}))
+		.sort((a, b) => a.displayName.localeCompare(b.displayName) || a.userId.localeCompare(b.userId));
+	return [...participants, ...nurseParticipants];
+}
+
+export function toSessionRdo(
+	session: TelehealthSession,
+	appointment: Appointment,
+	extras: SessionRdoExtras,
+): TelehealthSessionRdo {
 	const rdo: TelehealthSessionRdo = {
+		participants: extras.participants,
+		mediaExpiresAt: new Date(joinWindowExpiresAtUnix(appointment.endAt) * 1000).toISOString(),
+		viewerCanEnd: extras.viewerCanEnd,
 		id: session.id,
 		appointmentId: session.appointmentId,
 		practiceId: session.practiceId,

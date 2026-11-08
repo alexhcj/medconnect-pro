@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {
 	canCreateOrEndTelehealthSession,
+	canEndTelehealthVisit,
 	isVisitJoinParticipant,
 	resolveTelehealthReadScope,
 } from './telehealth-access.js';
@@ -18,6 +19,18 @@ describe('telehealth access', () => {
 		expect(canCreateOrEndTelehealthSession('SUPER_ADMIN')).toBe(true);
 		expect(canCreateOrEndTelehealthSession('NURSE')).toBe(false);
 		expect(canCreateOrEndTelehealthSession('PATIENT')).toBe(false);
+	});
+
+	it('limits End visit to the appointment provider and practice admins', () => {
+		const end = (role: Parameters<typeof canEndTelehealthVisit>[0]['role'], actorUserId: string) =>
+			canEndTelehealthVisit({role, actorUserId, providerUserId: providerId});
+		expect(end('PROVIDER', providerId)).toBe(true);
+		expect(end('PRACTICE_ADMIN', receptionistId)).toBe(true);
+		expect(end('SUPER_ADMIN', receptionistId)).toBe(true);
+		expect(end('PROVIDER', nurseId)).toBe(false);
+		expect(end('RECEPTIONIST', receptionistId)).toBe(false);
+		expect(end('NURSE', nurseId)).toBe(false);
+		expect(end('PATIENT', portalId)).toBe(false);
 	});
 
 	it('reuses appointment read scopes', () => {

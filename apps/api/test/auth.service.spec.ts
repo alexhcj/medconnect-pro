@@ -14,7 +14,7 @@ import type {Clock} from '../src/identity/clock.js';
 import type {MockIdpAccount} from '../src/identity/mock-idp.js';
 import {IdentityMembershipLookup} from '../src/identity/membership-lookup.js';
 import {SessionRepository} from '../src/identity/session.repository.js';
-import {ACCESS_TTL_MS, IDLE_TTL_MS, MFA_TTL_MS} from '../src/identity/session-policy.js';
+import {ABSOLUTE_TTL_MS, ACCESS_TTL_MS, IDLE_TTL_MS, MFA_TTL_MS} from '../src/identity/session-policy.js';
 import {hashToken} from '../src/identity/token.js';
 import {AuthSession} from '../src/persistence/entities/auth-session.entity.js';
 import {PracticeMembership} from '../src/persistence/entities/practice-membership.entity.js';
@@ -237,6 +237,53 @@ describe('AuthService', () => {
 		const tokens = expectTokens(await service.login({email: singleUser.email, password}));
 		now = new Date(now.getTime() + ACCESS_TTL_MS);
 		await expect(service.authenticate(tokens.accessToken)).rejects.toBeInstanceOf(SessionInvalidError);
+	});
+
+	it('leaves lastActivityAt unchanged for passive requests and refreshes it for ordinary ones', async () => {
+		now = new Date('2026-03-01T13:30:00.000Z');
+		const tokens = expectTokens(await service.login({email: singleUser.email, password}));
+		const loginActivity = (await service.authenticate(tokens.accessToken)).session.lastActivityAt;
+
+		now = new Date(now.getTime() + 5 * 60 * 1000);
+		const passive = await service.authenticate(tokens.accessToken, {passive: true});
+		expect(passive.membership.practiceId).toBe(practiceA.id);
+		expect(passive.session.lastActivityAt.getTime()).toBe(loginActivity.getTime());
+		const stored = await dataSource.getRepository(AuthSession).findOneByOrFail({id: passive.session.id});
+		expect(stored.lastActivityAt.getTime()).toBe(loginActivity.getTime());
+
+		const ordinary = await service.authenticate(tokens.accessToken);
+		expect(ordinary.session.lastActivityAt.getTime()).toBe(now.getTime());
+	});
+
+	it('still rejects a passive request after the idle window', async () => {
+		now = new Date('2026-03-01T13:45:00.000Z');
+		const tokens = expectTokens(await service.login({email: singleUser.email, password}));
+		now = new Date(now.getTime() + IDLE_TTL_MS);
+		await expect(service.authenticate(tokens.accessToken, {passive: true})).rejects.toBeInstanceOf(
+			SessionInvalidError,
+		);
+	});
+
+	it('keeps absoluteExpiresAt fixed while ordinary activity continues across the 24 h boundary', async () => {
+		now = new Date('2026-03-02T00:00:00.000Z');
+		const first = expectTokens(await service.login({email: singleUser.email, password}));
+		const startedAt = now.getTime();
+		const initial = (await service.authenticate(first.accessToken)).session.absoluteExpiresAt.getTime();
+		expect(initial).toBe(startedAt + ABSOLUTE_TTL_MS);
+
+		let refreshToken = first.refreshToken;
+		let accessToken = first.accessToken;
+		while (now.getTime() + 10 * 60 * 1000 < initial) {
+			now = new Date(now.getTime() + 10 * 60 * 1000);
+			const rotated = await service.refresh(refreshToken);
+			refreshToken = rotated.refreshToken;
+			accessToken = rotated.accessToken;
+			const resolved = await service.authenticate(accessToken);
+			expect(resolved.session.absoluteExpiresAt.getTime()).toBe(initial);
+		}
+
+		now = new Date(initial);
+		await expect(service.authenticate(accessToken)).rejects.toBeInstanceOf(SessionInvalidError);
 	});
 
 	it('rotates refresh tokens and revokes the session when a rotated token is reused', async () => {

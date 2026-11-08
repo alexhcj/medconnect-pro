@@ -6,6 +6,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.2.0] - 2026-11-08
+
+M22 Telehealth 2.0: Visit experience, BE-027.
+
+### Added
+
+- `POST /telehealth/sessions/:id/heartbeat` (204): in-visit keep-alive for visit participants of an
+  `in_session`, still-eligible visit inside the join window. It refreshes idle activity only, never
+  moves `absoluteExpiresAt`, and writes no audit row. Rate limit 10 per 5 minutes per session user
+  (fail open). Ended, past-grace or waiting sessions return `SESSION_NOT_JOINABLE` (409); a reader who
+  is not a participant gets 403, as for join.
+- Passive requests: `X-MCP-Activity: passive` authenticates normally but does not refresh
+  `lastActivityAt`; the header is allowed by CORS. Idle sign-out can now fire on a visible tab once the
+  web client marks its background polls (FE-064).
+- Session responses (create, get, open lookup, join, end) add `participants` (provider, portal patient,
+  assigned nurses; server-sourced display names), `mediaExpiresAt` (appointment end plus 15 minutes) and
+  `viewerCanEnd`.
+
+### Changed
+
+- **Breaking:** `POST /telehealth/sessions/:id/end` is host-only. It now requires `write:appointments`
+  and that the caller is the appointment's provider or a practice admin (super admin within the session
+  practice). Receptionists, nurses, patients and other providers receive 403. Unknown and cross-tenant
+  ids still return 404. The web End visit button still shows for receptionists until FE-063.
+- Test coverage: Daily meeting-token body is asserted to carry only `room_name`, `exp` and `user_id`.
+
 ## [1.1.0] - 2026-11-08
 
 M22 Telehealth 2.0: Visit experience, first implementation task.

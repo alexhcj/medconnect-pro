@@ -3,7 +3,7 @@ id: BE-027
 type: task
 area: backend
 feature: telehealth
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [SEC-013, DATA-007, BE-021, BE-023, BE-024]
@@ -28,7 +28,7 @@ related_docs:
     DATA-007-staff-display-identity.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -102,19 +102,20 @@ visit rule, and the session response additions (`participants`, `mediaExpiresAt`
 
 ## Acceptance Criteria
 
-- [ ] A passive request leaves `lastActivityAt` unchanged; an ordinary request still updates it
+- [x] A passive request leaves `lastActivityAt` unchanged; an ordinary request still updates it
       (fake-clock unit test)
-- [ ] Heartbeat: 204 for provider, patient and assigned nurse in `in_session`; 409 in `waiting`,
-      `ended` or past grace; 404 for non-participants, unknown and cross-tenant ids; 429 over limit
-- [ ] Heartbeat never moves `absoluteExpiresAt` (unit test across the 24 h boundary)
-- [ ] End: provider and practice admin succeed; receptionist, nurse and patient are forbidden;
+- [x] Heartbeat: 204 for provider, patient and assigned nurse in `in_session`; 409 in `waiting`,
+      `ended` or past grace; 403 for callers who can read the session but are not visit
+      participants (same as join); 404 for out-of-scope, unknown and cross-tenant ids; 429 over limit
+- [x] Heartbeat never moves `absoluteExpiresAt` (unit test across the 24 h boundary)
+- [x] End: provider and practice admin succeed; receptionist, nurse and patient are forbidden;
       `telehealth.http.spec.ts:223` updated to the new rule
-- [ ] Session responses carry `participants`, `mediaExpiresAt`, `viewerCanEnd` with correct values
+- [x] Session responses carry `participants`, `mediaExpiresAt`, `viewerCanEnd` with correct values
       per caller role
-- [ ] Authorization matrix (`apps/api/test/authorization-matrix-harness.ts`) covers heartbeat and
+- [x] Authorization matrix (`apps/api/test/authorization-matrix-harness.ts`) covers heartbeat and
       the end host rule
-- [ ] Daily token request body has no `user_name`
-- [ ] Contracts, OpenAPI, CHANGELOG and version updated
+- [x] Daily token request body has no `user_name`
+- [x] Contracts, OpenAPI, CHANGELOG and version updated
 
 ## Dependencies
 
@@ -136,3 +137,24 @@ visit rule, and the session response additions (`participants`, `mediaExpiresAt`
   CHANGELOG entry and the contracts updated in the same change.
 - Passive marking means idle sign-out starts working on visible tabs (intended).
 - The passive marker is client-cooperative by design (identity contract).
+
+## Completion
+
+Shipped at 1.2.0 (MINOR, ADR-007 MINOR cap; "Breaking" in the CHANGELOG for the host-only End rule).
+
+- Passive marker: `authenticate(token, {passive})` in `identity/auth.service.ts`, header read in
+  `identity/auth.guard.ts`, `X-MCP-Activity` added to CORS. Tests: `test/auth.service.spec.ts`
+  (passive vs ordinary, idle still enforced, 24 h boundary with continuous activity).
+- Heartbeat: `POST /telehealth/sessions/:id/heartbeat` (204), policy `telehealthHeartbeat` (10 / 5 min).
+  Non-participants who can read the session get 403 (same as join); the acceptance criterion was
+  corrected from 404 during planning. Tests: service spec, `test/telehealth.http.spec.ts`,
+  `test/auth-rate-limit.http.spec.ts`, authorization matrix.
+- Host rule: `canEndTelehealthVisit` (`telehealth/telehealth-access.ts`), checked after the tenant-scoped
+  load and before the already-ended return. The matrix gains an `endSessionId` fixture.
+- Response additions: `participants`, `mediaExpiresAt`, `viewerCanEnd` (`toSessionRdo`, `buildParticipants`,
+  `TelehealthSessionRepository.listAssignedNurses`). `participants` is the assigned roster, not live presence.
+- Daily token body asserted to carry only `room_name`, `exp`, `user_id`.
+- Not done here: the manual local-stack check (provider joins, tab hidden 16 minutes with the heartbeat
+  running, then ends the visit). It needs the web heartbeat loop from FE-064. The web End visit button
+  still shows for receptionists until FE-063.
+- Reviewed with the security-reviewer agent: no blocking findings.

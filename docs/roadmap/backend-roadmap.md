@@ -109,5 +109,5 @@ stay deferred. Local product work does not wait on AWS.
 passive background polls that do not refresh idle activity, `POST /telehealth/sessions/:id/heartbeat`
 for visit participants (10 / 5 min, fail open), session `participants`, `mediaExpiresAt` and
 `viewerCanEnd`, and membership `displayName`, `credential` and `personaKey`. Tasks: [DATA-007](../tasks/backend/DATA-007-staff-display-identity.md) and
-[BE-027](../tasks/backend/BE-027-telehealth-keepalive-and-host-rule.md) (pending). **M23 — Telehealth 2.0: Clinical controls** (admission, lock/remove, owner
+[BE-027](../tasks/backend/BE-027-telehealth-keepalive-and-host-rule.md) (shipped at 1.2.0). **M23 — Telehealth 2.0: Clinical controls** (admission, lock/remove, owner
 tokens, Daily webhooks) is planned.

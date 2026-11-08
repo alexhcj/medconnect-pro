@@ -72,6 +72,8 @@ export type AuthorizationMatrixHarness = {
 	foreignInvoiceId: string;
 	joinSessionId: string;
 	endedMintSessionId: string;
+	/** Waiting session for the End visit host rule; the provider's slot does not overlap others. */
+	endSessionId: string;
 	createSessionAppointmentId: string;
 	foreignSessionId: string;
 	login: (email: string) => Promise<string>;
@@ -256,6 +258,25 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		joinedAt: new Date(),
 		synthetic: true,
 	});
+	// Dedicated host-rule target: ending it must not disturb the join and mint fixtures.
+	const endAppointment = await dataSource.getRepository(Appointment).save({
+		practiceId: practiceA.id,
+		patientId: assignedPatient.id,
+		providerUserId: provider.id,
+		startAt: new Date(Date.now() + 4 * 60 * 60 * 1000),
+		endAt: new Date(Date.now() + 5 * 60 * 60 * 1000),
+		type: 'telehealth',
+		state: 'scheduled',
+		notes: null,
+		synthetic: true,
+	});
+	const endSession = await dataSource.getRepository(TelehealthSession).save({
+		practiceId: practiceA.id,
+		appointmentId: endAppointment.id,
+		state: 'waiting',
+		waitingStartedAt: new Date(),
+		synthetic: true,
+	});
 	const foreignSession = await dataSource.getRepository(TelehealthSession).save({
 		practiceId: practiceB.id,
 		appointmentId: foreignAppointment.id,
@@ -414,6 +435,7 @@ export async function createAuthorizationMatrixHarness(): Promise<AuthorizationM
 		foreignInvoiceId: foreignInvoice.id,
 		joinSessionId: joinSession.id,
 		endedMintSessionId: endedMintSession.id,
+		endSessionId: endSession.id,
 		createSessionAppointmentId: createSessionAppointment.id,
 		foreignSessionId: foreignSession.id,
 		login,

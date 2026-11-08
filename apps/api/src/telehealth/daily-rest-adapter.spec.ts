@@ -54,6 +54,8 @@ describe('DailyRestAdapter', () => {
 		const tokenBody = JSON.parse(String(fetchImpl.mock.calls[1][1]?.body));
 		expect(tokenBody.properties.user_id).toBe('00000000-0000-4000-8000-000000000012');
 		expect(tokenBody.properties).not.toHaveProperty('user_name');
+		// Minimum necessary toward Daily (SEC-013): room, expiry and the opaque user id only.
+		expect(Object.keys(tokenBody.properties).sort()).toEqual(['exp', 'room_name', 'user_id']);
 	});
 
 	it('reuses a room when Daily reports the name already exists', async () => {

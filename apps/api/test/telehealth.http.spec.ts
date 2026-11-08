@@ -220,7 +220,7 @@ describe('telehealth session HTTP', () => {
 		expect(JSON.stringify(invalid.body)).not.toMatch(/stack|password/i);
 	});
 
-	it('lets a receptionist create and end a session and records audit without PHI', async () => {
+	it('lets a receptionist create but only the provider end a session, and records audit without PHI', async () => {
 		const token = await login(receptionist.email);
 		await cancelOpenAppointments(token);
 		const appointment = await createAppointment(token, {
@@ -258,9 +258,16 @@ describe('telehealth session HTTP', () => {
 			.expect(201);
 		expect(again.body.id).toBe(created.body.id);
 
-		const ended = await request(app.getHttpServer())
+		const deskEnd = await request(app.getHttpServer())
 			.post(`/telehealth/sessions/${created.body.id}/end`)
 			.set('Authorization', `Bearer ${token}`)
+			.expect(403);
+		expect(deskEnd.body.error.code).toBe('FORBIDDEN');
+
+		const providerToken = await login(provider.email);
+		const ended = await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/end`)
+			.set('Authorization', `Bearer ${providerToken}`)
 			.expect(200);
 		expect(ended.body.state).toBe('ended');
 		expect(ended.body.endedAt).toBeDefined();
@@ -318,6 +325,140 @@ describe('telehealth session HTTP', () => {
 			.set('Authorization', `Bearer ${patientToken}`)
 			.expect(200);
 		expect(patientJoin.body.state).toBe('in_session');
+	});
+
+	it('accepts a heartbeat only from participants of an in_session visit and rejects it after end', async () => {
+		const desk = await login(receptionist.email);
+		await cancelOpenAppointments(desk);
+		const appointment = await createAppointment(desk, {
+			start: isoFromNow(-3 * 60 * 1000),
+			end: isoFromNow(45 * 60 * 1000),
+		});
+		const created = await request(app.getHttpServer())
+			.post('/telehealth/sessions')
+			.set('Authorization', `Bearer ${desk}`)
+			.send({appointmentId: appointment.id})
+			.expect(201);
+		const heartbeat = (token: string, id: string = created.body.id) =>
+			request(app.getHttpServer())
+				.post(`/telehealth/sessions/${id}/heartbeat`)
+				.set('Authorization', `Bearer ${token}`);
+
+		const providerToken = await login(provider.email);
+		const waiting = await heartbeat(providerToken).expect(409);
+		expect(waiting.body.error.code).toBe('SESSION_NOT_JOINABLE');
+
+		await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/join`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(200);
+
+		const sessionRow = () =>
+			dataSource.getRepository(TelehealthSession).findOneByOrFail({id: created.body.id});
+		const joinedRow = await sessionRow();
+
+		const noContent = await heartbeat(providerToken).expect(204);
+		expect(noContent.text).toBe('');
+		await heartbeat(await login(portalUser.email)).expect(204);
+
+		const assigned = await dataSource
+			.getRepository(PatientAssignment)
+			.findOneBy({patientId: patient.id, userId: nurse.id, practiceId: practiceA.id});
+		if (!assigned) {
+			await dataSource
+				.getRepository(PatientAssignment)
+				.save({practiceId: practiceA.id, patientId: patient.id, userId: nurse.id});
+		}
+		await heartbeat(await login(nurse.email)).expect(204);
+		if (!assigned) {
+			// Other specs in this file rely on the nurse starting unassigned.
+			await dataSource
+				.getRepository(PatientAssignment)
+				.delete({practiceId: practiceA.id, patientId: patient.id, userId: nurse.id});
+		}
+
+		const deskDenied = await heartbeat(desk).expect(403);
+		expect(deskDenied.body.error.code).toBe('FORBIDDEN');
+		const outsiderDenied = await heartbeat(await login(outsider.email)).expect(404);
+		expect(outsiderDenied.body.error.code).toBe('NOT_FOUND');
+		await heartbeat(providerToken, randomUUID()).expect(404);
+
+		const afterRow = await sessionRow();
+		expect(afterRow.updatedAt.getTime()).toBe(joinedRow.updatedAt.getTime());
+		const heartbeatAudits = await dataSource.getRepository(AuditEvent).find({
+			where: {practiceId: practiceA.id, resourceId: created.body.id},
+		});
+		expect(heartbeatAudits.map((event) => event.action).sort()).toEqual([
+			'telehealth_session.created',
+			'telehealth_session.joined',
+		]);
+
+		await request(app.getHttpServer())
+			.post(`/telehealth/sessions/${created.body.id}/end`)
+			.set('Authorization', `Bearer ${providerToken}`)
+			.expect(200);
+		const ended = await heartbeat(providerToken).expect(409);
+		expect(ended.body.error.code).toBe('SESSION_NOT_JOINABLE');
+	});
+
+	it('returns participants, mediaExpiresAt and a per-caller viewerCanEnd', async () => {
+		const desk = await login(receptionist.email);
+		await cancelOpenAppointments(desk);
+		const appointment = await createAppointment(desk, {
+			start: isoFromNow(-3 * 60 * 1000),
+			end: isoFromNow(45 * 60 * 1000),
+		});
+		const created = await request(app.getHttpServer())
+			.post('/telehealth/sessions')
+			.set('Authorization', `Bearer ${desk}`)
+			.send({appointmentId: appointment.id})
+			.expect(201);
+		expect(created.body.viewerCanEnd).toBe(false);
+
+		const assigned = await dataSource
+			.getRepository(PatientAssignment)
+			.findOneBy({patientId: patient.id, userId: nurse.id, practiceId: practiceA.id});
+		if (!assigned) {
+			await dataSource
+				.getRepository(PatientAssignment)
+				.save({practiceId: practiceA.id, patientId: patient.id, userId: nurse.id});
+		}
+
+		const read = async (email: string) => {
+			const token = await login(email);
+			const response = await request(app.getHttpServer())
+				.get(`/telehealth/sessions/${created.body.id}`)
+				.set('Authorization', `Bearer ${token}`)
+				.expect(200);
+			return response.body as {
+				participants: Array<{userId: string; displayName: string; role: string}>;
+				mediaExpiresAt: string;
+				viewerCanEnd: boolean;
+				end: string;
+			};
+		};
+
+		const asProvider = await read(provider.email);
+		expect(asProvider.viewerCanEnd).toBe(true);
+		expect(asProvider.participants).toEqual([
+			{userId: provider.id, displayName: 'Provider', role: 'PROVIDER'},
+			{userId: portalUser.id, displayName: `Avery Tele${suffix}`, role: 'PATIENT'},
+			{userId: nurse.id, displayName: 'Nurse', role: 'NURSE'},
+		]);
+		expect(new Date(asProvider.mediaExpiresAt).getTime()).toBe(
+			Math.floor((new Date(asProvider.end).getTime() + 15 * 60 * 1000) / 1000) * 1000,
+		);
+		expect(JSON.stringify(asProvider.participants)).not.toContain('@');
+
+		expect((await read(receptionist.email)).viewerCanEnd).toBe(false);
+		expect((await read(portalUser.email)).viewerCanEnd).toBe(false);
+		expect((await read(nurse.email)).viewerCanEnd).toBe(false);
+		if (!assigned) {
+			// Other specs in this file rely on the nurse starting unassigned.
+			await dataSource
+				.getRepository(PatientAssignment)
+				.delete({practiceId: practiceA.id, patientId: patient.id, userId: nurse.id});
+		}
 	});
 
 	it('limits nurse join to assigned patients', async () => {
@@ -617,7 +758,7 @@ describe('telehealth session HTTP', () => {
 
 		const ended = await request(app.getHttpServer())
 			.post(`/telehealth/sessions/${created.body.id}/end`)
-			.set('Authorization', `Bearer ${desk}`)
+			.set('Authorization', `Bearer ${providerToken}`)
 			.expect(200);
 		expect(ended.body.state).toBe('ended');
 		const deleteAudits = await dataSource.getRepository(AuditEvent).find({

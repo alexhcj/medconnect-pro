@@ -122,12 +122,14 @@ the visit for all participants. Leave is a client/Daily teardown; there is no Ne
 participant when a non-ended session exists, or 404 when it does not. It does not create a
 session. `POST /telehealth/sessions` still requires `write:appointments`.
 
-M22 ([SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)): `POST .../end` is host-only (the appointment provider or a practice admin;
+M22 ([SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md); shipped in 1.2.0 by [BE-027](../tasks/backend/BE-027-telehealth-keepalive-and-host-rule.md)): `POST .../end` is host-only (the appointment provider or a practice admin;
 receptionists create but do not end). `POST .../heartbeat` is the one in-visit keep-alive: visit
 participants only, session `in_session`, appointment still eligible; it refreshes the auth
 session's idle activity and nothing else, returns 204, and is rejected with the join conflict codes
-once the visit is ended or past grace. The session object adds `participants`, `mediaExpiresAt`
-and `viewerCanEnd`.
+once the visit is ended or past grace. A caller who can read the session but is not a visit
+participant gets 403 (as for join); out-of-scope, unknown and cross-tenant ids get 404. The session
+object adds `participants` (the assigned roster, not live presence), `mediaExpiresAt` and
+`viewerCanEnd`. Requests sent with `X-MCP-Activity: passive` do not refresh idle activity.
 
 - `POST /telehealth/sessions` — requires `write:appointments`
 - `GET /telehealth/sessions?appointmentId=` — open session for one appointment, or 404

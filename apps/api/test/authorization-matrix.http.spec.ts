@@ -22,6 +22,7 @@ import {
 import type {PracticeRole} from '../src/tenancy/practice-role.js';
 import {
 	canCreateOrEndTelehealthSession,
+	canEndTelehealthVisit,
 	isVisitJoinParticipant,
 } from '../src/telehealth/telehealth-access.js';
 import {
@@ -173,6 +174,30 @@ function joinStatus(harness: AuthorizationMatrixHarness, actor: MatrixActor): nu
 		return 200;
 	}
 	return 403;
+}
+
+/** Heartbeat uses the join participant rule; participants get 204 on an in_session visit. */
+function heartbeatStatus(harness: AuthorizationMatrixHarness, actor: MatrixActor): number {
+	const status = joinStatus(harness, actor);
+	return status === 200 ? 204 : status;
+}
+
+/** End visit host rule (SEC-013): write:appointments plus the appointment provider or an admin. */
+function endStatus(harness: AuthorizationMatrixHarness, actor: MatrixActor): number {
+	const role = harness.actors[actor].role;
+	if (actor === 'outsider') {
+		return 404;
+	}
+	if (!canWriteAppointments(role)) {
+		return 403;
+	}
+	return canEndTelehealthVisit({
+		role,
+		actorUserId: harness.actors[actor].id,
+		providerUserId: harness.providerId,
+	})
+		? 200
+		: 403;
 }
 
 function nextAppointmentWindow(): {start: string; end: string} {
@@ -331,6 +356,20 @@ function buildCases(): MatrixCase[] {
 				method: 'post',
 				path: (harness) => `/telehealth/sessions/${harness.joinSessionId}/media-token`,
 				expectedStatus: (h) => joinStatus(h, actor),
+			},
+			{
+				name: `${actor} POST telehealth heartbeat`,
+				actor,
+				method: 'post',
+				path: (harness) => `/telehealth/sessions/${harness.joinSessionId}/heartbeat`,
+				expectedStatus: (h) => heartbeatStatus(h, actor),
+			},
+			{
+				name: `${actor} POST telehealth end`,
+				actor,
+				method: 'post',
+				path: (harness) => `/telehealth/sessions/${harness.endSessionId}/end`,
+				expectedStatus: (h) => endStatus(h, actor),
 			},
 			{
 				name: `${actor} GET /billing/invoices`,
@@ -523,6 +562,48 @@ function buildCases(): MatrixCase[] {
 			expectedStatus: (harness) => joinStatus(harness, 'otherProvider'),
 		},
 		{
+			name: 'otherProvider POST telehealth heartbeat',
+			actor: 'otherProvider',
+			method: 'post',
+			path: (harness) => `/telehealth/sessions/${harness.joinSessionId}/heartbeat`,
+			expectedStatus: (harness) => heartbeatStatus(harness, 'otherProvider'),
+		},
+		{
+			name: 'otherProvider POST telehealth end',
+			actor: 'otherProvider',
+			method: 'post',
+			path: (harness) => `/telehealth/sessions/${harness.endSessionId}/end`,
+			expectedStatus: (harness) => endStatus(harness, 'otherProvider'),
+		},
+		{
+			name: 'superAdmin POST telehealth end',
+			actor: 'superAdmin',
+			method: 'post',
+			path: (harness) => `/telehealth/sessions/${harness.endSessionId}/end`,
+			expectedStatus: (harness) => endStatus(harness, 'superAdmin'),
+		},
+		{
+			name: 'outsider POST foreign-practice telehealth end',
+			actor: 'outsider',
+			method: 'post',
+			path: (harness) => `/telehealth/sessions/${harness.endSessionId}/end`,
+			expectedStatus: (harness) => endStatus(harness, 'outsider'),
+		},
+		{
+			name: 'outsider POST foreign-practice telehealth heartbeat',
+			actor: 'outsider',
+			method: 'post',
+			path: (harness) => `/telehealth/sessions/${harness.joinSessionId}/heartbeat`,
+			expectedStatus: () => 404,
+		},
+		{
+			name: 'provider POST telehealth end on a foreign session',
+			actor: 'provider',
+			method: 'post',
+			path: (harness) => `/telehealth/sessions/${harness.foreignSessionId}/end`,
+			expectedStatus: () => 404,
+		},
+		{
 			name: 'provider POST media-token after session end',
 			actor: 'provider',
 			method: 'post',
@@ -530,7 +611,7 @@ function buildCases(): MatrixCase[] {
 			before: async (harness, tokens) => {
 				await request(harness.app.getHttpServer())
 					.post(`/telehealth/sessions/${harness.endedMintSessionId}/end`)
-					.set('Authorization', `Bearer ${tokens.receptionist}`)
+					.set('Authorization', `Bearer ${tokens.provider}`)
 					.expect(200);
 			},
 			expectedStatus: () => 409,

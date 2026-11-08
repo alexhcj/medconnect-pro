@@ -2,6 +2,24 @@ import {ApiProperty, ApiSchema} from '@nestjs/swagger';
 import {APPOINTMENT_TYPES} from '../persistence/entities/appointment.entity.js';
 import {TELEHEALTH_SESSION_STATES} from '../persistence/entities/telehealth-session.entity.js';
 
+export const TELEHEALTH_PARTICIPANT_ROLES = ['PROVIDER', 'PATIENT', 'NURSE'] as const;
+
+@ApiSchema({name: 'TelehealthSessionParticipant'})
+export class TelehealthParticipantRdo {
+	@ApiProperty({
+		format: 'uuid',
+		description:
+			'User id. Equals the Daily participant user_id that Nest sets in the meeting token, so call tiles can resolve name and role without a client-chosen Daily user_name.',
+	})
+	userId!: string;
+
+	@ApiProperty({example: 'Dr. Jordan Ellis', description: 'Server-sourced display name, never an email.'})
+	displayName!: string;
+
+	@ApiProperty({enum: TELEHEALTH_PARTICIPANT_ROLES, example: 'PROVIDER'})
+	role!: (typeof TELEHEALTH_PARTICIPANT_ROLES)[number];
+}
+
 @ApiSchema({name: 'TelehealthSession'})
 export class TelehealthSessionRdo {
 	@ApiProperty({format: 'uuid'})
@@ -54,6 +72,27 @@ export class TelehealthSessionRdo {
 		description: 'Always true. This API stores synthetic demo data only.',
 	})
 	synthetic!: boolean;
+
+	@ApiProperty({
+		type: () => [TelehealthParticipantRdo],
+		description:
+			'The visit roster: the appointment provider, the portal patient (when linked), and each assigned nurse, in that order. This is who may join, not live presence.',
+	})
+	participants!: TelehealthParticipantRdo[];
+
+	@ApiProperty({
+		example: '2026-09-26T15:15:00.000Z',
+		description:
+			'When the Daily room and meeting token expire: appointment end plus 15 minutes (ISO-8601). The client can warn 5 minutes before. Rooms are not extended.',
+	})
+	mediaExpiresAt!: string;
+
+	@ApiProperty({
+		example: false,
+		description:
+			'UX hint computed from the End visit host rule for the caller (appointment provider or practice admin). POST .../end still enforces it.',
+	})
+	viewerCanEnd!: boolean;
 }
 
 @ApiSchema({name: 'TelehealthSessionCreateRequest'})

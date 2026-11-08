@@ -28,7 +28,13 @@ export function configureApp(app: INestApplication): void {
 			callback(null, isCorsOriginAllowed(corsPolicy, origin));
 		},
 		methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-		allowedHeaders: ['Authorization', 'Content-Type', 'X-Correlation-ID', 'X-CSRF-Token'],
+		allowedHeaders: [
+			'Authorization',
+			'Content-Type',
+			'X-Correlation-ID',
+			'X-CSRF-Token',
+			'X-MCP-Activity',
+		],
 		credentials: true,
 	});
 	app.useGlobalPipes(
