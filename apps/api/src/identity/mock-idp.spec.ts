@@ -7,6 +7,12 @@ import {
 	findMockIdpAccountByEmail,
 	matchMockIdpAccount,
 } from './mock-idp.js';
+import {
+	ADMIN_DISPLAY,
+	MFA_NURSE_DISPLAY,
+	PATIENT_DISPLAY,
+	PROVIDER_DISPLAY,
+} from './seed-mock-identity.js';
 
 describe('mock IdP fixture', () => {
 	const demoUsersPath = join(
@@ -14,7 +20,15 @@ describe('mock IdP fixture', () => {
 		'../../../../docs/mocks/demo-users.json',
 	);
 	const demo = JSON.parse(readFileSync(demoUsersPath, 'utf8')) as {
-		users: {email: string; password: string; role: string; userId: string}[];
+		users: {
+			email: string;
+			password: string;
+			role: string;
+			userId: string;
+			displayName: string;
+			credential: string | null;
+			personaKey: string | null;
+		}[];
 	};
 	const admin = defaultMockIdpAccounts.find((account) => account.email === demo.users[0]?.email);
 
@@ -92,6 +106,19 @@ describe('mock IdP fixture', () => {
 			password: 'Demo-Patient-1',
 			role: 'PATIENT',
 			userId: '77777777-7777-4777-8777-777777777777',
+		});
+	});
+
+	it('mirrors the seeded display identity in demo-users.json (DATA-007)', () => {
+		const byEmail = (email: string) => demo.users.find((user) => user.email === email);
+		expect(byEmail('jordan.ellis@synthetic.example')).toMatchObject(PROVIDER_DISPLAY);
+		expect(byEmail('mfa.nurse@example.test')).toMatchObject(MFA_NURSE_DISPLAY);
+		expect(byEmail('practice.admin@example.test')).toMatchObject(ADMIN_DISPLAY);
+		// The seeded patient's name comes from the patient record, so only persona and credential mirror.
+		expect(byEmail('avery.quinn@synthetic.example')).toMatchObject({
+			displayName: 'Avery Quinn',
+			credential: PATIENT_DISPLAY.credential,
+			personaKey: PATIENT_DISPLAY.personaKey,
 		});
 	});
 

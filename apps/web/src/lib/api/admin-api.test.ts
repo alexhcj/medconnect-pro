@@ -10,6 +10,9 @@ const userRdo: PracticeUserRdo = {
 	id: userId,
 	email: 'practice.admin@example.test',
 	role: 'PRACTICE_ADMIN',
+	displayName: 'Morgan Hale',
+	credential: null,
+	personaKey: null,
 	practiceId,
 	synthetic: true,
 };
@@ -18,6 +21,9 @@ const providerRdo: PracticeUserRdo = {
 	id: '44444444-4444-4444-8444-444444444444',
 	email: 'jordan.ellis@synthetic.example',
 	role: 'PROVIDER',
+	displayName: 'Dr. Jordan Ellis',
+	credential: 'MD',
+	personaKey: 'provider-jordan-ellis',
 	practiceId,
 	synthetic: true,
 };

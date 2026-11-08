@@ -9,6 +9,7 @@ import {
 	UpdateDateColumn,
 } from 'typeorm';
 import {Patient} from './patient.entity.js';
+import {PracticeMembership} from './practice-membership.entity.js';
 import {Practice} from './practice.entity.js';
 import {User} from './user.entity.js';
 
@@ -49,6 +50,12 @@ export class Appointment {
 	@ManyToOne(() => User, {onDelete: 'RESTRICT', nullable: false})
 	@JoinColumn({name: 'provider_user_id'})
 	provider!: User;
+
+	/**
+	 * Not a column. Mapped by a tenant-scoped join in the appointment repository so RDOs can show
+	 * the provider's membership display name (DATA-007). Absent on rows loaded without that join.
+	 */
+	providerMembership?: PracticeMembership | null;
 
 	@Column({name: 'start_at', type: 'timestamptz'})
 	startAt!: Date;

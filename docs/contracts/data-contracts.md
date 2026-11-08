@@ -65,8 +65,10 @@ Response concepts:
 
 - appointment identity
 - scheduling state
-- authorized participant information. From M22 ([SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)) the provider is shown by the
-  membership `displayName` (with `credential` when set), not by email
+- authorized participant information. From M22 ([SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md),
+  shipped by [DATA-007](../tasks/backend/DATA-007-staff-display-identity.md)) `providerName` is the membership
+  `displayName`, or a role label when none is set, never the email. `credential` is not appended and is
+  not a field on appointment or telehealth responses; it is only on the practice user directory
 - visit reason (the appointment notes). A visit title uses this field, never the patient's
   diagnosis list, because front-desk roles see visit titles
 

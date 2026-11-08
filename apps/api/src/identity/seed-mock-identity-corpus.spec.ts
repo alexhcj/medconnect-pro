@@ -11,7 +11,14 @@ import {
 	seededAuditCreatedAt,
 	utcDateKey,
 } from './seed-mock-identity-corpus.js';
+import {DEMO_PERSONA_KEYS} from '../tenancy/persona-key.js';
 import {defaultMockIdpAccounts} from './mock-idp.js';
+import {
+	ADMIN_DISPLAY,
+	MFA_NURSE_DISPLAY,
+	PATIENT_DISPLAY,
+	PROVIDER_DISPLAY,
+} from './seed-mock-identity.js';
 
 describe('DATA-006 paging corpus', () => {
 	it('keeps staff users synthetic, unique, role-limited and without mock IdP logins', () => {
@@ -23,6 +30,43 @@ describe('DATA-006 paging corpus', () => {
 			expect(user.email.endsWith('@synthetic.example')).toBe(true);
 			expect(['NURSE', 'RECEPTIONIST']).toContain(user.role);
 			expect(idpEmails.has(user.email)).toBe(false);
+		}
+	});
+
+	it('gives every staff user a unique, deterministic, email-free synthetic name (DATA-007)', () => {
+		const names = SEEDED_STAFF_USERS.map((user) => user.displayName);
+		expect(new Set(names).size).toBe(names.length);
+		const demoNames = [
+			PROVIDER_DISPLAY.displayName,
+			MFA_NURSE_DISPLAY.displayName,
+			ADMIN_DISPLAY.displayName,
+		];
+		for (const user of SEEDED_STAFF_USERS) {
+			expect(user.displayName).toMatch(/^[A-Z][a-z]+ [A-Z][a-z]+$/);
+			expect(user.displayName).not.toContain('@');
+			expect(demoNames).not.toContain(user.displayName);
+			expect(user.credential).toBe(user.role === 'NURSE' ? 'RN' : null);
+		}
+		expect(SEEDED_STAFF_USERS[0]).toMatchObject({displayName: 'Amari Stone', credential: 'RN'});
+	});
+
+	it('keeps demo account display identity in the persona catalog (DATA-007)', () => {
+		expect(PROVIDER_DISPLAY).toEqual({
+			displayName: 'Dr. Jordan Ellis',
+			credential: 'MD',
+			personaKey: 'provider-jordan-ellis',
+		});
+		expect(MFA_NURSE_DISPLAY).toEqual({
+			displayName: 'Riley Park',
+			credential: 'RN',
+			personaKey: 'nurse-riley-park',
+		});
+		expect(PATIENT_DISPLAY.personaKey).toBe('patient-avery-quinn');
+		expect(PATIENT_DISPLAY.displayName).toBeNull();
+		for (const display of [PROVIDER_DISPLAY, MFA_NURSE_DISPLAY, PATIENT_DISPLAY, ADMIN_DISPLAY]) {
+			if (display.personaKey) {
+				expect(DEMO_PERSONA_KEYS).toContain(display.personaKey);
+			}
 		}
 	});
 

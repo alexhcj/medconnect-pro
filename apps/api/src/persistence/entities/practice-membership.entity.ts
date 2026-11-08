@@ -9,6 +9,7 @@ import {
 	Unique,
 	UpdateDateColumn,
 } from 'typeorm';
+import type {DemoPersonaKey} from '../../tenancy/persona-key.js';
 import type {PracticeRole} from '../../tenancy/practice-role.js';
 import {Practice} from './practice.entity.js';
 import {User} from './user.entity.js';
@@ -36,6 +37,15 @@ export class PracticeMembership {
 
 	@Column({type: 'varchar', length: 32})
 	role!: PracticeRole;
+
+	@Column({name: 'display_name', type: 'varchar', length: 120, nullable: true})
+	displayName!: string | null;
+
+	@Column({type: 'varchar', length: 16, nullable: true})
+	credential!: string | null;
+
+	@Column({name: 'persona_key', type: 'varchar', length: 40, nullable: true})
+	personaKey!: DemoPersonaKey | null;
 
 	@CreateDateColumn({name: 'created_at', type: 'timestamptz'})
 	createdAt!: Date;

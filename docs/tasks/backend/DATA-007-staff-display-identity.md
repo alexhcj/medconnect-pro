@@ -3,7 +3,7 @@ id: DATA-007
 type: task
 area: backend
 feature: identity-access
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [SEC-013, DATA-005, DATA-006]
@@ -19,7 +19,7 @@ related_docs:
     DATA-006-live-seed-for-list-paging.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -104,15 +104,15 @@ task's fields).
 
 ## Acceptance Criteria
 
-- [ ] Migration adds the three nullable columns and the persona key constraint; down migration
+- [x] Migration adds the three nullable columns and the persona key constraint; down migration
       removes them
-- [ ] One display helper; no RDO shows an email as a name; role label fallback covered by tests
-- [ ] Appointment and telehealth `providerName` shows "Dr. Jordan Ellis" for the seeded provider
-- [ ] Practice user directory returns `displayName`, `credential`, `personaKey`
-- [ ] Seeded nurse is "Riley Park" (credential "RN"); seeded visit reason is "Blood pressure follow-up"; seed
+- [x] One display helper; no RDO shows an email as a name; role label fallback covered by tests
+- [x] Appointment and telehealth `providerName` shows "Dr. Jordan Ellis" for the seeded provider
+- [x] Practice user directory returns `displayName`, `credential`, `personaKey`
+- [x] Seeded nurse is "Riley Park" (credential "RN"); seeded visit reason is "Blood pressure follow-up"; seed
       re-run creates no duplicates
-- [ ] Mock fixtures and `demo-users.json` match the seed
-- [ ] Contracts and data architecture updated; CHANGELOG entry and version bump (ADR-007)
+- [x] Mock fixtures and `demo-users.json` match the seed
+- [x] Contracts and data architecture updated; CHANGELOG entry and version bump (ADR-007)
 
 ## Dependencies
 
@@ -133,3 +133,27 @@ task's fields).
   working. Any test that asserts the email string changes with it.
 - Renaming the seeded visit notes touches the seed's lookup key (see Scope).
 - Version: new response fields and seed data are a compatible feature (MINOR, ADR-007).
+
+## Completion
+
+Shipped at 1.1.0 (MINOR, ADR-007).
+
+- Migration `1760000000013-MembershipDisplayIdentity` (`display_name`, `credential`, `persona_key` + CHECK
+  against `apps/api/src/tenancy/persona-key.ts`). The down migration was dry-run in a rolled-back
+  transaction, and the CHECK rejects an unknown persona key.
+- `resolveDisplayName` (`apps/api/src/identity/display-name.ts`): patient record name for PATIENT, else
+  `displayName`, else role label ("Super admin" for SUPER_ADMIN); never email.
+- `providerName` on appointment and telehealth RDOs uses the provider's membership in the appointment's
+  own practice (mapped join in `appointment.repository.ts`, lookup in `telehealth-session.repository.ts`).
+  No `providerCredential` field was added (decision 2026-11-08); `data-contracts.md` wording fixed.
+- `GET /admin/users` returns `displayName`, `credential`, `personaKey`; PATIENT rows resolve the patient
+  record name through one tenant-scoped batched query.
+- Seeds set names for the demo accounts and the 24 extra staff and rename the live visit to
+  "Blood pressure follow-up" (matches the old value once). Verified on the local Compose DB: two seed
+  runs leave one visit row and the expected names.
+- Mock fixtures (`demo-users.json`, `admin-users.json`, `appointments.json`) mirror the seed; a spec
+  checks `demo-users.json` against the seed constants.
+- Validation: `npm run test:api` 630/630, `npm run test:web` 760/760, `lint:api`, `lint:web` and both
+  type-checks clean. Security review: no findings.
+- Not done (out of scope): UI display of the new directory fields; the web `liveDemoProvider` name override
+  is now redundant but left in place.

@@ -22,6 +22,7 @@ import {
 	TelehealthSessionNotFoundError,
 } from './telehealth-session.errors.js';
 import type {TelehealthMediaTokenRdo, TelehealthSessionRdo} from './telehealth-session.rdo.js';
+import {resolveDisplayName} from '../identity/display-name.js';
 import type {TelehealthSessionCreateBody} from './telehealth-session.schema.js';
 import {
 	TelehealthSessionRepository,
@@ -297,7 +298,9 @@ export function toSessionRdo(session: TelehealthSession, appointment: Appointmen
 		patientName: appointment.patient
 			? `${appointment.patient.firstName} ${appointment.patient.lastName}`
 			: appointment.patientId,
-		providerName: appointment.provider?.email ?? appointment.providerUserId,
+		providerName: resolveDisplayName(
+			appointment.providerMembership ?? {role: 'PROVIDER'},
+		),
 		synthetic: session.synthetic,
 	};
 	if (session.joinedAt) {

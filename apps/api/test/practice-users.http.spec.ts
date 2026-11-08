@@ -22,6 +22,9 @@ type PracticeUserBody = {
 	id: string;
 	email: string;
 	role: string;
+	displayName: string;
+	credential: string | null;
+	personaKey: string | null;
 	practiceId: string;
 	synthetic: boolean;
 };
@@ -88,7 +91,14 @@ describe('practice user directory HTTP', () => {
 		await dataSource.getRepository(PracticeMembership).save([
 			{practiceId: practiceA.id, userId: admin.id, role: 'PRACTICE_ADMIN'},
 			{practiceId: practiceA.id, userId: superAdmin.id, role: 'SUPER_ADMIN'},
-			{practiceId: practiceA.id, userId: provider.id, role: 'PROVIDER'},
+			{
+				practiceId: practiceA.id,
+				userId: provider.id,
+				role: 'PROVIDER',
+				displayName: 'Dr. Directory Provider',
+				credential: 'MD',
+				personaKey: 'provider-jordan-ellis',
+			},
 			{practiceId: practiceA.id, userId: nurse.id, role: 'NURSE'},
 			{practiceId: practiceA.id, userId: receptionist.id, role: 'RECEPTIONIST'},
 			{practiceId: practiceA.id, userId: portalUser.id, role: 'PATIENT'},
@@ -177,7 +187,22 @@ describe('practice user directory HTTP', () => {
 		expect(users.find((user) => user.id === provider.id)).toMatchObject({
 			email: provider.email,
 			role: 'PROVIDER',
+			displayName: 'Dr. Directory Provider',
+			credential: 'MD',
+			personaKey: 'provider-jordan-ellis',
 		});
+		// Role-label fallback; never the email (DATA-007).
+		expect(users.find((user) => user.id === nurse.id)).toMatchObject({
+			displayName: 'Nurse',
+			credential: null,
+			personaKey: null,
+		});
+		expect(users.find((user) => user.id === superAdmin.id)).toMatchObject({
+			displayName: 'Super admin',
+		});
+		for (const user of users) {
+			expect(user.displayName).not.toContain('@');
+		}
 		expect(users.some((user) => user.id === foreignAdmin.id)).toBe(false);
 		expect(users.some((user) => user.email === foreignAdmin.email)).toBe(false);
 

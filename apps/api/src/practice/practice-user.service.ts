@@ -3,6 +3,7 @@ import {REQUEST} from '@nestjs/core';
 import type {Request} from 'express';
 import {AuditEventRepository} from '../audit/audit-event.repository.js';
 import {PermissionDeniedError} from '../identity/auth.errors.js';
+import {type PatientNameSource, resolveDisplayName} from '../identity/display-name.js';
 import type {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {getCorrelationId} from '../platform/correlation.js';
 import {resolvePageRequest, toPageMeta} from '../platform/pagination.js';
@@ -29,7 +30,13 @@ export class PracticeUserService {
 			q: query.q,
 			role: query.role,
 		});
-		return {users: rows.map(toPracticeUserRdo), ...toPageMeta(total, paging)};
+		const patientNames = await this.memberships.patientNamesByPortalUserId(
+			rows.filter((row) => row.role === 'PATIENT').map((row) => row.userId),
+		);
+		return {
+			users: rows.map((row) => toPracticeUserRdo(row, patientNames.get(row.userId))),
+			...toPageMeta(total, paging),
+		};
 	}
 
 	async assignRole(userId: string, role: PracticeRole): Promise<PracticeUserRdo> {
@@ -49,7 +56,7 @@ export class PracticeUserService {
 			}
 		}
 		if (row.role === role) {
-			return toPracticeUserRdo(row);
+			return this.toRdoWithPatientName(row);
 		}
 
 		const saved = await this.memberships.updateRole(row, role);
@@ -59,15 +66,26 @@ export class PracticeUserService {
 			resourceId: userId,
 			correlationId: getCorrelationId(this.request),
 		});
-		return toPracticeUserRdo(saved);
+		return this.toRdoWithPatientName(saved);
+	}
+
+	private async toRdoWithPatientName(row: PracticeMembership): Promise<PracticeUserRdo> {
+		const names =
+			row.role === 'PATIENT'
+				? await this.memberships.patientNamesByPortalUserId([row.userId])
+				: new Map<string, PatientNameSource>();
+		return toPracticeUserRdo(row, names.get(row.userId));
 	}
 }
 
-function toPracticeUserRdo(row: PracticeMembership): PracticeUserRdo {
+function toPracticeUserRdo(row: PracticeMembership, patient?: PatientNameSource): PracticeUserRdo {
 	return {
 		id: row.userId,
 		email: row.user.email,
 		role: row.role,
+		displayName: resolveDisplayName(row, patient),
+		credential: row.credential,
+		personaKey: row.personaKey,
 		practiceId: row.practiceId,
 		synthetic: true,
 	};

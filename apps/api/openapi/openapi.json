@@ -4834,6 +4834,28 @@
             ],
             "example": "PRACTICE_ADMIN"
           },
+          "displayName": {
+            "type": "string",
+            "example": "Dr. Jordan Ellis",
+            "description": "Membership display name; the patient record name for PATIENT; otherwise a role label. Never the email."
+          },
+          "credential": {
+            "type": "string",
+            "nullable": true,
+            "example": "MD",
+            "description": "Optional credential shown beside the name (for example MD, RN)."
+          },
+          "personaKey": {
+            "type": "string",
+            "enum": [
+              "provider-jordan-ellis",
+              "nurse-riley-park",
+              "patient-avery-quinn"
+            ],
+            "nullable": true,
+            "example": "provider-jordan-ellis",
+            "description": "Optional demo persona key (synthetic camera; read-only in M22)."
+          },
           "practiceId": {
             "type": "string",
             "format": "uuid",
@@ -4849,6 +4871,9 @@
           "id",
           "email",
           "role",
+          "displayName",
+          "credential",
+          "personaKey",
           "practiceId",
           "synthetic"
         ]

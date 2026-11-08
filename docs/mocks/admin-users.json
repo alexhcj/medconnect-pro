@@ -6,6 +6,9 @@
 			"id": "user_mock_super_admin",
 			"email": "super.admin@example.test",
 			"role": "SUPER_ADMIN",
+			"displayName": "Super admin",
+			"credential": null,
+			"personaKey": null,
 			"practiceId": "demo-practice-001",
 			"synthetic": true
 		},
@@ -13,6 +16,9 @@
 			"id": "user_mock_practice_admin",
 			"email": "practice.admin@example.test",
 			"role": "PRACTICE_ADMIN",
+			"displayName": "Morgan Hale",
+			"credential": null,
+			"personaKey": null,
 			"practiceId": "demo-practice-001",
 			"synthetic": true
 		},
@@ -20,6 +26,9 @@
 			"id": "user_mock_provider",
 			"email": "provider@example.test",
 			"role": "PROVIDER",
+			"displayName": "Dr. Jordan Ellis",
+			"credential": "MD",
+			"personaKey": "provider-jordan-ellis",
 			"practiceId": "demo-practice-001",
 			"synthetic": true
 		},
@@ -27,6 +36,9 @@
 			"id": "user_mock_nurse",
 			"email": "nurse@example.test",
 			"role": "NURSE",
+			"displayName": "Riley Park",
+			"credential": "RN",
+			"personaKey": "nurse-riley-park",
 			"practiceId": "demo-practice-001",
 			"synthetic": true
 		},
@@ -34,6 +46,9 @@
 			"id": "user_mock_receptionist",
 			"email": "receptionist@example.test",
 			"role": "RECEPTIONIST",
+			"displayName": "Receptionist",
+			"credential": null,
+			"personaKey": null,
 			"practiceId": "demo-practice-001",
 			"synthetic": true
 		},
@@ -41,6 +56,9 @@
 			"id": "user_mock_patient",
 			"email": "patient@example.test",
 			"role": "PATIENT",
+			"displayName": "Avery Quinn",
+			"credential": null,
+			"personaKey": "patient-avery-quinn",
 			"practiceId": "demo-practice-001",
 			"synthetic": true
 		}

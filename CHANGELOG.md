@@ -6,6 +6,34 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.1.0] - 2026-11-08
+
+M22 Telehealth 2.0: Visit experience, first implementation task.
+
+### Added
+
+- DATA-007: practice memberships carry an optional `displayName`, `credential` (for example "MD",
+  "RN") and demo `personaKey` (migration `1760000000013-MembershipDisplayIdentity`: three nullable
+  columns and a CHECK that limits `persona_key` to the three demo persona keys). One display helper
+  (`resolveDisplayName`): the patient record name for PATIENT, else `displayName`, else a role label
+  ("Provider", "Nurse", "Practice admin", "Super admin", "Receptionist", "Patient"). It never falls back
+  to email.
+- `GET /admin/users` returns `displayName`, `credential` and `personaKey` (read-only; no write endpoint).
+  PATIENT rows show the patient record name.
+- Seeds: synthetic names for the demo accounts (Morgan Hale, Dr. Jordan Ellis MD, Riley Park RN, Avery
+  Quinn persona) and the 24 extra staff. Re-runs also update existing rows (for example Render
+  `SEED_ON_DEPLOY`).
+
+### Changed
+
+- Appointment and telehealth session `providerName` is now the provider's display name (for example
+  "Dr. Jordan Ellis") instead of their email. Same field and type; no email is returned as a person's
+  name. Display data is not sent to Daily.
+- The seeded in-window telehealth visit reason is "Blood pressure follow-up" (was "Live demo telehealth
+  visit"). The seed renames the existing row once and never adds a second visit.
+- Mock fixtures (`docs/mocks/demo-users.json`, `admin-users.json`, `appointments.json`) mirror the
+  seeded names, credentials, persona keys and visit reason.
+
 ## [1.0.1] - 2026-11-02
 
 ### Changed

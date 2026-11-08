@@ -254,7 +254,7 @@ demo persona camera, host-only End visit, passive background polls and an in-vis
 Ships as MINOR releases from 1.1.0; the breaking host rule is MINOR under the ADR-007 MINOR cap (2026-11-08).
 
 - SEC-013 — Telehealth 2.0 visit-experience contract (shipped; docs only, no version bump)
-- DATA-007 — Staff display identity and demo visit reason (pending)
+- DATA-007 — Staff display identity and demo visit reason (shipped at 1.1.0)
 - BE-027 — Telehealth keep-alive, passive requests and the End visit host rule (pending)
 - FE-062 — Telehealth pre-join green room (pending; design in progress)
 - FE-063 — Full-screen call stage and controls (pending; design in progress)
