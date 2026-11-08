@@ -251,9 +251,18 @@ the web app's forms, dates, select lists and inputs in line with the same design
 
 Telehealth 2.0: Visit experience. Green room, full-screen call stage, call states and wrap-up,
 demo persona camera, host-only End visit, passive background polls and an in-visit heartbeat.
-Further task specs are written as each task starts. Closes at 1.1.0.
+Ships as MINOR releases from 1.1.0; the breaking host rule is MINOR under the ADR-007 MINOR cap (2026-11-08).
 
 - SEC-013 — Telehealth 2.0 visit-experience contract (shipped; docs only, no version bump)
+- DATA-007 — Staff display identity and demo visit reason (pending)
+- BE-027 — Telehealth keep-alive, passive requests and the End visit host rule (pending)
+- FE-062 — Telehealth pre-join green room (pending; design in progress)
+- FE-063 — Full-screen call stage and controls (pending; design in progress)
+- FE-064 — Call states, session keep-alive and wrap-up (pending; design in progress)
+- FE-065 — Demo persona camera (pending; design in progress)
+- QA-014 — M22 verification and close audit (pending)
+
+Order: DATA-007, then BE-027 and FE-062 in parallel; FE-063 after BE-027 and FE-062; FE-064 after FE-063; FE-065 after FE-062 and DATA-007; QA-014 last.
 
 ## Product (M23, planned)
 

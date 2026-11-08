@@ -174,5 +174,8 @@ Shipped and closed at 0.96.3; QA-009 (live paging specs) shipped. Does not reope
   stage (1–3 tiles, per-participant mic and camera state, identity from the session `participants`
   list), devices modal, call states, room-expiry notice, wrap-up, session keep-alive while in a
   visit, and the demo persona camera behind `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS`. Design: Figma page
-  `Telehealth 2.0 · working copies`; frames are approved on each FE task (ADR-011). Task specs are
-  written as each starts. M23 (admission, lock/remove, chat, side panel) follows.
+  `Telehealth 2.0 · working copies`; frames are approved on each FE task (ADR-011). Tasks:
+  [FE-062](../tasks/frontend/FE-062-telehealth-pre-join-green-room.md),
+  [FE-063](../tasks/frontend/FE-063-call-stage-and-controls.md),
+  [FE-064](../tasks/frontend/FE-064-call-states-keepalive-and-wrap-up.md),
+  [FE-065](../tasks/frontend/FE-065-demo-persona-camera.md) (all pending). M23 (admission, lock/remove, chat, side panel) follows.

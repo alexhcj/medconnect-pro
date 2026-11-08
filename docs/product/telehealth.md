@@ -50,25 +50,25 @@ capabilities:
     status: planned
     demo: not in the demo yet (M22)
     public: no
-    related_tasks: [SEC-013]
+    related_tasks: [SEC-013, FE-062]
   - id: telehealth.call-controls
     name: Full-screen call stage and controls
     status: planned
     demo: not in the demo yet (M22)
     public: no
-    related_tasks: [SEC-013]
+    related_tasks: [SEC-013, BE-027, FE-063]
   - id: telehealth.in-visit-keepalive
     name: Stay signed in during a live visit
     status: planned
     demo: not in the demo yet (M22)
     public: no
-    related_tasks: [SEC-013]
+    related_tasks: [SEC-013, BE-027, FE-064]
   - id: telehealth.demo-persona
     name: Demo persona camera
     status: planned
     demo: not in the demo yet (M22); demo builds only
     public: no
-    related_tasks: [SEC-013]
+    related_tasks: [SEC-013, DATA-007, FE-065]
 ---
 
 # Telehealth
