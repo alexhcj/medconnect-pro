@@ -3,7 +3,7 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import type {DailyCall, DailyEventObjectNetworkConnectionEvent, DailyParticipant} from '@daily-co/daily-js';
 import {telehealthRealAPI} from '@/lib/api/telehealth-api';
-import {createDailyCallObject} from '@/lib/telehealth/daily-call-factory';
+import {createDailyCallObject, destroyDailyCall, whenDailyCallsDestroyed} from '@/lib/telehealth/daily-call-factory';
 import {dailyJoinOptions, type JoinChoices} from '@/lib/telehealth/join-choices';
 import {classifyDailyMediaFailure, type DailyMediaFailureKind} from '@/lib/telehealth/media-failure';
 import {isUnconfiguredDailyRoomUrl} from '@/lib/telehealth/unconfigured-daily';
@@ -71,13 +71,7 @@ async function teardownCall(call: DailyCall | null): Promise<void> {
 	} catch {
 		// Nest end remains source of truth.
 	}
-	try {
-		if (!call.isDestroyed()) {
-			await call.destroy();
-		}
-	} catch {
-		// Ignore Daily destroy failures.
-	}
+	await destroyDailyCall(call);
 }
 
 export function useDailyMediaSession({
@@ -194,6 +188,10 @@ export function useDailyMediaSession({
 				}
 
 				tokenRef.current = minted.token;
+				await whenDailyCallsDestroyed();
+				if (cancelledRef.current) {
+					return;
+				}
 				call = createDailyCallObject();
 				callRef.current = call;
 				call.on('joined-meeting', sync);

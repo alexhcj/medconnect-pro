@@ -3,13 +3,20 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import type {DailyCall, DailyParticipant} from '@daily-co/daily-js';
 import {ApiError} from '@/lib/api/http';
 
-const {createDailyCallObject, mintMediaToken} = vi.hoisted(() => ({
+const {createDailyCallObject, mintMediaToken, destroyDailyCall} = vi.hoisted(() => ({
 	createDailyCallObject: vi.fn(),
 	mintMediaToken: vi.fn(),
+	destroyDailyCall: async (call: {destroy: () => Promise<unknown>; isDestroyed: () => boolean} | null) => {
+		if (call && !call.isDestroyed()) {
+			await call.destroy();
+		}
+	},
 }));
 
 vi.mock('@/lib/telehealth/daily-call-factory', () => ({
 	createDailyCallObject,
+	destroyDailyCall,
+	whenDailyCallsDestroyed: async () => undefined,
 }));
 
 vi.mock('@/lib/api/telehealth-api', () => ({

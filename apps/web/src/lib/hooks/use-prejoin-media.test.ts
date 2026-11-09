@@ -1,13 +1,24 @@
+import {StrictMode} from 'react';
 import {act, renderHook, waitFor} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {PREJOIN_DEVICE_STORAGE_KEY} from '@/lib/telehealth/prejoin-preferences';
 
-const {createDailyCallObject, isDailyBrowserSupported} = vi.hoisted(() => ({
+const {createDailyCallObject, isDailyBrowserSupported, destroyDailyCall} = vi.hoisted(() => ({
 	createDailyCallObject: vi.fn(),
 	isDailyBrowserSupported: vi.fn(() => true),
+	destroyDailyCall: async (call: {destroy: () => Promise<unknown>; isDestroyed: () => boolean} | null) => {
+		if (call && !call.isDestroyed()) {
+			await call.destroy();
+		}
+	},
 }));
 
-vi.mock('@/lib/telehealth/daily-call-factory', () => ({createDailyCallObject, isDailyBrowserSupported}));
+vi.mock('@/lib/telehealth/daily-call-factory', () => ({
+	createDailyCallObject,
+	isDailyBrowserSupported,
+	destroyDailyCall,
+	whenDailyCallsDestroyed: async () => undefined,
+}));
 
 import {usePrejoinMedia} from '@/lib/hooks/use-prejoin-media';
 
@@ -69,6 +80,13 @@ describe('usePrejoinMedia', () => {
 		expect(result.current.phase).toBe('ready');
 		expect(result.current.cameras).toEqual([{deviceId: 'mock-camera', label: 'Integrated Camera'}]);
 		expect(result.current.litSegments).toBe(8);
+	});
+
+	it('creates only one call object under React Strict Mode (effects run twice in dev)', async () => {
+		createDailyCallObject.mockImplementation(() => createFakeCall());
+		const {result} = renderHook(() => usePrejoinMedia({mock: false}), {wrapper: StrictMode});
+		await waitFor(() => expect(result.current.phase).toBe('ready'));
+		expect(createDailyCallObject).toHaveBeenCalledTimes(1);
 	});
 
 	it('starts the local camera, lists devices and never joins', async () => {

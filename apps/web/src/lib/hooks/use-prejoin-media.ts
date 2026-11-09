@@ -7,7 +7,12 @@ import type {
 	DailyEventObjectLocalAudioLevel,
 	DailyEventObjectNonFatalError,
 } from '@daily-co/daily-js';
-import {createDailyCallObject, isDailyBrowserSupported} from '@/lib/telehealth/daily-call-factory';
+import {
+	createDailyCallObject,
+	destroyDailyCall,
+	isDailyBrowserSupported,
+	whenDailyCallsDestroyed,
+} from '@/lib/telehealth/daily-call-factory';
 import type {JoinChoices} from '@/lib/telehealth/join-choices';
 import {
 	DEFAULT_BACKGROUND,
@@ -73,11 +78,7 @@ async function destroyCall(call: DailyCall | null): Promise<void> {
 	} catch {
 		// Not running.
 	}
-	try {
-		await call.destroy();
-	} catch {
-		// Ignore Daily destroy failures; the tracks stop with the object.
-	}
+	await destroyDailyCall(call);
 }
 
 /**
@@ -139,6 +140,12 @@ export function usePrejoinMedia({mock, mockPhase = 'ready'}: {mock: boolean; moc
 		setBackgroundState(DEFAULT_BACKGROUND);
 		backgroundRef.current = DEFAULT_BACKGROUND;
 
+		const start = async () => {
+		// A previous call object may still be shutting down (Strict Mode re-run, or a quick retry).
+		await whenDailyCallsDestroyed();
+		if (cancelled) {
+			return;
+		}
 		const call = createDailyCallObject();
 		callRef.current = call;
 
@@ -251,6 +258,8 @@ export function usePrejoinMedia({mock, mockPhase = 'ready'}: {mock: boolean; moc
 				}
 			}
 		})();
+		};
+		void start();
 
 		const onPageHide = () => void release();
 		window.addEventListener('pagehide', onPageHide);
@@ -258,11 +267,10 @@ export function usePrejoinMedia({mock, mockPhase = 'ready'}: {mock: boolean; moc
 		return () => {
 			cancelled = true;
 			window.removeEventListener('pagehide', onPageHide);
-			if (callRef.current === call) {
-				callRef.current = null;
-			}
+			const current = callRef.current;
+			callRef.current = null;
 			setVideoTrack(null);
-			void destroyCall(call);
+			void destroyCall(current);
 		};
 	}, [mock, attempt, release, updateSelection]);
 
