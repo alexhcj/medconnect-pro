@@ -262,7 +262,7 @@ export const FEATURE_PAGES: Record<FeaturePageSlug, FeaturePageLayoutProps> = {
 				{
 					title: 'Create or join the session shell',
 					description:
-						'Join the waiting room, then Daily media when the API is configured. Unset Daily keys show labeled unavailable.',
+						'Join from the pre-join screen, then Daily media when the API is configured. Unset Daily keys show labeled unavailable.',
 				},
 				{
 					title: 'End the session',

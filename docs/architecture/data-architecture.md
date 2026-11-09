@@ -33,7 +33,9 @@ tenant context, including `SUPER_ADMIN`
 client-supplied `practice_id`.
 
 The current persistence slice includes `practices`, `users` (synthetic identity keys, no passwords),
-`practice_memberships`, `auth_sessions` (opaque mock session hashes, not passwords; no IP,
+`practice_memberships` (role, plus optional `display_name`, `credential` and `persona_key` from
+[DATA-007](../tasks/backend/DATA-007-staff-display-identity.md); `persona_key` is limited to a closed list
+of demo persona keys by a CHECK constraint), `auth_sessions` (opaque mock session hashes, not passwords; no IP,
 location, or raw user-agent stored for display; session inventory is the caller’s own rows —
 [BE-023](../tasks/backend/BE-023-concurrent-session-inventory-http.md)),
 `external_identities` (unique `(provider, subject)` links to `users`, one per provider per user),

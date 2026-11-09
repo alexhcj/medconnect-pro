@@ -24,6 +24,7 @@ import {Vital} from '../persistence/entities/vital.entity.js';
 import {resolveAdminDatabaseUrl} from '../persistence/default-database-url.js';
 import {resolveAppEnv} from '../platform/cors-origins.js';
 import {postgresConnectionOptions} from '../persistence/typeorm.options.js';
+import type {DemoPersonaKey} from '../tenancy/persona-key.js';
 import {defaultMockIdpAccounts} from './mock-idp.js';
 import {
 	currentMonthIssuedAt,
@@ -64,8 +65,62 @@ export const MFA_NURSE_EMAIL = 'mfa.nurse@example.test';
  */
 export const LIVE_DEMO_PATIENT_ID = '77777777-7777-4777-8777-777777777777';
 export const PATIENT_EMAIL = 'avery.quinn@synthetic.example';
-const LIVE_TELEHEALTH_NOTES = 'Live demo telehealth visit';
+/** Demo visit reason (DATA-007): matches Avery's seeded hypertension condition. */
+const LIVE_TELEHEALTH_NOTES = 'Blood pressure follow-up';
+/** Previous reason; matched once so a re-run renames the row instead of adding a second visit. */
+const LEGACY_LIVE_TELEHEALTH_NOTES = 'Live demo telehealth visit';
 const ANNUAL_FOLLOW_UP_NOTES = 'Annual follow-up';
+
+type MembershipDisplay = {
+	displayName: string | null;
+	credential: string | null;
+	personaKey: DemoPersonaKey | null;
+};
+
+/** Synthetic display identity for the demo accounts (DATA-007, SEC-013 scope 6). */
+export const ADMIN_DISPLAY: MembershipDisplay = {
+	displayName: 'Morgan Hale',
+	credential: null,
+	personaKey: null,
+};
+export const PROVIDER_DISPLAY: MembershipDisplay = {
+	displayName: 'Dr. Jordan Ellis',
+	credential: 'MD',
+	personaKey: 'provider-jordan-ellis',
+};
+export const MFA_NURSE_DISPLAY: MembershipDisplay = {
+	displayName: 'Riley Park',
+	credential: 'RN',
+	personaKey: 'nurse-riley-park',
+};
+/** The patient's name comes from the patient record, so no `displayName` here. */
+export const PATIENT_DISPLAY: MembershipDisplay = {
+	displayName: null,
+	credential: null,
+	personaKey: 'patient-avery-quinn',
+};
+
+/** Idempotent: writes only when a value differs, so SEED_ON_DEPLOY re-runs also fix older rows. */
+async function ensureMembershipDisplay(
+	memberships: Repository<PracticeMembership>,
+	practiceId: string,
+	userId: string,
+	display: MembershipDisplay,
+): Promise<void> {
+	const row = await memberships.findOne({where: {practiceId, userId}});
+	if (
+		!row ||
+		(row.displayName === display.displayName &&
+			row.credential === display.credential &&
+			row.personaKey === display.personaKey)
+	) {
+		return;
+	}
+	row.displayName = display.displayName;
+	row.credential = display.credential;
+	row.personaKey = display.personaKey;
+	await memberships.save(row);
+}
 
 const SEEDED_PATIENTS: readonly SeededPatientDemographics[] = [
 	{
@@ -248,6 +303,7 @@ export async function seedMockIdentity(): Promise<void> {
 				role: account.role,
 			});
 		}
+		await ensureMembershipDisplay(memberships, practice.id, admin.id, ADMIN_DISPLAY);
 
 		const oidcDemoEmail = process.env.OIDC_DEMO_EMAIL?.trim().toLowerCase();
 		if (oidcDemoEmail && resolveAppEnv() === 'local') {
@@ -282,6 +338,7 @@ export async function seedMockIdentity(): Promise<void> {
 				role: 'PROVIDER',
 			});
 		}
+		await ensureMembershipDisplay(memberships, practice.id, provider.id, PROVIDER_DISPLAY);
 
 		let mfaNurse = await users.findOne({where: {id: LIVE_DEMO_MFA_NURSE_ID}});
 		if (!mfaNurse) {
@@ -300,6 +357,7 @@ export async function seedMockIdentity(): Promise<void> {
 				role: 'NURSE',
 			});
 		}
+		await ensureMembershipDisplay(memberships, practice.id, mfaNurse.id, MFA_NURSE_DISPLAY);
 
 		let patientUser = await users.findOne({where: {id: LIVE_DEMO_PATIENT_ID}});
 		if (!patientUser) {
@@ -318,6 +376,7 @@ export async function seedMockIdentity(): Promise<void> {
 				role: 'PATIENT',
 			});
 		}
+		await ensureMembershipDisplay(memberships, practice.id, patientUser.id, PATIENT_DISPLAY);
 
 		for (const demographics of [...SEEDED_PATIENTS, ...EXTRA_SEEDED_PATIENTS]) {
 			await upsertPatient(patients, practice.id, provider.id, demographics);
@@ -362,7 +421,13 @@ export async function seedMockIdentity(): Promise<void> {
 			});
 
 			let liveTelehealth = await appointments.findOne({
-				where: {practiceId: practice.id, patientId: seededPatient.id, notes: LIVE_TELEHEALTH_NOTES},
+				where: {
+					practiceId: practice.id,
+					patientId: seededPatient.id,
+					type: 'telehealth',
+					notes: In([LIVE_TELEHEALTH_NOTES, LEGACY_LIVE_TELEHEALTH_NOTES]),
+				},
+				order: {createdAt: 'ASC'},
 			});
 			if (!liveTelehealth) {
 				liveTelehealth = await appointments.save({
@@ -382,6 +447,7 @@ export async function seedMockIdentity(): Promise<void> {
 				liveTelehealth.endAt = telehealthEnd;
 				liveTelehealth.type = 'telehealth';
 				liveTelehealth.state = 'scheduled';
+				liveTelehealth.notes = LIVE_TELEHEALTH_NOTES;
 				await appointments.save(liveTelehealth);
 			}
 			await telehealthSessions.delete({appointmentId: liveTelehealth.id});
@@ -656,6 +722,11 @@ export async function seedMockIdentity(): Promise<void> {
 					role: staff.role,
 				});
 			}
+			await ensureMembershipDisplay(memberships, practice.id, staffUser.id, {
+				displayName: staff.displayName,
+				credential: staff.credential,
+				personaKey: null,
+			});
 		}
 
 		for (const catalog of SEEDED_PAGING_INVOICES) {

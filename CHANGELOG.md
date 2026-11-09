@@ -6,6 +6,88 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.3.0] - 2026-11-09
+
+M22 Telehealth 2.0: Visit experience, FE-062.
+
+### Added
+
+- Telehealth pre-join green room: a live camera preview, camera, microphone and speaker pickers, a
+  12-segment microphone level meter with a text alternative, a "Play test sound" tone made in the
+  browser (Web Audio), a checks list, background effects (None, Blur, or one of three built-in images:
+  Clinic exam room, Nurse station, Home living room), recovery steps for blocked and missing cameras, and
+  an audio-only join. Desktop and mobile (390 and 320).
+- The network row reads "Checked after you join" and never shows a made-up result or latency number.
+- The preview starts the local camera before the visit is joined and never joins a Daily room or asks
+  Nest for a meeting token; the preview call object is destroyed first and the choices are passed to the
+  real join. Device, network and background choices stay in the browser: nothing is sent to Nest or
+  logged. The last-used device ids are remembered in local storage only.
+- Mock mode: deterministic preview placeholder and device list; `?prejoin=checking|blocked|no_camera`
+  shows each state for the mock Playwright spec.
+- `SelectField` gains a `large` (44 px) size for touch screens.
+- Three first-party background images under `apps/web/public/telehealth/backgrounds/`.
+
+### Changed
+
+- The waiting room is replaced by the green room. The visit title is the appointment reason
+  ("Video visit — Blood pressure follow-up"), never the diagnosis list.
+- Copy: "Encrypted connection. This visit is not recorded." The green room never says "secure",
+  "private" or "end-to-end".
+
+## [1.2.0] - 2026-11-08
+
+M22 Telehealth 2.0: Visit experience, BE-027.
+
+### Added
+
+- `POST /telehealth/sessions/:id/heartbeat` (204): in-visit keep-alive for visit participants of an
+  `in_session`, still-eligible visit inside the join window. It refreshes idle activity only, never
+  moves `absoluteExpiresAt`, and writes no audit row. Rate limit 10 per 5 minutes per session user
+  (fail open). Ended, past-grace or waiting sessions return `SESSION_NOT_JOINABLE` (409); a reader who
+  is not a participant gets 403, as for join.
+- Passive requests: `X-MCP-Activity: passive` authenticates normally but does not refresh
+  `lastActivityAt`; the header is allowed by CORS. Idle sign-out can now fire on a visible tab once the
+  web client marks its background polls (FE-064).
+- Session responses (create, get, open lookup, join, end) add `participants` (provider, portal patient,
+  assigned nurses; server-sourced display names), `mediaExpiresAt` (appointment end plus 15 minutes) and
+  `viewerCanEnd`.
+
+### Changed
+
+- **Breaking:** `POST /telehealth/sessions/:id/end` is host-only. It now requires `write:appointments`
+  and that the caller is the appointment's provider or a practice admin (super admin within the session
+  practice). Receptionists, nurses, patients and other providers receive 403. Unknown and cross-tenant
+  ids still return 404. The web End visit button still shows for receptionists until FE-063.
+- Test coverage: Daily meeting-token body is asserted to carry only `room_name`, `exp` and `user_id`.
+
+## [1.1.0] - 2026-11-08
+
+M22 Telehealth 2.0: Visit experience, first implementation task.
+
+### Added
+
+- DATA-007: practice memberships carry an optional `displayName`, `credential` (for example "MD",
+  "RN") and demo `personaKey` (migration `1760000000013-MembershipDisplayIdentity`: three nullable
+  columns and a CHECK that limits `persona_key` to the three demo persona keys). One display helper
+  (`resolveDisplayName`): the patient record name for PATIENT, else `displayName`, else a role label
+  ("Provider", "Nurse", "Practice admin", "Super admin", "Receptionist", "Patient"). It never falls back
+  to email.
+- `GET /admin/users` returns `displayName`, `credential` and `personaKey` (read-only; no write endpoint).
+  PATIENT rows show the patient record name.
+- Seeds: synthetic names for the demo accounts (Morgan Hale, Dr. Jordan Ellis MD, Riley Park RN, Avery
+  Quinn persona) and the 24 extra staff. Re-runs also update existing rows (for example Render
+  `SEED_ON_DEPLOY`).
+
+### Changed
+
+- Appointment and telehealth session `providerName` is now the provider's display name (for example
+  "Dr. Jordan Ellis") instead of their email. Same field and type; no email is returned as a person's
+  name. Display data is not sent to Daily.
+- The seeded in-window telehealth visit reason is "Blood pressure follow-up" (was "Live demo telehealth
+  visit"). The seed renames the existing row once and never adds a second visit.
+- Mock fixtures (`docs/mocks/demo-users.json`, `admin-users.json`, `appointments.json`) mirror the
+  seeded names, credentials, persona keys and visit reason.
+
 ## [1.0.1] - 2026-11-02
 
 ### Changed

@@ -3,6 +3,7 @@ import type {AuditEventRepository} from '../audit/audit-event.repository.js';
 import {PermissionDeniedError} from '../identity/auth.errors.js';
 import type {Appointment} from '../persistence/entities/appointment.entity.js';
 import type {Patient} from '../persistence/entities/patient.entity.js';
+import type {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import type {TelehealthSession} from '../persistence/entities/telehealth-session.entity.js';
 import type {User} from '../persistence/entities/user.entity.js';
 import type {PatientRepository} from '../practice/patient.repository.js';
@@ -94,6 +95,7 @@ function harness(role: PracticeRole, userId = actorId) {
 	const sessions = {
 		getById: vi.fn().mockResolvedValue(sessionRow()),
 		getByAppointmentId: vi.fn().mockResolvedValue(undefined),
+		listAssignedNurses: vi.fn().mockResolvedValue([]),
 		create: vi.fn().mockResolvedValue(sessionRow()),
 		save: vi.fn(async (row: TelehealthSession) => row),
 		transitionWaitingToInSession: vi.fn<
@@ -171,6 +173,58 @@ describe('TelehealthSessionService', () => {
 
 		const patient = harness('PATIENT', portalId);
 		await expect(patient.service.create({appointmentId})).rejects.toBeInstanceOf(PermissionDeniedError);
+	});
+
+	it('adds participants, mediaExpiresAt and a per-caller viewerCanEnd to the session', async () => {
+		const nurseMembership = {
+			userId: nurseId,
+			role: 'NURSE',
+			displayName: 'Riley Chen',
+		} as PracticeMembership;
+		const appointment = appointmentRow({
+			providerMembership: {
+				userId: providerId,
+				role: 'PROVIDER',
+				displayName: 'Dr. Jordan Ellis',
+			} as PracticeMembership,
+		});
+		const seen = (role: PracticeRole, userId?: string) => {
+			const h = harness(role, userId);
+			h.sessions.getById.mockResolvedValue(sessionRow({appointment}));
+			h.sessions.listAssignedNurses.mockResolvedValue([nurseMembership]);
+			h.patients.isAssigned.mockResolvedValue(role === 'NURSE');
+			return h.service.get(sessionId);
+		};
+
+		const asProvider = await seen('PROVIDER', providerId);
+		expect(asProvider.participants).toEqual([
+			{userId: providerId, displayName: 'Dr. Jordan Ellis', role: 'PROVIDER'},
+			{userId: portalId, displayName: 'Avery Quinn', role: 'PATIENT'},
+			{userId: nurseId, displayName: 'Riley Chen', role: 'NURSE'},
+		]);
+		expect(asProvider.mediaExpiresAt).toBe(
+			new Date(Math.floor((appointment.endAt.getTime() + 15 * 60 * 1000) / 1000) * 1000).toISOString(),
+		);
+		expect(JSON.stringify(asProvider.participants)).not.toContain('@');
+
+		expect((await seen('PROVIDER', providerId)).viewerCanEnd).toBe(true);
+		expect((await seen('PRACTICE_ADMIN')).viewerCanEnd).toBe(true);
+		expect((await seen('SUPER_ADMIN')).viewerCanEnd).toBe(true);
+		expect((await seen('PROVIDER', otherId)).viewerCanEnd).toBe(false);
+		expect((await seen('RECEPTIONIST')).viewerCanEnd).toBe(false);
+		expect((await seen('NURSE', nurseId)).viewerCanEnd).toBe(false);
+		expect((await seen('PATIENT', portalId)).viewerCanEnd).toBe(false);
+	});
+
+	it('omits the patient participant when the patient has no portal user', async () => {
+		const provider = harness('PROVIDER', providerId);
+		const unlinked = appointmentRow({
+			patient: {id: patientId, firstName: 'Avery', lastName: 'Quinn', portalUserId: null} as Patient,
+		});
+		provider.sessions.getById.mockResolvedValue(sessionRow({appointment: unlinked}));
+		const got = await provider.service.get(sessionId);
+		expect(got.participants.map((participant) => participant.role)).toEqual(['PROVIDER']);
+		expect(got.participants[0]?.displayName).toBe('Provider');
 	});
 
 	it('lets the appointment provider join and records join audit without PHI', async () => {
@@ -313,19 +367,35 @@ describe('TelehealthSessionService', () => {
 		);
 	});
 
-	it('ends a session for a receptionist and is idempotent when already ended', async () => {
-		const receptionist = harness('RECEPTIONIST');
-		const ended = await receptionist.service.end(sessionId);
+	it('ends a session for the appointment provider and is idempotent when already ended', async () => {
+		const provider = harness('PROVIDER', providerId);
+		const ended = await provider.service.end(sessionId);
 		expect(ended.state).toBe('ended');
-		expect(receptionist.audit.record).toHaveBeenCalledWith(
+		expect(provider.audit.record).toHaveBeenCalledWith(
 			expect.objectContaining({action: 'telehealth_session.ended', resourceId: sessionId}),
 		);
 
-		const already = harness('RECEPTIONIST');
+		const already = harness('PROVIDER', providerId);
 		already.sessions.getById.mockResolvedValue(sessionRow({state: 'ended', endedAt: new Date()}));
 		const again = await already.service.end(sessionId);
 		expect(again.state).toBe('ended');
 		expect(already.audit.record).not.toHaveBeenCalled();
+	});
+
+	it('lets a practice admin end a visit and forbids a receptionist or another provider', async () => {
+		const admin = harness('PRACTICE_ADMIN');
+		await expect(admin.service.end(sessionId)).resolves.toMatchObject({state: 'ended'});
+
+		const receptionist = harness('RECEPTIONIST');
+		await expect(receptionist.service.end(sessionId)).rejects.toBeInstanceOf(PermissionDeniedError);
+		expect(receptionist.audit.record).not.toHaveBeenCalled();
+
+		const otherProvider = harness('PROVIDER', otherId);
+		await expect(otherProvider.service.end(sessionId)).rejects.toBeInstanceOf(PermissionDeniedError);
+
+		const endedAlready = harness('RECEPTIONIST');
+		endedAlready.sessions.getById.mockResolvedValue(sessionRow({state: 'ended', endedAt: new Date()}));
+		await expect(endedAlready.service.end(sessionId)).rejects.toBeInstanceOf(PermissionDeniedError);
 	});
 
 	it('mints a media token for visit participants, reuses the room, and omits the token from audit', async () => {
@@ -367,6 +437,67 @@ describe('TelehealthSessionService', () => {
 		await expect(nurse.service.mintMediaToken(sessionId)).resolves.toMatchObject({
 			roomUrl: first.roomUrl,
 		});
+	});
+
+	it('accepts a heartbeat from visit participants only, without writing or auditing', async () => {
+		const inSession = () => sessionRow({state: 'in_session', joinedAt: new Date()});
+
+		const provider = harness('PROVIDER', providerId);
+		provider.sessions.getById.mockResolvedValue(inSession());
+		await expect(provider.service.heartbeat(sessionId)).resolves.toBeUndefined();
+		expect(provider.audit.record).not.toHaveBeenCalled();
+		expect(provider.sessions.save).not.toHaveBeenCalled();
+		expect(provider.daily.createOrGetRoom).not.toHaveBeenCalled();
+
+		const patient = harness('PATIENT', portalId);
+		patient.sessions.getById.mockResolvedValue(inSession());
+		await expect(patient.service.heartbeat(sessionId)).resolves.toBeUndefined();
+
+		const nurse = harness('NURSE', nurseId);
+		nurse.patients.isAssigned.mockResolvedValue(true);
+		nurse.sessions.getById.mockResolvedValue(inSession());
+		await expect(nurse.service.heartbeat(sessionId)).resolves.toBeUndefined();
+
+		const receptionist = harness('RECEPTIONIST');
+		receptionist.sessions.getById.mockResolvedValue(inSession());
+		await expect(receptionist.service.heartbeat(sessionId)).rejects.toBeInstanceOf(
+			PermissionDeniedError,
+		);
+
+		const unassignedNurse = harness('NURSE', nurseId);
+		unassignedNurse.sessions.getById.mockResolvedValue(inSession());
+		await expect(unassignedNurse.service.heartbeat(sessionId)).rejects.toBeInstanceOf(
+			TelehealthSessionNotFoundError,
+		);
+	});
+
+	it('rejects a heartbeat for waiting, ended and past-grace sessions', async () => {
+		const waiting = harness('PROVIDER', providerId);
+		await expect(waiting.service.heartbeat(sessionId)).rejects.toBeInstanceOf(SessionNotJoinableError);
+
+		const ended = harness('PROVIDER', providerId);
+		ended.sessions.getById.mockResolvedValue(sessionRow({state: 'ended', endedAt: new Date()}));
+		await expect(ended.service.heartbeat(sessionId)).rejects.toBeInstanceOf(SessionNotJoinableError);
+
+		const pastGrace = harness('PROVIDER', providerId);
+		const expired = appointmentRow(aroundNow(-3 * 60 * 60 * 1000, -2 * 60 * 60 * 1000));
+		pastGrace.sessions.getById.mockResolvedValue(
+			sessionRow({state: 'in_session', joinedAt: new Date(), appointment: expired}),
+		);
+		await expect(pastGrace.service.heartbeat(sessionId)).rejects.toBeInstanceOf(SessionNotJoinableError);
+		expect(pastGrace.audit.record).toHaveBeenCalledWith(
+			expect.objectContaining({action: 'telehealth_session.ended'}),
+		);
+
+		const cancelled = harness('PROVIDER', providerId);
+		cancelled.sessions.getById.mockResolvedValue(
+			sessionRow({
+				state: 'in_session',
+				joinedAt: new Date(),
+				appointment: appointmentRow({state: 'cancelled'}),
+			}),
+		);
+		await expect(cancelled.service.heartbeat(sessionId)).rejects.toBeInstanceOf(SessionNotJoinableError);
 	});
 
 	it('rejects media-token while the Nest session is still waiting', async () => {
@@ -421,17 +552,17 @@ describe('TelehealthSessionService', () => {
 	});
 
 	it('ends the Nest session even when Daily room delete fails', async () => {
-		const receptionist = harness('RECEPTIONIST');
-		receptionist.sessions.getById.mockResolvedValue(
+		const provider = harness('PROVIDER', providerId);
+		provider.sessions.getById.mockResolvedValue(
 			sessionRow({dailyRoomName: `mcp-${sessionId}`}),
 		);
-		receptionist.daily.deleteRoom.mockRejectedValue(new Error('Daily timeout'));
-		const ended = await receptionist.service.end(sessionId);
+		provider.daily.deleteRoom.mockRejectedValue(new Error('Daily timeout'));
+		const ended = await provider.service.end(sessionId);
 		expect(ended.state).toBe('ended');
-		expect(receptionist.audit.record).toHaveBeenCalledWith(
+		expect(provider.audit.record).toHaveBeenCalledWith(
 			expect.objectContaining({action: 'telehealth_session.ended', resourceId: sessionId}),
 		);
-		expect(receptionist.audit.record).not.toHaveBeenCalledWith(
+		expect(provider.audit.record).not.toHaveBeenCalledWith(
 			expect.objectContaining({action: 'telehealth_session.media_room_deleted'}),
 		);
 	});

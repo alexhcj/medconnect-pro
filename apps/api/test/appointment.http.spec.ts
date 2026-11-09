@@ -96,7 +96,13 @@ describe('appointment HTTP', () => {
 		});
 		await dataSource.getRepository(PracticeMembership).save([
 			{practiceId: practiceA.id, userId: receptionist.id, role: 'RECEPTIONIST'},
-			{practiceId: practiceA.id, userId: provider.id, role: 'PROVIDER'},
+			{
+				practiceId: practiceA.id,
+				userId: provider.id,
+				role: 'PROVIDER',
+				displayName: 'Dr. Appt Provider',
+				credential: 'MD',
+			},
 			{practiceId: practiceA.id, userId: nurse.id, role: 'NURSE'},
 			{practiceId: practiceA.id, userId: portalUser.id, role: 'PATIENT'},
 			{practiceId: practiceB.id, userId: outsider.id, role: 'PROVIDER'},
@@ -196,7 +202,8 @@ describe('appointment HTTP', () => {
 		expect(created.body.synthetic).toBe(true);
 		expect(created.body.practiceId).toBe(practiceA.id);
 		expect(created.body.patientName).toBe(`Avery Appt${suffix}`);
-		expect(created.body.providerName).toBe(provider.email);
+		expect(created.body.providerName).toBe('Dr. Appt Provider');
+		expect(created.body.providerName).not.toContain('@');
 		expect(created.body.notes).toBe('Annual follow-up');
 
 		const audits = await dataSource.getRepository(AuditEvent).find({

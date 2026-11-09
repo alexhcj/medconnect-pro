@@ -1,4 +1,5 @@
 import {ApiProperty, ApiSchema} from '@nestjs/swagger';
+import {DEMO_PERSONA_KEYS, type DemoPersonaKey} from '../tenancy/persona-key.js';
 import {PRACTICE_ROLES, type PracticeRole} from '../tenancy/practice-role.js';
 
 @ApiSchema({name: 'PracticeUser'})
@@ -11,6 +12,29 @@ export class PracticeUserRdo {
 
 	@ApiProperty({enum: PRACTICE_ROLES, example: 'PRACTICE_ADMIN'})
 	role!: PracticeRole;
+
+	@ApiProperty({
+		example: 'Dr. Jordan Ellis',
+		description:
+			'Membership display name; the patient record name for PATIENT; otherwise a role label. Never the email.',
+	})
+	displayName!: string;
+
+	@ApiProperty({
+		type: String,
+		nullable: true,
+		example: 'MD',
+		description: 'Optional credential shown beside the name (for example MD, RN).',
+	})
+	credential!: string | null;
+
+	@ApiProperty({
+		enum: DEMO_PERSONA_KEYS,
+		nullable: true,
+		example: 'provider-jordan-ellis',
+		description: 'Optional demo persona key (synthetic camera; read-only in M22).',
+	})
+	personaKey!: DemoPersonaKey | null;
 
 	@ApiProperty({
 		format: 'uuid',

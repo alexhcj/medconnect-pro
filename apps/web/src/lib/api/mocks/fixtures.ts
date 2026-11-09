@@ -33,6 +33,10 @@ export interface DemoUserFixture {
 	password: string;
 	role: Role;
 	userId: string;
+	/** Mirrors the API seed (DATA-007); the patient name comes from the patient record. */
+	displayName: string;
+	credential: string | null;
+	personaKey: string | null;
 }
 
 export const fixtureDemoUsers = demoUsersFixture.users as DemoUserFixture[];

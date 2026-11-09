@@ -65,7 +65,12 @@ Response concepts:
 
 - appointment identity
 - scheduling state
-- authorized participant information
+- authorized participant information. From M22 ([SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md),
+  shipped by [DATA-007](../tasks/backend/DATA-007-staff-display-identity.md)) `providerName` is the membership
+  `displayName`, or a role label when none is set, never the email. `credential` is not appended and is
+  not a field on appointment or telehealth responses; it is only on the practice user directory
+- visit reason (the appointment notes). A visit title uses this field, never the patient's
+  diagnosis list, because front-desk roles see visit titles
 
 ## Telehealth session
 
@@ -84,9 +89,25 @@ Response concepts:
 - session identity (server-generated UUID)
 - linked appointment identity and window
 - authorized participant names
+- `participants` (shipped in 1.2.0, BE-027; [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md)): `{userId, displayName, role}` for the appointment
+  provider, the portal patient, and each assigned nurse, sourced by Nest. Call tiles resolve name
+  and role by matching the Daily participant `user_id` (set by Nest in the meeting token) to this
+  list, never from a client-chosen Daily `user_name`
+- `mediaExpiresAt` (shipped in 1.2.0): when the Daily room and meeting token expire (appointment end plus 15
+  minutes), so the client can warn 5 minutes before. M22 does not extend rooms
+- `viewerCanEnd` (shipped in 1.2.0): UX hint computed by Nest from the end host rule; `POST .../end` still
+  enforces it
 - session state
 - waiting/join/end timestamps
 - synthetic (always true)
+
+Leave and end vocabulary (M22): **Leave call** is the client/Daily teardown, reversible, for every
+participant. **End visit** is `POST .../end` and closes the visit for everyone. UI copy uses these
+two labels; red is reserved for End visit.
+
+Minimum necessary toward Daily (M22): meeting tokens carry `user_id` (an opaque internal id) and
+the room name stays opaque (`mcp-<sessionId>`). Names, email, role, and appointment details are not
+sent to Daily (no token `user_name`, no app-message payloads with PHI).
 
 Media-token response concepts:
 
@@ -336,6 +357,9 @@ with no IP, email, or key hash
 - `id` (user id, not membership id)
 - `email`
 - `role` (membership role for the resolved practice)
+- `displayName`, optional `credential` (for example "MD", "RN"), optional demo `personaKey` (M22,
+  [SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md); membership-level, synthetic in seeds). Staff email is not shown as a name in
+  patient-facing UI
 - `practiceId` (session tenant; display only)
 - `synthetic` (always true)
 

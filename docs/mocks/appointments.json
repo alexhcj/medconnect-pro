@@ -45,7 +45,7 @@
       "end": "2026-10-10T19:00:00.000Z",
       "type": "telehealth",
       "state": "confirmed",
-      "notes": "Two-device live demo. Mock runtime replaces start/end with a current join window.",
+      "notes": "Blood pressure follow-up",
       "synthetic": true
     }
   ]

@@ -7,6 +7,9 @@ export interface PracticeUserRdo {
 	id: string;
 	email: string;
 	role: Role;
+	displayName: string;
+	credential: string | null;
+	personaKey: string | null;
 	practiceId: string;
 	synthetic: boolean;
 }
@@ -42,6 +45,9 @@ export function practiceUserFromRdo(rdo: PracticeUserRdo): PracticeUser {
 		id: rdo.id,
 		email: rdo.email,
 		role: rdo.role,
+		displayName: rdo.displayName,
+		credential: rdo.credential,
+		personaKey: rdo.personaKey,
 		practiceId: rdo.practiceId,
 		synthetic: rdo.synthetic,
 	};

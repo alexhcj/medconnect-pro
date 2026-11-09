@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {In, Repository} from 'typeorm';
+import {Patient} from '../persistence/entities/patient.entity.js';
 import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import type {PracticeRole} from '../tenancy/practice-role.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
@@ -62,6 +63,33 @@ export class MembershipRepository {
 			.take(query.pageSize)
 			.getManyAndCount();
 		return {rows, total};
+	}
+
+	/**
+	 * Patient-record names for PATIENT memberships, keyed by portal user id. Tenant-scoped; one
+	 * batched query so the directory page never reads per row.
+	 */
+	async patientNamesByPortalUserId(
+		userIds: string[],
+	): Promise<Map<string, {firstName: string; lastName: string}>> {
+		const names = new Map<string, {firstName: string; lastName: string}>();
+		if (userIds.length === 0) {
+			return names;
+		}
+		const {practiceId} = this.tenant.require();
+		const patients = await this.rows.manager.find(Patient, {
+			where: {practiceId, portalUserId: In(userIds)},
+			select: {portalUserId: true, firstName: true, lastName: true},
+		});
+		for (const patient of patients) {
+			if (patient.portalUserId) {
+				names.set(patient.portalUserId, {
+					firstName: patient.firstName,
+					lastName: patient.lastName,
+				});
+			}
+		}
+		return names;
 	}
 
 	async getById(id: string): Promise<PracticeMembership | undefined> {

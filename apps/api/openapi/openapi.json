@@ -3104,9 +3104,102 @@
         ]
       }
     },
+    "/telehealth/sessions/{id}/heartbeat": {
+      "post": {
+        "description": "Visit participants only: the appointment provider, the portal patient, or an assigned nurse (same rule as join). The Nest session must be in_session and the appointment still eligible and inside the join window; otherwise the join conflict code is returned. The request counts as user activity for the idle timeout and does nothing else: it never extends the absolute session cap and writes no audit row. Intended about once a minute while joined to Daily. Rate limited to 10 per 5 minutes per session user (fails open).",
+        "operationId": "TelehealthSessionController_heartbeat",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Idle activity refreshed."
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded. `Retry-After` gives seconds until the window resets.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitedErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Keep the signed-in session alive during a live visit",
+        "tags": [
+          "telehealth"
+        ]
+      }
+    },
     "/telehealth/sessions/{id}/end": {
       "post": {
-        "description": "Requires write:appointments. Closes the application visit for all participants. Idempotent when the session is already ended. Best-effort deletes the Daily room; Nest ended remains source of truth if Daily fails.",
+        "description": "Host only: requires write:appointments and the caller must be the appointment provider or a practice admin (super admin within the session practice). Receptionists, nurses, patients and other providers receive the forbidden envelope. Unknown and cross-tenant ids return not-found. Closes the application visit for all participants. Idempotent when the session is already ended. Best-effort deletes the Daily room; Nest ended remains source of truth if Daily fails.",
         "operationId": "TelehealthSessionController_end",
         "parameters": [
           {
@@ -4834,6 +4927,28 @@
             ],
             "example": "PRACTICE_ADMIN"
           },
+          "displayName": {
+            "type": "string",
+            "example": "Dr. Jordan Ellis",
+            "description": "Membership display name; the patient record name for PATIENT; otherwise a role label. Never the email."
+          },
+          "credential": {
+            "type": "string",
+            "nullable": true,
+            "example": "MD",
+            "description": "Optional credential shown beside the name (for example MD, RN)."
+          },
+          "personaKey": {
+            "type": "string",
+            "enum": [
+              "provider-jordan-ellis",
+              "nurse-riley-park",
+              "patient-avery-quinn"
+            ],
+            "nullable": true,
+            "example": "provider-jordan-ellis",
+            "description": "Optional demo persona key (synthetic camera; read-only in M22)."
+          },
           "practiceId": {
             "type": "string",
             "format": "uuid",
@@ -4849,6 +4964,9 @@
           "id",
           "email",
           "role",
+          "displayName",
+          "credential",
+          "personaKey",
           "practiceId",
           "synthetic"
         ]
@@ -5880,6 +5998,35 @@
           "correlationId"
         ]
       },
+      "TelehealthSessionParticipant": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id. Equals the Daily participant user_id that Nest sets in the meeting token, so call tiles can resolve name and role without a client-chosen Daily user_name."
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Dr. Jordan Ellis",
+            "description": "Server-sourced display name, never an email."
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "PROVIDER",
+              "PATIENT",
+              "NURSE"
+            ],
+            "example": "PROVIDER"
+          }
+        },
+        "required": [
+          "userId",
+          "displayName",
+          "role"
+        ]
+      },
       "TelehealthSession": {
         "type": "object",
         "properties": {
@@ -5956,6 +6103,23 @@
             "type": "boolean",
             "example": true,
             "description": "Always true. This API stores synthetic demo data only."
+          },
+          "participants": {
+            "description": "The visit roster: the appointment provider, the portal patient (when linked), and each assigned nurse, in that order. This is who may join, not live presence.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TelehealthSessionParticipant"
+            }
+          },
+          "mediaExpiresAt": {
+            "type": "string",
+            "example": "2026-09-26T15:15:00.000Z",
+            "description": "When the Daily room and meeting token expire: appointment end plus 15 minutes (ISO-8601). The client can warn 5 minutes before. Rooms are not extended."
+          },
+          "viewerCanEnd": {
+            "type": "boolean",
+            "example": false,
+            "description": "UX hint computed from the End visit host rule for the caller (appointment provider or practice admin). POST .../end still enforces it."
           }
         },
         "required": [
@@ -5971,7 +6135,10 @@
           "type",
           "state",
           "waitingStartedAt",
-          "synthetic"
+          "synthetic",
+          "participants",
+          "mediaExpiresAt",
+          "viewerCanEnd"
         ]
       },
       "TelehealthMediaToken": {

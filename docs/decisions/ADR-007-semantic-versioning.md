@@ -25,7 +25,14 @@ While `MAJOR` is `0`, the public demo API is not treated as stable:
   first stable demo release.
 
 After `1.0.0`, standard SemVer applies: breaking → MAJOR, compatible features → MINOR, compatible
-fixes → PATCH.
+fixes → PATCH, as amended below.
+
+**MINOR cap for the 1.x demo (amended 2026-11-08, user decision).** Agents never bump MAJOR. A
+change that strict SemVer would call breaking (for example a contract, authorization or
+security-model change such as the M22 host-only End visit rule in
+[BE-027](../tasks/backend/BE-027-telehealth-keepalive-and-host-rule.md)) ships as a MINOR bump,
+the same rule as the 0.x policy above. It must still update `docs/contracts/` in the same change
+and say "Breaking" in the CHANGELOG entry. A MAJOR bump happens only on an explicit human request.
 
 **1.0.0 target (amended 2026-10-28, user decision).** The first stable demo release is the
 feature-complete synthetic demo on Render, released by
@@ -36,8 +43,8 @@ becomes a later 1.x release. The explicit human request rule above still applies
 ## Scope
 
 This version is the **application/demo artifact**, not HTTP API URL versioning (for example `/v1`).
-Breaking API contracts still require a MINOR bump on 0.x (MAJOR after 1.0.0) and must update
-`docs/contracts/` in the same change.
+Breaking API contracts still require a MINOR bump (on 0.x, and on 1.x under the 2026-11-08 MINOR
+cap) and must update `docs/contracts/` in the same change.
 
 ## Rationale
 

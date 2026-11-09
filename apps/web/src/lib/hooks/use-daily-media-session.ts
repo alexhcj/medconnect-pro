@@ -3,7 +3,8 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import type {DailyCall, DailyEventObjectNetworkConnectionEvent, DailyParticipant} from '@daily-co/daily-js';
 import {telehealthRealAPI} from '@/lib/api/telehealth-api';
-import {createDailyCallObject} from '@/lib/telehealth/daily-call-factory';
+import {createDailyCallObject, destroyDailyCall, whenDailyCallsDestroyed} from '@/lib/telehealth/daily-call-factory';
+import {dailyJoinOptions, type JoinChoices} from '@/lib/telehealth/join-choices';
 import {classifyDailyMediaFailure, type DailyMediaFailureKind} from '@/lib/telehealth/media-failure';
 import {isUnconfiguredDailyRoomUrl} from '@/lib/telehealth/unconfigured-daily';
 
@@ -70,16 +71,20 @@ async function teardownCall(call: DailyCall | null): Promise<void> {
 	} catch {
 		// Nest end remains source of truth.
 	}
-	try {
-		if (!call.isDestroyed()) {
-			await call.destroy();
-		}
-	} catch {
-		// Ignore Daily destroy failures.
-	}
+	await destroyDailyCall(call);
 }
 
-export function useDailyMediaSession({sessionId, enabled}: {sessionId: string; enabled: boolean}) {
+export function useDailyMediaSession({
+	sessionId,
+	enabled,
+	joinChoices,
+}: {
+	sessionId: string;
+	enabled: boolean;
+	/** Device, background and audio-only choices from the green room (FE-062). Browser-only. */
+	joinChoices?: JoinChoices;
+}) {
+	const joinChoicesRef = useRef(joinChoices);
 	const [attempt, setAttempt] = useState(0);
 	const [connectionState, setConnectionState] = useState<DailyMediaConnectionState>('joining');
 	const [cameraOn, setCameraOn] = useState(false);
@@ -183,6 +188,10 @@ export function useDailyMediaSession({sessionId, enabled}: {sessionId: string; e
 				}
 
 				tokenRef.current = minted.token;
+				await whenDailyCallsDestroyed();
+				if (cancelledRef.current) {
+					return;
+				}
 				call = createDailyCallObject();
 				callRef.current = call;
 				call.on('joined-meeting', sync);
@@ -196,10 +205,18 @@ export function useDailyMediaSession({sessionId, enabled}: {sessionId: string; e
 				call.on('error', onError);
 				call.on('network-connection', onNetwork);
 
-				await call.join({url: minted.roomUrl, token: minted.token});
+				const choices = joinChoicesRef.current;
+				await call.join({
+					url: minted.roomUrl,
+					token: minted.token,
+					...(choices ? dailyJoinOptions(choices, window.location.origin) : {}),
+				});
 				if (cancelledRef.current) {
 					await teardownCall(call);
 					return;
+				}
+				if (choices?.speakerId) {
+					void call.setOutputDeviceAsync({outputDeviceId: choices.speakerId}).catch(() => undefined);
 				}
 				applySnapshot(call);
 			} catch (error) {

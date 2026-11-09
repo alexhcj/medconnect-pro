@@ -390,7 +390,18 @@ export const SEEDED_INBOX_ITEMS: readonly SeededInboxItem[] = [
 export type SeededStaffUser = {
 	email: string;
 	role: 'NURSE' | 'RECEPTIONIST';
+	/** Deterministic synthetic name derived from the email slug (DATA-007). */
+	displayName: string;
+	/** "RN" for nurses; receptionists carry none. */
+	credential: string | null;
 };
+
+function titleCaseSlug(slug: string): string {
+	return slug
+		.split('.')
+		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.join(' ');
+}
 
 const STAFF_NAMES = [
 	'amari.stone',
@@ -423,10 +434,15 @@ const STAFF_NAMES = [
  * Twenty-four extra Harbor staff for the user-directory second page (25 per page). They hold
  * NURSE or RECEPTIONIST only and have no mock IdP account, so none can sign in with a password.
  */
-export const SEEDED_STAFF_USERS: readonly SeededStaffUser[] = STAFF_NAMES.map((name, index) => ({
-	email: `${name}@synthetic.example`,
-	role: index % 2 === 0 ? 'NURSE' : 'RECEPTIONIST',
-}));
+export const SEEDED_STAFF_USERS: readonly SeededStaffUser[] = STAFF_NAMES.map((name, index) => {
+	const role = index % 2 === 0 ? 'NURSE' : 'RECEPTIONIST';
+	return {
+		email: `${name}@synthetic.example`,
+		role,
+		displayName: titleCaseSlug(name),
+		credential: role === 'NURSE' ? 'RN' : null,
+	};
+});
 
 export type SeededPagingInvoice = {
 	description: string;

@@ -363,6 +363,11 @@ describe('auth and sensitive-route rate limits (HTTP)', () => {
 				send: () => request(server()).post(`/telehealth/sessions/${randomUUID()}/join`),
 			},
 			{
+				name: 'telehealth heartbeat',
+				limit: RATE_LIMIT_POLICIES.telehealthHeartbeat.limit,
+				send: () => request(server()).post(`/telehealth/sessions/${randomUUID()}/heartbeat`),
+			},
+			{
 				name: 'media-token',
 				limit: RATE_LIMIT_POLICIES.mediaToken.limit,
 				send: () => request(server()).post(`/telehealth/sessions/${randomUUID()}/media-token`),

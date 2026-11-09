@@ -182,7 +182,14 @@ export class AuthService {
 		return this.rotate(current, now);
 	}
 
-	async authenticate(accessToken: string): Promise<AuthenticatedSession> {
+	/**
+	 * Resolves the session behind an access token. Passive requests (background polls the user did
+	 * not trigger, SEC-013) authenticate normally but do not refresh `lastActivityAt`.
+	 */
+	async authenticate(
+		accessToken: string,
+		options: {passive?: boolean} = {},
+	): Promise<AuthenticatedSession> {
 		const now = this.clock.now();
 		const session = await this.sessions.findByAccessHash(hashToken(accessToken));
 		if (!session?.accessExpiresAt || session.accessExpiresAt.getTime() <= now.getTime()) {
@@ -192,6 +199,9 @@ export class AuthService {
 		const membership = await this.memberships.getById(session.membershipId);
 		if (!membership || membership.userId !== session.userId || !isPracticeRole(membership.role)) {
 			throw new SessionInvalidError();
+		}
+		if (options.passive) {
+			return {session, membership};
 		}
 		session.lastActivityAt = now;
 		const saved = await this.sessions.save(session);

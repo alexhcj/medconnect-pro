@@ -34,11 +34,12 @@ While `MAJOR == 0`:
   change.
 - **MAJOR** — never automatic. Only when the user explicitly requests `1.0.0`.
 
-After `1.0.0`, use SemVer 2.0.0: compatible fix → PATCH, compatible feature → MINOR, breaking →
-MAJOR.
+After `1.0.0`: compatible fix → PATCH, compatible feature → MINOR, breaking contract/auth/
+security-model change → **MINOR** too (ADR-007 MINOR cap, user decision 2026-11-08). Never bump
+MAJOR unless the user explicitly asks. Mark breaking changes "Breaking" in the CHANGELOG entry.
 
 This version is the application/demo artifact, not API URL versioning (`/v1`). Breaking API
-contracts still bump MINOR on 0.x (MAJOR after 1.0.0) and must update `docs/contracts/` in the same
+contracts bump MINOR (0.x and 1.x, ADR-007 MINOR cap) and must update `docs/contracts/` in the same
 change.
 
 ## How to bump

@@ -7,9 +7,14 @@ import {
 	type AppointmentType,
 } from '../persistence/entities/appointment.entity.js';
 import {PatientAssignment} from '../persistence/entities/patient-assignment.entity.js';
+import {PracticeMembership} from '../persistence/entities/practice-membership.entity.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 import {AppointmentConflictError} from './appointment.errors.js';
+
+/** Provider's membership in the appointment's own practice (never a client-supplied tenant). */
+const PROVIDER_MEMBERSHIP_JOIN =
+	'providerMembership.userId = appointment.providerUserId AND providerMembership.practiceId = appointment.practiceId';
 
 export const DEFAULT_APPOINTMENT_PAGE_SIZE = 50;
 export const MAX_APPOINTMENT_PAGE_SIZE = 100;
@@ -76,6 +81,12 @@ export class AppointmentRepository {
 			.createQueryBuilder('appointment')
 			.leftJoinAndSelect('appointment.patient', 'patient')
 			.leftJoinAndSelect('appointment.provider', 'provider')
+			.leftJoinAndMapOne(
+				'appointment.providerMembership',
+				PracticeMembership,
+				'providerMembership',
+				PROVIDER_MEMBERSHIP_JOIN,
+			)
 			.where('appointment.practiceId = :practiceId', {practiceId});
 
 		if (query.assignedToUserId) {
@@ -145,10 +156,19 @@ export class AppointmentRepository {
 
 	async getById(id: string): Promise<Appointment | undefined> {
 		const {practiceId} = this.tenant.require();
-		const row = await this.rows.findOne({
-			where: {id, practiceId},
-			relations: {patient: true, provider: true},
-		});
+		const row = await this.rows
+			.createQueryBuilder('appointment')
+			.leftJoinAndSelect('appointment.patient', 'patient')
+			.leftJoinAndSelect('appointment.provider', 'provider')
+			.leftJoinAndMapOne(
+				'appointment.providerMembership',
+				PracticeMembership,
+				'providerMembership',
+				PROVIDER_MEMBERSHIP_JOIN,
+			)
+			.where('appointment.id = :id', {id})
+			.andWhere('appointment.practiceId = :practiceId', {practiceId})
+			.getOne();
 		return row ?? undefined;
 	}
 

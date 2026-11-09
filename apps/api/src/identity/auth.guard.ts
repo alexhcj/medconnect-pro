@@ -12,6 +12,13 @@ import {AuthService} from './auth.service.js';
 import {assertCookieMutationCsrf} from './csrf.js';
 import {ACCESS_COOKIE_NAME, readCookie} from './session-cookies.js';
 
+/** Client-cooperative marker for background polls that must not refresh idle activity. */
+export const ACTIVITY_HEADER = 'X-MCP-Activity';
+
+function isPassiveRequest(value: string | undefined): boolean {
+	return value?.trim().toLowerCase() === 'passive';
+}
+
 export type RequestAuth = {
 	authSessionId?: string;
 	authUserId?: string;
@@ -45,7 +52,9 @@ export class AuthGuard implements CanActivate {
 			usedCookieAuth: !bearer,
 		});
 
-		const resolved = await this.auth.authenticate(token);
+		const resolved = await this.auth.authenticate(token, {
+			passive: isPassiveRequest(request.header(ACTIVITY_HEADER)),
+		});
 		const clientPracticeIds = readClientPracticeIds(request);
 		if (clientPracticeIds.some((practiceId) => practiceId !== resolved.membership.practiceId)) {
 			await this.audit.tryRecordDenied(request, {

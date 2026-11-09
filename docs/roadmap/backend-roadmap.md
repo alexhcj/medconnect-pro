@@ -103,3 +103,11 @@ QA-005). **M18 — Interview Demo Readiness** is shipped and **closed** at 0.91.
 [QA-007](../tasks/qa/QA-007-m18-close-audit.md) (shipped)). It does not reopen M17 or close M9. Render PR
 previews, real Google OAuth credentials, chat, recording, Socket.IO, hosted Stripe, and Redis
 stay deferred. Local product work does not wait on AWS.
+
+**M22 — Telehealth 2.0: Visit experience** is in progress. Contract
+[SEC-013](../tasks/security/SEC-013-telehealth-2-visit-experience-contract.md) is shipped (docs only): host-only `POST /telehealth/sessions/:id/end`,
+passive background polls that do not refresh idle activity, `POST /telehealth/sessions/:id/heartbeat`
+for visit participants (10 / 5 min, fail open), session `participants`, `mediaExpiresAt` and
+`viewerCanEnd`, and membership `displayName`, `credential` and `personaKey`. Tasks: [DATA-007](../tasks/backend/DATA-007-staff-display-identity.md) and
+[BE-027](../tasks/backend/BE-027-telehealth-keepalive-and-host-rule.md) (shipped at 1.2.0). **M23 — Telehealth 2.0: Clinical controls** (admission, lock/remove, owner
+tokens, Daily webhooks) is planned.

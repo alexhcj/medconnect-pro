@@ -34,6 +34,7 @@ import {
 	type BusyInterval,
 } from './appointment.repository.js';
 import {AuditEventRepository} from '../audit/audit-event.repository.js';
+import {resolveDisplayName} from '../identity/display-name.js';
 import {NotificationService} from '../notifications/notification.service.js';
 import {
 	DEMO_AVAILABILITY_TIME_ZONE,
@@ -336,7 +337,7 @@ export function toAppointmentRdo(row: Appointment): AppointmentRdo {
 		patientName: row.patient
 			? `${row.patient.firstName} ${row.patient.lastName}`
 			: row.patientId,
-		providerName: row.provider?.email ?? row.providerUserId,
+		providerName: resolveDisplayName(row.providerMembership ?? {role: 'PROVIDER'}),
 		synthetic: row.synthetic,
 	};
 	if (row.notes) {
