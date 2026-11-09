@@ -133,3 +133,12 @@ unverified.
   creates no Daily room session; (2) blocked and no-camera states compared against the frames on a real
   browser; (3) recorded keyboard-only and screen-reader pass (keyboard operation is covered in the mock
   e2e). `telehealth.prejoin-devices` stays `planned` until QA-014.
+
+### First production check (2026-11-09, user)
+
+Desktop (microphone only) and laptop (camera and microphone) on the production demo: permissions,
+meter, test sound, device detection, join with the detected devices, no Daily room before join, room and
+session after join, screen share, leave and rejoin all worked. Found and fixed at 1.3.1: duplicate Daily
+call object under Strict Mode, image backgrounds falling back to blur, meter idle colour, missing tip
+icons, device checks and Join status colours. Still unchecked: keyboard-only and screen-reader pass; image
+backgrounds on a real camera after the 1.3.1 fix.

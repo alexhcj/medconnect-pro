@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState} from 'react';
 import Image from 'next/image';
 import {Radio, RadioGroup} from '@headlessui/react';
-import {Check, CircleAlert, CircleCheck, CircleDashed, Loader2, Mic, VideoOff} from 'lucide-react';
+import {Check, CircleAlert, CircleCheck, CircleDashed, Loader2, Mic, TriangleAlert, VideoOff} from 'lucide-react';
 import {cn} from '@/lib/utils/utils';
 import {LEVEL_SEGMENTS} from '@/lib/hooks/use-prejoin-media';
 import {
@@ -12,8 +12,8 @@ import {
 	type BackgroundChoice,
 	type BackgroundImageId,
 } from '@/lib/telehealth/prejoin-backgrounds';
-import type {PrejoinCheck} from '@/lib/telehealth/prejoin-checks';
-import type {PrejoinPhase} from '@/lib/telehealth/prejoin-devices';
+import {readinessTone, type PrejoinCheck} from '@/lib/telehealth/prejoin-checks';
+import {PREJOIN_READINESS_COPY, type PrejoinPhase} from '@/lib/telehealth/prejoin-devices';
 
 function backgroundLabel(choice: BackgroundChoice): string {
 	if (choice.kind === 'image') {
@@ -171,7 +171,7 @@ export function LevelMeter({lit, statusText}: {lit: number; statusText: string})
 					<span
 						key={index}
 						aria-hidden="true"
-						className={cn('h-2 rounded-sm', index < lit ? 'bg-success' : 'bg-muted')}
+						className={cn('h-2 rounded-sm', index < lit ? 'bg-success' : 'bg-border')}
 					/>
 				))}
 			</div>
@@ -259,6 +259,7 @@ export function BackgroundPicker({
 
 const CHECK_ICON = {
 	pass: {Icon: CircleCheck, className: 'text-success'},
+	warn: {Icon: TriangleAlert, className: 'text-warning'},
 	fail: {Icon: CircleAlert, className: 'text-danger'},
 	checking: {Icon: Loader2, className: 'animate-spin motion-reduce:animate-none text-foreground-secondary'},
 	deferred: {Icon: CircleDashed, className: 'text-foreground-secondary'},
@@ -266,7 +267,8 @@ const CHECK_ICON = {
 
 const CHECK_STATE_TEXT = {
 	pass: 'Passed',
-	fail: 'Needs attention',
+	warn: 'Needs attention, you can still join',
+	fail: 'Not supported',
 	checking: 'Checking',
 	deferred: 'Not checked yet',
 } as const;
@@ -278,7 +280,7 @@ export function ConnectionChecks({checks}: {checks: PrejoinCheck[]}) {
 				const {Icon, className} = CHECK_ICON[check.state];
 				return (
 					<li key={check.id} className="flex items-center justify-between gap-3 text-sm">
-						<span className={cn('flex items-center gap-2', check.state === 'fail' ? 'text-danger' : 'text-foreground')}>
+						<span className={cn('flex items-center gap-2', check.state === 'fail' ? 'text-danger' : check.state === 'warn' ? 'text-warning' : 'text-foreground')}>
 							<Icon aria-hidden="true" className={cn('size-4 shrink-0', className)} />
 							{check.label}
 							<span className="sr-only"> — {CHECK_STATE_TEXT[check.state]}</span>
@@ -288,5 +290,29 @@ export function ConnectionChecks({checks}: {checks: PrejoinCheck[]}) {
 				);
 			})}
 		</ul>
+	);
+}
+
+const READINESS = {
+	checking: {Icon: Loader2, className: 'text-foreground-secondary animate-spin motion-reduce:animate-none'},
+	success: {Icon: CircleCheck, className: 'text-success'},
+	warning: {Icon: TriangleAlert, className: 'text-warning'},
+	muted: {Icon: CircleAlert, className: 'text-foreground-secondary'},
+} as const;
+
+/** The status next to Join: an icon and a colour for the state. Not an error colour: the visit can still be joined. */
+export function ReadinessStatus({phase}: {phase: PrejoinPhase}) {
+	const tone = readinessTone(phase);
+	const {Icon, className} = READINESS[tone];
+	return (
+		<span
+			className={cn(
+				'flex items-center gap-2 text-sm max-sm:justify-center',
+				tone === 'warning' ? 'text-warning' : tone === 'success' ? 'text-foreground' : 'text-foreground-secondary',
+			)}
+		>
+			<Icon aria-hidden="true" className={cn('size-4 shrink-0', className)} />
+			{PREJOIN_READINESS_COPY[phase]}
+		</span>
 	);
 }

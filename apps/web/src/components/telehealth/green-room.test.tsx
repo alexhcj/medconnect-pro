@@ -48,7 +48,8 @@ describe('GreenRoom (mock mode)', () => {
 
 		const checks = screen.getByRole('list', {name: 'Connection checks'});
 		expect(within(checks).getByText('Browser supported')).toBeInTheDocument();
-		expect(within(checks).getByText('Camera and microphone allowed')).toBeInTheDocument();
+		expect(within(checks).getByText('Camera allowed')).toBeInTheDocument();
+		expect(within(checks).getByText('Microphone allowed')).toBeInTheDocument();
 		expect(within(checks).getByText('Checked after you join')).toBeInTheDocument();
 		expect(screen.queryByText(/\d+\s?ms/)).not.toBeInTheDocument();
 	});
@@ -136,9 +137,10 @@ describe('GreenRoom (mock mode)', () => {
 		const {onJoin} = renderRoom();
 
 		expect(screen.getByRole('heading', {name: 'Camera and microphone are blocked'})).toBeInTheDocument();
-		expect(screen.getByText('Camera blocked')).toBeInTheDocument();
+		expect(screen.getAllByText('Camera blocked').length).toBeGreaterThan(0);
 		expect(screen.getByRole('meter')).toHaveAttribute('aria-valuenow', '0');
-		expect(screen.getByText('Camera and microphone blocked')).toBeInTheDocument();
+		expect(within(screen.getByRole('list', {name: 'Connection checks'})).getByText('Camera blocked')).toBeInTheDocument();
+		expect(within(screen.getByRole('list', {name: 'Connection checks'})).getByText('Microphone blocked')).toBeInTheDocument();
 
 		const joins = screen.getAllByRole('button', {name: 'Join with audio only'});
 		await user.click(joins[joins.length - 1]);
@@ -161,7 +163,8 @@ describe('GreenRoom (mock mode)', () => {
 		expect(screen.getByRole('heading', {name: 'No camera found'})).toBeInTheDocument();
 		expect(screen.getByRole('button', {name: 'Check again'})).toBeInTheDocument();
 		expect(screen.getByText('No camera')).toBeInTheDocument();
-		expect(screen.getByText('No camera found · microphone ready')).toBeInTheDocument();
+		expect(within(screen.getByRole('list', {name: 'Connection checks'})).getByText('No camera found')).toBeInTheDocument();
+		expect(screen.getByText('Microphone allowed')).toBeInTheDocument();
 		expect(screen.getByRole('meter')).toHaveAttribute('aria-valuenow', '8');
 		for (const button of screen.getAllByRole('button', {name: 'Join with audio only'})) {
 			expect(button).toBeEnabled();
