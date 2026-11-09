@@ -6,6 +6,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.5.0] - 2026-11-10
+
+M22 Telehealth 2.0: Visit experience, FE-064 call states, session keep-alive and wrap-up.
+
+### Added
+
+- Call states on the stage with a clear next step: "Waiting for <name> to join…" (the patient waits for the
+  provider, everyone else for the patient), reconnecting, poor network with a Turn off camera action,
+  "<name> left the call." with Wait (and End visit for the host only), device access lost with Retry devices, and
+  the shipped "Live media is not configured" copy. Status changes are announced politely.
+- In-visit keep-alive: while joined, the web app sends `POST /telehealth/sessions/:id/heartbeat` about every minute
+  (also in a hidden tab), stops on Leave call, End visit, 404 and 409, and waits for the next interval on 429. It
+  also refreshes the access token quietly before it lapses, so a live visit longer than 15 minutes is not signed out.
+  A once-per-visit notice says "You'll stay signed in while you're in a live visit."
+- Room-closing notice 5 minutes before `mediaExpiresAt`, with the closing time in US format. It never takes focus.
+- Provider wrap-up (duration, who was seen in this call as seen from the browser, ended time, connection quality,
+  "Book follow-up") and a patient "Your visit has ended" screen that shows a follow-up card only when a real next
+  appointment exists.
+- "Book follow-up" opens the new-appointment form with the patient and provider prefilled (`providerId` query).
+
+### Changed
+
+- The background session-inventory poll sends `X-MCP-Activity: passive`, so it no longer refreshes the idle
+  timeout. It is the only request marked passive.
+- End visit keeps you on the page and shows the wrap-up, instead of redirecting to the lobby.
+- The session expiry banner and extension modal stay quiet during a live visit; after the call the normal 15-minute
+  idle rule applies again.
+- When Daily drops the call, the page re-reads the Nest session, so the other side moves to the visit-ended screen
+  when the host ends the visit.
+
+### Fixed
+
+- A visit longer than the 15-minute access token no longer ends in a forced sign-in during the call.
+
 ## [1.4.0] - 2026-11-10
 
 M22 Telehealth 2.0: Visit experience, FE-063 full-screen call stage and controls.

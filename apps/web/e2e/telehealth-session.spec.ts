@@ -64,9 +64,15 @@ test.describe('Telehealth session shell', () => {
 
 		await page.getByRole('button', {name: 'End visit'}).click();
 		await page.getByRole('dialog', {name: 'End this visit for everyone?'}).getByRole('button', {name: 'End visit'}).click();
-		await expect(page).toHaveURL(/\/dashboard\/telehealth$/);
-		await expect(page.getByRole('heading', {level: 1, name: 'Telehealth'})).toBeVisible();
-		await expect(page.getByRole('list', {name: 'Telehealth visits'})).toContainText('Taylor Bennett');
+		// The visit ends in place: the provider sees the wrap-up, not the lobby (FE-064).
+		await expect(page).toHaveURL(/\/dashboard\/telehealth\/session-demo-appointment-002$/);
+		await expect(page.getByRole('heading', {level: 2, name: 'Visit wrap-up · Taylor Bennett'})).toBeVisible();
+		await expect(page.getByText('Visit ended', {exact: true})).toBeVisible();
+		await expect(page.getByRole('region', {name: 'Video visit'})).toBeHidden();
+		const followUp = page.getByRole('link', {name: 'Book follow-up'});
+		await expect(followUp).toHaveAttribute('href', /\/dashboard\/appointments\/new\?patientId=.+&providerId=.+/);
+		await followUp.click();
+		await expect(page).toHaveURL(/\/dashboard\/appointments\/new\?patientId=.+&providerId=.+/);
 	});
 
 	for (const width of [1440, 768]) {

@@ -3,7 +3,7 @@ id: FE-064
 type: task
 area: frontend
 feature: telehealth
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [SEC-013, BE-027, FE-063, FE-036]
@@ -21,11 +21,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-983"
-  frame: "Page 'Telehealth 2.0 · working copies' (499:983): section Call states and wrap-up (499:1948) — TH-08 call states 499:1949 (incl. closing soon, waiting for provider, device access lost), TH-05 reconnecting mobile 499:2191, TH-09 provider wrap-up 499:2260, TH-09 patient visit ended 499:2401; section Session keep-alive (499:2913) — live notice 503:510, after-call idle warning 503:606. Move to a task page and approve before code."
-  status: in_progress
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-1948"
+  frame: "Page 'FE-064 Call states, keep-alive and wrap-up' (541:456), moved from the working-copies page 2026-11-10; approved by the user 2026-11-10: section Call states and wrap-up (499:1948) — TH-08 call states 499:1949 (incl. closing soon, waiting for provider, device access lost), TH-05 reconnecting mobile 499:2191, TH-09 provider wrap-up 499:2260, TH-09 patient visit ended 499:2401; section Session keep-alive (499:2913) — live notice 503:510, after-call idle warning 503:606."
+  status: approved
 implementation:
-  status: not_started
+  status: in_progress
 validation:
   responsive: true
   accessibility: true
@@ -91,26 +91,51 @@ have no Figma frame.
 
 ## Acceptance Criteria
 
-- [ ] Frames approved on the task page before code
-- [ ] Inventory poll carries the passive header; nothing else does (unit test on the API client)
-- [ ] Heartbeat starts and stops on the right events, keeps running in a hidden tab, and backs off
+- [x] Frames approved on the task page before code
+- [x] Inventory poll carries the passive header; nothing else does (unit test on the API client)
+- [x] Heartbeat starts and stops on the right events, keeps running in a hidden tab, and backs off
       on 429 (fake timers)
 - [ ] A 25-minute live visit with the tab hidden can still End visit (local stack, recorded)
-- [ ] All TH-08 states render with the right actions per role
+- [x] All TH-08 states render with the right actions per role
 - [ ] Wrap-up and visit-ended screens match the frames; "Book follow-up" opens the prefilled form
-- [ ] Room-expiry notice at T-5 minutes
-- [ ] CHANGELOG and version (ADR-007)
+      (behavior verified by unit and mock e2e tests; the visual comparison with the frames is not done)
+- [x] Room-expiry notice at T-5 minutes
+- [x] CHANGELOG and version (ADR-007)
 
 ## Dependencies
 
 - Contract: [SEC-013](../security/SEC-013-telehealth-2-visit-experience-contract.md)
 - Needs: [BE-027](../backend/BE-027-telehealth-keepalive-and-host-rule.md), [FE-063](FE-063-call-stage-and-controls.md)
-- Figma: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-983
+- Figma: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-1948
 
 ## Validation
 
 - `npm run test -w apps/web` (heartbeat hook, passive header, state mapping)
 - Mock Playwright specs for states and wrap-up; one local live run with a hidden tab
+
+## Completion
+
+Implemented at 1.5.0 (MINOR). Two criteria stay open: the 25-minute hidden-tab run on the local stack, and the
+visual comparison of wrap-up and visit-ended with the Figma frames.
+
+- **Passive poll:** `PASSIVE_HEADER_NAME` in `apps/web/src/lib/api/http.ts`, applied only in
+  `checkConcurrentSessions` (`session-real.ts`). Test: `session-real.test.ts`.
+- **Heartbeat and token refresh:** `lib/telehealth/use-visit-keepalive.ts` (60 s timer chain; stops on cleanup,
+  404, 409; 429 waits). Deviation from the plan: the 15-minute access token lapses regardless of the heartbeat
+  (`apps/api/src/identity/session-policy.ts`), so the hook also calls `/auth/refresh` through
+  `sessionAPI.extendSession` while less than 12 minutes remain. `live-visit-flag.ts` keeps the expiry banner and
+  modal quiet during a live visit. The identity contract line "Do not add a keep-alive other than the in-visit
+  heartbeat" now names this refresh as the one accompanying client behavior (amended, user approved 2026-11-10).
+- **Call states:** pure mapper `lib/telehealth/call-state.ts`; `deviceLost` from Daily `camera-error`;
+  `CallStage` gains status actions and non-modal notices (`use-call-notices.ts`: keep-alive notice once per visit,
+  closing notice at `mediaExpiresAt` minus 5 minutes).
+- **Wrap-up and visit ended:** `visit-wrap-up.tsx`, `visit-ended.tsx`; the shell shows them for a session that was
+  live (`joinedAt` set), and End visit no longer redirects to the lobby. "Seen in this call" and connection quality
+  come from `call-summary.ts` (in memory, this browser only) and are hidden after a reload. Patient ids for the
+  follow-up link come from the appointment list, not the session type.
+- **Follow-up prefill:** `appointments/new` reads `providerId`; `AppointmentForm` applies it only if the provider is
+  in the loaded list.
+- Not changed: the after-call extension modal copy and structure (its Figma frame is a restyle; see Plan Q1).
 
 ## Risks / Considerations
 

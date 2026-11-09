@@ -17,10 +17,28 @@ import type {NetworkLevel, ScreenShareView, StageTile} from '@/lib/telehealth/ca
 import type {BackgroundChoice} from '@/lib/telehealth/prejoin-backgrounds';
 import {cn} from '@/lib/utils/utils';
 
+export interface StageStatusAction {
+	id: string;
+	label: string;
+	onClick: () => void;
+}
+
 export interface StageStatus {
 	kind: 'info' | 'error';
 	text: string;
+	/** Second line under the text (for example "The visit is still open."). */
+	detail?: string;
 	onRetry?: () => void;
+	/** Next steps for this state. Red is reserved for End visit. */
+	actions?: StageStatusAction[];
+}
+
+/** A polite, non-modal notice under the status. It never takes focus (FE-064). */
+export interface StageNotice {
+	id: string;
+	text: string;
+	dismissLabel?: string;
+	onDismiss?: () => void;
 }
 
 export interface CallStageProps {
@@ -28,6 +46,9 @@ export interface CallStageProps {
 	/** Session `joinedAt`; the timer counts from here. */
 	joinedAt?: string;
 	status?: StageStatus;
+	notices?: StageNotice[];
+	/** What the empty stage says while nobody else is here. */
+	waitingText?: string;
 	tiles: StageTile[];
 	screenShare: ScreenShareView | null;
 	microphoneOn: boolean;
@@ -119,7 +140,39 @@ export function CallStage(props: CallStageProps) {
 							: 'border-(--color-stage-border) bg-(--color-stage-surface) text-(--color-stage-text)',
 					)}
 				>
-					<span>{props.status.text}</span>
+					<span>
+						{props.status.text}
+						{props.status.detail && (
+							<span className="ml-2 text-(--color-stage-text-muted)">{props.status.detail}</span>
+						)}
+					</span>
+					{props.status.actions?.map((action) =>
+						action.id === 'end-visit' ? (
+							// Same confirmation as the control bar; red stays reserved for End visit.
+							props.canEnd && (
+								<Button
+									key={action.id}
+									type="button"
+									variant="destructive"
+									size="sm"
+									onClick={() => setEndOpen(true)}
+								>
+									{action.label}
+								</Button>
+							)
+						) : (
+							<Button
+								key={action.id}
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={action.onClick}
+								className="border-white bg-white text-gray-900 hover:bg-gray-100"
+							>
+								{action.label}
+							</Button>
+						),
+					)}
 					{props.status.onRetry && (
 						<Button
 							type="button"
@@ -133,6 +186,29 @@ export function CallStage(props: CallStageProps) {
 					)}
 				</div>
 			)}
+
+			{props.notices?.map((notice) => (
+				<div
+					key={notice.id}
+					role="status"
+					aria-live="polite"
+					data-notice={notice.id}
+					className="flex flex-wrap items-center gap-3 border-b border-(--color-stage-border) bg-(--color-stage-surface-raised) px-4 py-2 text-sm text-(--color-stage-text) sm:px-7"
+				>
+					<span>{notice.text}</span>
+					{notice.onDismiss && (
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onClick={notice.onDismiss}
+							className="border-white bg-white text-gray-900 hover:bg-gray-100"
+						>
+							{notice.dismissLabel ?? 'Got it'}
+						</Button>
+					)}
+				</div>
+			))}
 
 			{props.endError && (
 				<p role="alert" className="border-b border-red-400/60 bg-red-950/50 px-4 py-2 text-sm text-red-100 sm:px-7">
@@ -176,7 +252,7 @@ export function CallStage(props: CallStageProps) {
 								)}
 							>
 								{remotes.length === 0 ? (
-									<WaitingTile text="Waiting for the other participant" />
+									<WaitingTile text={props.waitingText ?? 'Waiting for the other participant'} />
 								) : (
 									remotes.map((tile) => <ParticipantTile key={tile.id} tile={tile} className="min-h-40" />)
 								)}

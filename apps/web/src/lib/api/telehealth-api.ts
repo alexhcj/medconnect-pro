@@ -66,6 +66,11 @@ export const telehealthRealAPI = {
 		return sessionFromNest(`/${sessionId}/end`, {method: 'POST'});
 	},
 
+	/** In-visit keep-alive (BE-027): 204, no body, no device data. */
+	heartbeat: async (sessionId: string): Promise<void> => {
+		await apiFetch<void>(telehealthSessionsUrl(`/${sessionId}/heartbeat`), {method: 'POST'});
+	},
+
 	mintMediaToken: async (sessionId: string): Promise<TelehealthMediaToken> => {
 		const body = await apiFetch<unknown>(telehealthSessionsUrl(`/${sessionId}/media-token`), {
 			method: 'POST',

@@ -143,12 +143,57 @@ describe('TelehealthSessionShell', () => {
 		expect(mutate).not.toHaveBeenCalled();
 		const dialog = await screen.findByRole('dialog', {name: 'End this visit for everyone?'});
 		await user.click(within(dialog).getByRole('button', {name: 'End visit'}));
-		expect(mutate).toHaveBeenCalledWith(
-			'session-demo-appointment-002',
-			expect.objectContaining({onSuccess: expect.any(Function)}),
+		expect(mutate).toHaveBeenCalledWith('session-demo-appointment-002');
+		// The page stays and shows the wrap-up once the session reads `ended`; no redirect to the lobby.
+		expect(push).not.toHaveBeenCalled();
+	});
+
+	const liveEnded: TelehealthSession = {
+		...waitingSession,
+		state: 'ended',
+		joinedAt: '2026-10-16T16:00:00.000Z',
+		endedAt: '2026-10-16T16:18:00.000Z',
+	};
+
+	it('shows the provider wrap-up with a prefilled follow-up link after a live visit', () => {
+		useAppointments.mockReturnValue({
+			data: [{id: 'demo-appointment-002', notes: 'Blood pressure follow-up', patientId: 'patient-9', providerId: 'provider-3'}],
+		});
+		mockVisit({data: {...liveEnded, viewerCanEnd: true}});
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+
+		expect(screen.getByRole('heading', {name: 'Visit wrap-up · Taylor Bennett'})).toBeInTheDocument();
+		expect(screen.getByText('18 min')).toBeInTheDocument();
+		expect(screen.getByRole('link', {name: 'Book follow-up'})).toHaveAttribute(
+			'href',
+			'/dashboard/appointments/new?patientId=patient-9&providerId=provider-3',
 		);
-		mutate.mock.calls[0]?.[1]?.onSuccess();
-		expect(push).toHaveBeenCalledWith('/dashboard/telehealth');
+		expect(screen.queryByRole('heading', {name: 'This visit has ended'})).not.toBeInTheDocument();
+	});
+
+	it('shows the patient confirmation, with a follow-up card only for a real next appointment', () => {
+		useSessionStatus.mockReturnValue({session: {userRole: 'PATIENT'}, isLoading: false});
+		useAppointments.mockReturnValue({
+			data: [
+				{id: 'demo-appointment-002', notes: 'Blood pressure follow-up', state: 'completed', start: '2026-10-16T16:00:00.000Z'},
+			],
+		});
+		mockVisit({data: liveEnded});
+		const view = render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+
+		expect(screen.getByRole('heading', {name: 'Your visit has ended'})).toBeInTheDocument();
+		expect(screen.queryByText('Follow-up appointment')).not.toBeInTheDocument();
+		expect(screen.getByRole('link', {name: 'Back to appointments'})).toBeInTheDocument();
+		view.unmount();
+
+		useAppointments.mockReturnValue({
+			data: [
+				{id: 'demo-appointment-002', notes: 'x', state: 'completed', start: '2026-10-16T16:00:00.000Z'},
+				{id: 'later', state: 'scheduled', start: '2099-01-01T15:00:00.000Z', providerName: 'Dr. Casey Walsh'},
+			],
+		});
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		expect(screen.getByRole('heading', {name: 'Follow-up appointment'})).toBeInTheDocument();
 	});
 
 	it('hides End visit when the server says the viewer cannot end, whatever the role', () => {

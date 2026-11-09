@@ -29,5 +29,7 @@ export interface TelehealthSession {
 	mediaExpiresAt?: string;
 	/** When the visit went live; the call timer counts from here. */
 	joinedAt?: string;
+	/** When the visit ended (Nest); the wrap-up duration is `endedAt` minus `joinedAt`. */
+	endedAt?: string;
 	synthetic: true;
 }

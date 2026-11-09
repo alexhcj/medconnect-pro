@@ -54,13 +54,13 @@ capabilities:
   - id: telehealth.call-controls
     name: Full-screen call stage and controls
     status: partial
-    demo: full-screen dark stage with server-named tiles, active speaker, network indicator, devices, background effects, read-only participants and host-only End visit (1.4.0); call states, expiry notice and wrap-up follow in FE-064
+    demo: full-screen dark stage with server-named tiles, active speaker, network indicator, devices, background effects, read-only participants and host-only End visit (1.4.0); call states (waiting, reconnecting, poor network, participant left, device access lost), a 5-minute room-closing notice, and a provider wrap-up and patient visit-ended screen (1.5.0)
     public: no
-    related_tasks: [SEC-013, BE-027, FE-063]
+    related_tasks: [SEC-013, BE-027, FE-063, FE-064]
   - id: telehealth.in-visit-keepalive
     name: Stay signed in during a live visit
-    status: planned
-    demo: not in the demo yet (M22)
+    status: partial
+    demo: heartbeat about every minute plus a quiet token refresh while joined, passive background polls (1.5.0); the 25-minute hidden-tab run is pending
     public: no
     related_tasks: [SEC-013, BE-027, FE-064]
   - id: telehealth.demo-persona
@@ -88,6 +88,6 @@ or recording.
 | `telehealth.participant-entry` | Second participant enters an open visit | shipped | lookup, then the existing waiting-room join | qualified |
 | `telehealth.chat-recording` | In-session chat, recording, and transcription | planned | not in the demo | no |
 | `telehealth.prejoin-devices` | Pre-join green room | planned | not in the demo yet (M22) | no |
-| `telehealth.call-controls` | Full-screen call stage and controls | partial | full-screen stage and controls (1.4.0); call states and wrap-up still to come (M22) | no |
-| `telehealth.in-visit-keepalive` | Stay signed in during a live visit | planned | not in the demo yet (M22) | no |
+| `telehealth.call-controls` | Full-screen call stage and controls | partial | full-screen stage and controls (1.4.0); call states, closing notice and wrap-up (1.5.0); live checks pending | no |
+| `telehealth.in-visit-keepalive` | Stay signed in during a live visit | partial | heartbeat and token refresh while in a live visit (1.5.0); hidden-tab run pending | no |
 | `telehealth.demo-persona` | Demo persona camera | planned | not in the demo yet (M22); demo builds only | no |

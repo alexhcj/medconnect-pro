@@ -92,16 +92,27 @@ export function useDailyMediaSession({
 	enabled,
 	joinChoices,
 	roster = [],
+	onEndedSuspected,
 }: {
 	sessionId: string;
 	enabled: boolean;
+	/**
+	 * Daily dropped us or errored. The host's End visit deletes the room, so the other side sees this
+	 * first; the caller re-reads the Nest session to find out whether the visit actually ended.
+	 */
+	onEndedSuspected?: () => void;
 	/** Device, background and audio-only choices from the green room (FE-062). Browser-only. */
 	joinChoices?: JoinChoices;
 	/** Server roster (BE-027). Tile names and roles come from here, never from Daily `user_name`. */
 	roster?: readonly TelehealthParticipant[];
 }) {
 	const joinChoicesRef = useRef(joinChoices);
+	const onEndedSuspectedRef = useRef(onEndedSuspected);
+	useEffect(() => {
+		onEndedSuspectedRef.current = onEndedSuspected;
+	}, [onEndedSuspected]);
 	const [attempt, setAttempt] = useState(0);
+	const [deviceLost, setDeviceLost] = useState(false);
 	const [connectionState, setConnectionState] = useState<DailyMediaConnectionState>('joining');
 	const [cameraOn, setCameraOn] = useState(false);
 	const [microphoneOn, setMicrophoneOn] = useState(false);
@@ -170,6 +181,7 @@ export function useDailyMediaSession({
 		reconnectingRef.current = false;
 		setConnectionState('joining');
 		setFailureKind('none');
+		setDeviceLost(false);
 		setCameraOn(false);
 		setMicrophoneOn(false);
 		setScreenShareOn(false);
@@ -223,6 +235,24 @@ export function useDailyMediaSession({
 			if (!cancelledRef.current) {
 				setFailureKind(classifyDailyMediaFailure(event));
 				setConnectionState('failed');
+				onEndedSuspectedRef.current?.();
+			}
+		};
+
+		// Mid-call permission or device loss. The visit stays open; audio and video stop (TH-08).
+		const onCameraError = () => {
+			if (!cancelledRef.current) {
+				setDeviceLost(true);
+			}
+		};
+		const onCameraStarted = () => {
+			if (!cancelledRef.current) {
+				setDeviceLost(false);
+			}
+		};
+		const onLeftMeeting = () => {
+			if (!cancelledRef.current) {
+				onEndedSuspectedRef.current?.();
 			}
 		};
 
@@ -257,6 +287,9 @@ export function useDailyMediaSession({
 				call.on('network-quality-change', onQuality);
 				call.on('error', onError);
 				call.on('network-connection', onNetwork);
+				call.on('camera-error', onCameraError);
+				call.on('started-camera', onCameraStarted);
+				call.on('left-meeting', onLeftMeeting);
 
 				const choices = joinChoicesRef.current;
 				await call.join({
@@ -423,6 +456,7 @@ export function useDailyMediaSession({
 		devices,
 		background,
 		failureKind,
+		deviceLost,
 		controlsEnabled,
 		retry,
 		toggleCamera,

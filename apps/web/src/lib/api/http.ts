@@ -116,6 +116,10 @@ function readRetryAfterSeconds(details: unknown): number | undefined {
 
 const CSRF_COOKIE_NAME = 'mcp_csrf';
 export const CSRF_HEADER_NAME = 'X-CSRF-Token';
+
+/** Marks a background poll the user did not trigger; Nest then skips the idle-activity touch (SEC-013). */
+export const PASSIVE_HEADER_NAME = 'X-MCP-Activity';
+export const PASSIVE_HEADER_VALUE = 'passive';
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 function readDetails(value: unknown): ApiErrorDetail[] | undefined {

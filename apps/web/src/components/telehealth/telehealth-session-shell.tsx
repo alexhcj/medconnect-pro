@@ -3,8 +3,11 @@
 import type {ReactNode} from 'react';
 import {useState} from 'react';
 import Link from 'next/link';
-import {useRouter} from 'next/navigation';
 import {Button} from '@/components/ui/button';
+import {VisitEnded} from '@/components/telehealth/visit-ended';
+import {VisitWrapUp} from '@/components/telehealth/visit-wrap-up';
+import {readCallSummary} from '@/lib/telehealth/call-summary';
+import {findNextAppointment, followUpHref} from '@/lib/telehealth/next-appointment';
 import {DailyMediaSession} from '@/components/telehealth/daily-media-session';
 import {MockCallStage} from '@/components/telehealth/mock-call-stage';
 import {
@@ -55,7 +58,6 @@ function isClosedVisitError(error: unknown): boolean {
 }
 
 export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
-	const router = useRouter();
 	const {session: authSession, isLoading: isAuthLoading} = useSessionStatus();
 	const canAccess = !isAuthLoading && canAccessTelehealth(authSession?.userRole);
 	const visit = useTelehealthSession(sessionId, canAccess);
@@ -67,14 +69,19 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 	const [joinChoices, setJoinChoices] = useState<JoinChoices | undefined>();
 	// The visit title is the appointment reason (notes), never the diagnosis list (SEC-013 scope 6).
 	const appointments = useAppointments(canAccess);
-	const reason = appointments.data?.find((appointment) => appointment.id === visit.data?.appointmentId)?.notes?.trim();
+	const appointment = appointments.data?.find((item) => item.id === visit.data?.appointmentId);
+	const reason = appointment?.notes?.trim();
+	const nextAppointment =
+		authSession?.userRole === 'PATIENT' && visit.data
+			? findNextAppointment(appointments.data, visit.data.appointmentId)
+			: undefined;
 	const visitTitle = reason ? `Video visit — ${reason}` : 'Video visit';
 	// The stage header already says "Video visit" above the title.
 	const stageTitle = reason ? `${reason} · ${visit.data?.patientName ?? ''}`.replace(/ · $/, '') : 'Consultation';
-	const endMutation = () =>
-		endVisit.mutate(sessionId, {
-			onSuccess: () => router.push('/dashboard/telehealth'),
-		});
+	// After End visit the session flips to `ended` and this page shows the wrap-up in place (FE-064).
+	const endMutation = () => endVisit.mutate(sessionId);
+	// Daily dropped us or the keep-alive was refused: ask Nest whether the host ended the visit.
+	const recheckVisit = () => void visit.refetch();
 	const endErrorText = endVisit.isError
 		? telehealthActionErrorMessage(endVisit.error, 'Unable to end this session.')
 		: undefined;
@@ -102,6 +109,8 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 
 	const closed =
 		visit.data?.state === 'ended' || isClosedVisitError(visit.error) || isClosedVisitError(join.error);
+	// A visit that was live gets the wrap-up or confirmation; one that never started keeps the plain card.
+	const endedAfterLive = visit.data?.state === 'ended' && Boolean(visit.data.joinedAt);
 
 	return (
 		<SessionChrome>
@@ -145,7 +154,19 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 						<TelehealthAppointmentLinkage session={visit.data} />
 					</section>
 
-					{closed && (
+					{closed && endedAfterLive && canEnd && (
+						<VisitWrapUp
+							session={visit.data}
+							summary={readCallSummary(sessionId)}
+							followUpHref={followUpHref(appointment?.patientId, appointment?.providerId)}
+						/>
+					)}
+
+					{closed && endedAfterLive && !canEnd && (
+						<VisitEnded session={visit.data} nextAppointment={nextAppointment} />
+					)}
+
+					{closed && !endedAfterLive && (
 						<VisitUnavailable
 							title={visit.data.state === 'ended' ? 'This visit has ended' : 'This visit is not available'}
 							message={
@@ -195,6 +216,9 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 								session={visit.data}
 								visitTitle={stageTitle}
 								canEnd={canEnd}
+								viewerRole={authSession?.userRole}
+								onEndedSuspected={recheckVisit}
+								onVisitClosed={recheckVisit}
 								joinChoices={joinChoices}
 								isEnding={endVisit.isPending}
 								endError={endErrorText}

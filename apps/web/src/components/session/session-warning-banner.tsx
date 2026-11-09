@@ -5,13 +5,15 @@ import {Clock, TriangleAlert} from 'lucide-react';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import {useUISelectors} from '@/lib/stores/ui-store';
 import {clsx} from 'clsx';
+import {useLiveVisitActive} from '@/lib/telehealth/live-visit-flag';
 
 export function SessionWarningBanner() {
 	const {isExpiringSoon, isExpiringNow, remainingTime, extendSession, isExtending} = useSessionStatus();
 	const addNotification = useUISelectors.useAddNotification();
+	const liveVisit = useLiveVisitActive();
 
-	// Don't show banner if not expiring soon or if modal should be shown
-	if (!isExpiringSoon || isExpiringNow) {
+	// Don't show banner if not expiring soon, if the modal should be shown, or during a live visit (FE-064)
+	if (!isExpiringSoon || isExpiringNow || liveVisit) {
 		return null;
 	}
 

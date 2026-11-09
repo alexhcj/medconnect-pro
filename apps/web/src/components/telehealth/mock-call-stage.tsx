@@ -1,6 +1,7 @@
 'use client';
 
-import {useMemo, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
+import {recordCallSummary} from '@/lib/telehealth/call-summary';
 import {Button} from '@/components/ui/button';
 import {CallStage} from '@/components/telehealth/call-stage/call-stage';
 import {CallStagePortal} from '@/components/telehealth/call-stage/call-stage-portal';
@@ -63,6 +64,10 @@ export function MockCallStage({
 			.map((entry) => make(entry.userId, entry.displayName, entry.role, false));
 		return [local, ...remotes];
 	}, [session.participants, userRole, cameraOn, microphoneOn]);
+
+	useEffect(() => {
+		recordCallSummary(session.id, tiles);
+	}, [session.id, tiles]);
 
 	if (leftMedia) {
 		return (

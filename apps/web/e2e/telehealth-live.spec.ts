@@ -48,8 +48,7 @@ test.describe('Live telehealth session shell', () => {
 
 		await page.getByRole('button', {name: 'End visit'}).click();
 		await page.getByRole('dialog', {name: 'End this visit for everyone?'}).getByRole('button', {name: 'End visit'}).click();
-		await expect(page).toHaveURL(/\/dashboard\/telehealth$/);
-		await expect(page.getByRole('heading', {level: 1, name: 'Telehealth'})).toBeVisible();
-		await expect(page.getByRole('list', {name: 'Telehealth visits'})).toContainText('Avery Quinn');
+		await expect(page.getByRole('heading', {level: 2, name: 'Visit wrap-up · Avery Quinn'})).toBeVisible();
+		await expect(page.getByRole('link', {name: 'Book follow-up'})).toBeVisible();
 	});
 });

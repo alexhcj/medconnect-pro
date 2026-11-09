@@ -9,7 +9,15 @@ import type {
 	SessionInfo,
 	VerifyMfaInput,
 } from '@/types/auth/session';
-import {ApiError, apiFetch, errorFromResponseBody, liveFetch, liveRequestInit} from '@/lib/api/http';
+import {
+	ApiError,
+	apiFetch,
+	errorFromResponseBody,
+	liveFetch,
+	liveRequestInit,
+	PASSIVE_HEADER_NAME,
+	PASSIVE_HEADER_VALUE,
+} from '@/lib/api/http';
 import {fixtureDemoUsers} from '@/lib/api/mocks/fixtures';
 import {clearLiveSession, readLiveSession, writeLiveSession} from '@/lib/api/live-session-store';
 import {nestApiBaseUrl} from '@/lib/api/nest-api';
@@ -249,7 +257,10 @@ export const sessionRealAPI = {
 	},
 
 	checkConcurrentSessions: async (): Promise<ConcurrentSessionInfo[]> => {
-		const body = await apiFetch<unknown>(`${nestApiBaseUrl()}/auth/sessions`);
+		// Background poll: passive, so it never refreshes the idle timeout (SEC-013). The only marked request.
+		const body = await apiFetch<unknown>(`${nestApiBaseUrl()}/auth/sessions`, {
+			headers: {[PASSIVE_HEADER_NAME]: PASSIVE_HEADER_VALUE},
+		});
 		if (!Array.isArray(body)) {
 			throw new ApiError('Unable to load sessions', 502);
 		}

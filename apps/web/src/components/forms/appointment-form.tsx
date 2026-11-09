@@ -31,6 +31,8 @@ interface AppointmentFormProps {
 	patients: Patient[];
 	providers: Provider[];
 	prefilledPatientId?: string;
+	/** From a visit wrap-up link. Applied only when the provider is in the loaded options. */
+	prefilledProviderId?: string;
 }
 
 function FieldFrame({
@@ -60,14 +62,22 @@ function FieldFrame({
 	);
 }
 
-export function AppointmentForm({patients, providers, prefilledPatientId}: AppointmentFormProps) {
+export function AppointmentForm({
+	patients,
+	providers,
+	prefilledPatientId,
+	prefilledProviderId,
+}: AppointmentFormProps) {
 	const router = useRouter();
 	const createAppointment = useCreateAppointment();
 	const form = useForm<AppointmentFormValues>({
 		resolver: zodResolver(appointmentFormSchema),
 		mode: 'onSubmit',
 		shouldFocusError: true,
-		defaultValues: emptyAppointmentFormValues(prefilledPatientId ?? ''),
+		defaultValues: emptyAppointmentFormValues(
+			prefilledPatientId ?? '',
+			providers.some((provider) => provider.id === prefilledProviderId) ? prefilledProviderId : '',
+		),
 	});
 	const {
 		register,

@@ -352,6 +352,29 @@ describe('sessionRealAPI', () => {
 		expect(stored.join('')).not.toMatch(/token/i);
 	});
 
+	it('marks only the inventory poll as passive', async () => {
+		document.cookie = 'mcp_csrf=hosted-csrf';
+		const fetchMock = vi
+			.fn()
+			.mockResolvedValueOnce(jsonResponse(200, []))
+			.mockResolvedValueOnce(jsonResponse(200, tokenPair('opaque-access', 'opaque-refresh')))
+			.mockResolvedValueOnce(jsonResponse(200, {}));
+		vi.stubGlobal('fetch', fetchMock);
+		await sessionRealAPI.login(demo.email, demo.password).catch(() => undefined);
+		fetchMock.mockReset();
+		fetchMock.mockResolvedValueOnce(jsonResponse(200, []));
+		await sessionRealAPI.checkConcurrentSessions();
+		expect(new Headers(fetchMock.mock.calls[0][1]?.headers).get('X-MCP-Activity')).toBe('passive');
+
+		fetchMock.mockResolvedValueOnce(jsonResponse(200, tokenPair('a', 'b')));
+		await sessionRealAPI.hydrateSession().catch(() => undefined);
+		fetchMock.mockResolvedValueOnce(jsonResponse(204, {}));
+		await sessionRealAPI.terminateSessions(['11111111-1111-4111-8111-111111111111']).catch(() => undefined);
+		for (const call of fetchMock.mock.calls.slice(1)) {
+			expect(new Headers(call[1]?.headers).get('X-MCP-Activity')).toBeNull();
+		}
+	});
+
 	it('revokes other sessions without clearing the current live session', async () => {
 		document.cookie = 'mcp_csrf=hosted-csrf';
 		vi.stubGlobal(

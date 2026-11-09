@@ -35,13 +35,13 @@ describe('sessionFromRdo', () => {
 			participants: [],
 			viewerCanEnd: false,
 			joinedAt: sessionRdo.joinedAt,
+			endedAt: sessionRdo.endedAt,
 			synthetic: true,
 		});
 		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('practiceId');
 		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('patientId');
 		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('providerId');
 		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('waitingStartedAt');
-		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('endedAt');
 	});
 
 	it('carries the server roster, viewerCanEnd and mediaExpiresAt', () => {

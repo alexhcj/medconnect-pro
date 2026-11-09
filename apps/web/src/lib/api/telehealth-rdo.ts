@@ -44,6 +44,6 @@ export function sessionFromRdo(rdo: TelehealthSessionRdo): TelehealthSession {
 		viewerCanEnd: rdo.viewerCanEnd === true,
 		...(rdo.mediaExpiresAt ? {mediaExpiresAt: rdo.mediaExpiresAt} : {}),
 		...(rdo.joinedAt ? {joinedAt: rdo.joinedAt} : {}),
-		synthetic: true,
+		...(rdo.endedAt ? {endedAt: rdo.endedAt} : {}),		synthetic: true,
 	};
 }

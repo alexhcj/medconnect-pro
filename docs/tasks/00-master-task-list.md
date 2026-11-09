@@ -258,7 +258,7 @@ Ships as MINOR releases from 1.1.0; the breaking host rule is MINOR under the AD
 - BE-027 — Telehealth keep-alive, passive requests and the End visit host rule (shipped at 1.2.0)
 - FE-062 — Telehealth pre-join green room (implemented at 1.3.0; live camera check pending)
 - FE-063 — Full-screen call stage and controls (implemented at 1.4.0; live two-browser check pending)
-- FE-064 — Call states, session keep-alive and wrap-up (pending; design in progress)
+- FE-064 — Call states, session keep-alive and wrap-up (implemented at 1.5.0; 25-minute hidden-tab run pending)
 - FE-065 — Demo persona camera (pending; design in progress)
 - QA-014 — M22 verification and close audit (pending)
 

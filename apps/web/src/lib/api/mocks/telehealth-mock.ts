@@ -102,6 +102,8 @@ export const telehealthMockAPI = {
 		return present(next);
 	},
 
+	heartbeat: async (_sessionId: string): Promise<void> => undefined,
+
 	endSession: async (sessionId: string): Promise<TelehealthSession> => {
 		const appointmentId = appointmentIdFromSessionId(sessionId);
 		if (!appointmentId) {
@@ -109,7 +111,7 @@ export const telehealthMockAPI = {
 		}
 		const appointment = await joinableAppointment(appointmentId);
 		const existing = sessions.get(sessionId) ?? sessionFromAppointment(appointment, 'waiting');
-		const next: TelehealthSession = {...existing, state: 'ended'};
+		const next: TelehealthSession = {...existing, state: 'ended', endedAt: new Date().toISOString()};
 		sessions.set(sessionId, next);
 		return present(next);
 	},
