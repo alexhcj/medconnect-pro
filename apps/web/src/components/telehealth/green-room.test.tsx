@@ -39,7 +39,7 @@ describe('GreenRoom (mock mode)', () => {
 		renderRoom();
 
 		expect(screen.getByRole('heading', {level: 2, name: 'Video visit — Blood pressure follow-up'})).toBeInTheDocument();
-		expect(screen.getByRole('img', {name: 'Camera preview placeholder'})).toBeInTheDocument();
+		expect(screen.getByRole('img', {name: /Camera preview placeholder/})).toBeInTheDocument();
 		expect(screen.getByRole('button', {name: /Camera/})).toHaveTextContent('Integrated Camera');
 		expect(screen.getByRole('button', {name: /Microphone/})).toHaveTextContent('Built-in Microphone');
 		expect(screen.getByRole('button', {name: /Speaker/})).toHaveTextContent('Headphones');
@@ -51,6 +51,16 @@ describe('GreenRoom (mock mode)', () => {
 		expect(within(checks).getByText('Camera and microphone allowed')).toBeInTheDocument();
 		expect(within(checks).getByText('Checked after you join')).toBeInTheDocument();
 		expect(screen.queryByText(/\d+\s?ms/)).not.toBeInTheDocument();
+	});
+
+	it('shows the chosen background behind the mock avatar', async () => {
+		const user = userEvent.setup();
+		renderRoom();
+		await user.click(screen.getByRole('radio', {name: 'Image'}));
+		await user.click(screen.getByRole('radio', {name: 'Nurse station'}));
+		expect(screen.getByRole('img', {name: 'Camera preview placeholder, background Nurse station'})).toBeInTheDocument();
+		await user.click(screen.getByRole('radio', {name: 'Blur'}));
+		expect(screen.getByRole('img', {name: 'Camera preview placeholder, background blur'})).toBeInTheDocument();
 	});
 
 	it('exposes the level meter with a text alternative', () => {

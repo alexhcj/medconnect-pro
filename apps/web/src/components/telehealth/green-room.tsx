@@ -233,7 +233,7 @@ export function GreenRoom({
 								onAudioOnly={() => void handleJoin(true)}
 							/>
 						) : (
-							<CameraPreview track={media.videoTrack} label={initials} />
+							<CameraPreview track={media.videoTrack} label={initials} background={media.background} />
 						)}
 					</div>
 

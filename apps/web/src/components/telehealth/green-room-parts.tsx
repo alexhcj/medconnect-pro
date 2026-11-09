@@ -8,16 +8,33 @@ import {cn} from '@/lib/utils/utils';
 import {LEVEL_SEGMENTS} from '@/lib/hooks/use-prejoin-media';
 import {
 	BACKGROUND_IMAGES,
+	backgroundImageById,
 	type BackgroundChoice,
 	type BackgroundImageId,
 } from '@/lib/telehealth/prejoin-backgrounds';
 import type {PrejoinCheck} from '@/lib/telehealth/prejoin-checks';
 import type {PrejoinPhase} from '@/lib/telehealth/prejoin-devices';
 
+function backgroundLabel(choice: BackgroundChoice): string {
+	if (choice.kind === 'image') {
+		return backgroundImageById(choice.imageId).label;
+	}
+	return choice.kind === 'blur' ? 'blur' : 'none';
+}
+
 export const PREJOIN_ENCRYPTION_NOTE = 'Encrypted connection. This visit is not recorded.';
 
 /** The live local camera. Mirrored like a mirror, muted, never sent anywhere from here. */
-export function CameraPreview({track, label}: {track: MediaStreamTrack | null; label: string}) {
+export function CameraPreview({
+	track,
+	label,
+	background = {kind: 'none'},
+}: {
+	track: MediaStreamTrack | null;
+	label: string;
+	/** Mock mode only: the chosen background is drawn behind the avatar card so it can be seen without a camera. */
+	background?: BackgroundChoice;
+}) {
 	const ref = useRef<HTMLVideoElement>(null);
 
 	useEffect(() => {
@@ -32,16 +49,25 @@ export function CameraPreview({track, label}: {track: MediaStreamTrack | null; l
 	}, [track]);
 
 	if (!track) {
+		const image = background.kind === 'image' ? backgroundImageById(background.imageId) : null;
 		return (
 			<div
 				role="img"
-				aria-label="Camera preview placeholder"
-				className="flex size-full flex-col items-center justify-center gap-2 bg-foreground text-inverse"
+				aria-label={`Camera preview placeholder, background ${backgroundLabel(background)}`}
+				className="relative flex size-full items-center justify-center overflow-hidden bg-foreground text-inverse"
 			>
-				<span className="flex size-16 items-center justify-center rounded-full bg-foreground-secondary text-xl font-semibold">
-					{label}
-				</span>
-				<span className="text-sm text-inverse/80">Demo preview. No camera in mock mode.</span>
+				{image && (
+					<Image src={image.src} alt="" fill sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover" />
+				)}
+				{background.kind === 'blur' && (
+					<div aria-hidden="true" className="absolute inset-0 bg-gradient-to-br from-foreground-secondary/60 to-foreground blur-xl" />
+				)}
+				<div className="relative flex flex-col items-center gap-2 rounded-lg bg-foreground/80 px-5 py-4 text-center">
+					<span className="flex size-16 items-center justify-center rounded-full bg-foreground-secondary text-xl font-semibold">
+						{label}
+					</span>
+					<span className="text-sm text-inverse">Demo preview. No camera in mock mode.</span>
+				</div>
 			</div>
 		);
 	}

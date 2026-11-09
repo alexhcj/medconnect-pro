@@ -28,7 +28,7 @@ for (const viewport of VIEWPORTS) {
 		test('ready state: preview placeholder, meter, checks and approved wording', async ({page}) => {
 			await openGreenRoom(page);
 
-			await expect(page.getByRole('img', {name: 'Camera preview placeholder'})).toBeVisible();
+			await expect(page.getByRole('img', {name: /Camera preview placeholder/})).toBeVisible();
 			await expect(page.getByRole('meter', {name: 'Microphone input level'})).toHaveAttribute('aria-valuenow', '8');
 			await expect(page.getByRole('list', {name: 'Connection checks'})).toContainText('Checked after you join');
 			await expect(page.getByText('Encrypted connection. This visit is not recorded.')).toBeVisible();
