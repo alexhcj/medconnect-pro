@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState, useSyncExternalStore} from 'react';
 import Link from 'next/link';
 import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/react';
-import {ChevronDown, Info, ShieldCheck, Volume2} from 'lucide-react';
+import {ChevronDown, Headphones, Info, ShieldCheck, Volume1, Volume2} from 'lucide-react';
 import {
 	BackgroundPicker,
 	CameraPreview,
@@ -11,6 +11,7 @@ import {
 	LevelMeter,
 	PREJOIN_ENCRYPTION_NOTE,
 	PreviewProblem,
+	ReadinessStatus,
 } from '@/components/telehealth/green-room-parts';
 import {Button} from '@/components/ui/button';
 import {SelectField, type SelectOption} from '@/components/ui/select-field';
@@ -18,7 +19,7 @@ import {isMockMode} from '@/lib/api/mocks/runtime';
 import {usePrejoinMedia, type PrejoinDeviceOption} from '@/lib/hooks/use-prejoin-media';
 import type {JoinChoices} from '@/lib/telehealth/join-choices';
 import {buildPrejoinChecks} from '@/lib/telehealth/prejoin-checks';
-import {PREJOIN_READINESS_COPY, primaryJoinAction, type PrejoinPhase} from '@/lib/telehealth/prejoin-devices';
+import {primaryJoinAction, type PrejoinPhase} from '@/lib/telehealth/prejoin-devices';
 import {playTestTone, type TestToneHandle} from '@/lib/telehealth/test-tone';
 
 export interface GreenRoomProps {
@@ -254,8 +255,14 @@ export function GreenRoom({
 					<div className="hidden rounded-lg border border-border bg-surface p-4 md:block">
 						<h3 className="text-sm font-semibold text-foreground">Before you join</h3>
 						<ul className="mt-2 grid gap-1 text-sm text-foreground-secondary sm:grid-cols-2">
-							<li>Use headphones to reduce echo.</li>
-							<li>Choose a quiet space.</li>
+							<li className="flex items-center gap-2">
+								<Headphones aria-hidden="true" className="size-4 shrink-0" />
+								Use headphones to reduce echo.
+							</li>
+							<li className="flex items-center gap-2">
+								<Volume1 aria-hidden="true" className="size-4 shrink-0" />
+								Choose a quiet space.
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -317,7 +324,7 @@ export function GreenRoom({
 					Back to appointment
 				</Link>
 				<div className="flex flex-1 flex-wrap items-center justify-end gap-3 max-sm:flex-col-reverse max-sm:items-stretch">
-					<span className="text-sm text-foreground-secondary max-sm:text-center">{PREJOIN_READINESS_COPY[phase]}</span>
+					<ReadinessStatus phase={phase} />
 					<Button
 						type="button"
 						size="lg"

@@ -6,6 +6,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.3.1] - 2026-11-09
+
+M22 Telehealth 2.0: Visit experience, FE-062 fixes from the first live test.
+
+### Fixed
+
+- Green room: React Strict Mode and the hand-over to the real join no longer create a second Daily call
+  object ("Duplicate DailyIframe instances are not allowed"); every destroy is tracked and creators wait for it.
+- Built-in background images now use JPEG files and Daily's `source` option; WebP images with `url` fell back to
+  blur on a real camera.
+- Microphone meter idle segments use the border grey from the design.
+- "Before you join" tips have icons.
+
+### Changed
+
+- Connection check shows Camera and Microphone as separate rows. A missing or blocked device is a warning
+  (not an error colour), with a different icon from a passing row.
+- The status next to Join has an icon and a tone: success when all devices work, warning when one is missing,
+  neutral when none work.
+
 ## [1.3.0] - 2026-11-09
 
 M22 Telehealth 2.0: Visit experience, FE-062.

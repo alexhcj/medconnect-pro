@@ -6,9 +6,9 @@ import type {DailyInputVideoProcessorSettings} from '@daily-co/daily-js';
  * browser and is applied by Daily's in-browser processor on the local camera track.
  */
 export const BACKGROUND_IMAGES = [
-	{id: 'clinic-exam-room', label: 'Clinic exam room', src: '/telehealth/backgrounds/clinic-exam-room.webp'},
-	{id: 'nurse-station', label: 'Nurse station', src: '/telehealth/backgrounds/nurse-station.webp'},
-	{id: 'home-living-room', label: 'Home living room', src: '/telehealth/backgrounds/home-living-room.webp'},
+	{id: 'clinic-exam-room', label: 'Clinic exam room', src: '/telehealth/backgrounds/clinic-exam-room.jpg'},
+	{id: 'nurse-station', label: 'Nurse station', src: '/telehealth/backgrounds/nurse-station.jpg'},
+	{id: 'home-living-room', label: 'Home living room', src: '/telehealth/backgrounds/home-living-room.jpg'},
 ] as const;
 
 export type BackgroundImageId = (typeof BACKGROUND_IMAGES)[number]['id'];
@@ -34,7 +34,7 @@ export function dailyProcessorFor(choice: BackgroundChoice, origin: string): Dai
 		return {type: 'background-blur', config: {strength: 0.6}};
 	}
 	if (choice.kind === 'image') {
-		return {type: 'background-image', config: {url: new URL(backgroundImageById(choice.imageId).src, origin).href}};
+		return {type: 'background-image', config: {source: new URL(backgroundImageById(choice.imageId).src, origin).href}};
 	}
 	return {type: 'none'};
 }

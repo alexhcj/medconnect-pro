@@ -1,11 +1,15 @@
 import {describe, expect, it} from 'vitest';
-import {buildPrejoinChecks} from '@/lib/telehealth/prejoin-checks';
+import {buildPrejoinChecks, readinessTone} from '@/lib/telehealth/prejoin-checks';
+
+const rows = (phase: Parameters<typeof buildPrejoinChecks>[0]['phase']) =>
+	Object.fromEntries(buildPrejoinChecks({browserSupported: true, phase}).map((check) => [check.id, check]));
 
 describe('buildPrejoinChecks', () => {
-	it('passes browser and devices when ready and defers the network row', () => {
+	it('passes browser and both devices when ready and defers the network row', () => {
 		expect(buildPrejoinChecks({browserSupported: true, phase: 'ready'})).toEqual([
 			{id: 'browser', label: 'Browser supported', state: 'pass'},
-			{id: 'devices', label: 'Camera and microphone allowed', state: 'pass'},
+			{id: 'camera', label: 'Camera allowed', state: 'pass'},
+			{id: 'microphone', label: 'Microphone allowed', state: 'pass'},
 			{id: 'network', label: 'Network quality', state: 'deferred', detail: 'Checked after you join'},
 		]);
 	});
@@ -20,15 +24,22 @@ describe('buildPrejoinChecks', () => {
 		const good = buildPrejoinChecks({browserSupported: true, phase: 'ready', networkQuality: 'good'}).at(-1);
 		const poor = buildPrejoinChecks({browserSupported: true, phase: 'ready', networkQuality: 'poor'}).at(-1);
 		expect(good).toMatchObject({state: 'pass', detail: 'Good'});
-		expect(poor).toMatchObject({state: 'fail', detail: 'Poor'});
+		expect(poor).toMatchObject({state: 'warn', detail: 'Poor'});
 	});
 
-	it('maps each device phase to its row', () => {
-		const row = (phase: Parameters<typeof buildPrejoinChecks>[0]['phase']) =>
-			buildPrejoinChecks({browserSupported: true, phase})[1];
-		expect(row('checking')).toMatchObject({state: 'checking', label: 'Checking camera and microphone…'});
-		expect(row('blocked')).toMatchObject({state: 'fail', label: 'Camera and microphone blocked'});
-		expect(row('no_camera')).toMatchObject({state: 'fail', label: 'No camera found · microphone ready'});
+	it('gives each device its own status, and a missing device is a warning, not an error', () => {
+		expect(rows('no_camera').camera).toMatchObject({state: 'warn', label: 'No camera found'});
+		expect(rows('no_camera').microphone).toMatchObject({state: 'pass', label: 'Microphone allowed'});
+		expect(rows('blocked').camera).toMatchObject({state: 'warn', label: 'Camera blocked'});
+		expect(rows('blocked').microphone).toMatchObject({state: 'warn', label: 'Microphone blocked'});
+		expect(buildPrejoinChecks({browserSupported: true, phase: 'blocked'}).some((check) => check.state === 'fail')).toBe(
+			false,
+		);
+	});
+
+	it('shows both devices as checking while checking', () => {
+		expect(rows('checking').camera).toMatchObject({state: 'checking', label: 'Checking camera…'});
+		expect(rows('checking').microphone).toMatchObject({state: 'checking', label: 'Checking microphone…'});
 	});
 
 	it('fails an unsupported browser', () => {
@@ -37,5 +48,14 @@ describe('buildPrejoinChecks', () => {
 			label: 'Browser not supported',
 			state: 'fail',
 		});
+	});
+});
+
+describe('readinessTone', () => {
+	it('differs for all working, one missing and none working, and is never an error', () => {
+		expect(readinessTone('ready')).toBe('success');
+		expect(readinessTone('no_camera')).toBe('warning');
+		expect(readinessTone('blocked')).toBe('muted');
+		expect(readinessTone('checking')).toBe('checking');
 	});
 });

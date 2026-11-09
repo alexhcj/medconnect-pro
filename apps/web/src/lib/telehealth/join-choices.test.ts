@@ -31,7 +31,7 @@ describe('dailyJoinOptions', () => {
 		expect(options.audioSource).toBe('mic-1');
 		expect(options.startVideoOff).toBeUndefined();
 		expect(options.inputSettings).toEqual({
-			video: {processor: {type: 'background-image', config: {url: `${ORIGIN}/telehealth/backgrounds/nurse-station.webp`}}},
+			video: {processor: {type: 'background-image', config: {source: `${ORIGIN}/telehealth/backgrounds/nurse-station.jpg`}}},
 		});
 	});
 
