@@ -3,7 +3,7 @@ id: FE-062
 type: task
 area: frontend
 feature: telehealth
-status: pending
+status: implemented
 priority: high
 estimate: 3
 dependencies: [SEC-013, FE-035, FE-038, FE-056, FE-058]
@@ -22,10 +22,10 @@ design:
   required: true
   tool: figma
   file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-983"
-  frame: "Page 'Telehealth 2.0 · working copies' (499:983), section Pre-join (499:984): TH-01 desktop 499:985, TH-01 camera blocked 503:690, TH-01 no camera 503:929, TH-02 mobile ready 499:1161, TH-02 mobile camera blocked 499:1203. Move to a task page and approve before code."
-  status: in_progress
+  frame: "Page 'Telehealth 2.0 · working copies' (499:983), section Pre-join (499:984). Desktop 1440: ready 499:985, checking 526:343, test sound playing 526:496, background Image picker 526:943, camera blocked 503:690, no camera 503:929. Mobile 390: ready 499:1161, camera blocked 499:1203, no camera 526:664. Mobile 320: ready 526:704, camera blocked 526:746, no camera 526:786. Background images (Clinic exam room 526:1173, Nurse station 526:1174, Home living room 526:1175), generated with Figma AI; export to apps/web/public/telehealth/backgrounds/. Network row reads 'Checked after you join' unless the pre-call test runs without a meeting token. Approved by the user 2026-11-09 on the working-copies page; frames not moved to a task page."
+  status: approved
 implementation:
-  status: not_started
+  status: in_progress
 validation:
   responsive: true
   accessibility: true
@@ -88,14 +88,14 @@ Join-before-mint stays (SEC-008): the green room runs before Nest join, so it ha
 
 ## Acceptance Criteria
 
-- [ ] Frames approved on the task page (`design.status: approved`) before code
+- [x] Frames approved on the task page (`design.status: approved`) before code
 - [ ] Preview, three pickers, meter, test sound and background options work in live mode with a
       real camera; mock mode shows placeholders
 - [ ] Blocked and no-camera states match the frames; "Join with audio only" joins without video
-- [ ] No device, network or background data in requests or logs (test spies on fetch)
-- [ ] Unit tests for state mapping; Playwright mock spec for states at 1440, 390 and 320
+- [x] No device, network or background data in requests or logs (test spies on fetch)
+- [x] Unit tests for state mapping; Playwright mock spec for states at 1440, 390 and 320
 - [ ] Keyboard-only and screen-reader pass recorded
-- [ ] CHANGELOG and version (ADR-007); `docs/product/telehealth.md` row `telehealth.prejoin-devices`
+- [x] CHANGELOG and version (ADR-007); `docs/product/telehealth.md` row `telehealth.prejoin-devices`
       becomes shipped only when QA-014 confirms
 
 ## Dependencies
@@ -114,3 +114,22 @@ Join-before-mint stays (SEC-008): the green room runs before Nest join, so it ha
 - Starting the camera before Nest join must not create a Daily room session; verify the call
   object stays unjoined until mint.
 - Background processing costs CPU on low-end laptops; default stays None.
+
+## Completion
+
+Implemented at 1.3.0 (MINOR). Not marked `completed`: the live-camera and screen-reader criteria are
+unverified.
+
+- Preview hook: `lib/hooks/use-prejoin-media.ts` (never joins, no token; released before the real join).
+  Join options: `lib/telehealth/join-choices.ts`, wired through `use-daily-media-session.ts`.
+- UI: `components/telehealth/green-room.tsx`, `green-room-parts.tsx`; replaces `waiting-room.tsx`.
+  `SelectField` gains `size="large"` (44 px). Backgrounds: `public/telehealth/backgrounds/*.webp`.
+- Tests: `green-room.test.tsx`, `use-prejoin-media.test.ts`, `join-choices.test.ts`,
+  `prejoin-*.test.ts`, `test-tone.test.ts`; Playwright `e2e/telehealth-green-room.spec.ts` at 1440, 390 and 320
+  (axe, no horizontal scroll, no request carries device or background data). Web suite 804 passed, e2e 15 passed.
+- Deviations: the visit title comes from the appointments list notes (the session response has no reason);
+  the network row always reads "Checked after you join" (a token-free pre-call test was not tried).
+- Unticked, still to do: (1) live mode with a real camera on the Render demo, including whether the preview
+  creates no Daily room session; (2) blocked and no-camera states compared against the frames on a real
+  browser; (3) recorded keyboard-only and screen-reader pass (keyboard operation is covered in the mock
+  e2e). `telehealth.prejoin-devices` stays `planned` until QA-014.

@@ -1,11 +1,12 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {TelehealthSessionShell} from '@/components/telehealth/telehealth-session-shell';
 import {ApiError, RateLimitedError} from '@/lib/api/http';
 import {TelehealthSession} from '@/types/medical/telehealth-session';
 
-const {useTelehealthSession, useJoinTelehealthSession, useEndTelehealthSession, useSessionStatus, push} =
+const {useTelehealthSession, useJoinTelehealthSession, useEndTelehealthSession, useSessionStatus, useAppointments, push} =
 	vi.hoisted(() => ({
+		useAppointments: vi.fn(),
 		useTelehealthSession: vi.fn(),
 		useJoinTelehealthSession: vi.fn(),
 		useEndTelehealthSession: vi.fn(),
@@ -21,6 +22,10 @@ vi.mock('@/lib/hooks/use-telehealth', () => ({
 	useTelehealthSession,
 	useJoinTelehealthSession,
 	useEndTelehealthSession,
+}));
+
+vi.mock('@/lib/hooks/use-medical', () => ({
+	useAppointments,
 }));
 
 vi.mock('@/lib/hooks/use-session', () => ({
@@ -56,33 +61,38 @@ describe('TelehealthSessionShell', () => {
 			session: {userRole: 'PRACTICE_ADMIN'},
 			isLoading: false,
 		});
+		useAppointments.mockReturnValue({
+			data: [{id: 'demo-appointment-002', notes: 'Blood pressure follow-up'}],
+		});
 		useJoinTelehealthSession.mockReturnValue({mutate: vi.fn(), isPending: false, isError: false});
 		useEndTelehealthSession.mockReturnValue({mutate: vi.fn(), isPending: false, isError: false});
 	});
 
-	it('shows the waiting room and appointment linkage', () => {
+	it('shows the green room and appointment linkage', () => {
 		mockVisit();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
 		expect(screen.getByRole('heading', {level: 1, name: 'Telehealth session'})).toBeInTheDocument();
-		expect(screen.getByRole('heading', {level: 2, name: 'Waiting room'})).toBeInTheDocument();
+		expect(
+			screen.getByRole('heading', {level: 2, name: 'Video visit — Blood pressure follow-up'}),
+		).toBeInTheDocument();
+		expect(screen.getAllByText(/Taylor Bennett/).length).toBeGreaterThan(0);
 		expect(screen.getByText('Taylor Bennett')).toBeInTheDocument();
 		expect(screen.getByText('Dr. Casey Walsh')).toBeInTheDocument();
 		expect(screen.getByText('demo-appointment-002')).toBeInTheDocument();
-		expect(screen.getByRole('button', {name: 'Join session'})).toBeInTheDocument();
-		expect(screen.getByRole('button', {name: 'Check camera and microphone'})).toBeInTheDocument();
-		expect(screen.queryByRole('button', {name: 'Camera'})).not.toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Join visit'})).toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'Check camera and microphone'})).not.toBeInTheDocument();
 	});
 
-	it('joins from the waiting room', async () => {
+	it('joins from the green room', async () => {
 		const mutate = vi.fn();
 		useJoinTelehealthSession.mockReturnValue({mutate, isPending: false, isError: false});
 		mockVisit();
 		const user = userEvent.setup();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
-		await user.click(screen.getByRole('button', {name: 'Join session'}));
-		expect(mutate).toHaveBeenCalledWith('session-demo-appointment-002');
+		await user.click(screen.getByRole('button', {name: 'Join visit'}));
+		await waitFor(() => expect(mutate).toHaveBeenCalledWith('session-demo-appointment-002'));
 	});
 
 	it('does not import Daily media into mock in-session chrome', () => {
@@ -154,7 +164,7 @@ describe('TelehealthSessionShell', () => {
 
 		expect(screen.getByRole('heading', {level: 2, name: 'This visit has ended'})).toBeInTheDocument();
 		expect(screen.queryByRole('heading', {name: 'Waiting room'})).not.toBeInTheDocument();
-		expect(screen.queryByRole('button', {name: 'Join session'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'Join visit'})).not.toBeInTheDocument();
 		expect(screen.getByRole('link', {name: 'Return to lobby'})).toBeInTheDocument();
 	});
 
@@ -167,7 +177,7 @@ describe('TelehealthSessionShell', () => {
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
 		expect(screen.getByRole('status')).toHaveTextContent('You do not have access to telehealth sessions.');
-		expect(screen.queryByRole('button', {name: 'Join session'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'Join visit'})).not.toBeInTheDocument();
 		expect(useTelehealthSession).toHaveBeenCalledWith('session-demo-appointment-002', false);
 	});
 
@@ -194,10 +204,10 @@ describe('TelehealthSessionShell', () => {
 
 		expect(screen.getByRole('heading', {level: 2, name: 'This visit is not available'})).toBeInTheDocument();
 		expect(screen.getByText('This telehealth session cannot be joined.')).toBeInTheDocument();
-		expect(screen.queryByRole('button', {name: 'Join session'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'Join visit'})).not.toBeInTheDocument();
 	});
 
-	it('keeps the waiting room and announces a 429', () => {
+	it('keeps the green room and announces a 429', () => {
 		useJoinTelehealthSession.mockReturnValue({
 			mutate: vi.fn(),
 			isPending: false,
@@ -207,8 +217,10 @@ describe('TelehealthSessionShell', () => {
 		mockVisit();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
-		expect(screen.getByRole('heading', {level: 2, name: 'Waiting room'})).toBeInTheDocument();
+		expect(
+			screen.getByRole('heading', {level: 2, name: 'Video visit — Blood pressure follow-up'}),
+		).toBeInTheDocument();
 		expect(screen.getByRole('alert')).toHaveTextContent('Too many attempts. Try again in 30 seconds.');
-		expect(screen.getByRole('button', {name: 'Join session'})).toBeInTheDocument();
+		expect(screen.getByRole('button', {name: 'Join visit'})).toBeInTheDocument();
 	});
 });

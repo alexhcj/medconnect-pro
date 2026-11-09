@@ -22,7 +22,7 @@ capabilities:
   - id: telehealth.waiting-room
     name: Waiting room
     status: shipped
-    demo: pre-join waiting room with optional camera/mic check; after Nest join, presence wait until a remote Daily participant (or labeled unavailable)
+    demo: pre-join screen with a camera and microphone check (the FE-062 green room replaces it at 1.3.0); after Nest join, presence wait until a remote Daily participant (or labeled unavailable)
     public: qualified
     related_tasks: [FE-007, FE-014, FE-030, FE-035]
   - id: telehealth.live-media
@@ -83,7 +83,7 @@ or recording.
 | ID | Name | Status | Demo | Public |
 | --- | --- | --- | --- | --- |
 | `telehealth.start-session` | Start a virtual visit from an appointment | shipped | create / join / leave / end shell | qualified |
-| `telehealth.waiting-room` | Waiting room | shipped | pre-join device check plus presence wait | qualified |
+| `telehealth.waiting-room` | Waiting room | shipped | pre-join screen with device check (green room, see `telehealth.prejoin-devices`) plus presence wait | qualified |
 | `telehealth.live-media` | Live video, camera, and screen sharing | shipped | Daily call object when configured; leave vs end | qualified |
 | `telehealth.participant-entry` | Second participant enters an open visit | shipped | lookup, then the existing waiting-room join | qualified |
 | `telehealth.chat-recording` | In-session chat, recording, and transcription | planned | not in the demo | no |

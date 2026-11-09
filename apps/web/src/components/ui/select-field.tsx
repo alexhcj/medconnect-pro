@@ -27,8 +27,11 @@ export interface SelectFieldProps {
 	status?: string | null;
 	disabled?: boolean;
 	required?: boolean;
-	/** `compact` is the narrower table-row select; the height is the shared 40 px either way. */
-	size?: 'default' | 'compact';
+	/**
+	 * `compact` is the narrower table-row select; the height is the shared 40 px either way.
+	 * `large` is a 44 px trigger for touch-first screens such as the telehealth green room (FE-062).
+	 */
+	size?: 'default' | 'compact' | 'large';
 	/** Hide the visible label from sighted users on some widths, for example `md:sr-only`. */
 	labelClassName?: string;
 	id?: string;
@@ -94,12 +97,13 @@ export function SelectField({
 					aria-invalid={error ? true : undefined}
 					aria-busy={ariaBusy}
 					className={cn(
-						'group flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-surface px-3 text-left text-sm text-foreground',
+						'group flex w-full items-center justify-between gap-2 rounded-md border border-input bg-surface px-3 text-left text-sm text-foreground',
 						'hover:border-input-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
 						'data-open:ring-2 data-open:ring-ring',
 						'disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-foreground-muted',
 						error && 'border-danger focus-visible:ring-ring-danger data-open:ring-ring-danger',
-						size === 'compact' && 'font-medium',
+						size === 'large' ? 'h-11' : 'h-10',
+							size === 'compact' && 'font-medium',
 					)}
 				>
 					{/* Real text, not an input placeholder, so it needs 4.5:1: muted, not the placeholder grey (axe). */}

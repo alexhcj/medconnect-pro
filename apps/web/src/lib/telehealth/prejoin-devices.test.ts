@@ -1,8 +1,10 @@
-import {afterEach, describe, expect, it, vi} from 'vitest';
+import {describe, expect, it} from 'vitest';
 import {
-	checkPrejoinDevices,
 	classifyGetUserMediaError,
-	PREJOIN_DEVICE_COPY,
+	phaseFromDailyCameraError,
+	phaseFromMediaError,
+	PREJOIN_READINESS_COPY,
+	primaryJoinAction,
 } from '@/lib/telehealth/prejoin-devices';
 
 describe('classifyGetUserMediaError', () => {
@@ -14,43 +16,37 @@ describe('classifyGetUserMediaError', () => {
 	});
 });
 
-describe('checkPrejoinDevices', () => {
-	afterEach(() => {
-		vi.unstubAllGlobals();
+describe('green room phases', () => {
+	it('maps media errors to blocked or no camera', () => {
+		expect(phaseFromMediaError({name: 'NotAllowedError'})).toBe('blocked');
+		expect(phaseFromMediaError({name: 'NotReadableError'})).toBe('blocked');
+		expect(phaseFromMediaError({name: 'NotFoundError'})).toBe('no_camera');
+		expect(phaseFromMediaError({name: 'OverconstrainedError'})).toBe('no_camera');
+		expect(phaseFromMediaError(undefined)).toBe('blocked');
 	});
 
-	it('returns ready when getUserMedia is unavailable', async () => {
-		vi.stubGlobal('navigator', {mediaDevices: undefined});
-		await expect(checkPrejoinDevices()).resolves.toBe('ready');
+	it('maps Daily camera errors', () => {
+		expect(phaseFromDailyCameraError('permissions')).toBe('blocked');
+		expect(phaseFromDailyCameraError('cam-in-use')).toBe('blocked');
+		expect(phaseFromDailyCameraError('not-found', ['video'])).toBe('no_camera');
+		expect(phaseFromDailyCameraError('not-found', ['audio'])).toBe('blocked');
+		expect(phaseFromDailyCameraError('constraints')).toBe('no_camera');
+		expect(phaseFromDailyCameraError(undefined)).toBe('blocked');
 	});
 
-	it('stops tracks after a successful check', async () => {
-		const stop = vi.fn();
-		vi.stubGlobal('navigator', {
-			mediaDevices: {
-				getUserMedia: vi.fn().mockResolvedValue({
-					getTracks: () => [{stop}, {stop}],
-				}),
-			},
+	it('picks the join action from the phase', () => {
+		expect(primaryJoinAction('ready')).toEqual({label: 'Join visit', audioOnly: false, disabled: false});
+		expect(primaryJoinAction('checking')).toEqual({label: 'Join visit', audioOnly: false, disabled: true});
+		expect(primaryJoinAction('blocked')).toEqual({label: 'Join with audio only', audioOnly: true, disabled: false});
+		expect(primaryJoinAction('no_camera')).toEqual({label: 'Join with audio only', audioOnly: true, disabled: false});
+	});
+
+	it('has readiness text for every phase', () => {
+		expect(PREJOIN_READINESS_COPY).toEqual({
+			checking: 'Checking…',
+			ready: 'Ready to join',
+			blocked: 'Camera blocked',
+			no_camera: 'No camera',
 		});
-
-		await expect(checkPrejoinDevices()).resolves.toBe('ready');
-		expect(stop).toHaveBeenCalledTimes(2);
-	});
-
-	it('returns permission_denied when the browser denies access', async () => {
-		vi.stubGlobal('navigator', {
-			mediaDevices: {
-				getUserMedia: vi.fn().mockRejectedValue({name: 'NotAllowedError'}),
-			},
-		});
-		await expect(checkPrejoinDevices()).resolves.toBe('permission_denied');
-	});
-});
-
-describe('PREJOIN_DEVICE_COPY', () => {
-	it('lets the visitor join after a denied or missing device', () => {
-		expect(PREJOIN_DEVICE_COPY.permission_denied).toContain('still join');
-		expect(PREJOIN_DEVICE_COPY.no_device).toContain('still join');
 	});
 });

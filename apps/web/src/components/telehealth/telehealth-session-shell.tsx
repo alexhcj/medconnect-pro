@@ -7,9 +7,13 @@ import {useRouter} from 'next/navigation';
 import {Button} from '@/components/ui/button';
 import {DailyMediaSession} from '@/components/telehealth/daily-media-session';
 import {MediaPlaceholders} from '@/components/telehealth/media-placeholders';
-import {TELEHEALTH_DEMO_NOTICE, TelehealthAppointmentLinkage} from '@/components/telehealth/telehealth-appointment-linkage';
+import {
+	formatTelehealthRange,
+	TELEHEALTH_DEMO_NOTICE,
+	TelehealthAppointmentLinkage,
+} from '@/components/telehealth/telehealth-appointment-linkage';
 import {VisitUnavailable} from '@/components/telehealth/visit-unavailable';
-import {WaitingRoom} from '@/components/telehealth/waiting-room';
+import {GreenRoom} from '@/components/telehealth/green-room';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {ApiError} from '@/lib/api/http';
 import {canAccessTelehealth, canEndTelehealthVisit} from '@/lib/auth/telehealth-access';
@@ -18,7 +22,11 @@ import {
 	useJoinTelehealthSession,
 	useTelehealthSession,
 } from '@/lib/hooks/use-telehealth';
+import {useAppointments} from '@/lib/hooks/use-medical';
 import {useSessionStatus} from '@/lib/hooks/use-session';
+import type {JoinChoices} from '@/lib/telehealth/join-choices';
+import {mediaTileInitials, localParticipantDisplayName} from '@/lib/telehealth/media-participant';
+import type {TelehealthSession} from '@/types/medical/telehealth-session';
 import {telehealthActionErrorMessage} from '@/lib/telehealth/action-error';
 
 function SessionChrome({children}: {children: ReactNode}) {
@@ -33,6 +41,10 @@ function SessionChrome({children}: {children: ReactNode}) {
 			<div className="mt-4">{children}</div>
 		</div>
 	);
+}
+
+function greenRoomInitials(role: Parameters<typeof localParticipantDisplayName>[1], session: TelehealthSession): string {
+	return mediaTileInitials(localParticipantDisplayName(session, role));
 }
 
 function isClosedVisitError(error: unknown): boolean {
@@ -52,6 +64,11 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 	const endVisit = useEndTelehealthSession();
 	const mockMode = isMockMode();
 	const [leftMockMedia, setLeftMockMedia] = useState(false);
+	const [joinChoices, setJoinChoices] = useState<JoinChoices | undefined>();
+	// The visit title is the appointment reason (notes), never the diagnosis list (SEC-013 scope 6).
+	const appointments = useAppointments(canAccess);
+	const reason = appointments.data?.find((appointment) => appointment.id === visit.data?.appointmentId)?.notes?.trim();
+	const visitTitle = reason ? `Video visit — ${reason}` : 'Video visit';
 
 	if (isAuthLoading) {
 		return (
@@ -134,8 +151,14 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 					)}
 
 					{!closed && visit.data.state === 'waiting' && (
-						<WaitingRoom
-							onJoin={() => join.mutate(sessionId)}
+						<GreenRoom
+							visitTitle={visitTitle}
+							scheduleText={`${formatTelehealthRange(visit.data.start, visit.data.end)} · ${visit.data.providerName} with ${visit.data.patientName}`}
+							initials={greenRoomInitials(authSession?.userRole, visit.data)}
+							onJoin={(choices) => {
+								setJoinChoices(choices);
+								join.mutate(sessionId);
+							}}
 							isJoining={join.isPending}
 							errorMessage={
 								join.isError
@@ -199,6 +222,7 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 							session={visit.data}
 							userRole={authSession?.userRole}
 							canEnd={canEnd}
+							joinChoices={joinChoices}
 							isEnding={endVisit.isPending}
 							endError={
 								endVisit.isError

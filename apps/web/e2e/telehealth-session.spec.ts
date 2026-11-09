@@ -32,11 +32,11 @@ test.describe('Telehealth session shell', () => {
 			.click();
 		await expect(page).toHaveURL(/\/dashboard\/telehealth\/session-demo-appointment-002$/);
 		await expect(page.getByRole('heading', {level: 1, name: 'Telehealth session'})).toBeVisible();
-		await expect(page.getByRole('heading', {level: 2, name: 'Waiting room'})).toBeVisible();
-		await expect(page.getByText('Taylor Bennett')).toBeVisible();
-		await expect(page.getByText('Dr. Casey Walsh')).toBeVisible();
+		await expect(page.getByRole('heading', {level: 2, name: /^Video visit/})).toBeVisible();
+		await expect(page.getByText('Taylor Bennett', {exact: true})).toBeVisible();
+		await expect(page.getByText('Dr. Casey Walsh', {exact: true})).toBeVisible();
 
-		await page.getByRole('button', {name: 'Join session'}).click();
+		await page.getByRole('button', {name: 'Join visit'}).click();
 		await expect(page.getByText('Demo placeholder. Not a live video connection.')).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Camera'})).toBeVisible();
 		await expect(page.getByRole('button', {name: 'Microphone'})).toBeVisible();

@@ -4,6 +4,7 @@ import {useEffect, useRef, useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {MediaConnectionStatus, MEDIA_CONNECTION_COPY} from '@/components/telehealth/media-connection-status';
 import {useDailyMediaSession} from '@/lib/hooks/use-daily-media-session';
+import type {JoinChoices} from '@/lib/telehealth/join-choices';
 import {DAILY_MEDIA_FAILURE_COPY} from '@/lib/telehealth/media-failure';
 import {
 	localParticipantDisplayName,
@@ -127,7 +128,9 @@ export function DailyMediaSession({
 	isEnding,
 	endError,
 	canEnd = true,
+	joinChoices,
 }: {
+	joinChoices?: JoinChoices;
 	sessionId: string;
 	session: TelehealthSession;
 	userRole: Role | undefined;
@@ -137,7 +140,7 @@ export function DailyMediaSession({
 	endError?: string;
 	canEnd?: boolean;
 }) {
-	const media = useDailyMediaSession({sessionId, enabled: true});
+	const media = useDailyMediaSession({sessionId, enabled: true, joinChoices});
 	const [leftMedia, setLeftMedia] = useState(false);
 	const localName = localParticipantDisplayName(session, userRole);
 	const remoteFallback = remoteParticipantFallbackName(session, userRole);
