@@ -178,4 +178,4 @@ Shipped and closed at 0.96.3; QA-009 (live paging specs) shipped. Does not reope
   [FE-062](../tasks/frontend/FE-062-telehealth-pre-join-green-room.md),
   [FE-063](../tasks/frontend/FE-063-call-stage-and-controls.md),
   [FE-064](../tasks/frontend/FE-064-call-states-keepalive-and-wrap-up.md),
-  [FE-065](../tasks/frontend/FE-065-demo-persona-camera.md). FE-062 is implemented at 1.3.0 (live camera check pending); FE-063 to FE-065 are pending. M23 (admission, lock/remove, chat, side panel) follows.
+  [FE-065](../tasks/frontend/FE-065-demo-persona-camera.md). FE-062 is implemented at 1.3.0 (live camera check pending); FE-063 is implemented at 1.4.0 (live two-browser check pending); FE-064 and FE-065 are pending. M23 (admission, lock/remove, chat, side panel) follows.

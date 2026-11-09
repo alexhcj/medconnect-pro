@@ -11,6 +11,12 @@ Postgres database. The only paid item in use today is two custom domains above t
 **Cost policy:** keep the demo on free resources where possible. Pay for something only when it
 is a crucial improvement, and record the item, its cost and the reason in this runbook.
 
+**Noise reduction (FE-063, 2026-11-10):** the call stage does not ship a noise-reduction toggle.
+Daily's noise cancellation (Krisp) was last announced with 100,000 free minutes per month and about
+$0.0002 per minute above that (2023, [Daily blog](https://www.daily.co/blog/daily-partners-with-krisp-to-provide-world-class-noise-cancellation-capabilities/)).
+Current terms for this plan are not confirmed, so the toggle stays off under the cost policy. Add it
+once the account's current pricing shows no extra cost.
+
 Catalog: [environment-configuration.md](../contracts/environment-configuration.md).
 Placeholders: `apps/api/.env.render.example`, `apps/web/.env.render.example`, and
 `apps/marketing/.env.render.example`.

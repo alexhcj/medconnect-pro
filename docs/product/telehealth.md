@@ -53,8 +53,8 @@ capabilities:
     related_tasks: [SEC-013, FE-062]
   - id: telehealth.call-controls
     name: Full-screen call stage and controls
-    status: planned
-    demo: not in the demo yet (M22)
+    status: partial
+    demo: full-screen dark stage with server-named tiles, active speaker, network indicator, devices, background effects, read-only participants and host-only End visit (1.4.0); call states, expiry notice and wrap-up follow in FE-064
     public: no
     related_tasks: [SEC-013, BE-027, FE-063]
   - id: telehealth.in-visit-keepalive
@@ -88,6 +88,6 @@ or recording.
 | `telehealth.participant-entry` | Second participant enters an open visit | shipped | lookup, then the existing waiting-room join | qualified |
 | `telehealth.chat-recording` | In-session chat, recording, and transcription | planned | not in the demo | no |
 | `telehealth.prejoin-devices` | Pre-join green room | planned | not in the demo yet (M22) | no |
-| `telehealth.call-controls` | Full-screen call stage and controls | planned | not in the demo yet (M22) | no |
+| `telehealth.call-controls` | Full-screen call stage and controls | partial | full-screen stage and controls (1.4.0); call states and wrap-up still to come (M22) | no |
 | `telehealth.in-visit-keepalive` | Stay signed in during a live visit | planned | not in the demo yet (M22) | no |
 | `telehealth.demo-persona` | Demo persona camera | planned | not in the demo yet (M22); demo builds only | no |

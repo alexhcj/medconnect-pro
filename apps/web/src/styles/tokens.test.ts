@@ -67,6 +67,23 @@ describe('design tokens', () => {
 		expect(token('color-focus-brand')).not.toBe(token('color-border-input'));
 	});
 
+	it('maps the Figma color/stage/* variables and keeps stage text and outlines readable (FE-063)', () => {
+		expect(token('color-stage-bg')).toBe('#111827');
+		expect(token('color-stage-surface')).toBe('#1f2937');
+		expect(token('color-stage-surface-raised')).toBe('#374151');
+		expect(token('color-stage-border')).toBe('#374151');
+		expect(token('color-stage-border-strong')).toBe('#6b7280');
+		expect(token('color-stage-text')).toBe('#ffffff');
+		expect(token('color-stage-text-muted')).toBe('#d1d5db');
+
+		const grounds = [token('color-stage-bg'), token('color-stage-surface')];
+		for (const ground of grounds) {
+			expect(contrast(token('color-stage-text'), ground)).toBeGreaterThanOrEqual(4.5);
+			expect(contrast(token('color-stage-text-muted'), ground)).toBeGreaterThanOrEqual(4.5);
+			expect(contrast(token('color-stage-border-strong'), ground)).toBeGreaterThanOrEqual(3);
+		}
+	});
+
 	it('maps radius, type, and space to the Figma 4px grid', () => {
 		expect(tokensCss).toContain('--radius-md: 6px');
 		expect(tokensCss).toContain('--radius-lg: 8px');

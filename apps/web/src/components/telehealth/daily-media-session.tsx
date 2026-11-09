@@ -1,163 +1,63 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
+import {useState} from 'react';
 import {Button} from '@/components/ui/button';
-import {MediaConnectionStatus, MEDIA_CONNECTION_COPY} from '@/components/telehealth/media-connection-status';
+import {CallStage, type StageStatus} from '@/components/telehealth/call-stage/call-stage';
+import {CallStagePortal} from '@/components/telehealth/call-stage/call-stage-portal';
+import {MEDIA_CONNECTION_COPY} from '@/components/telehealth/media-connection-status';
 import {useDailyMediaSession} from '@/lib/hooks/use-daily-media-session';
 import type {JoinChoices} from '@/lib/telehealth/join-choices';
 import {DAILY_MEDIA_FAILURE_COPY} from '@/lib/telehealth/media-failure';
-import {
-	localParticipantDisplayName,
-	mediaTileInitials,
-	remoteParticipantFallbackName,
-} from '@/lib/telehealth/media-participant';
-import {cn} from '@/lib/utils/utils';
-import type {Role} from '@/types/auth/roles';
 import type {TelehealthSession} from '@/types/medical/telehealth-session';
 
-function MediaTile({
-	nameplate,
-	track,
-	placeholder,
-	active,
-	muted,
-}: {
-	nameplate: string;
-	track: MediaStreamTrack | null;
-	placeholder: string;
-	active: boolean;
-	muted?: boolean;
-}) {
-	const videoRef = useRef<HTMLVideoElement>(null);
+type MediaSnapshot = Pick<ReturnType<typeof useDailyMediaSession>, 'connectionState' | 'failureKind' | 'retry'>;
 
-	useEffect(() => {
-		const element = videoRef.current;
-		if (!element) {
-			return;
-		}
-		if (track) {
-			element.srcObject = new MediaStream([track]);
-			void element.play().catch(() => undefined);
-			return () => {
-				element.srcObject = null;
+function stageStatus(media: MediaSnapshot): StageStatus | undefined {
+	switch (media.connectionState) {
+		case 'joining':
+			return {kind: 'info', text: MEDIA_CONNECTION_COPY.joining};
+		case 'waiting_for_participant':
+			return {kind: 'info', text: MEDIA_CONNECTION_COPY.waiting_for_participant};
+		case 'reconnecting':
+			return {kind: 'info', text: MEDIA_CONNECTION_COPY.reconnecting};
+		case 'not_configured':
+			return {kind: 'error', text: MEDIA_CONNECTION_COPY.not_configured};
+		case 'failed':
+			return {
+				kind: 'error',
+				text: DAILY_MEDIA_FAILURE_COPY[media.failureKind === 'none' ? 'generic' : media.failureKind],
+				onRetry: media.retry,
 			};
-		}
-		element.srcObject = null;
-		return undefined;
-	}, [track]);
-
-	return (
-		<div
-			className={cn(
-				'relative flex min-h-40 flex-col justify-between overflow-hidden rounded-lg border p-3',
-				active ? 'border-brand bg-brand-subtle' : 'border-gray-200 bg-gray-100',
-			)}
-		>
-			{track ? (
-				<video
-					ref={videoRef}
-					className="absolute inset-0 h-full w-full object-cover"
-					autoPlay
-					playsInline
-					muted={muted}
-				/>
-			) : (
-				<p className="text-center text-sm font-medium text-brand">{placeholder}</p>
-			)}
-			<div className="relative z-10 mt-auto inline-flex w-fit items-center gap-2 rounded bg-surface px-2 py-1">
-				<span className="inline-block size-2 rounded-full bg-success" aria-hidden />
-				<span className="text-xs text-foreground">{nameplate}</span>
-			</div>
-		</div>
-	);
-}
-
-function helperText(options: {
-	connectionState: ReturnType<typeof useDailyMediaSession>['connectionState'];
-	cameraOn: boolean;
-	microphoneOn: boolean;
-}): string {
-	if (options.connectionState === 'joining') {
-		return 'Connecting camera and microphone…';
+		default:
+			return undefined;
 	}
-	if (options.connectionState === 'not_configured') {
-		return 'This demo environment does not have live Daily media configured.';
-	}
-	if (options.connectionState === 'failed') {
-		return 'Check your connection and try again. You can still end the session.';
-	}
-	if (!options.cameraOn && !options.microphoneOn) {
-		return 'Microphone is off. Camera is off.';
-	}
-	return `Microphone is ${options.microphoneOn ? 'on' : 'off'}.`;
-}
-
-function tilePlaceholder(options: {
-	connectionState: ReturnType<typeof useDailyMediaSession>['connectionState'];
-	cameraOffInitials?: string;
-	waiting?: boolean;
-	screenShare?: boolean;
-}): string {
-	if (options.connectionState === 'joining' || options.connectionState === 'reconnecting') {
-		return options.connectionState === 'joining' ? 'Connecting…' : 'Reconnecting…';
-	}
-	if (options.connectionState === 'not_configured') {
-		return 'Live media unavailable';
-	}
-	if (options.connectionState === 'failed') {
-		return 'Unable to connect';
-	}
-	if (options.screenShare) {
-		return 'Screen share';
-	}
-	if (options.waiting) {
-		return MEDIA_CONNECTION_COPY.waiting_for_participant;
-	}
-	if (options.cameraOffInitials) {
-		return options.cameraOffInitials;
-	}
-	return 'Live video';
 }
 
 export function DailyMediaSession({
 	sessionId,
 	session,
-	userRole,
+	visitTitle,
 	onEnd,
 	onLeave,
 	isEnding,
 	endError,
-	canEnd = true,
+	canEnd,
 	joinChoices,
 }: {
 	joinChoices?: JoinChoices;
 	sessionId: string;
 	session: TelehealthSession;
-	userRole: Role | undefined;
+	visitTitle: string;
 	onEnd: () => void;
 	onLeave?: () => void;
 	isEnding: boolean;
 	endError?: string;
-	canEnd?: boolean;
+	/** `viewerCanEnd` from Nest. Never derived from the role here. */
+	canEnd: boolean;
 }) {
-	const media = useDailyMediaSession({sessionId, enabled: true, joinChoices});
+	const media = useDailyMediaSession({sessionId, enabled: true, joinChoices, roster: session.participants});
 	const [leftMedia, setLeftMedia] = useState(false);
-	const localName = localParticipantDisplayName(session, userRole);
-	const remoteFallback = remoteParticipantFallbackName(session, userRole);
-	const remoteName =
-		media.connectionState === 'connected' || media.connectionState === 'reconnecting'
-			? media.remoteParticipantName || remoteFallback
-			: 'Participant';
-	const showingScreenShare = Boolean(media.screenShareTrack);
-	const localPlaceholder = tilePlaceholder({
-		connectionState: media.connectionState,
-		cameraOffInitials: media.cameraOn ? undefined : mediaTileInitials(localName),
-	});
-	const remotePlaceholder = tilePlaceholder({
-		connectionState: media.connectionState,
-		waiting: media.connectionState === 'waiting_for_participant',
-		screenShare: showingScreenShare,
-	});
+	const status = stageStatus(media);
 
 	if (leftMedia) {
 		return (
@@ -183,7 +83,7 @@ export function DailyMediaSession({
 				)}
 				{canEnd && (
 					<Button type="button" variant="destructive" isLoading={isEnding} onClick={onEnd}>
-						End session
+						End visit
 					</Button>
 				)}
 			</div>
@@ -191,98 +91,40 @@ export function DailyMediaSession({
 	}
 
 	return (
-		<div className="space-y-4">
-			<MediaConnectionStatus state={media.connectionState} />
-			<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-				<MediaTile
-					nameplate="You"
-					track={media.cameraOn ? media.localVideoTrack : null}
-					placeholder={localPlaceholder}
-					active={media.cameraOn && media.connectionState !== 'not_configured' && media.connectionState !== 'failed'}
-					muted
-				/>
-				<MediaTile
-					nameplate={showingScreenShare ? 'Shared screen' : remoteName}
-					track={showingScreenShare ? media.screenShareTrack : media.remoteVideoTrack}
-					placeholder={remotePlaceholder}
-					active={
-						(showingScreenShare || Boolean(media.remoteVideoTrack)) &&
-						media.connectionState !== 'not_configured' &&
-						media.connectionState !== 'failed'
-					}
-				/>
-			</div>
-			<div className="flex flex-wrap gap-2" role="group" aria-label="Media controls">
-				<Button
-					type="button"
-					variant={media.cameraOn ? 'default' : 'outline'}
-					aria-pressed={media.cameraOn}
-					disabled={!media.controlsEnabled}
-					onClick={media.toggleCamera}
-				>
-					Camera
-				</Button>
-				<Button
-					type="button"
-					variant={media.microphoneOn ? 'default' : 'outline'}
-					aria-pressed={media.microphoneOn}
-					disabled={!media.controlsEnabled}
-					onClick={media.toggleMicrophone}
-				>
-					Microphone
-				</Button>
-				<Button
-					type="button"
-					variant={media.screenShareOn ? 'default' : 'outline'}
-					aria-pressed={media.screenShareOn}
-					disabled={!media.controlsEnabled}
-					onClick={media.toggleScreenShare}
-				>
-					Screen share
-				</Button>
-			</div>
-			<p className="text-sm text-gray-600">{helperText(media)}</p>
-			{media.connectionState === 'failed' && (
-				<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
-					<p className="text-sm text-gray-700">
-						{DAILY_MEDIA_FAILURE_COPY[media.failureKind === 'none' ? 'generic' : media.failureKind]}
-					</p>
-					<Button type="button" className="mt-3" variant="outline" onClick={media.retry}>
-						Retry
-					</Button>
-				</div>
-			)}
-			{endError && (
-				<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
-					<p className="text-sm text-gray-700">{endError}</p>
-				</div>
-			)}
-			<div className="flex flex-wrap gap-2">
-				<Button
-					type="button"
-					variant="outline"
-					onClick={() => {
-						void media.leaveAndDestroy().then(() => {
-							setLeftMedia(true);
-							onLeave?.();
-						});
-					}}
-				>
-					Leave call
-				</Button>
-				{canEnd && (
-					<Button
-						type="button"
-						variant="destructive"
-						isLoading={isEnding}
-						onClick={() => {
-							void media.leaveAndDestroy().finally(onEnd);
-						}}
-					>
-						End session
-					</Button>
-				)}
-			</div>
-		</div>
+		<CallStagePortal>
+			<CallStage
+				visitTitle={visitTitle}
+				joinedAt={session.joinedAt}
+				status={status}
+				tiles={media.tiles}
+				screenShare={media.screenShare}
+				microphoneOn={media.microphoneOn}
+				cameraOn={media.cameraOn}
+				screenShareOn={media.screenShareOn}
+				controlsEnabled={media.controlsEnabled}
+				canShareScreen={media.canShareScreen}
+				networkLevel={media.networkLevel}
+				devices={media.devices}
+				background={media.background}
+				onToggleMicrophone={media.toggleMicrophone}
+				onToggleCamera={media.toggleCamera}
+				onToggleScreenShare={media.toggleScreenShare}
+				onChooseDevice={(kind, id) => void media.chooseDevice(kind, id)}
+				onSetBackground={(choice) => void media.setBackground(choice)}
+				onFlipCamera={() => void media.flipCamera()}
+				onLeave={() => {
+					void media.leaveAndDestroy().then(() => {
+						setLeftMedia(true);
+						onLeave?.();
+					});
+				}}
+				canEnd={canEnd}
+				isEnding={isEnding}
+				endError={endError}
+				onEnd={() => {
+					void media.leaveAndDestroy().finally(onEnd);
+				}}
+			/>
+		</CallStagePortal>
 	);
 }

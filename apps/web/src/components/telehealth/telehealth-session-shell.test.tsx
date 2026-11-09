@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from '@testing-library/react';
+import {render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {TelehealthSessionShell} from '@/components/telehealth/telehealth-session-shell';
 import {ApiError, RateLimitedError} from '@/lib/api/http';
@@ -41,6 +41,8 @@ const waitingSession: TelehealthSession = {
 	end: '2026-10-16T16:30:00.000Z',
 	type: 'telehealth',
 	state: 'waiting',
+	participants: [],
+	viewerCanEnd: false,
 	synthetic: true,
 };
 
@@ -125,7 +127,7 @@ describe('TelehealthSessionShell', () => {
 	it('shows media placeholders and ends an in-session visit', async () => {
 		const mutate = vi.fn();
 		useEndTelehealthSession.mockReturnValue({mutate, isPending: false, isError: false});
-		mockVisit({data: {...waitingSession, state: 'in_session'}});
+		mockVisit({data: {...waitingSession, state: 'in_session', viewerCanEnd: true}});
 		const user = userEvent.setup();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
@@ -134,10 +136,13 @@ describe('TelehealthSessionShell', () => {
 		expect(screen.getByRole('button', {name: 'Camera'})).toHaveAttribute('aria-pressed', 'true');
 		await user.click(screen.getByRole('button', {name: 'Microphone'}));
 		expect(screen.getByRole('button', {name: 'Microphone'})).toHaveAttribute('aria-pressed', 'true');
-		await user.click(screen.getByRole('button', {name: 'Screen share'}));
-		expect(screen.getByRole('button', {name: 'Screen share'})).toHaveAttribute('aria-pressed', 'true');
+		await user.click(screen.getByRole('button', {name: 'Share screen'}));
+		expect(screen.getByRole('button', {name: 'Share screen'})).toHaveAttribute('aria-pressed', 'true');
 
-		await user.click(screen.getByRole('button', {name: 'End session'}));
+		await user.click(screen.getByRole('button', {name: 'End visit'}));
+		expect(mutate).not.toHaveBeenCalled();
+		const dialog = await screen.findByRole('dialog', {name: 'End this visit for everyone?'});
+		await user.click(within(dialog).getByRole('button', {name: 'End visit'}));
 		expect(mutate).toHaveBeenCalledWith(
 			'session-demo-appointment-002',
 			expect.objectContaining({onSuccess: expect.any(Function)}),
@@ -146,16 +151,16 @@ describe('TelehealthSessionShell', () => {
 		expect(push).toHaveBeenCalledWith('/dashboard/telehealth');
 	});
 
-	it('hides End session for a patient', () => {
+	it('hides End visit when the server says the viewer cannot end, whatever the role', () => {
 		useSessionStatus.mockReturnValue({
-			session: {userRole: 'PATIENT'},
+			session: {userRole: 'PRACTICE_ADMIN'},
 			isLoading: false,
 		});
-		mockVisit({data: {...waitingSession, state: 'in_session'}});
+		mockVisit({data: {...waitingSession, state: 'in_session', viewerCanEnd: false}});
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
 		expect(screen.getByRole('button', {name: 'Leave call'})).toBeInTheDocument();
-		expect(screen.queryByRole('button', {name: 'End session'})).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'End visit'})).not.toBeInTheDocument();
 	});
 
 	it('shows a terminal ended state instead of the waiting room', () => {

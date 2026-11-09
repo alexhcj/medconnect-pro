@@ -67,6 +67,9 @@ export function sessionFromAppointment(
 		end: appointment.end,
 		type: appointment.type,
 		state,
+		// The listing and mock sessions have no server roster; Nest supplies it on the real session.
+		participants: [],
+		viewerCanEnd: false,
 		synthetic: true,
 	};
 }

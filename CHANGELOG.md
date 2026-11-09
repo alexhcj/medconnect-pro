@@ -6,6 +6,41 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.4.0] - 2026-11-10
+
+M22 Telehealth 2.0: Visit experience, FE-063 full-screen call stage and controls.
+
+### Added
+
+- Full-screen dark call stage for one to three participants plus screen share, opened from the same
+  `/dashboard/telehealth/[sessionId]` URL (rendered through a portal; the dashboard behind it is inert).
+  Header with visit title, Live status, elapsed timer, network quality (bars and a Good / Fair / Poor label)
+  and the demo-data badge; picture-in-picture self view; active-speaker border and icon; per-tile mic and
+  camera state with initials when the camera is off.
+- Control bar: Microphone, Camera, Share screen, Background, Devices, Participants, Leave call, and End visit.
+  Labels never change; `aria-pressed` carries the state. Alt/Option+M and Alt/Option+V toggle the microphone
+  and camera (no single-character shortcuts); tooltips show them and open on keyboard focus.
+- At 390 px and below: Microphone, Camera, Flip camera, More and Leave call; the More sheet holds Devices,
+  Participants, Background and End visit. Share screen is hidden where the browser cannot share.
+- Devices modal (Video, Audio, Background tabs) that applies changes to the live call right away, and a
+  read-only participants panel (name, role tag, mic and camera state, weak network).
+- End visit confirmation dialog ("End this visit for everyone?"); focus starts on "Keep visit open".
+- `--color-stage-*` tokens from the Figma `color/stage/*` variables.
+- Session `participants`, `viewerCanEnd`, `mediaExpiresAt` and `joinedAt` are read from Nest.
+
+### Changed
+
+- Tile names and role tags come from the Nest roster matched by the Daily `user_id`; a renamed Daily
+  `user_name` no longer changes a tile.
+- End visit is shown from the server's `viewerCanEnd` instead of a client role list; the button reads
+  "End visit" (was "End session") and asks first. Leave call is unchanged.
+- Mock mode shows the same stage with a three-way mock roster instead of placeholder tiles.
+- Noise reduction is not shipped: Daily's current pricing for it is unconfirmed (see `docs/workflows/deploy-render.md`).
+
+### Removed
+
+- `canEndTelehealthVisit` and the client-side End visit role list; the mock-only `MediaPlaceholders` view.
+
 ## [1.3.1] - 2026-11-09
 
 M22 Telehealth 2.0: Visit experience, FE-062 fixes from the first live test.

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {Button} from '@/components/ui/button';
 import {DailyMediaSession} from '@/components/telehealth/daily-media-session';
-import {MediaPlaceholders} from '@/components/telehealth/media-placeholders';
+import {MockCallStage} from '@/components/telehealth/mock-call-stage';
 import {
 	formatTelehealthRange,
 	TELEHEALTH_DEMO_NOTICE,
@@ -16,7 +16,7 @@ import {VisitUnavailable} from '@/components/telehealth/visit-unavailable';
 import {GreenRoom} from '@/components/telehealth/green-room';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {ApiError} from '@/lib/api/http';
-import {canAccessTelehealth, canEndTelehealthVisit} from '@/lib/auth/telehealth-access';
+import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
 import {
 	useEndTelehealthSession,
 	useJoinTelehealthSession,
@@ -58,17 +58,26 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 	const router = useRouter();
 	const {session: authSession, isLoading: isAuthLoading} = useSessionStatus();
 	const canAccess = !isAuthLoading && canAccessTelehealth(authSession?.userRole);
-	const canEnd = canEndTelehealthVisit(authSession?.userRole);
 	const visit = useTelehealthSession(sessionId, canAccess);
+	// Server host rule (BE-027). A UX hint only; Nest enforces it on POST .../end.
+	const canEnd = visit.data?.viewerCanEnd === true;
 	const join = useJoinTelehealthSession();
 	const endVisit = useEndTelehealthSession();
 	const mockMode = isMockMode();
-	const [leftMockMedia, setLeftMockMedia] = useState(false);
 	const [joinChoices, setJoinChoices] = useState<JoinChoices | undefined>();
 	// The visit title is the appointment reason (notes), never the diagnosis list (SEC-013 scope 6).
 	const appointments = useAppointments(canAccess);
 	const reason = appointments.data?.find((appointment) => appointment.id === visit.data?.appointmentId)?.notes?.trim();
 	const visitTitle = reason ? `Video visit — ${reason}` : 'Video visit';
+	// The stage header already says "Video visit" above the title.
+	const stageTitle = reason ? `${reason} · ${visit.data?.patientName ?? ''}`.replace(/ · $/, '') : 'Consultation';
+	const endMutation = () =>
+		endVisit.mutate(sessionId, {
+			onSuccess: () => router.push('/dashboard/telehealth'),
+		});
+	const endErrorText = endVisit.isError
+		? telehealthActionErrorMessage(endVisit.error, 'Unable to end this session.')
+		: undefined;
 
 	if (isAuthLoading) {
 		return (
@@ -168,74 +177,30 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 						/>
 					)}
 
-					{!closed && visit.data.state === 'in_session' && mockMode && (
-						<div className="space-y-4">
-							{leftMockMedia ? (
-								<div className="rounded-lg border border-gray-200 bg-white p-4" role="status">
-									<p className="text-sm text-gray-700">You left the call. The visit is still open.</p>
-									<Button
-										type="button"
-										className="mt-3"
-										variant="outline"
-										onClick={() => setLeftMockMedia(false)}
-									>
-										Rejoin call
-									</Button>
-								</div>
-							) : (
-								<MediaPlaceholders />
-							)}
-							{endVisit.isError && (
-								<div className="rounded-lg border border-red-200 bg-white p-4" role="alert">
-									<p className="text-sm text-gray-700">
-										{telehealthActionErrorMessage(endVisit.error, 'Unable to end this session.')}
-									</p>
-								</div>
-							)}
-							<div className="flex flex-wrap gap-2">
-								{!leftMockMedia && (
-									<Button type="button" variant="outline" onClick={() => setLeftMockMedia(true)}>
-										Leave call
-									</Button>
-								)}
-								{canEnd && (
-									<Button
-										type="button"
-										variant="destructive"
-										isLoading={endVisit.isPending}
-										onClick={() =>
-											endVisit.mutate(sessionId, {
-												onSuccess: () => router.push('/dashboard/telehealth'),
-											})
-										}
-									>
-										End session
-									</Button>
-								)}
-							</div>
-						</div>
-					)}
+						{!closed && visit.data.state === 'in_session' && mockMode && (
+							<MockCallStage
+								session={visit.data}
+								userRole={authSession?.userRole}
+								visitTitle={stageTitle}
+								canEnd={canEnd}
+								isEnding={endVisit.isPending}
+								endError={endErrorText}
+								onEnd={endMutation}
+							/>
+						)}
 
-					{!closed && visit.data.state === 'in_session' && !mockMode && (
-						<DailyMediaSession
-							sessionId={sessionId}
-							session={visit.data}
-							userRole={authSession?.userRole}
-							canEnd={canEnd}
-							joinChoices={joinChoices}
-							isEnding={endVisit.isPending}
-							endError={
-								endVisit.isError
-									? telehealthActionErrorMessage(endVisit.error, 'Unable to end this session.')
-									: undefined
-							}
-							onEnd={() =>
-								endVisit.mutate(sessionId, {
-									onSuccess: () => router.push('/dashboard/telehealth'),
-								})
-							}
-						/>
-					)}
+						{!closed && visit.data.state === 'in_session' && !mockMode && (
+							<DailyMediaSession
+								sessionId={sessionId}
+								session={visit.data}
+								visitTitle={stageTitle}
+								canEnd={canEnd}
+								joinChoices={joinChoices}
+								isEnding={endVisit.isPending}
+								endError={endErrorText}
+								onEnd={endMutation}
+							/>
+						)}
 				</div>
 			)}
 		</SessionChrome>
