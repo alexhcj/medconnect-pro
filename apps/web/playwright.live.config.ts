@@ -51,7 +51,16 @@ export default defineConfig({
 			testMatch: '**/*-live.spec.ts',
 			testIgnore: '**/auth{,-*}-live.spec.ts',
 			dependencies: ['setup'],
-			use: {...devices['Desktop Chrome']},
+			use: {
+				...devices['Desktop Chrome'],
+				// QA-014: telehealth specs run the green room and the call stage with a fake camera and
+				// microphone and no permission prompt. The local API uses the Fake Daily adapter, so these
+				// specs assert UI and API behavior, not media.
+				launchOptions: {
+					args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'],
+				},
+				permissions: ['camera', 'microphone'],
+			},
 		},
 	],
 	webServer: {

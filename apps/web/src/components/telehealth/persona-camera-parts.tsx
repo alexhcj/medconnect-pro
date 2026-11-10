@@ -15,7 +15,7 @@ import {
 export type CameraSource = 'camera' | 'persona';
 
 export const PERSONA_BANNER_TEXT = 'Demo build. The persona camera sends an illustrated video, not your camera.';
-export const PERSONA_PRIVACY_TITLE_ON = 'Your real camera stays private';
+export const PERSONA_PRIVACY_TITLE_ON = 'Your real camera stays off';
 export const PERSONA_PRIVACY_BODY_ON =
 	"Your camera stays off. The call shows this account's illustrated persona instead of your camera feed.";
 export const PERSONA_PRIVACY_TITLE_OFF = 'Your camera is shared';

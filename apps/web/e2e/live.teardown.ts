@@ -1,10 +1,19 @@
 import {test as teardown} from '@playwright/test';
-import {ADMIN_STATE, mutationHeaders, nestApiBase, PROVIDER_STATE} from './helpers/live-session';
+import {
+	ADMIN_STATE,
+	mutationHeaders,
+	nestApiBase,
+	NURSE_STATE,
+	PATIENT_STATE,
+	PROVIDER_STATE,
+} from './helpers/live-session';
 
 // Revoke the shared sessions so a finished run leaves no open session behind.
 for (const [name, state] of [
 	['practice admin', ADMIN_STATE],
 	['live provider', PROVIDER_STATE],
+	['portal patient', PATIENT_STATE],
+	['MFA nurse', NURSE_STATE],
 ] as const) {
 	teardown(`sign out the shared ${name} session`, async ({browser}) => {
 		const context = await browser.newContext({storageState: state});

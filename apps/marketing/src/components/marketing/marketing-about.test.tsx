@@ -88,8 +88,9 @@ describe('MarketingAbout', () => {
 		expect(within(shipped).getByText('1.0.0 demo release')).toBeInTheDocument();
 		const inProgress = within(section).getByRole('list', {name: 'In progress'});
 		expect(within(inProgress).getByText('Accessibility follow-ups')).toBeInTheDocument();
+		expect(within(inProgress).getByText('Telehealth 2.0: visit experience')).toBeInTheDocument();
 		const upNext = within(section).getByRole('list', {name: 'Up next'});
-		expect(within(upNext).getByText('Telehealth 2.0')).toBeInTheDocument();
+		expect(within(upNext).getByText('Telehealth 2.0: clinical controls')).toBeInTheDocument();
 
 		const paused = within(section).getByText(MARKETING_ABOUT_STATE.paused.text);
 		expect(paused.parentElement).toHaveTextContent(MARKETING_ABOUT_STATE.paused.label);

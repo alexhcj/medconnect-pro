@@ -6,7 +6,8 @@ area: telehealth
 marketing_path: /platform/telehealth
 status: partial
 claim: "Appointment-linked session shell with demo Daily media when configured. Not production telehealth or HIPAA video."
-related_tasks: [FE-007, FE-014, BE-006, BE-016, FE-030, BE-021, FE-035, BE-024, FE-038]
+related_tasks:
+  [FE-007, FE-014, BE-006, BE-016, FE-030, BE-021, FE-035, BE-024, FE-038, SEC-013, DATA-007, BE-027, FE-062, FE-063, FE-064, FE-065, QA-014]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md

@@ -95,7 +95,7 @@ have no Figma frame.
 - [x] Inventory poll carries the passive header; nothing else does (unit test on the API client)
 - [x] Heartbeat starts and stops on the right events, keeps running in a hidden tab, and backs off
       on 429 (fake timers)
-- [ ] A 25-minute live visit with the tab hidden can still End visit (local stack, recorded)
+- [ ] A 25-minute live visit with the tab hidden can still End visit (on Render with real Daily, recorded in QA-014; amended 2026-11-10: the local Fake adapter never reaches a joined state, so the UI heartbeat cannot run on the local stack)
 - [x] All TH-08 states render with the right actions per role
 - [ ] Wrap-up and visit-ended screens match the frames; "Book follow-up" opens the prefilled form
       (behavior verified by unit and mock e2e tests; the visual comparison with the frames is not done)
@@ -111,7 +111,7 @@ have no Figma frame.
 ## Validation
 
 - `npm run test -w apps/web` (heartbeat hook, passive header, state mapping)
-- Mock Playwright specs for states and wrap-up; one local live run with a hidden tab
+- Mock Playwright specs for states and wrap-up; one Render run with a hidden tab (QA-014)
 
 ## Completion
 

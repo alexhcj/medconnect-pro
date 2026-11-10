@@ -284,14 +284,16 @@ describe('GreenRoom demo persona camera (FE-065)', () => {
 		expect(within(list).queryByRole('radio')).not.toBeInTheDocument();
 	});
 
-	it('labels the preview as synthetic and keeps the real camera private', async () => {
+	it('labels the preview as synthetic and keeps the real camera off', async () => {
 		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
 		const user = userEvent.setup();
 		renderRoom({personaKey: 'provider-jordan-ellis'});
 		await user.click(screen.getByRole('radio', {name: 'Demo persona camera'}));
 		expect((await screen.findAllByText('Demo · synthetic camera')).length).toBeGreaterThan(0);
-		expect(screen.getByText('Your real camera stays private')).toBeInTheDocument();
+		expect(screen.getByText('Your real camera stays off')).toBeInTheDocument();
 		expect(document.querySelector('[aria-live="polite"]')).toHaveTextContent('Demo persona camera on.');
+		// SEC-013 scope 10: the persona copy follows the same claim wording as the rest of the room.
+		expect(document.body.textContent).not.toMatch(/\b(secure|private|end-to-end)\b/i);
 	});
 
 	it('hands the persona track to the join and keeps it running', async () => {

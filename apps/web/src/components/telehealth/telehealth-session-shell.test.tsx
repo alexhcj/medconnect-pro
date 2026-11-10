@@ -16,6 +16,7 @@ const {useTelehealthSession, useJoinTelehealthSession, useEndTelehealthSession, 
 
 vi.mock('next/navigation', () => ({
 	useRouter: () => ({push}),
+	useSearchParams: () => new URLSearchParams(),
 }));
 
 vi.mock('@/lib/hooks/use-telehealth', () => ({

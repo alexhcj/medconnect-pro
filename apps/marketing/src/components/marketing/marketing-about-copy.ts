@@ -93,15 +93,20 @@ export const MARKETING_ABOUT_STATE = {
 					title: 'Accessibility follow-ups',
 					description: 'Wider browser and screen-reader checks. Higher-contrast input borders shipped at 1.0.1.',
 				},
+				{
+					title: 'Telehealth 2.0: visit experience',
+					description:
+						'Device pickers with a camera preview, a full-screen call layout for up to three people, call states and a demo persona camera. Live checks are still under way.',
+				},
 			],
 		},
 		{
 			label: 'Up next',
 			items: [
 				{
-					title: 'Telehealth 2.0',
+					title: 'Telehealth 2.0: clinical controls',
 					description:
-						'Planned: device pickers with a camera preview, a provider admit step and a call layout for three people.',
+						'Planned: a provider admit step, lock and remove, and in-call chat.',
 				},
 			],
 		},

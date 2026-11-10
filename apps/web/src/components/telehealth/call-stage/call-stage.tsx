@@ -247,9 +247,13 @@ export function CallStage(props: CallStageProps) {
 						</div>
 					) : (
 						<>
+							{/* Scrolls when a status row or notice squeezes it, so keyboard users must be able to reach it. */}
 							<div
+								role="region"
+								aria-label="Video tiles"
+								tabIndex={0}
 								className={cn(
-									'grid min-h-0 flex-1 auto-rows-[minmax(10rem,1fr)] gap-3 overflow-y-auto',
+									'grid min-h-0 flex-1 auto-rows-[minmax(10rem,1fr)] gap-3 overflow-y-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-stage-text)',
 									remotes.length > 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1',
 								)}
 							>

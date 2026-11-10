@@ -156,6 +156,9 @@ The media hook now yields tiles, active speaker, network level, device and backg
   `sm:` scope because a base `hover:` class beat the `max-sm:hover:` one; mock mode shows the stage with the admin
   role as an extra "You" tile because no roster role matches; marketing copy files were not checked against the
   matrix for 1.4.0.
+- Fixed at 1.6.1 (found by QA-014): the video tile area scrolls when a status row or notice squeezes it at 390 and 320 px
+  and was not keyboard reachable (axe `scrollable-region-focusable`); it is now a labelled "Video tiles" region in the
+  tab order. Covered by `e2e/telehealth-call-states.spec.ts`.
 - Not done: the live two-browser check on Render (network, active speaker, screen share and picture-in-picture with
   real media) and the screen-reader pass. At 390 px and below, End visit for the host is in the More sheet because
   the bar has no room for it.

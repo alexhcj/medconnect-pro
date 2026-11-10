@@ -8,7 +8,7 @@ matrix.
 This file is a **claim view** of the registry plus infrastructure rows that are not product
 modules (CI, hosted deploy). If a row and its catalog file disagree, fix both.
 
-Last synced release: 1.6.0
+Last synced release: 1.6.1
 
 Keep the line above equal to the root `package.json` version whenever a task ships or a milestone
 closes. `npm run docs:marketing-sync` fails when it drifts. After a claim-affecting release, also
@@ -27,7 +27,7 @@ Columns:
 | Patient management | [patient-management](../product/patient-management.md) | Yes | Yes | — |
 | Scheduling (appointments, calendar) | [scheduling](../product/scheduling.md) | Yes | Yes | Waitlist and check-in / check-out (not in the demo) |
 | Clinical / EHR foundation | [patient-management](../product/patient-management.md) | Yes (lists on patient profile) | Yes, as foundation | External EHR integrations |
-| Telehealth | [telehealth](../product/telehealth.md) | Session shell plus Daily call-object media when `DAILY_API_KEY` is set; labeled unavailable otherwise; leave does not end the visit; ended/ineligible visits stay closed; the live call is a full-screen stage with server-named tiles, host-only End visit and read-only participants (1.4.0); mock mode shows the same stage without media. A portal patient or assigned nurse opens an existing visit from Join visit; writers still create the session. Lookup says the visit is not open yet when none exists. | Qualified — demo Daily media, not production telehealth or HIPAA video | Chat, recording, transcription |
+| Telehealth | [telehealth](../product/telehealth.md) | Session shell plus Daily call-object media when `DAILY_API_KEY` is set; labeled unavailable otherwise; leave does not end the visit; ended/ineligible visits stay closed; a pre-join green room with device pickers (1.3.0); the live call is a full-screen stage with server-named tiles, host-only End visit and read-only participants (1.4.0), call states, a room-closing notice and a wrap-up screen (1.5.0), and an illustrated demo persona camera in demo builds only (1.6.0); mock mode shows the same stage without media. Live two-browser, screen-reader and 25-minute checks are pending (QA-014), so these stay out of public copy. A portal patient or assigned nurse opens an existing visit from Join visit; writers still create the session. Lookup says the visit is not open yet when none exists. | Qualified — demo Daily media, not production telehealth or HIPAA video | Chat, recording, transcription |
 | Billing | [billing](../product/billing.md) | Invoice list/detail plus demo record-payment and labeled claims envelopes | Qualified demo payments and envelopes; not hosted Stripe or claims submission | Hosted payments, claims submission, EDI |
 | Analytics | [analytics](../product/analytics.md) | Live Nest dashboard overview cards; mock fixtures when mocks on | Qualified — demo cards, not a warehouse or HIPAA analytics | Extra chart widgets remain unscheduled |
 | Notifications | [notifications](../product/notifications.md) | In-app inbox, mark-read, and channel preferences (session user only) | Qualified — not push, SMS, or email carriers | Push/SMS/email carriers, Redis |

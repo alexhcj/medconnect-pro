@@ -72,8 +72,13 @@ Run procedure (repo root):
 How sign-in is handled: `auth` projects run the real sign-in specs (`auth-live`, `auth-mfa-live`,
 `auth-oauth-live`); `setup` signs in once as the practice admin and once as the live provider and
 saves the sessions under `e2e/.auth/` (gitignored); every other live spec reuses them through
-`storageState` and must not sign out; `teardown` signs both out. A run makes 2 practice-admin
-password sign-ins, 1 live-provider, 1 MFA nurse, and 1 OAuth. The API allows 5 password sign-ins per
+`storageState` and must not sign out; `teardown` signs all four out. `setup` also signs in the
+portal patient (Avery Quinn) and the MFA nurse once each, for the three-participant visit in
+`telehealth-live.spec.ts` (QA-014). A run makes 2 practice-admin password sign-ins, 1 live-provider,
+1 patient, 2 MFA nurse (one in `auth-mfa-live`, one in `setup`), and 1 OAuth. The `app` project
+launches Chromium with `--use-fake-device-for-media-stream` and `--use-fake-ui-for-media-stream`
+and grants camera and microphone; the local API uses the Fake Daily adapter, so telehealth specs
+assert UI and API, not media. The API allows 5 password sign-ins per
 account per 15 minutes and 20 per IP (`auth.login.account`, `auth.login.ip`). Two runs fit; a
 third within 15 minutes, or manual sign-ins as the same accounts, hit "Too many attempts".
 Production limits are not relaxed for tests.

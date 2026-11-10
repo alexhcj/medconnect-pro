@@ -1,9 +1,20 @@
 'use client';
 
+import {useSearchParams} from 'next/navigation';
 import {useEffect, useMemo, useState} from 'react';
 import {recordCallSummary} from '@/lib/telehealth/call-summary';
+import {deriveCallState} from '@/lib/telehealth/call-state';
+import {
+	MOCK_CALL_SCENARIO_PARAM,
+	parseMockCallScenario,
+} from '@/lib/telehealth/mock-call-scenario';
+import {ROOM_CLOSING_WARNING_MS, closingSoonText} from '@/lib/telehealth/use-call-notices';
 import {Button} from '@/components/ui/button';
-import {CallStage} from '@/components/telehealth/call-stage/call-stage';
+import {
+	CallStage,
+	type StageNotice,
+	type StageStatus,
+} from '@/components/telehealth/call-stage/call-stage';
 import {CallStagePortal} from '@/components/telehealth/call-stage/call-stage-portal';
 import {mediaTileInitials} from '@/lib/telehealth/media-participant';
 import type {StageTile} from '@/lib/telehealth/call-participants';
@@ -34,12 +45,16 @@ export function MockCallStage({
 	endError?: string;
 	onEnd: () => void;
 }) {
+	const scenario = parseMockCallScenario(useSearchParams().get(MOCK_CALL_SCENARIO_PARAM));
 	const [leftMedia, setLeftMedia] = useState(false);
-	const [cameraOn, setCameraOn] = useState(false);
+	const [leftAcknowledged, setLeftAcknowledged] = useState(false);
+	const [closesAt] = useState(() => new Date(Date.now() + ROOM_CLOSING_WARNING_MS).toISOString());
+	const [cameraOn, setCameraOn] = useState(scenario === 'poor-network');
 	const [microphoneOn, setMicrophoneOn] = useState(false);
 	const [screenShareOn, setScreenShareOn] = useState(false);
 	const [background, setBackground] = useState<BackgroundChoice>(DEFAULT_BACKGROUND);
 
+	const remoteGone = scenario === 'waiting' || scenario === 'participant-left';
 	const tiles = useMemo<StageTile[]>(() => {
 		const localEntry = session.participants.find((entry) => entry.role === userRole);
 		const entries = session.participants.length > 0 ? session.participants : [];
@@ -59,11 +74,51 @@ export function MockCallStage({
 		const local = localEntry
 			? make(localEntry.userId, 'You', localEntry.role, true)
 			: make('mock-you', 'You', null, true);
-		const remotes = entries
-			.filter((entry) => entry !== localEntry)
-			.map((entry) => make(entry.userId, entry.displayName, entry.role, false));
+		const remotes = remoteGone
+			? []
+			: entries
+					.filter((entry) => entry !== localEntry)
+					.map((entry) => make(entry.userId, entry.displayName, entry.role, false));
 		return [local, ...remotes];
-	}, [session.participants, userRole, cameraOn, microphoneOn]);
+	}, [session.participants, userRole, cameraOn, microphoneOn, remoteGone]);
+
+	const remoteName = session.participants.find((entry) => entry.role !== userRole)?.displayName;
+	const callState = scenario
+		? deriveCallState({
+				connectionState: scenario === 'reconnecting' ? 'reconnecting' : 'connected',
+				failureKind: 'none',
+				hasRemote: !remoteGone,
+				hadRemote: scenario === 'participant-left',
+				lastRemoteName: remoteName,
+				deviceLost: scenario === 'device-lost',
+				networkLevel: scenario === 'poor-network' ? 'poor' : 'good',
+				cameraOn,
+				leftAcknowledged,
+				canEnd,
+				viewerRole: userRole,
+				patientName: session.patientName,
+				providerName: session.providerName,
+			})
+		: undefined;
+	const status: StageStatus = callState
+		? {
+				kind: callState.kind,
+				text: callState.text,
+				detail: callState.detail,
+				actions: callState.actions.map((action) => ({
+					id: action.id,
+					label: action.label,
+					onClick:
+						action.id === 'wait'
+							? () => setLeftAcknowledged(true)
+							: action.id === 'turn-off-camera'
+								? () => setCameraOn(false)
+								: () => undefined,
+				})),
+			}
+		: {kind: 'info', text: MOCK_MEDIA_NOTICE};
+	const notices: StageNotice[] =
+		scenario === 'closing' ? [{id: 'closing-soon', text: closingSoonText(5, closesAt)}] : [];
 
 	useEffect(() => {
 		recordCallSummary(session.id, tiles);
@@ -87,7 +142,8 @@ export function MockCallStage({
 			<CallStage
 				visitTitle={visitTitle}
 				joinedAt={session.joinedAt}
-				status={{kind: 'info', text: MOCK_MEDIA_NOTICE}}
+				status={status}
+				notices={notices}
 				tiles={tiles}
 				screenShare={null}
 				microphoneOn={microphoneOn}
@@ -95,7 +151,7 @@ export function MockCallStage({
 				screenShareOn={screenShareOn}
 				controlsEnabled
 				canShareScreen
-				networkLevel="good"
+				networkLevel={scenario === 'poor-network' ? 'poor' : 'good'}
 				devices={{cameras: [], microphones: [], speakers: []}}
 				background={background}
 				onToggleMicrophone={() => setMicrophoneOn((on) => !on)}

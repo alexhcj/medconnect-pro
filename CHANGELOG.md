@@ -6,6 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.6.1] - 2026-11-10
+
+QA-014 finding in the FE-063 call stage (PATCH, accessibility fix).
+
+### Fixed
+
+- The call stage's video tile area scrolls when a status row or notice (device lost, room closing) squeezes it on narrow
+  screens. It was not reachable by keyboard (axe `scrollable-region-focusable`). It is now a labelled "Video tiles"
+  region in the tab order with a visible focus outline.
+
+### Changed
+
+- Demo persona camera: the green-room note "Your real camera stays private" now reads "Your real camera stays off",
+  to follow the SEC-013 claim wording (no "secure", "private" or "end-to-end"). The approved FE-065 Figma frame
+  still carries the old text and needs the same edit.
+- Mock mode only: `?mockState=` on the session page shows one call state (waiting, participant-left, reconnecting,
+  device-lost, poor-network, closing) so the mock e2e covers them. Live mode ignores it.
+
 ## [1.6.0] - 2026-11-10
 
 M22 Telehealth 2.0: Visit experience, FE-065 demo persona camera.

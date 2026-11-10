@@ -135,7 +135,7 @@ test.describe('Telehealth green room demo persona camera (FE-065)', () => {
 		await expect(personas.locator('[aria-current="true"]')).toContainText('Avery Quinn');
 		await expect(personas.locator('[aria-disabled="true"]')).toHaveCount(2);
 		await expect(page.getByText('Demo · synthetic camera').first()).toBeVisible();
-		await expect(page.getByText('Your real camera stays private')).toBeVisible();
+		await expect(page.getByText('Your real camera stays off')).toBeVisible();
 		await expectNoAxeViolations(page, ['main']);
 
 		await page.getByRole('radio', {name: 'My camera'}).click();
