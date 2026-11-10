@@ -34,6 +34,7 @@ describe('sessionFromRdo', () => {
 			state: 'waiting',
 			participants: [],
 			viewerCanEnd: false,
+			viewerPersonaKey: null,
 			joinedAt: sessionRdo.joinedAt,
 			endedAt: sessionRdo.endedAt,
 			synthetic: true,
@@ -64,6 +65,13 @@ describe('sessionFromRdo', () => {
 	it('treats a missing or non-true viewerCanEnd as false so an older API never shows End visit', () => {
 		expect(sessionFromRdo({...sessionRdo, viewerCanEnd: undefined}).viewerCanEnd).toBe(false);
 		expect(sessionFromRdo({...sessionRdo, viewerCanEnd: false}).viewerCanEnd).toBe(false);
+	});
+
+	it('keeps only a known viewerPersonaKey from Nest (FE-065)', () => {
+		expect(sessionFromRdo({...sessionRdo, viewerPersonaKey: 'nurse-riley-park'}).viewerPersonaKey).toBe('nurse-riley-park');
+		expect(sessionFromRdo({...sessionRdo, viewerPersonaKey: 'someone-else'}).viewerPersonaKey).toBeNull();
+		expect(sessionFromRdo({...sessionRdo, viewerPersonaKey: null}).viewerPersonaKey).toBeNull();
+		expect(sessionFromRdo(sessionRdo).viewerPersonaKey).toBeNull();
 	});
 
 	it('keeps the Nest provider name when the actor is not the live demo provider', () => {

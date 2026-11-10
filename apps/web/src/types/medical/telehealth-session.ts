@@ -1,4 +1,5 @@
 import type {Role} from '@/types/auth/roles';
+import type {DemoPersonaKey} from '@/lib/telehealth/demo-personas';
 import type {AppointmentType} from '@/types/medical/appointment';
 
 export const TELEHEALTH_SESSION_STATES = ['waiting', 'in_session', 'ended'] as const;
@@ -25,6 +26,8 @@ export interface TelehealthSession {
 	participants: TelehealthParticipant[];
 	/** UX hint from Nest's host rule. Enforcement stays on `POST .../end`. */
 	viewerCanEnd: boolean;
+	/** The caller's own demo persona key from Nest (FE-065). Absent from an older API and in mock sessions. */
+	viewerPersonaKey?: DemoPersonaKey | null;
 	/** When the Daily room and token expire (FE-064 warns before this). */
 	mediaExpiresAt?: string;
 	/** When the visit went live; the call timer counts from here. */

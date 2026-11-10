@@ -259,7 +259,7 @@ Ships as MINOR releases from 1.1.0; the breaking host rule is MINOR under the AD
 - FE-062 — Telehealth pre-join green room (implemented at 1.3.0; live camera check pending)
 - FE-063 — Full-screen call stage and controls (implemented at 1.4.0; live two-browser check pending)
 - FE-064 — Call states, session keep-alive and wrap-up (implemented at 1.5.0; 25-minute hidden-tab run pending)
-- FE-065 — Demo persona camera (pending; design in progress)
+- FE-065 — Demo persona camera (implemented at 1.6.0; two-browser check pending)
 - QA-014 — M22 verification and close audit (pending)
 
 Order: DATA-007, then BE-027 and FE-062 in parallel; FE-063 after BE-027 and FE-062; FE-064 after FE-063; FE-065 after FE-062 and DATA-007; QA-014 last.

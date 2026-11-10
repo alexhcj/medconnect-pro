@@ -1,7 +1,7 @@
 'use client';
 
 import type {ReactNode} from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {Button} from '@/components/ui/button';
 import {VisitEnded} from '@/components/telehealth/visit-ended';
@@ -19,6 +19,7 @@ import {VisitUnavailable} from '@/components/telehealth/visit-unavailable';
 import {GreenRoom} from '@/components/telehealth/green-room';
 import {isMockMode} from '@/lib/api/mocks/runtime';
 import {ApiError} from '@/lib/api/http';
+import {mockViewerPersonaKey} from '@/lib/auth/demo-accounts';
 import {canAccessTelehealth} from '@/lib/auth/telehealth-access';
 import {
 	useEndTelehealthSession,
@@ -67,6 +68,17 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 	const endVisit = useEndTelehealthSession();
 	const mockMode = isMockMode();
 	const [joinChoices, setJoinChoices] = useState<JoinChoices | undefined>();
+	// FE-065: the persona outlives the green room, so it is stopped here when the visit ends or this page goes away.
+	const personaCamera = joinChoices?.personaCamera;
+	useEffect(() => () => personaCamera?.stop(), [personaCamera]);
+	const visitEnded = visit.data?.state === 'ended';
+	useEffect(() => {
+		if (visitEnded) {
+			personaCamera?.stop();
+		}
+	}, [visitEnded, personaCamera]);
+	// Live mode reads the caller's own key from Nest. Mock mode has no session, so it maps the fixture account.
+	const personaKey = visit.data?.viewerPersonaKey ?? (mockMode ? mockViewerPersonaKey(authSession?.userId) : null);
 	// The visit title is the appointment reason (notes), never the diagnosis list (SEC-013 scope 6).
 	const appointments = useAppointments(canAccess);
 	const appointment = appointments.data?.find((item) => item.id === visit.data?.appointmentId);
@@ -185,6 +197,8 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 							visitTitle={visitTitle}
 							scheduleText={`${formatTelehealthRange(visit.data.start, visit.data.end)} · ${visit.data.providerName} with ${visit.data.patientName}`}
 							initials={greenRoomInitials(authSession?.userRole, visit.data)}
+							personaKey={personaKey}
+							displayName={localParticipantDisplayName(visit.data, authSession?.userRole)}
 							onJoin={(choices) => {
 								setJoinChoices(choices);
 								join.mutate(sessionId);

@@ -27,6 +27,8 @@ export interface StageTile {
 	videoTrack: MediaStreamTrack | null;
 	network: NetworkLevel;
 	speaking: boolean;
+	/** Local tile only: the video is the FE-065 demo persona, so the tile says so. */
+	syntheticCamera?: boolean;
 }
 
 export interface ScreenShareView {

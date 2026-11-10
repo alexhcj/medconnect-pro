@@ -4,6 +4,7 @@ import {useEffect, useRef} from 'react';
 import {AudioLines, Mic, MicOff, Video, VideoOff, WifiLow} from 'lucide-react';
 import {cn} from '@/lib/utils/utils';
 import type {StageTile} from '@/lib/telehealth/call-participants';
+import {SYNTHETIC_CAMERA_LABEL} from '@/lib/telehealth/demo-personas';
 import type {Role} from '@/types/auth/roles';
 
 export const ROLE_TAG_LABEL: Partial<Record<Role, string>> = {
@@ -106,6 +107,12 @@ export function ParticipantTile({
 					</span>
 					{!compact && <span className="text-sm text-(--color-stage-text-muted)">Camera off</span>}
 				</div>
+			)}
+
+			{tile.syntheticCamera && showVideo && (
+				<span className="absolute left-2 top-2 z-10 rounded-md bg-(--color-stage-bg)/80 px-2 py-0.5 text-xs font-medium text-(--color-stage-text)">
+					{SYNTHETIC_CAMERA_LABEL}
+				</span>
 			)}
 
 			{tile.speaking && (

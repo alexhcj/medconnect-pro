@@ -1,4 +1,5 @@
 import {LIVE_DEMO_PROVIDER_ID, liveDemoProvider} from '@/lib/api/live-demo-provider';
+import {parsePersonaKey} from '@/lib/telehealth/demo-personas';
 import type {AppointmentType} from '@/types/medical/appointment';
 import type {
 	TelehealthParticipant,
@@ -26,6 +27,7 @@ export interface TelehealthSessionRdo {
 	participants?: TelehealthParticipant[];
 	mediaExpiresAt?: string;
 	viewerCanEnd?: boolean;
+	viewerPersonaKey?: string | null;
 }
 
 export function sessionFromRdo(rdo: TelehealthSessionRdo): TelehealthSession {
@@ -42,8 +44,11 @@ export function sessionFromRdo(rdo: TelehealthSessionRdo): TelehealthSession {
 		// An older API without these fields must never show End visit (UX hint only; Nest enforces).
 		participants: Array.isArray(rdo.participants) ? rdo.participants : [],
 		viewerCanEnd: rdo.viewerCanEnd === true,
+		// An unknown or missing key means no persona option (the catalog is closed).
+		viewerPersonaKey: parsePersonaKey(rdo.viewerPersonaKey),
 		...(rdo.mediaExpiresAt ? {mediaExpiresAt: rdo.mediaExpiresAt} : {}),
 		...(rdo.joinedAt ? {joinedAt: rdo.joinedAt} : {}),
-		...(rdo.endedAt ? {endedAt: rdo.endedAt} : {}),		synthetic: true,
+		...(rdo.endedAt ? {endedAt: rdo.endedAt} : {}),
+		synthetic: true,
 	};
 }

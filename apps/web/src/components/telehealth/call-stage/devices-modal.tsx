@@ -5,6 +5,7 @@ import {X} from 'lucide-react';
 import {SelectField} from '@/components/ui/select-field';
 import {BackgroundPicker} from '@/components/telehealth/green-room-parts';
 import type {CallDevices, DeviceOption} from '@/lib/hooks/use-daily-media-session';
+import {SYNTHETIC_CAMERA_LABEL} from '@/lib/telehealth/demo-personas';
 import type {BackgroundChoice} from '@/lib/telehealth/prejoin-backgrounds';
 
 export type DevicesTab = 'video' | 'audio' | 'background';
@@ -55,6 +56,7 @@ export function DevicesModal({
 	onTabChange,
 	devices,
 	background,
+	personaActive = false,
 	onChooseDevice,
 	onSetBackground,
 	disabled,
@@ -65,6 +67,7 @@ export function DevicesModal({
 	onTabChange: (tab: DevicesTab) => void;
 	devices: CallDevices;
 	background: BackgroundChoice;
+	personaActive?: boolean;
 	onChooseDevice: (kind: 'camera' | 'microphone' | 'speaker', deviceId: string) => void;
 	onSetBackground: (choice: BackgroundChoice) => void;
 	disabled: boolean;
@@ -99,13 +102,23 @@ export function DevicesModal({
 						</TabList>
 						<TabPanels className="mt-5">
 							<TabPanel className="space-y-4 focus-visible:outline-none">
-								<DeviceSelect
-									label="Camera"
-									options={devices.cameras}
-									value={devices.cameraId}
-									onChange={(id) => onChooseDevice('camera', id)}
-									emptyText="No camera found."
-								/>
+								{personaActive ? (
+									<div className="space-y-1.5">
+										<p className="text-sm font-medium text-gray-900">Camera</p>
+										<p className="text-sm text-gray-600">
+											Using the demo persona camera ({SYNTHETIC_CAMERA_LABEL}). Leave and rejoin from the green room to use your
+											camera.
+										</p>
+									</div>
+								) : (
+									<DeviceSelect
+										label="Camera"
+										options={devices.cameras}
+										value={devices.cameraId}
+										onChange={(id) => onChooseDevice('camera', id)}
+										emptyText="No camera found."
+									/>
+								)}
 							</TabPanel>
 							<TabPanel className="space-y-4 focus-visible:outline-none">
 								<DeviceSelect

@@ -6,6 +6,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.6.0] - 2026-11-10
+
+M22 Telehealth 2.0: Visit experience, FE-065 demo persona camera.
+
+### Added
+
+- Demo persona camera (demo builds only, `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true`): the green room offers "My camera"
+  or "Demo persona camera". The persona is the signed-in demo account's own illustrated persona (provider, nurse or
+  patient), drawn on a canvas with a light idle motion and a mouth cue from the microphone level, and sent to Daily as
+  the video source at about 15 fps. The other two personas are shown dimmed and cannot be chosen. A "Demo · synthetic
+  camera" label stays on the preview and on the local call tile, and a demo banner explains the option. Reduced motion
+  shows a still persona. Background None, Blur and the three images are drawn into the persona instead of using
+  Daily's processor. Hosted production never renders the option.
+- `viewerPersonaKey` on the telehealth session response (the caller's own membership persona key, or null). It never
+  appears in `participants` and never changes a display name. `GET /telehealth/sessions*` and the OpenAPI document
+  carry it; `docs/contracts/data-contracts.md` describes it.
+- Three first-party persona illustrations in `apps/web/public/telehealth/personas/`, exported from the approved Figma
+  frames.
+
+### Changed
+
+- In a persona call the Devices dialog shows a note instead of the Camera select, and the real camera is released in
+  the green room preview. If the canvas or the art is unavailable the green room falls back to the real camera with a
+  status notice.
+- The Daily background processor is skipped for a custom video source.
+
 ## [1.5.0] - 2026-11-10
 
 M22 Telehealth 2.0: Visit experience, FE-064 call states, session keep-alive and wrap-up.

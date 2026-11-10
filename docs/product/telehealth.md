@@ -65,8 +65,8 @@ capabilities:
     related_tasks: [SEC-013, BE-027, FE-064]
   - id: telehealth.demo-persona
     name: Demo persona camera
-    status: planned
-    demo: not in the demo yet (M22); demo builds only
+    status: partial
+    demo: illustrated persona of the signed-in demo account as the camera source, demo builds only (1.6.0); two-browser check pending
     public: no
     related_tasks: [SEC-013, DATA-007, FE-065]
 ---
@@ -90,4 +90,4 @@ or recording.
 | `telehealth.prejoin-devices` | Pre-join green room | planned | not in the demo yet (M22) | no |
 | `telehealth.call-controls` | Full-screen call stage and controls | partial | full-screen stage and controls (1.4.0); call states, closing notice and wrap-up (1.5.0); live checks pending | no |
 | `telehealth.in-visit-keepalive` | Stay signed in during a live visit | partial | heartbeat and token refresh while in a live visit (1.5.0); hidden-tab run pending | no |
-| `telehealth.demo-persona` | Demo persona camera | planned | not in the demo yet (M22); demo builds only | no |
+| `telehealth.demo-persona` | Demo persona camera | partial | illustrated persona camera in the green room and call, demo builds only (1.6.0); two-browser check pending | no |

@@ -1,4 +1,5 @@
 import type {DailyCallOptions} from '@daily-co/daily-js';
+import type {PersonaCameraHandle} from '@/lib/telehealth/persona-camera';
 import {
 	DEFAULT_BACKGROUND,
 	dailyProcessorFor,
@@ -16,8 +17,13 @@ export interface JoinChoices {
 	microphoneId?: string;
 	speakerId?: string;
 	background: BackgroundChoice;
-	/** Reserved for FE-065 (demo persona camera): a custom video source replaces the device camera. */
+	/** FE-065 demo persona camera: a custom video source replaces the device camera. */
 	videoSource?: MediaStreamTrack;
+	/**
+	 * Owner of `videoSource`. The shell stops it when the visit leaves, so the track outlives the
+	 * green room. Never sent anywhere.
+	 */
+	personaCamera?: PersonaCameraHandle;
 }
 
 export const DEFAULT_JOIN_CHOICES: JoinChoices = {audioOnly: false, background: DEFAULT_BACKGROUND};
@@ -39,7 +45,8 @@ export function dailyJoinOptions(
 	if (choices.microphoneId) {
 		options.audioSource = choices.microphoneId;
 	}
-	if (!choices.audioOnly && choices.background.kind !== 'none') {
+	// A persona track already has its background drawn in, so Daily's processor must not run on it.
+	if (!choices.audioOnly && !choices.videoSource && choices.background.kind !== 'none') {
 		options.inputSettings = {video: {processor: dailyProcessorFor(choices.background, origin)}};
 	}
 	return options;

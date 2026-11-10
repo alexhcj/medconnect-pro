@@ -1,6 +1,7 @@
 import {ApiProperty, ApiSchema} from '@nestjs/swagger';
 import {APPOINTMENT_TYPES} from '../persistence/entities/appointment.entity.js';
 import {TELEHEALTH_SESSION_STATES} from '../persistence/entities/telehealth-session.entity.js';
+import {DEMO_PERSONA_KEYS, type DemoPersonaKey} from '../tenancy/persona-key.js';
 
 export const TELEHEALTH_PARTICIPANT_ROLES = ['PROVIDER', 'PATIENT', 'NURSE'] as const;
 
@@ -93,6 +94,15 @@ export class TelehealthSessionRdo {
 			'UX hint computed from the End visit host rule for the caller (appointment provider or practice admin). POST .../end still enforces it.',
 	})
 	viewerCanEnd!: boolean;
+
+	@ApiProperty({
+		enum: DEMO_PERSONA_KEYS,
+		nullable: true,
+		example: 'provider-jordan-ellis',
+		description:
+			"The caller's own demo persona key from their membership in the session practice (FE-065), or null. Never another participant's key. Selects the illustrated demo camera; it never changes a display name.",
+	})
+	viewerPersonaKey!: DemoPersonaKey | null;
 }
 
 @ApiSchema({name: 'TelehealthSessionCreateRequest'})

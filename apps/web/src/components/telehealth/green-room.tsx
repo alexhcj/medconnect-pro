@@ -13,11 +13,25 @@ import {
 	PreviewProblem,
 	ReadinessStatus,
 } from '@/components/telehealth/green-room-parts';
+import {
+	CameraSourcePicker,
+	DemoPersonaBanner,
+	PERSONA_FALLBACK_NOTICE,
+	PERSONA_PRIVACY_BODY_ON,
+	PERSONA_PRIVACY_TITLE_ON,
+	PersonaPreview,
+	PersonaStrip,
+	type CameraSource,
+} from '@/components/telehealth/persona-camera-parts';
 import {Button} from '@/components/ui/button';
 import {SelectField, type SelectOption} from '@/components/ui/select-field';
 import {isMockMode} from '@/lib/api/mocks/runtime';
+import {showDemoAccounts} from '@/lib/auth/demo-accounts';
 import {usePrejoinMedia, type PrejoinDeviceOption} from '@/lib/hooks/use-prejoin-media';
+import type {DemoPersonaKey} from '@/lib/telehealth/demo-personas';
 import type {JoinChoices} from '@/lib/telehealth/join-choices';
+import {startPersonaCamera, type PersonaCameraHandle} from '@/lib/telehealth/persona-camera';
+import type {BackgroundChoice} from '@/lib/telehealth/prejoin-backgrounds';
 import {buildPrejoinChecks} from '@/lib/telehealth/prejoin-checks';
 import {primaryJoinAction, type PrejoinPhase} from '@/lib/telehealth/prejoin-devices';
 import {playTestTone, type TestToneHandle} from '@/lib/telehealth/test-tone';
@@ -33,6 +47,19 @@ export interface GreenRoomProps {
 	isJoining: boolean;
 	errorMessage?: string;
 	backHref?: string;
+	/**
+	 * FE-065: the caller's own demo persona key from Nest. The persona option exists only in demo
+	 * builds (`NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true`) and only when this is set.
+	 */
+	personaKey?: DemoPersonaKey | null;
+	/** The caller's name from Nest (roster). The persona never changes it. */
+	displayName?: string;
+}
+
+function prefersReducedMotion(): boolean {
+	return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+		? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		: false;
 }
 
 const PHASE_ANNOUNCEMENT: Record<PrejoinPhase, string> = {
@@ -108,6 +135,8 @@ export function GreenRoom({
 	isJoining,
 	errorMessage,
 	backHref = '/dashboard/appointments',
+	personaKey = null,
+	displayName = 'You',
 }: GreenRoomProps) {
 	const mock = isMockMode();
 	const [mockPhase] = useState(() => (mock ? mockPhaseFromLocation() : undefined));
@@ -128,13 +157,111 @@ export function GreenRoom({
 
 	useEffect(() => () => toneRef.current?.stop(), []);
 
-	const action = primaryJoinAction(phase);
+	// ---- FE-065 demo persona camera. Browser-only; nothing here is sent to Nest. ----
+	const personaAvailable = showDemoAccounts() && personaKey !== null;
+	const [source, setSource] = useState<CameraSource>('camera');
+	const [personaStream, setPersonaStream] = useState<MediaStream | null>(null);
+	const [personaNotice, setPersonaNotice] = useState<string | null>(null);
+	const [personaBackground, setPersonaBackground] = useState<BackgroundChoice>({kind: 'none'});
+	const personaRef = useRef<PersonaCameraHandle | null>(null);
+	const personaBackgroundRef = useRef<BackgroundChoice>(personaBackground);
+	const personaTransferredRef = useRef(false);
+	const personaOn = personaAvailable && source === 'persona';
+	const personaReady = personaOn && personaStream !== null;
+	const {setCameraEnabled} = media;
+
+	useEffect(() => {
+		if (!personaOn || !personaKey) {
+			return;
+		}
+		let cancelled = false;
+		personaBackgroundRef.current = media.background;
+		setPersonaBackground(media.background);
+		void setCameraEnabled(false);
+		startPersonaCamera({
+			personaKey,
+			background: media.background,
+			microphoneId: media.selection.microphoneId,
+			reducedMotion: prefersReducedMotion(),
+		})
+			.then((handle) => {
+				if (cancelled) {
+					handle.stop();
+					return;
+				}
+				personaRef.current = handle;
+				setPersonaStream(handle.stream);
+			})
+			.catch(() => {
+				if (cancelled) {
+					return;
+				}
+				// Canvas capture or the art is unavailable: fall back to the real camera and say so.
+				setPersonaNotice(PERSONA_FALLBACK_NOTICE);
+				setSource('camera');
+			});
+		return () => {
+			cancelled = true;
+			const handle = personaRef.current;
+			personaRef.current = null;
+			setPersonaStream(null);
+			if (handle && !personaTransferredRef.current) {
+				handle.stop();
+			}
+			void setCameraEnabled(true);
+		};
+		// The persona restarts only when it is turned on or off. Background and microphone changes are applied live.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [personaOn, personaKey, setCameraEnabled]);
+
+	// A failed join keeps this screen, so it owns the persona again until the next join.
+	useEffect(() => {
+		if (errorMessage) {
+			personaTransferredRef.current = false;
+		}
+	}, [errorMessage]);
+
+	useEffect(() => {
+		if (!personaOn || typeof window.matchMedia !== 'function') {
+			return;
+		}
+		const list = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const apply = () => personaRef.current?.setReducedMotion(list.matches);
+		list.addEventListener('change', apply);
+		return () => list.removeEventListener('change', apply);
+	}, [personaOn]);
+
+	const action = personaOn
+		? {label: 'Join visit', audioOnly: false, disabled: !personaReady}
+		: primaryJoinAction(phase);
 	const checks = buildPrejoinChecks({browserSupported: media.browserSupported, phase});
-	const problem = phase !== 'ready';
+	const problem = phase !== 'ready' && !personaOn;
 	const devicesUnavailable = phase === 'blocked';
 
+	function handleBackground(choice: BackgroundChoice) {
+		if (personaOn) {
+			personaBackgroundRef.current = choice;
+			setPersonaBackground(choice);
+			void personaRef.current?.setBackground(choice);
+			return;
+		}
+		void media.setBackground(choice);
+	}
+
 	async function handleJoin(audioOnly: boolean) {
-		const choices = media.getChoices(audioOnly);
+		const persona = personaOn && !audioOnly ? personaRef.current : null;
+		const choices: JoinChoices = persona
+			? {
+					...media.getChoices(false),
+					background: personaBackgroundRef.current,
+					videoSource: persona.track,
+					personaCamera: persona,
+				}
+			: media.getChoices(audioOnly);
+		if (persona) {
+			// The shell owns the persona from here, so it outlives this screen.
+			personaTransferredRef.current = true;
+		}
 		releasedRef.current = true;
 		toneRef.current?.stop();
 		await media.release();
@@ -170,14 +297,25 @@ export function GreenRoom({
 
 	const devicePanel = (
 		<div className="space-y-3">
-			<SelectField
-				size="large"
-				label="Camera"
-				value={cameraOptions.length === 1 && cameraOptions[0].disabled ? '' : (media.selection.cameraId ?? '')}
-				options={cameraOptions}
-				disabled={devicesUnavailable || phase === 'no_camera' || phase === 'checking' || media.cameras.length === 0}
-				onChange={(value) => void media.selectCamera(value)}
-			/>
+			{personaAvailable && personaKey && (
+				<div className="space-y-4 border-b border-border pb-4">
+					<CameraSourcePicker value={source} onChange={(next) => {
+						setPersonaNotice(null);
+						setSource(next);
+					}} />
+					{personaOn && <PersonaStrip activeKey={personaKey} />}
+				</div>
+			)}
+			{!personaOn && (
+				<SelectField
+					size="large"
+					label="Camera"
+					value={cameraOptions.length === 1 && cameraOptions[0].disabled ? '' : (media.selection.cameraId ?? '')}
+					options={cameraOptions}
+					disabled={devicesUnavailable || phase === 'no_camera' || phase === 'checking' || media.cameras.length === 0}
+					onChange={(value) => void media.selectCamera(value)}
+				/>
+			)}
 			<SelectField
 				size="large"
 				label="Microphone"
@@ -203,7 +341,11 @@ export function GreenRoom({
 			</div>
 			<div className="space-y-2 pt-1">
 				<p className="text-sm font-medium text-foreground-label">Background</p>
-				<BackgroundPicker value={media.background} onChange={(choice) => void media.setBackground(choice)} disabled={problem} />
+				<BackgroundPicker
+					value={personaOn ? personaBackground : media.background}
+					onChange={handleBackground}
+					disabled={problem}
+				/>
 			</div>
 		</div>
 	);
@@ -218,16 +360,29 @@ export function GreenRoom({
 				<p className="text-sm text-foreground-secondary">{scheduleText}</p>
 			</header>
 
+			{personaAvailable && <DemoPersonaBanner />}
+
 			<p className="sr-only" aria-live="polite">
 				{PHASE_ANNOUNCEMENT[phase]}
 				{playing ? ' Playing test sound.' : ''}
 				{media.notice ? ` ${media.notice}` : ''}
+				{personaAvailable ? (personaOn ? ' Demo persona camera on.' : ' My camera selected.') : ''}
+				{personaNotice ? ` ${personaNotice}` : ''}
 			</p>
+
+			{personaNotice && (
+				<p className="flex items-start gap-2 rounded-md border border-warning bg-warning-subtle p-3 text-sm text-foreground" role="status">
+					<Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+					{personaNotice}
+				</p>
+			)}
 
 			<div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)]">
 				<div className="space-y-4">
 					<div className="relative aspect-video overflow-hidden rounded-lg border border-border bg-surface max-md:aspect-[3/4] max-md:max-h-[60vh]">
-						{problem ? (
+						{personaOn && personaKey ? (
+							<PersonaPreview stream={personaStream} personaKey={personaKey} displayName={displayName} />
+						) : problem ? (
 							<PreviewProblem
 								phase={phase as Exclude<PrejoinPhase, 'ready'>}
 								onRetry={retry}
@@ -242,10 +397,17 @@ export function GreenRoom({
 						<LevelMeter lit={phase === 'checking' || phase === 'blocked' ? 0 : media.litSegments} statusText={levelText(phase, media.litSegments)} />
 					</div>
 
-					<p className="flex items-start gap-2 text-sm text-foreground-secondary">
-						<Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-						{guidanceText(phase)}
-					</p>
+					{personaOn ? (
+						<div className="rounded-lg border border-border bg-surface p-4">
+							<h3 className="text-base font-semibold text-foreground">{PERSONA_PRIVACY_TITLE_ON}</h3>
+							<p className="mt-1 text-sm text-foreground-secondary">{PERSONA_PRIVACY_BODY_ON}</p>
+						</div>
+					) : (
+						<p className="flex items-start gap-2 text-sm text-foreground-secondary">
+							<Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+							{guidanceText(phase)}
+						</p>
+					)}
 					{media.notice && (
 						<p className="rounded-md border border-warning bg-warning-subtle p-3 text-sm text-foreground" role="status">
 							{media.notice}

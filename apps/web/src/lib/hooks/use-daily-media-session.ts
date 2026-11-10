@@ -367,6 +367,10 @@ export function useDailyMediaSession({
 			if (!current) {
 				return;
 			}
+			if (kind === 'camera' && joinChoicesRef.current?.videoSource) {
+				// The persona camera is the video source for this visit.
+				return;
+			}
 			try {
 				if (kind === 'camera') {
 					await current.setInputDevicesAsync({videoDeviceId: deviceId});
@@ -391,6 +395,13 @@ export function useDailyMediaSession({
 		async (choice: BackgroundChoice) => {
 			const current = liveCall();
 			if (!current) {
+				return;
+			}
+			const persona = joinChoicesRef.current?.personaCamera;
+			if (persona) {
+				// The persona draws its own background. Daily's processor never runs on it.
+				await persona.setBackground(choice);
+				setBackgroundChoice(choice);
 				return;
 			}
 			try {
@@ -429,10 +440,12 @@ export function useDailyMediaSession({
 		});
 	}, []);
 
-	const tiles: StageTile[] = useMemo(
-		() => buildStageTiles(participants, roster, activeSpeakerId, localNetwork),
-		[participants, roster, activeSpeakerId, localNetwork],
-	);
+	// FE-065: the persona is the local video source, so only the local tile carries the label.
+	const personaActive = Boolean(joinChoices?.videoSource);
+	const tiles: StageTile[] = useMemo(() => {
+		const built = buildStageTiles(participants, roster, activeSpeakerId, localNetwork);
+		return personaActive ? built.map((tile) => (tile.isLocal ? {...tile, syntheticCamera: true} : tile)) : built;
+	}, [participants, roster, activeSpeakerId, localNetwork, personaActive]);
 	const screenShare: ScreenShareView | null = useMemo(
 		() => findScreenShare(participants, roster),
 		[participants, roster],
@@ -455,6 +468,7 @@ export function useDailyMediaSession({
 		canShareScreen,
 		devices,
 		background,
+		personaActive,
 		failureKind,
 		deviceLost,
 		controlsEnabled,

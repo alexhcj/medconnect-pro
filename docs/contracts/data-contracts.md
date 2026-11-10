@@ -97,6 +97,9 @@ Response concepts:
   minutes), so the client can warn 5 minutes before. M22 does not extend rooms
 - `viewerCanEnd` (shipped in 1.2.0): UX hint computed by Nest from the end host rule; `POST .../end` still
   enforces it
+- `viewerPersonaKey` (FE-065): the caller's own demo `personaKey` from their membership in the session
+  practice, or null. Never another participant's key and never part of `participants`. It only selects the
+  illustrated demo camera; it never changes a display name
 - session state
 - waiting/join/end timestamps
 - synthetic (always true)

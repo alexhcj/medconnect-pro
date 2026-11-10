@@ -177,6 +177,7 @@ export function DailyMediaSession({
 				networkLevel={media.networkLevel}
 				devices={media.devices}
 				background={media.background}
+				personaActive={media.personaActive}
 				onToggleMicrophone={media.toggleMicrophone}
 				onToggleCamera={media.toggleCamera}
 				onToggleScreenShare={media.toggleScreenShare}

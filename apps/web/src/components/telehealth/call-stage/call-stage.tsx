@@ -59,6 +59,8 @@ export interface CallStageProps {
 	networkLevel: NetworkLevel;
 	devices: CallDevices;
 	background: BackgroundChoice;
+	/** FE-065: the local video is the demo persona, so the Camera select is replaced by a note. */
+	personaActive?: boolean;
 	onToggleMicrophone: () => void;
 	onToggleCamera: () => void;
 	onToggleScreenShare: () => void;
@@ -312,6 +314,7 @@ export function CallStage(props: CallStageProps) {
 				onTabChange={setDevicesTab}
 				devices={props.devices}
 				background={props.background}
+				personaActive={props.personaActive}
 				onChooseDevice={props.onChooseDevice}
 				onSetBackground={props.onSetBackground}
 				disabled={!props.controlsEnabled}
