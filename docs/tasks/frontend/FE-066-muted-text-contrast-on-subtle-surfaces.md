@@ -3,7 +3,7 @@ id: FE-066
 type: task
 area: frontend
 feature: design-system
-status: pending
+status: implemented
 priority: high
 estimate: 1
 dependencies: [FE-059, FE-061]
@@ -19,11 +19,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: ""
-  frame: ""
-  status: not_started
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=557-2231"
+  frame: "FE-066 Muted text contrast (page; review frame 557:2231): muted before and after, and secondary, on white, canvas, subtle, brand-subtle and danger-subtle, plus the demo account panel. Variables: new primitive gray/550 (#646b78); color/text/muted -> gray/550 (was gray/500). gray/500 and color/border/input-hover are unchanged."
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -90,13 +90,13 @@ subtle surface may fail the same way.
 
 ## Acceptance Criteria
 
-- [ ] Frames or variable change approved on the task page before code
-- [ ] Every audited muted-on-tinted pairing measures at least 4.5:1, with the ratios recorded in Completion
-- [ ] A unit test asserts muted and secondary text at 4.5:1 or better on white, canvas and subtle
-- [ ] All three `auth-wake-live` tests above pass (or the layout one is logged separately with its cause), and `npm run e2e:live` runs the `setup` and `app` projects
-- [ ] Axe passes on `/login` with the demo panel in its preview and selected states, in the mock e2e
+- [x] Frames or variable change approved on the task page before code
+- [x] Every audited muted-on-tinted pairing measures at least 4.5:1, with the ratios recorded in Completion
+- [x] A unit test asserts muted and secondary text at 4.5:1 or better on white, canvas and subtle
+- [x] All three `auth-wake-live` tests above pass (or the layout one is logged separately with its cause), and `npm run e2e:live` runs the `setup` and `app` projects
+- [x] Axe passes on `/login` with the demo panel in its preview and selected states, in the mock e2e
 - [ ] Layout is unchanged at 375, 768 and 1280 px (no horizontal scroll)
-- [ ] CHANGELOG and version (ADR-007), PATCH
+- [x] CHANGELOG and version (ADR-007), PATCH
 
 ## Dependencies
 
@@ -123,3 +123,34 @@ After 1.0.0: compatible visual fix → PATCH.
 
 Standalone. Found by the QA-014 live run on 2026-11-10. It does not belong to M22 (no telehealth
 code is involved), but QA-014's live-suite criterion cannot be ticked until it ships.
+
+## Completion
+
+- Figma ([FE-066 page](https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=557-2231)):
+  new primitive gray/550 `#646b78`; `color/text/muted` rebound to it. `gray/500` and
+  `color/border/input-hover` are unchanged. Approved by the user on 2026-11-10 before code.
+- Token ([tokens.css](../../../apps/web/src/styles/tokens.css)): `--color-text-muted` `#6b7280` -> `#646b78`.
+- Audit (muted text on a tinted surface; ratio before -> after; all measured with the formula in `tokens.test.ts`):
+  - `demo-account-panel.tsx` preview line and Email/Password labels, on subtle: 4.39 -> 4.87
+  - `mfa-challenge-form.tsx` "Theater only" hint, on subtle: 4.39 -> 4.87
+  - `notification-item.tsx` "Info" type chip, on subtle: 4.39 -> 4.87
+  - `notification-item.tsx` timestamp on an unread row, on brand-subtle: 4.44 -> 4.93
+  - `calendar.tsx` outside-month day on hover, on subtle: 4.39 -> 4.87
+  - Already passing, still passing: `user-role-list.tsx` (canvas 4.63 -> 5.13), `api-status-indicator.tsx` (warning-subtle 4.66 -> 5.17)
+  - Exempt (disabled controls, WCAG 1.4.3): `form-field-styles.ts`, `select-field.tsx`, `time-field.tsx`, `date-field.tsx`, `oauth-provider-button.tsx` unavailable state
+  - Secondary text (unchanged `#4b5563`): 6.87 on subtle, 6.94 on brand-subtle, 7.56 on white
+- Also fixed: the demo panel's credential rows were a `<dl>` containing buttons (axe `definition-list`,
+  found by the new axe check). They are now `<ul>/<li>` with spans; same classes, no layout change.
+- Tests: `tokens.test.ts` asserts muted and secondary at 4.5:1 or better on surface, canvas, subtle,
+  brand-subtle, danger-subtle and warning-subtle, and muted lighter than secondary. `demo-account-picker.spec.ts`
+  runs axe on `main` in the preview and selected states.
+- Validation: `npm run lint:web` 0 errors (10 existing warnings); `npm run type-check:web` clean;
+  `npm run test:web` 128 files, 934 tests passed; `npm run e2e:mocks -- demo-account-picker` 6 passed.
+- Live (`npm run e2e:live`, fresh seed, local stack): `auth` project all passed, including the three tests named
+  in Context (the 320 px layout test passed too; its original failure was never diagnosed, so its cause is
+  unknown and may have been stale limiter or session state); `setup` 4 passed; `app` 15 of 16 passed; `teardown`
+  passed. The failure is `telehealth-live.spec.ts` "provider, patient and nurse share one visit" (120 s timeout
+  in `patient.context.close()`); it is outside this task and not diagnosed. Logged as [QA-015](../qa/QA-015-telehealth-live-three-participant-timeout.md).
+- Browser (mock preview, `/login`): no horizontal scroll at 375 px (scrollWidth 375) and 768 px (768); the muted token computes `#646b78` and the preview line `rgb(100, 107, 120)`. 1280 px could not be set in the browser pane, so that width is unchecked and the layout criterion stays unticked.
+- Version 1.6.1 -> 1.6.2 (PATCH: compatible visual and accessibility fix).
+- Not done: refreshed screenshots wait for the next milestone close.

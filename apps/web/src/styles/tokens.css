@@ -30,7 +30,7 @@
 	/* Text */
 	--color-text-primary: #111827;
 	--color-text-secondary: #4b5563;
-	--color-text-muted: #6b7280;
+	--color-text-muted: #646b78; /* gray-550, 5.36:1 on white, 4.87:1 on subtle, 4.93:1 on brand-subtle (FE-066) */
 	--color-text-label: #374151;
 	--color-text-placeholder: #9ca3af;
 	--color-text-inverse: #ffffff;

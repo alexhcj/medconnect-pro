@@ -52,6 +52,30 @@ describe('design tokens', () => {
 		}
 	});
 
+	it('keeps muted and secondary text at 4.5:1 or better on white, canvas and tinted surfaces (WCAG 1.4.3, FE-066)', () => {
+		const backgrounds = [
+			'color-bg-surface',
+			'color-bg-canvas',
+			'color-bg-subtle',
+			'color-bg-brand-subtle',
+			'color-bg-danger-subtle',
+			'color-bg-warning-subtle',
+		];
+
+		for (const name of ['color-text-muted', 'color-text-secondary']) {
+			for (const background of backgrounds) {
+				expect(contrast(token(name), token(background)), `${name} on ${background}`).toBeGreaterThanOrEqual(4.5);
+			}
+		}
+	});
+
+	it('keeps muted text quieter than secondary text', () => {
+		const surface = token('color-bg-surface');
+
+		expect(token('color-text-muted')).toBe('#646b78');
+		expect(contrast(token('color-text-muted'), surface)).toBeLessThan(contrast(token('color-text-secondary'), surface));
+	});
+
 	it('steps hover darker than the default and keeps card dividers out of the control token', () => {
 		const surface = token('color-bg-surface');
 

@@ -6,6 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.6.2] - 2026-11-10
+
+FE-066 muted text contrast on subtle surfaces (PATCH, accessibility fix).
+
+### Fixed
+
+- `--color-text-muted` is darker (`#6b7280` to `#646b78`, new primitive gray/550). Muted text now measures at least 4.5:1
+  on white, canvas, subtle, brand-subtle, danger-subtle and warning-subtle surfaces (4.87:1 on subtle, was 4.39:1). The
+  `/login` demo account panel preview line failed axe `color-contrast`, which stopped the `auth` live project and so the
+  whole live suite.
+- The demo account panel's email and password rows are a list, not a `<dl>` holding buttons (axe `definition-list`). The
+  layout is unchanged.
+
+### Added
+
+- Token test for muted and secondary text contrast on every light surface; mock axe check on `/login` with the demo panel
+  in its preview and selected states.
+
 ## [1.6.1] - 2026-11-10
 
 QA-014 finding in the FE-063 call stage (PATCH, accessibility fix).

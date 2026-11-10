@@ -279,6 +279,7 @@ side panel). Contract task to come. Release version set when M22 closes (1.2.0 s
 - INFRA-022 — Architecture overview, request lifecycle and ADR index (shipped; docs only, no version bump)
 - SEC-012 — Resolve glob and follow-redirects audit findings (shipped at 0.103.4)
 - INFRA-023 — Render usage and preview build-filter follow-ups (in progress; docs only; hours reading 2026-11-09 to 2026-11-16)
-- FE-066 — Muted text contrast on subtle surfaces (pending; found by the QA-014 live run; blocks the live suite on `/login`)
+- FE-066 — Muted text contrast on subtle surfaces (shipped at 1.6.2; found by the QA-014 live run; cleared the `auth` live failures)
 - FE-067 — Green room for later joiners (pending; found by QA-014: a second participant joining an `in_session` visit skips the device check)
 - FE-068 — Remove "HIPAA compliant" claims from the legal pages (pending; found by the QA-014 wording sweep)
+- QA-015 — Telehealth live three-participant spec times out (pending; found by the FE-066 live run; blocks a green `e2e:live`)
