@@ -67,9 +67,19 @@ describe('TelehealthSessionShell', () => {
 		useAppointments.mockReturnValue({
 			data: [{id: 'demo-appointment-002', notes: 'Blood pressure follow-up'}],
 		});
-		useJoinTelehealthSession.mockReturnValue({mutate: vi.fn(), isPending: false, isError: false});
+		// A successful join calls onSuccess, like the TanStack mutation (FE-067: the stage needs it).
+		useJoinTelehealthSession.mockReturnValue({
+			mutate: vi.fn((_id: string, options?: {onSuccess?: () => void}) => options?.onSuccess?.()),
+			isPending: false,
+			isError: false,
+		});
 		useEndTelehealthSession.mockReturnValue({mutate: vi.fn(), isPending: false, isError: false});
 	});
+
+	/** FE-067: a live visit opens on the green room; join from it to reach the stage. */
+	async function enterLiveVisit(user: ReturnType<typeof userEvent.setup>) {
+		await user.click(screen.getByRole('button', {name: 'Join visit'}));
+	}
 
 	it('shows the green room and appointment linkage', () => {
 		mockVisit();
@@ -95,14 +105,47 @@ describe('TelehealthSessionShell', () => {
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
 		await user.click(screen.getByRole('button', {name: 'Join visit'}));
-		await waitFor(() => expect(mutate).toHaveBeenCalledWith('session-demo-appointment-002'));
+		await waitFor(() => expect(mutate).toHaveBeenCalledWith('session-demo-appointment-002', expect.anything()));
 	});
 
-	it('does not import Daily media into mock in-session chrome', () => {
-		mockVisit({data: {...waitingSession, state: 'in_session'}});
+	it('shows a later joiner the green room first and the stage only after Join (FE-067)', async () => {
+		mockVisit({data: {...waitingSession, state: 'in_session', joinedAt: '2026-10-16T16:00:00.000Z'}});
+		const user = userEvent.setup();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
-		expect(screen.getByText('Demo placeholder. Not a live video connection.')).toBeInTheDocument();
+		expect(screen.getByText('Pre-join check')).toBeInTheDocument();
+		expect(screen.getByText('This visit has already started')).toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'Leave call'})).not.toBeInTheDocument();
+
+		await enterLiveVisit(user);
+		expect(await screen.findByRole('button', {name: 'Leave call'})).toBeInTheDocument();
+		expect(screen.queryByText('Pre-join check')).not.toBeInTheDocument();
+	});
+
+	it('keeps the stage hidden when joining a live visit fails (FE-067)', async () => {
+		useJoinTelehealthSession.mockReturnValue({mutate: vi.fn(), isPending: false, isError: false});
+		mockVisit({data: {...waitingSession, state: 'in_session'}});
+		const user = userEvent.setup();
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+
+		await enterLiveVisit(user);
+		expect(screen.getByText('Pre-join check')).toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'Leave call'})).not.toBeInTheDocument();
+	});
+
+	it('does not show the already-started line to the first joiner', () => {
+		mockVisit();
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+
+		expect(screen.queryByText('This visit has already started')).not.toBeInTheDocument();
+	});
+
+	it('does not import Daily media into mock in-session chrome', async () => {
+		mockVisit({data: {...waitingSession, state: 'in_session'}});
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		await enterLiveVisit(userEvent.setup());
+
+		expect(await screen.findByText('Demo placeholder. Not a live video connection.')).toBeInTheDocument();
 		expect(screen.getByRole('status')).toHaveTextContent('Demo placeholder');
 		expect(
 			screen.queryByText('Live media is not configured in this environment'),
@@ -115,8 +158,9 @@ describe('TelehealthSessionShell', () => {
 		mockVisit({data: {...waitingSession, state: 'in_session'}});
 		const user = userEvent.setup();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		await enterLiveVisit(user);
 
-		expect(screen.getByText('Demo placeholder. Not a live video connection.')).toBeInTheDocument();
+		expect(await screen.findByText('Demo placeholder. Not a live video connection.')).toBeInTheDocument();
 		await user.click(screen.getByRole('button', {name: 'Leave call'}));
 		expect(mutate).not.toHaveBeenCalled();
 		expect(screen.getByText('You left the call. The visit is still open.')).toBeInTheDocument();
@@ -131,8 +175,9 @@ describe('TelehealthSessionShell', () => {
 		mockVisit({data: {...waitingSession, state: 'in_session', viewerCanEnd: true}});
 		const user = userEvent.setup();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		await enterLiveVisit(user);
 
-		expect(screen.getByRole('button', {name: 'Camera'})).toHaveAttribute('aria-pressed', 'false');
+		expect(await screen.findByRole('button', {name: 'Camera'})).toHaveAttribute('aria-pressed', 'false');
 		await user.click(screen.getByRole('button', {name: 'Camera'}));
 		expect(screen.getByRole('button', {name: 'Camera'})).toHaveAttribute('aria-pressed', 'true');
 		await user.click(screen.getByRole('button', {name: 'Microphone'}));
@@ -197,15 +242,16 @@ describe('TelehealthSessionShell', () => {
 		expect(screen.getByRole('heading', {name: 'Follow-up appointment'})).toBeInTheDocument();
 	});
 
-	it('hides End visit when the server says the viewer cannot end, whatever the role', () => {
+	it('hides End visit when the server says the viewer cannot end, whatever the role', async () => {
 		useSessionStatus.mockReturnValue({
 			session: {userRole: 'PRACTICE_ADMIN'},
 			isLoading: false,
 		});
 		mockVisit({data: {...waitingSession, state: 'in_session', viewerCanEnd: false}});
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		await enterLiveVisit(userEvent.setup());
 
-		expect(screen.getByRole('button', {name: 'Leave call'})).toBeInTheDocument();
+		expect(await screen.findByRole('button', {name: 'Leave call'})).toBeInTheDocument();
 		expect(screen.queryByRole('button', {name: 'End visit'})).not.toBeInTheDocument();
 	});
 

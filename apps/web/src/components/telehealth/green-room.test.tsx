@@ -92,6 +92,19 @@ describe('GreenRoom (mock mode)', () => {
 		expect(container.textContent).not.toMatch(/\b(secure|private|end-to-end)\b/i);
 	});
 
+	it('shows and announces the already-started line only for a later joiner (FE-067)', () => {
+		renderRoom({inProgressText: 'This visit has already started'});
+		expect(screen.getByText('This visit has already started')).toBeInTheDocument();
+		expect(document.querySelector('[aria-live="polite"]')).toHaveTextContent(
+			'This visit has already started. Camera and microphone are ready.',
+		);
+	});
+
+	it('shows no already-started line by default', () => {
+		renderRoom();
+		expect(screen.queryByText(/already started/)).not.toBeInTheDocument();
+	});
+
 	it('announces status changes politely', () => {
 		renderRoom();
 		const live = document.querySelector('[aria-live="polite"]');

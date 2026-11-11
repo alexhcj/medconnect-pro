@@ -56,6 +56,21 @@ describe('telehealthMockAPI', () => {
 		expect(ended.state).toBe('ended');
 	});
 
+	it('opens an already-live visit with ?mockVisit=in_progress and keeps joinedAt on a repeat join (FE-067)', async () => {
+		window.history.pushState({}, '', '/dashboard/telehealth/session-demo-appointment-002?mockVisit=in_progress');
+		try {
+			const live = await telehealthMockAPI.getSession('session-demo-appointment-002');
+			expect(live.state).toBe('in_session');
+			expect(live.joinedAt).toBeTruthy();
+
+			const again = await telehealthMockAPI.joinSession('session-demo-appointment-002');
+			expect(again.state).toBe('in_session');
+			expect(again.joinedAt).toBe(live.joinedAt);
+		} finally {
+			window.history.pushState({}, '', '/');
+		}
+	});
+
 	it('keeps an ended session ended on get and rejects rejoin', async () => {
 		await telehealthMockAPI.joinSession('session-demo-appointment-002');
 		await telehealthMockAPI.endSession('session-demo-appointment-002');

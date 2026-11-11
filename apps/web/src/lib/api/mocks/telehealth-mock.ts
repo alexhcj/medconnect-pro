@@ -55,9 +55,21 @@ function currentOrWaiting(appointment: Appointment): TelehealthSession {
 	if (existing && existing.state !== 'ended') {
 		return present(existing);
 	}
-	const session = present(sessionFromAppointment(appointment, 'waiting'));
+	const session = present(
+		mockVisitInProgress()
+			? {...sessionFromAppointment(appointment, 'in_session'), joinedAt: new Date().toISOString()}
+			: sessionFromAppointment(appointment, 'waiting'),
+	);
 	sessions.set(id, session);
 	return session;
+}
+
+/**
+ * FE-067, mock mode only: `?mockVisit=in_progress` opens the visit as already live, like a visit the
+ * provider joined first. Live mode never reads it. Tests only; the real order comes from Nest.
+ */
+function mockVisitInProgress(): boolean {
+	return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mockVisit') === 'in_progress';
 }
 
 export function resetTelehealthMockSessions() {
@@ -96,6 +108,10 @@ export const telehealthMockAPI = {
 			throw new ApiError('A telehealth session for this appointment has already ended.', 409, {
 				code: 'SESSION_ENDED',
 			});
+		}
+		// Like Nest, a repeat join on a live visit returns it unchanged (the first join sets `joinedAt`).
+		if (session.state === 'in_session') {
+			return session;
 		}
 		const next: TelehealthSession = {...session, state: 'in_session', joinedAt: new Date().toISOString()};
 		sessions.set(session.id, next);

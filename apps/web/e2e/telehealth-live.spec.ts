@@ -30,7 +30,14 @@ async function newParticipant(browser: Browser, storageState: string): Promise<{
 }
 
 /** Lobby -> session page -> green room -> Join. Returns the session id. */
-async function joinSeededVisit(page: Page): Promise<string> {
+async function joinSeededVisit(page: Page, options: {laterJoiner?: boolean} = {}): Promise<string> {
+	const tokenRequests: string[] = [];
+	page.on('request', (request) => {
+		// The meeting token is the only way into a Daily room, so no token request means no room session.
+		if (/\/media-token/i.test(request.url())) {
+			tokenRequests.push(request.url());
+		}
+	});
 	await page.goto('/dashboard/telehealth');
 	await expect(page.getByRole('heading', {level: 1, name: 'Telehealth'})).toBeVisible();
 	await page
@@ -41,12 +48,15 @@ async function joinSeededVisit(page: Page): Promise<string> {
 	await expect(page).toHaveURL(SESSION_URL);
 	const greenRoom = page.getByRole('heading', {level: 2, name: /^Video visit/});
 	const stage = page.getByRole('region', {name: 'Video visit', exact: true});
-	await expect(greenRoom.or(stage)).toBeVisible();
-	// The green room shows only while the session is `waiting` (the first joiner). A participant who
-	// opens a visit that is already `in_session` lands on the stage directly (QA-014 finding).
-	if (await greenRoom.isVisible()) {
-		await page.getByRole('button', {name: 'Join visit', exact: true}).click();
+	// FE-067: every participant gets the green room first, the first joiner and a later joiner alike.
+	await expect(greenRoom).toBeVisible();
+	await expect(stage).toHaveCount(0);
+	if (options.laterJoiner) {
+		await expect(page.getByText('This visit has already started', {exact: true})).toBeVisible();
 	}
+	// The green room mints no meeting token, so it cannot join a Daily room.
+	expect(tokenRequests).toEqual([]);
+	await page.getByRole('button', {name: 'Join visit', exact: true}).click();
 	await expect(stage).toBeVisible();
 	return SESSION_URL.exec(page.url())![1];
 }
@@ -88,8 +98,8 @@ test.describe('Live telehealth visit with three participants', () => {
 		const patient = await newParticipant(browser, PATIENT_STATE);
 		const nurse = await newParticipant(browser, NURSE_STATE);
 		try {
-			const patientSessionId = await joinSeededVisit(patient.page);
-			const nurseSessionId = await joinSeededVisit(nurse.page);
+			const patientSessionId = await joinSeededVisit(patient.page, {laterJoiner: true});
+			const nurseSessionId = await joinSeededVisit(nurse.page, {laterJoiner: true});
 			expect(patientSessionId).toBe(providerSessionId);
 			expect(nurseSessionId).toBe(providerSessionId);
 

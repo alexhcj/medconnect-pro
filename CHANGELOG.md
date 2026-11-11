@@ -6,6 +6,30 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.6.3] - 2026-11-11
+
+FE-067 green room for later joiners (PATCH; makes the visit match what FE-062 and SEC-013 already describe).
+
+### Changed
+
+- A participant who opens a visit that is already in progress now gets the pre-join green room first (device check, test
+  sound, persona option in demo builds) and reaches the call stage only after Join. Before, only the first joiner saw it.
+  The green room shows "This visit has already started" for a later joiner. A reload during a call returns to the green
+  room. The first joiner's flow and Leave and Rejoin call are unchanged.
+- Mock mode: `?mockVisit=in_progress` opens a visit as already live (tests only), and a repeat join keeps `joinedAt`.
+
+### Added
+
+- `visitView` mapping (session state, joined-here, closed) with unit tests; mock e2e `telehealth-later-joiner.spec.ts` at
+  1440, 390 and 320 px; the live three-participant spec now asserts the green room for the patient and nurse and that no
+  meeting token is requested before Join.
+- `docs/contracts/data-contracts.md`: join is idempotent on a live visit (documents existing behaviour; no server change).
+
+### Known limitations
+
+- The line does not name who is in the call. That needs connected-participant presence from Nest, which does not exist
+  yet; it is a planned backend follow-up.
+
 ## [1.6.2] - 2026-11-10
 
 FE-066 muted text contrast on subtle surfaces (PATCH, accessibility fix).

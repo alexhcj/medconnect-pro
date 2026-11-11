@@ -124,6 +124,11 @@ State machine:
 - `ended` after `POST .../end`, or after the next get/join/mint, or a participant open-session
   lookup, lazily persists end when the appointment is cancelled, completed, or past grace
 
+Join is idempotent on a live visit: a second authorized participant joining an `in_session` session
+gets the session back unchanged (200, same `joinedAt`) after the same participant, eligibility and
+join-window checks, and join on `ended` is still 409. The client uses this so a later joiner can show
+the green room first and join afterwards; it does not report who is connected.
+
 Media-token does not change that state machine. Mint requires `state === 'in_session'`; minting
 from `waiting` returns 409 `SESSION_NOT_JOINABLE`. Token TTL is bounded by the join window
 (appointment end plus 15 minutes). Nest `ended` remains source of truth if Daily room delete

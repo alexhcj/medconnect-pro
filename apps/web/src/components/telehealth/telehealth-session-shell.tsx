@@ -29,6 +29,7 @@ import {
 import {useAppointments} from '@/lib/hooks/use-medical';
 import {useSessionStatus} from '@/lib/hooks/use-session';
 import type {JoinChoices} from '@/lib/telehealth/join-choices';
+import {VISIT_ALREADY_STARTED_TEXT, visitView} from '@/lib/telehealth/visit-view';
 import {mediaTileInitials, localParticipantDisplayName} from '@/lib/telehealth/media-participant';
 import type {TelehealthSession} from '@/types/medical/telehealth-session';
 import {telehealthActionErrorMessage} from '@/lib/telehealth/action-error';
@@ -68,6 +69,7 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 	const endVisit = useEndTelehealthSession();
 	const mockMode = isMockMode();
 	const [joinChoices, setJoinChoices] = useState<JoinChoices | undefined>();
+	const [joinedHere, setJoinedHere] = useState(false);
 	// FE-065: the persona outlives the green room, so it is stopped here when the visit ends or this page goes away.
 	const personaCamera = joinChoices?.personaCamera;
 	useEffect(() => () => personaCamera?.stop(), [personaCamera]);
@@ -123,6 +125,8 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 		visit.data?.state === 'ended' || isClosedVisitError(visit.error) || isClosedVisitError(join.error);
 	// A visit that was live gets the wrap-up or confirmation; one that never started keeps the plain card.
 	const endedAfterLive = visit.data?.state === 'ended' && Boolean(visit.data.joinedAt);
+	// FE-067: a later joiner of a live visit gets the green room until they join from this page.
+	const view = visit.data ? visitView({state: visit.data.state, joinedHere, closed}) : 'closed';
 
 	return (
 		<SessionChrome>
@@ -192,16 +196,17 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 						/>
 					)}
 
-					{!closed && visit.data.state === 'waiting' && (
+					{view === 'green_room' && (
 						<GreenRoom
 							visitTitle={visitTitle}
+							inProgressText={visit.data.state === 'in_session' ? VISIT_ALREADY_STARTED_TEXT : undefined}
 							scheduleText={`${formatTelehealthRange(visit.data.start, visit.data.end)} · ${visit.data.providerName} with ${visit.data.patientName}`}
 							initials={greenRoomInitials(authSession?.userRole, visit.data)}
 							personaKey={personaKey}
 							displayName={localParticipantDisplayName(visit.data, authSession?.userRole)}
 							onJoin={(choices) => {
 								setJoinChoices(choices);
-								join.mutate(sessionId);
+								join.mutate(sessionId, {onSuccess: () => setJoinedHere(true)});
 							}}
 							isJoining={join.isPending}
 							errorMessage={
@@ -212,7 +217,7 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 						/>
 					)}
 
-						{!closed && visit.data.state === 'in_session' && mockMode && (
+						{view === 'stage' && mockMode && (
 							<MockCallStage
 								session={visit.data}
 								userRole={authSession?.userRole}
@@ -224,7 +229,7 @@ export function TelehealthSessionShell({sessionId}: {sessionId: string}) {
 							/>
 						)}
 
-						{!closed && visit.data.state === 'in_session' && !mockMode && (
+						{view === 'stage' && !mockMode && (
 							<DailyMediaSession
 								sessionId={sessionId}
 								session={visit.data}

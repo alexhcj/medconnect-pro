@@ -54,6 +54,11 @@ export interface GreenRoomProps {
 	personaKey?: DemoPersonaKey | null;
 	/** The caller's name from Nest (roster). The persona never changes it. */
 	displayName?: string;
+	/**
+	 * FE-067: set when the visit is already live and this participant is a later joiner. Wording only;
+	 * it never decides access. Who is in the call by name needs Nest presence (known limitation).
+	 */
+	inProgressText?: string;
 }
 
 function prefersReducedMotion(): boolean {
@@ -137,6 +142,7 @@ export function GreenRoom({
 	backHref = '/dashboard/appointments',
 	personaKey = null,
 	displayName = 'You',
+	inProgressText,
 }: GreenRoomProps) {
 	const mock = isMockMode();
 	const [mockPhase] = useState(() => (mock ? mockPhaseFromLocation() : undefined));
@@ -358,11 +364,18 @@ export function GreenRoom({
 					{visitTitle}
 				</h2>
 				<p className="text-sm text-foreground-secondary">{scheduleText}</p>
+				{inProgressText && (
+					<p className="flex items-center gap-2 text-sm font-medium text-foreground-secondary">
+						<span aria-hidden="true" className="size-2 rounded-full bg-success" />
+						{inProgressText}
+					</p>
+				)}
 			</header>
 
 			{personaAvailable && <DemoPersonaBanner />}
 
 			<p className="sr-only" aria-live="polite">
+				{inProgressText ? `${inProgressText}. ` : ''}
 				{PHASE_ANNOUNCEMENT[phase]}
 				{playing ? ' Playing test sound.' : ''}
 				{media.notice ? ` ${media.notice}` : ''}
