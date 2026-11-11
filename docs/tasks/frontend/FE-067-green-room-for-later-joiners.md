@@ -138,8 +138,9 @@ Implemented 2026-11-11 at 1.6.3.
 Deviation from the approved frames: the frames name the person ("Dr. Jordan Ellis is already in this visit", "The
 patient is already in this visit"). The client cannot know who is connected (`participants` is the assigned roster,
 not presence), so this ships with the neutral line "This visit has already started". Naming the person needs
-connected-participant presence from Nest and a contract edit. Known limitation until that backend task and its
-frontend follow-up ship; mock mode keeps its mock roster. The Figma frames still show the named wording as the target.
+connected-participant presence from Nest and a contract edit. Known limitation until
+[BE-028](../backend/BE-028-telehealth-connected-participants.md) and its frontend follow-up
+[FE-069](FE-069-green-room-named-presence-line.md) ship; mock mode keeps its mock roster. The Figma frames still show the named wording as the target.
 
 Not verified: the live three-participant spec (blocked by QA-015), the live no-Daily-session check, the two-browser run
 on Render, and the keyboard-only and screen-reader pass.
