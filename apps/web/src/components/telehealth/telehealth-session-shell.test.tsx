@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from '@testing-library/react';
+import {render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {TelehealthSessionShell} from '@/components/telehealth/telehealth-session-shell';
 import {ApiError, RateLimitedError} from '@/lib/api/http';
@@ -16,6 +16,7 @@ const {useTelehealthSession, useJoinTelehealthSession, useEndTelehealthSession, 
 
 vi.mock('next/navigation', () => ({
 	useRouter: () => ({push}),
+	useSearchParams: () => new URLSearchParams(),
 }));
 
 vi.mock('@/lib/hooks/use-telehealth', () => ({
@@ -41,6 +42,8 @@ const waitingSession: TelehealthSession = {
 	end: '2026-10-16T16:30:00.000Z',
 	type: 'telehealth',
 	state: 'waiting',
+	participants: [],
+	viewerCanEnd: false,
 	synthetic: true,
 };
 
@@ -64,9 +67,19 @@ describe('TelehealthSessionShell', () => {
 		useAppointments.mockReturnValue({
 			data: [{id: 'demo-appointment-002', notes: 'Blood pressure follow-up'}],
 		});
-		useJoinTelehealthSession.mockReturnValue({mutate: vi.fn(), isPending: false, isError: false});
+		// A successful join calls onSuccess, like the TanStack mutation (FE-067: the stage needs it).
+		useJoinTelehealthSession.mockReturnValue({
+			mutate: vi.fn((_id: string, options?: {onSuccess?: () => void}) => options?.onSuccess?.()),
+			isPending: false,
+			isError: false,
+		});
 		useEndTelehealthSession.mockReturnValue({mutate: vi.fn(), isPending: false, isError: false});
 	});
+
+	/** FE-067: a live visit opens on the green room; join from it to reach the stage. */
+	async function enterLiveVisit(user: ReturnType<typeof userEvent.setup>) {
+		await user.click(screen.getByRole('button', {name: 'Join visit'}));
+	}
 
 	it('shows the green room and appointment linkage', () => {
 		mockVisit();
@@ -92,14 +105,47 @@ describe('TelehealthSessionShell', () => {
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
 		await user.click(screen.getByRole('button', {name: 'Join visit'}));
-		await waitFor(() => expect(mutate).toHaveBeenCalledWith('session-demo-appointment-002'));
+		await waitFor(() => expect(mutate).toHaveBeenCalledWith('session-demo-appointment-002', expect.anything()));
 	});
 
-	it('does not import Daily media into mock in-session chrome', () => {
-		mockVisit({data: {...waitingSession, state: 'in_session'}});
+	it('shows a later joiner the green room first and the stage only after Join (FE-067)', async () => {
+		mockVisit({data: {...waitingSession, state: 'in_session', joinedAt: '2026-10-16T16:00:00.000Z'}});
+		const user = userEvent.setup();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
-		expect(screen.getByText('Demo placeholder. Not a live video connection.')).toBeInTheDocument();
+		expect(screen.getByText('Pre-join check')).toBeInTheDocument();
+		expect(screen.getByText('This visit has already started')).toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'Leave call'})).not.toBeInTheDocument();
+
+		await enterLiveVisit(user);
+		expect(await screen.findByRole('button', {name: 'Leave call'})).toBeInTheDocument();
+		expect(screen.queryByText('Pre-join check')).not.toBeInTheDocument();
+	});
+
+	it('keeps the stage hidden when joining a live visit fails (FE-067)', async () => {
+		useJoinTelehealthSession.mockReturnValue({mutate: vi.fn(), isPending: false, isError: false});
+		mockVisit({data: {...waitingSession, state: 'in_session'}});
+		const user = userEvent.setup();
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+
+		await enterLiveVisit(user);
+		expect(screen.getByText('Pre-join check')).toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'Leave call'})).not.toBeInTheDocument();
+	});
+
+	it('does not show the already-started line to the first joiner', () => {
+		mockVisit();
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+
+		expect(screen.queryByText('This visit has already started')).not.toBeInTheDocument();
+	});
+
+	it('does not import Daily media into mock in-session chrome', async () => {
+		mockVisit({data: {...waitingSession, state: 'in_session'}});
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		await enterLiveVisit(userEvent.setup());
+
+		expect(await screen.findByText('Demo placeholder. Not a live video connection.')).toBeInTheDocument();
 		expect(screen.getByRole('status')).toHaveTextContent('Demo placeholder');
 		expect(
 			screen.queryByText('Live media is not configured in this environment'),
@@ -112,8 +158,9 @@ describe('TelehealthSessionShell', () => {
 		mockVisit({data: {...waitingSession, state: 'in_session'}});
 		const user = userEvent.setup();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		await enterLiveVisit(user);
 
-		expect(screen.getByText('Demo placeholder. Not a live video connection.')).toBeInTheDocument();
+		expect(await screen.findByText('Demo placeholder. Not a live video connection.')).toBeInTheDocument();
 		await user.click(screen.getByRole('button', {name: 'Leave call'}));
 		expect(mutate).not.toHaveBeenCalled();
 		expect(screen.getByText('You left the call. The visit is still open.')).toBeInTheDocument();
@@ -125,37 +172,87 @@ describe('TelehealthSessionShell', () => {
 	it('shows media placeholders and ends an in-session visit', async () => {
 		const mutate = vi.fn();
 		useEndTelehealthSession.mockReturnValue({mutate, isPending: false, isError: false});
-		mockVisit({data: {...waitingSession, state: 'in_session'}});
+		mockVisit({data: {...waitingSession, state: 'in_session', viewerCanEnd: true}});
 		const user = userEvent.setup();
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		await enterLiveVisit(user);
 
-		expect(screen.getByRole('button', {name: 'Camera'})).toHaveAttribute('aria-pressed', 'false');
+		expect(await screen.findByRole('button', {name: 'Camera'})).toHaveAttribute('aria-pressed', 'false');
 		await user.click(screen.getByRole('button', {name: 'Camera'}));
 		expect(screen.getByRole('button', {name: 'Camera'})).toHaveAttribute('aria-pressed', 'true');
 		await user.click(screen.getByRole('button', {name: 'Microphone'}));
 		expect(screen.getByRole('button', {name: 'Microphone'})).toHaveAttribute('aria-pressed', 'true');
-		await user.click(screen.getByRole('button', {name: 'Screen share'}));
-		expect(screen.getByRole('button', {name: 'Screen share'})).toHaveAttribute('aria-pressed', 'true');
+		await user.click(screen.getByRole('button', {name: 'Share screen'}));
+		expect(screen.getByRole('button', {name: 'Share screen'})).toHaveAttribute('aria-pressed', 'true');
 
-		await user.click(screen.getByRole('button', {name: 'End session'}));
-		expect(mutate).toHaveBeenCalledWith(
-			'session-demo-appointment-002',
-			expect.objectContaining({onSuccess: expect.any(Function)}),
-		);
-		mutate.mock.calls[0]?.[1]?.onSuccess();
-		expect(push).toHaveBeenCalledWith('/dashboard/telehealth');
+		await user.click(screen.getByRole('button', {name: 'End visit'}));
+		expect(mutate).not.toHaveBeenCalled();
+		const dialog = await screen.findByRole('dialog', {name: 'End this visit for everyone?'});
+		await user.click(within(dialog).getByRole('button', {name: 'End visit'}));
+		expect(mutate).toHaveBeenCalledWith('session-demo-appointment-002');
+		// The page stays and shows the wrap-up once the session reads `ended`; no redirect to the lobby.
+		expect(push).not.toHaveBeenCalled();
 	});
 
-	it('hides End session for a patient', () => {
-		useSessionStatus.mockReturnValue({
-			session: {userRole: 'PATIENT'},
-			isLoading: false,
+	const liveEnded: TelehealthSession = {
+		...waitingSession,
+		state: 'ended',
+		joinedAt: '2026-10-16T16:00:00.000Z',
+		endedAt: '2026-10-16T16:18:00.000Z',
+	};
+
+	it('shows the provider wrap-up with a prefilled follow-up link after a live visit', () => {
+		useAppointments.mockReturnValue({
+			data: [{id: 'demo-appointment-002', notes: 'Blood pressure follow-up', patientId: 'patient-9', providerId: 'provider-3'}],
 		});
-		mockVisit({data: {...waitingSession, state: 'in_session'}});
+		mockVisit({data: {...liveEnded, viewerCanEnd: true}});
 		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
 
-		expect(screen.getByRole('button', {name: 'Leave call'})).toBeInTheDocument();
-		expect(screen.queryByRole('button', {name: 'End session'})).not.toBeInTheDocument();
+		expect(screen.getByRole('heading', {name: 'Visit wrap-up · Taylor Bennett'})).toBeInTheDocument();
+		expect(screen.getByText('18 min')).toBeInTheDocument();
+		expect(screen.getByRole('link', {name: 'Book follow-up'})).toHaveAttribute(
+			'href',
+			'/dashboard/appointments/new?patientId=patient-9&providerId=provider-3',
+		);
+		expect(screen.queryByRole('heading', {name: 'This visit has ended'})).not.toBeInTheDocument();
+	});
+
+	it('shows the patient confirmation, with a follow-up card only for a real next appointment', () => {
+		useSessionStatus.mockReturnValue({session: {userRole: 'PATIENT'}, isLoading: false});
+		useAppointments.mockReturnValue({
+			data: [
+				{id: 'demo-appointment-002', notes: 'Blood pressure follow-up', state: 'completed', start: '2026-10-16T16:00:00.000Z'},
+			],
+		});
+		mockVisit({data: liveEnded});
+		const view = render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+
+		expect(screen.getByRole('heading', {name: 'Your visit has ended'})).toBeInTheDocument();
+		expect(screen.queryByText('Follow-up appointment')).not.toBeInTheDocument();
+		expect(screen.getByRole('link', {name: 'Back to appointments'})).toBeInTheDocument();
+		view.unmount();
+
+		useAppointments.mockReturnValue({
+			data: [
+				{id: 'demo-appointment-002', notes: 'x', state: 'completed', start: '2026-10-16T16:00:00.000Z'},
+				{id: 'later', state: 'scheduled', start: '2099-01-01T15:00:00.000Z', providerName: 'Dr. Casey Walsh'},
+			],
+		});
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		expect(screen.getByRole('heading', {name: 'Follow-up appointment'})).toBeInTheDocument();
+	});
+
+	it('hides End visit when the server says the viewer cannot end, whatever the role', async () => {
+		useSessionStatus.mockReturnValue({
+			session: {userRole: 'PRACTICE_ADMIN'},
+			isLoading: false,
+		});
+		mockVisit({data: {...waitingSession, state: 'in_session', viewerCanEnd: false}});
+		render(<TelehealthSessionShell sessionId="session-demo-appointment-002" />);
+		await enterLiveVisit(userEvent.setup());
+
+		expect(await screen.findByRole('button', {name: 'Leave call'})).toBeInTheDocument();
+		expect(screen.queryByRole('button', {name: 'End visit'})).not.toBeInTheDocument();
 	});
 
 	it('shows a terminal ended state instead of the waiting room', () => {

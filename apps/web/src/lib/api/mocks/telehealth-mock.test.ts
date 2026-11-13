@@ -1,4 +1,6 @@
 import {ApiError} from '@/lib/api/http';
+import {clearMockSession, writeMockSession} from '@/lib/api/mocks/mock-session-store';
+import type {Role} from '@/types/auth/roles';
 import {resetTelehealthMockSessions, telehealthMockAPI} from '@/lib/api/mocks/telehealth-mock';
 
 describe('telehealthMockAPI', () => {
@@ -54,6 +56,21 @@ describe('telehealthMockAPI', () => {
 		expect(ended.state).toBe('ended');
 	});
 
+	it('opens an already-live visit with ?mockVisit=in_progress and keeps joinedAt on a repeat join (FE-067)', async () => {
+		window.history.pushState({}, '', '/dashboard/telehealth/session-demo-appointment-002?mockVisit=in_progress');
+		try {
+			const live = await telehealthMockAPI.getSession('session-demo-appointment-002');
+			expect(live.state).toBe('in_session');
+			expect(live.joinedAt).toBeTruthy();
+
+			const again = await telehealthMockAPI.joinSession('session-demo-appointment-002');
+			expect(again.state).toBe('in_session');
+			expect(again.joinedAt).toBe(live.joinedAt);
+		} finally {
+			window.history.pushState({}, '', '/');
+		}
+	});
+
 	it('keeps an ended session ended on get and rejects rejoin', async () => {
 		await telehealthMockAPI.joinSession('session-demo-appointment-002');
 		await telehealthMockAPI.endSession('session-demo-appointment-002');
@@ -80,6 +97,30 @@ describe('telehealthMockAPI', () => {
 		await expect(telehealthMockAPI.getSession('demo-appointment-002')).rejects.toMatchObject({
 			status: 404,
 		});
+	});
+
+	it('returns a three-way mock roster and gates viewerCanEnd by the mock role', async () => {
+		const asRole = (userRole: Role) =>
+			writeMockSession({
+				sessionId: 'mock-session',
+				userId: 'mock-user',
+				userRole,
+				expiresAt: Date.now() + 60_000,
+				lastActivity: Date.now(),
+				isActive: true,
+				permissions: [],
+				currentContext: 'mock',
+			});
+		asRole('PROVIDER');
+		const provider = await telehealthMockAPI.getSession('session-demo-appointment-002');
+		expect(provider.participants.map((p) => p.role)).toEqual(['PROVIDER', 'PATIENT', 'NURSE']);
+		expect(provider.viewerCanEnd).toBe(true);
+
+		asRole('RECEPTIONIST');
+		expect((await telehealthMockAPI.getSession('session-demo-appointment-002')).viewerCanEnd).toBe(false);
+		asRole('PATIENT');
+		expect((await telehealthMockAPI.getSession('session-demo-appointment-002')).viewerCanEnd).toBe(false);
+		clearMockSession();
 	});
 
 	it('does not expose a media-token method', () => {

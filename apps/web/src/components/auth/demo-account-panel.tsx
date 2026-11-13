@@ -112,21 +112,21 @@ export function DemoAccountPanel({
 					: `Preview: ${shown.label}. Tap a role to fill the sign-in form.`}
 			</p>
 
-			<dl className="space-y-2">
+			<ul className="space-y-2">
 				{credentials.map(({kind, label, value}) => {
 					const copied = current?.kind === kind && current.result === 'copied';
 					const blocked = current?.kind === kind && current.result === 'blocked';
 					return (
-						<div key={kind} className="flex min-w-0 items-center gap-2">
-							<dt className="w-15 shrink-0 font-medium text-foreground-muted">{label}</dt>
-							<dd
+						<li key={kind} className="flex min-w-0 items-center gap-2">
+							<span className="w-15 shrink-0 font-medium text-foreground-muted">{label}</span>
+							<span
 								className={cn(
 									'min-w-0 flex-1 rounded-sm px-1 py-0.5 font-mono break-all text-foreground select-all',
 									blocked && 'bg-brand-subtle',
 								)}
 							>
 								{value}
-							</dd>
+							</span>
 							<Button
 								type="button"
 								variant="ghost"
@@ -149,10 +149,10 @@ export function DemoAccountPanel({
 									<Copy className="size-4" aria-hidden="true" />
 								)}
 							</Button>
-						</div>
+						</li>
 					);
 				})}
-			</dl>
+			</ul>
 
 			{current?.result === 'blocked' && (
 				<p className="flex items-center gap-1.5 font-medium text-danger">

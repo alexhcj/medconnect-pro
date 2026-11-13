@@ -15,6 +15,8 @@ const session: TelehealthSession = {
 	end: '2026-10-16T16:30:00.000Z',
 	type: 'telehealth',
 	state: 'in_session',
+	participants: [],
+	viewerCanEnd: false,
 	synthetic: true,
 };
 

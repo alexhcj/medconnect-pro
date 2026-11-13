@@ -40,6 +40,15 @@ export async function whenDailyCallsDestroyed(): Promise<void> {
 	}
 }
 
+/** Whether this browser can share a screen. Phones usually cannot; the control is hidden then (FE-063). */
+export function canDailyShareScreen(): boolean {
+	try {
+		return Daily.supportedBrowser().supportsScreenShare !== false;
+	} catch {
+		return false;
+	}
+}
+
 /** Daily's own browser check, used by the green room's "Browser supported" row. */
 export function isDailyBrowserSupported(): boolean {
 	try {

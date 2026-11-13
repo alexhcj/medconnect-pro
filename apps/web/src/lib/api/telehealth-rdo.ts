@@ -1,6 +1,11 @@
 import {LIVE_DEMO_PROVIDER_ID, liveDemoProvider} from '@/lib/api/live-demo-provider';
+import {parsePersonaKey} from '@/lib/telehealth/demo-personas';
 import type {AppointmentType} from '@/types/medical/appointment';
-import type {TelehealthSession, TelehealthSessionState} from '@/types/medical/telehealth-session';
+import type {
+	TelehealthParticipant,
+	TelehealthSession,
+	TelehealthSessionState,
+} from '@/types/medical/telehealth-session';
 
 /** Session returned by Nest `TelehealthSessionRdo`. `practiceId` is informational only. */
 export interface TelehealthSessionRdo {
@@ -19,6 +24,10 @@ export interface TelehealthSessionRdo {
 	joinedAt?: string;
 	endedAt?: string;
 	synthetic: boolean;
+	participants?: TelehealthParticipant[];
+	mediaExpiresAt?: string;
+	viewerCanEnd?: boolean;
+	viewerPersonaKey?: string | null;
 }
 
 export function sessionFromRdo(rdo: TelehealthSessionRdo): TelehealthSession {
@@ -32,6 +41,14 @@ export function sessionFromRdo(rdo: TelehealthSessionRdo): TelehealthSession {
 		end: rdo.end,
 		type: rdo.type,
 		state: rdo.state,
+		// An older API without these fields must never show End visit (UX hint only; Nest enforces).
+		participants: Array.isArray(rdo.participants) ? rdo.participants : [],
+		viewerCanEnd: rdo.viewerCanEnd === true,
+		// An unknown or missing key means no persona option (the catalog is closed).
+		viewerPersonaKey: parsePersonaKey(rdo.viewerPersonaKey),
+		...(rdo.mediaExpiresAt ? {mediaExpiresAt: rdo.mediaExpiresAt} : {}),
+		...(rdo.joinedAt ? {joinedAt: rdo.joinedAt} : {}),
+		...(rdo.endedAt ? {endedAt: rdo.endedAt} : {}),
 		synthetic: true,
 	};
 }

@@ -257,9 +257,9 @@ Ships as MINOR releases from 1.1.0; the breaking host rule is MINOR under the AD
 - DATA-007 — Staff display identity and demo visit reason (shipped at 1.1.0)
 - BE-027 — Telehealth keep-alive, passive requests and the End visit host rule (shipped at 1.2.0)
 - FE-062 — Telehealth pre-join green room (implemented at 1.3.0; live camera check pending)
-- FE-063 — Full-screen call stage and controls (pending; design in progress)
-- FE-064 — Call states, session keep-alive and wrap-up (pending; design in progress)
-- FE-065 — Demo persona camera (pending; design in progress)
+- FE-063 — Full-screen call stage and controls (implemented at 1.4.0; live two-browser check pending)
+- FE-064 — Call states, session keep-alive and wrap-up (implemented at 1.5.0; 25-minute hidden-tab run pending)
+- FE-065 — Demo persona camera (implemented at 1.6.0; two-browser check pending)
 - QA-014 — M22 verification and close audit (pending)
 
 Order: DATA-007, then BE-027 and FE-062 in parallel; FE-063 after BE-027 and FE-062; FE-064 after FE-063; FE-065 after FE-062 and DATA-007; QA-014 last.
@@ -267,7 +267,7 @@ Order: DATA-007, then BE-027 and FE-062 in parallel; FE-063 after BE-027 and FE-
 ## Product (M23, planned)
 
 Telehealth 2.0: Clinical controls (admission, lock/remove, ephemeral chat, Daily webhooks, clinical
-side panel). Contract task to come. Planned 1.2.0.
+side panel). Contract task to come. Release version set when M22 closes (1.2.0 shipped with M22).
 
 ## Standalone (no milestone)
 
@@ -279,3 +279,9 @@ side panel). Contract task to come. Planned 1.2.0.
 - INFRA-022 — Architecture overview, request lifecycle and ADR index (shipped; docs only, no version bump)
 - SEC-012 — Resolve glob and follow-redirects audit findings (shipped at 0.103.4)
 - INFRA-023 — Render usage and preview build-filter follow-ups (in progress; docs only; hours reading 2026-11-09 to 2026-11-16)
+- FE-066 — Muted text contrast on subtle surfaces (shipped at 1.6.2; found by the QA-014 live run; cleared the `auth` live failures)
+- FE-067 — Green room for later joiners (implemented at 1.6.3; found by QA-014; a later joiner now gets the green room first; live three-participant check passed in QA-015; naming who is in the call needs a presence follow-up)
+- FE-068 — Remove "HIPAA compliant" claims from the legal pages (shipped at 1.6.4; found by the QA-014 wording sweep; copy and a wording test only)
+- BE-028 — Telehealth connected participants (pending; Nest reports who is connected so the green room can name them; follows FE-067)
+- FE-069 — Green room named presence line (pending; blocked by BE-028; needs Figma frames for several connected people and the fallback line first)
+- QA-015 — Telehealth live three-participant spec times out (implemented; test only, no version bump; cause: the MFA nurse's second session opened the multiple-sessions modal; `e2e:live` green twice)

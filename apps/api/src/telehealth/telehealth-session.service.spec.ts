@@ -96,6 +96,7 @@ function harness(role: PracticeRole, userId = actorId) {
 		getById: vi.fn().mockResolvedValue(sessionRow()),
 		getByAppointmentId: vi.fn().mockResolvedValue(undefined),
 		listAssignedNurses: vi.fn().mockResolvedValue([]),
+		findPersonaKey: vi.fn().mockResolvedValue(null),
 		create: vi.fn().mockResolvedValue(sessionRow()),
 		save: vi.fn(async (row: TelehealthSession) => row),
 		transitionWaitingToInSession: vi.fn<
@@ -214,6 +215,20 @@ describe('TelehealthSessionService', () => {
 		expect((await seen('RECEPTIONIST')).viewerCanEnd).toBe(false);
 		expect((await seen('NURSE', nurseId)).viewerCanEnd).toBe(false);
 		expect((await seen('PATIENT', portalId)).viewerCanEnd).toBe(false);
+	});
+
+	it("returns only the caller's own persona key (FE-065)", async () => {
+		const provider = harness('PROVIDER', providerId);
+		provider.sessions.findPersonaKey.mockImplementation(async (userId: string) =>
+			userId === providerId ? 'provider-jordan-ellis' : 'patient-avery-quinn',
+		);
+		const own = await provider.service.get(sessionId);
+		expect(provider.sessions.findPersonaKey).toHaveBeenCalledWith(providerId);
+		expect(own.viewerPersonaKey).toBe('provider-jordan-ellis');
+		expect(JSON.stringify(own.participants)).not.toMatch(/persona/i);
+
+		const none = await harness('PROVIDER', providerId).service.get(sessionId);
+		expect(none.viewerPersonaKey).toBeNull();
 	});
 
 	it('omits the patient participant when the patient has no portal user', async () => {

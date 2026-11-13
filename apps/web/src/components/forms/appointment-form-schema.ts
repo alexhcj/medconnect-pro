@@ -57,10 +57,10 @@ export function isAppointmentFieldPath(path: string): path is (typeof APPOINTMEN
 	return (APPOINTMENT_FIELD_PATHS as readonly string[]).includes(path);
 }
 
-export function emptyAppointmentFormValues(patientId = ''): AppointmentFormValues {
+export function emptyAppointmentFormValues(patientId = '', providerId = ''): AppointmentFormValues {
 	return {
 		patientId,
-		providerId: '',
+		providerId,
 		start: '',
 		end: '',
 		type: '',

@@ -32,14 +32,46 @@ describe('sessionFromRdo', () => {
 			end: sessionRdo.end,
 			type: 'telehealth',
 			state: 'waiting',
+			participants: [],
+			viewerCanEnd: false,
+			viewerPersonaKey: null,
+			joinedAt: sessionRdo.joinedAt,
+			endedAt: sessionRdo.endedAt,
 			synthetic: true,
 		});
 		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('practiceId');
 		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('patientId');
 		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('providerId');
 		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('waitingStartedAt');
-		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('joinedAt');
-		expect(sessionFromRdo(sessionRdo)).not.toHaveProperty('endedAt');
+	});
+
+	it('carries the server roster, viewerCanEnd and mediaExpiresAt', () => {
+		const participants = [
+			{userId: 'u-provider', displayName: 'Dr. Jordan Ellis', role: 'PROVIDER' as const},
+			{userId: 'u-patient', displayName: 'Avery Quinn', role: 'PATIENT' as const},
+			{userId: 'u-nurse', displayName: 'Riley Chen', role: 'NURSE' as const},
+		];
+		const mapped = sessionFromRdo({
+			...sessionRdo,
+			participants,
+			viewerCanEnd: true,
+			mediaExpiresAt: '2026-09-26T15:00:00.000Z',
+		});
+		expect(mapped.participants).toEqual(participants);
+		expect(mapped.viewerCanEnd).toBe(true);
+		expect(mapped.mediaExpiresAt).toBe('2026-09-26T15:00:00.000Z');
+	});
+
+	it('treats a missing or non-true viewerCanEnd as false so an older API never shows End visit', () => {
+		expect(sessionFromRdo({...sessionRdo, viewerCanEnd: undefined}).viewerCanEnd).toBe(false);
+		expect(sessionFromRdo({...sessionRdo, viewerCanEnd: false}).viewerCanEnd).toBe(false);
+	});
+
+	it('keeps only a known viewerPersonaKey from Nest (FE-065)', () => {
+		expect(sessionFromRdo({...sessionRdo, viewerPersonaKey: 'nurse-riley-park'}).viewerPersonaKey).toBe('nurse-riley-park');
+		expect(sessionFromRdo({...sessionRdo, viewerPersonaKey: 'someone-else'}).viewerPersonaKey).toBeNull();
+		expect(sessionFromRdo({...sessionRdo, viewerPersonaKey: null}).viewerPersonaKey).toBeNull();
+		expect(sessionFromRdo(sessionRdo).viewerPersonaKey).toBeNull();
 	});
 
 	it('keeps the Nest provider name when the actor is not the live demo provider', () => {

@@ -35,7 +35,7 @@ const PrivacyPolicyPage = () => {
 		{id: 'sharing', title: 'Information Sharing', icon: Eye},
 		{id: 'security', title: 'Security Measures', icon: Lock},
 		{id: 'rights', title: 'Your Rights', icon: CheckCircle},
-		{id: 'hipaa', title: 'HIPAA Compliance', icon: AlertTriangle},
+		{id: 'hipaa', title: 'HIPAA and this demo', icon: AlertTriangle},
 		{id: 'contact', title: 'Contact Information', icon: Users}
 	];
 
@@ -83,9 +83,8 @@ const PrivacyPolicyPage = () => {
 								<div>
 									<h2 className="text-2xl font-bold text-blue-900 mb-2">Privacy Policy Overview</h2>
 									<p className="text-blue-800 text-lg">
-										Your privacy and the security of your health information is our top priority. This policy explains
-										how we collect, use, and protect your personal and health information in compliance with HIPAA and
-										other applicable privacy laws.
+										This is a synthetic demo. It holds no real patient data, and this policy describes how the demo treats
+										its synthetic records. It makes no claim of HIPAA compliance or certification.
 									</p>
 								</div>
 							</div>
@@ -94,11 +93,11 @@ const PrivacyPolicyPage = () => {
 						<div className="grid md:grid-cols-2 gap-6">
 							<div className="bg-white border border-gray-200 rounded-lg p-6">
 								<h3 className="text-lg font-semibold text-gray-900 mb-3">Last Updated</h3>
-								<p className="text-gray-600">January 29, 2025</p>
+								<p className="text-gray-600">November 13, 2026</p>
 							</div>
 							<div className="bg-white border border-gray-200 rounded-lg p-6">
 								<h3 className="text-lg font-semibold text-gray-900 mb-3">Effective Date</h3>
-								<p className="text-gray-600">January 29, 2025</p>
+								<p className="text-gray-600">November 13, 2026</p>
 							</div>
 						</div>
 
@@ -108,9 +107,8 @@ const PrivacyPolicyPage = () => {
 								<div>
 									<h3 className="text-lg font-semibold text-amber-900 mb-2">Important Notice</h3>
 									<p className="text-amber-800">
-										This healthcare application is designed to handle Protected Health Information (PHI) in compliance
-										with HIPAA regulations. By using our services, you acknowledge and consent to our privacy practices
-										as outlined in this policy.
+										This is a synthetic portfolio demo with no real patient data. It does not claim HIPAA compliance or
+										certification and must not be used with real patient information. Do not enter real health information.
 									</p>
 								</div>
 							</div>
@@ -144,7 +142,7 @@ const PrivacyPolicyPage = () => {
 								</ul>
 								<div className="bg-red-50 border border-red-200 rounded-lg p-4">
 									<p className="text-red-800 font-semibold">
-										All PHI is handled in strict accordance with HIPAA Privacy and Security Rules.
+										Records in this demo are synthetic (ADR-005). Do not enter real patient information.
 									</p>
 								</div>
 							</div>
@@ -191,7 +189,7 @@ const PrivacyPolicyPage = () => {
 							<div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
 								<h3 className="text-lg font-semibold text-purple-900 mb-3">Legal Compliance</h3>
 								<ul className="space-y-2 text-purple-800">
-									<li>• HIPAA compliance and reporting</li>
+									<li>• Demonstrating compliance-oriented engineering patterns</li>
 									<li>• Regulatory requirements and audits</li>
 									<li>• Legal proceedings when required</li>
 									<li>• Security incident response</li>
@@ -222,9 +220,8 @@ const PrivacyPolicyPage = () => {
 										you or permitted by law.</p>
 								</div>
 								<div className="border-l-4 border-green-500 pl-4">
-									<h4 className="font-semibold text-gray-900">Business Associates</h4>
-									<p className="text-gray-700">With HIPAA-compliant service providers who assist in our operations
-										(cloud hosting, IT support, etc.).</p>
+									<h4 className="font-semibold text-gray-900">Hosting providers</h4>
+									<p className="text-gray-700">With the services that host the demo. No real patient data is shared.</p>
 								</div>
 								<div className="border-l-4 border-orange-500 pl-4">
 									<h4 className="font-semibold text-gray-900">Legal Requirements</h4>
@@ -241,7 +238,7 @@ const PrivacyPolicyPage = () => {
 								<li>• Marketing communications</li>
 								<li>• Research participation</li>
 								<li>• Third-party analytics beyond operational needs</li>
-								<li>• Any disclosure not covered by HIPAA permitted uses</li>
+									<li>• Any use of real patient information, which this demo does not accept</li>
 							</ul>
 						</CollapsibleSection>
 					</div>
@@ -255,52 +252,45 @@ const PrivacyPolicyPage = () => {
 						<div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
 							<h3 className="text-lg font-semibold text-green-900 mb-2">Our Commitment</h3>
 							<p className="text-green-800">
-								We implement comprehensive technical, administrative, and physical safeguards to protect your
-								information in accordance with HIPAA Security Rule requirements.
+								This demo shows security engineering patterns using synthetic data. It makes no claim of HIPAA
+								compliance or certification.
 							</p>
 						</div>
 
 						<div className="grid gap-4">
 							<SecurityFeature
-								icon={Lock}
-								title="Encryption at Rest"
-								description="AES-256 encryption for all stored data using PostgreSQL Transparent Data Encryption (TDE)"
-							/>
-							<SecurityFeature
-								icon={Shield}
-								title="Encryption in Transit"
-								description="TLS 1.3 with certificate pinning for all data transmissions"
+								icon={Users}
+								title="Access Controls"
+								description="Role-based access control with resource-level checks and rate limiting"
 							/>
 							<SecurityFeature
 								icon={FileText}
-								title="Database Security"
-								description="Row-level security controls with comprehensive audit triggers"
-							/>
-							<SecurityFeature
-								icon={Users}
-								title="Access Controls"
-								description="JWT token authentication with role-based access controls and rate limiting"
+								title="Tenant Isolation"
+								description="Tenant-scoped records with PostgreSQL row-level security"
 							/>
 							<SecurityFeature
 								icon={Eye}
-								title="Network Security"
-								description="Virtual Private Cloud (VPC) with private subnets and network isolation"
+								title="Audit Logging"
+								description="Audit events and a tenant-scoped security-events viewer"
 							/>
 							<SecurityFeature
-								icon={Clock}
-								title="File Storage"
-								description="AWS S3 with Server-Side Encryption using AWS Key Management Service (SSE-KMS)"
+								icon={Shield}
+								title="Document Access Control"
+								description="Document list and download checks against the signed-in role and tenant"
+							/>
+							<SecurityFeature
+								icon={Lock}
+								title="Sessions"
+								description="Mock identity provider sessions with HttpOnly cookies. Not production sign-in"
 							/>
 						</div>
 
 						<div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
 							<h3 className="text-lg font-semibold text-blue-900 mb-3">Additional Security Measures</h3>
 							<ul className="space-y-2 text-blue-800">
-								<li>• Regular security assessments and penetration testing</li>
-								<li>• Employee security training and background checks</li>
-								<li>• Incident response procedures and breach notification protocols</li>
-								<li>• Multi-factor authentication for administrative access</li>
-								<li>• Continuous monitoring and threat detection</li>
+								<li>• Mock identity sessions and a labelled mock multi-factor challenge</li>
+								<li>• Rate limiting on the API</li>
+								<li>• Production encryption, network isolation and security assessments are planned, not deployed</li>
 							</ul>
 						</div>
 					</div>
@@ -313,7 +303,7 @@ const PrivacyPolicyPage = () => {
 
 						<div className="grid gap-6">
 							<div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-								<h3 className="text-lg font-semibold text-blue-900 mb-3">HIPAA Rights</h3>
+								<h3 className="text-lg font-semibold text-blue-900 mb-3">Rights modelled in the demo</h3>
 								<ul className="space-y-2 text-blue-800">
 									<li>• Right to access your PHI</li>
 									<li>• Right to request amendments to your PHI</li>
@@ -356,76 +346,49 @@ const PrivacyPolicyPage = () => {
 
 			case 'hipaa':
 				return (
-					<div className="space-y-6">
-						<h2 className="text-2xl font-bold text-gray-900">HIPAA Compliance</h2>
+						<div className="space-y-6">
+							<h2 className="text-2xl font-bold text-gray-900">HIPAA and this demo</h2>
+							<div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+								<div className="flex items-start space-x-3">
+									<AlertTriangle className="h-8 w-8 text-red-600 mt-1"/>
+									<div>
+										<h3 className="text-xl font-semibold text-red-900 mb-2">Demo notice</h3>
+										<p className="text-red-800">
+											MedConnect Pro is a synthetic portfolio demo. It is not a Covered Entity or Business Associate, and it
+											does not claim HIPAA compliance or certification. It must not be used with real patient data.
+										</p>
+									</div>
+								</div>
+							</div>
 
-						<div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
-							<div className="flex items-start space-x-3">
-								<AlertTriangle className="h-8 w-8 text-red-600 mt-1"/>
-								<div>
-									<h3 className="text-xl font-semibold text-red-900 mb-2">HIPAA Notice</h3>
-									<p className="text-red-800">
-										This application serves as a Covered Entity under HIPAA. We are committed to protecting your health
-										information and complying with all applicable HIPAA Privacy and Security Rules.
+							<CollapsibleSection id="hipaa-compliance" title="HIPAA patterns modelled" defaultExpanded>
+								<div className="space-y-4">
+									<p className="text-gray-700">
+										The demo models engineering patterns that healthcare software uses. Modelling a pattern is not a claim
+										of compliance:
 									</p>
+									<ul className="text-sm text-gray-700 space-y-1">
+										<li>• Role-based access control and tenant isolation</li>
+										<li>• Audit logging and a security-events viewer</li>
+										<li>• Document access control</li>
+										<li>• Synthetic data only (ADR-005)</li>
+									</ul>
 								</div>
-							</div>
+							</CollapsibleSection>
+
+							<CollapsibleSection id="business-associates" title="Business associates">
+								<p className="text-gray-700">
+									No business associate agreements are in place, because the demo holds no real patient data.
+								</p>
+							</CollapsibleSection>
+
+							<CollapsibleSection id="breach-notification" title="Breach notification">
+								<p className="text-gray-700">
+									The demo holds only synthetic records, so there is no real patient information to breach and no
+									breach notification process.
+								</p>
+							</CollapsibleSection>
 						</div>
-
-						<CollapsibleSection id="hipaa-compliance" title="Our HIPAA Obligations" defaultExpanded>
-							<div className="space-y-4">
-								<div className="grid md:grid-cols-2 gap-4">
-									<div className="bg-white border border-gray-200 rounded-lg p-4">
-										<h4 className="font-semibold text-gray-900 mb-2">Privacy Rule Compliance</h4>
-										<ul className="text-sm text-gray-700 space-y-1">
-											<li>• Minimum necessary standard</li>
-											<li>• Individual rights protection</li>
-											<li>• Administrative safeguards</li>
-											<li>• Notice of privacy practices</li>
-										</ul>
-									</div>
-									<div className="bg-white border border-gray-200 rounded-lg p-4">
-										<h4 className="font-semibold text-gray-900 mb-2">Security Rule Compliance</h4>
-										<ul className="text-sm text-gray-700 space-y-1">
-											<li>• Technical safeguards</li>
-											<li>• Physical safeguards</li>
-											<li>• Administrative safeguards</li>
-											<li>• Breach notification procedures</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</CollapsibleSection>
-
-						<CollapsibleSection id="business-associates" title="Business Associate Agreements">
-							<div className="space-y-4">
-								<p className="text-gray-700">
-									All third-party vendors who have access to PHI on our behalf have signed HIPAA-compliant Business
-									Associate Agreements (BAAs). These include:
-								</p>
-								<ul className="space-y-2 text-gray-700">
-									<li>• Cloud hosting providers (AWS)</li>
-									<li>• IT support and maintenance services</li>
-									<li>• Security monitoring services</li>
-									<li>• Backup and disaster recovery providers</li>
-								</ul>
-							</div>
-						</CollapsibleSection>
-
-						<CollapsibleSection id="breach-notification" title="Breach Notification">
-							<div className="space-y-4">
-								<p className="text-gray-700">
-									In the event of a breach of unsecured PHI, we will:
-								</p>
-								<ul className="space-y-2 text-gray-700">
-									<li>• Notify affected individuals within 60 days</li>
-									<li>• Report to the Department of Health and Human Services</li>
-									<li>• Notify media if breach affects 500+ individuals in a state</li>
-									<li>• Document the incident and remedial actions taken</li>
-								</ul>
-							</div>
-						</CollapsibleSection>
-					</div>
 				);
 
 			case 'contact':
@@ -474,21 +437,10 @@ const PrivacyPolicyPage = () => {
 						<div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
 							<h3 className="text-lg font-semibold text-yellow-900 mb-3">Filing Complaints</h3>
 							<div className="space-y-4 text-yellow-800">
-								<p>
-									You have the right to file a complaint if you believe your privacy rights have been violated. You may
-									file a complaint with:
-								</p>
-								<div className="grid md:grid-cols-2 gap-4">
-									<div>
-										<p className="font-medium">Our Privacy Officer (contact above)</p>
-									</div>
-									<div>
-										<p className="font-medium">U.S. Department of Health and Human Services</p>
-										<p className="text-sm">Office for Civil Rights<br/>
-											Online: www.hhs.gov/ocr/privacy<br/>
-											Phone: 1-800-368-1019</p>
-									</div>
-								</div>
+									<p>
+										This demo holds no real patient data and operates no privacy complaint process. The contact details
+										below are placeholders.
+									</p>
 								<p className="text-sm">
 									<strong>No Retaliation:</strong> We will not retaliate against you for filing a complaint.
 								</p>
@@ -521,7 +473,7 @@ const PrivacyPolicyPage = () => {
 							<Shield className="h-8 w-8 text-blue-600"/>
 							<div>
 								<h1 className="text-3xl font-bold text-gray-900">Privacy Policy</h1>
-								<p className="text-gray-600 mt-1">Healthcare SaaS Platform - HIPAA Compliant</p>
+								<p className="text-gray-600 mt-1">MedConnect Pro demo - synthetic data only</p>
 							</div>
 						</div>
 					</div>
@@ -576,7 +528,7 @@ const PrivacyPolicyPage = () => {
 							© 2025 Healthcare SaaS, Inc. All rights reserved.
 						</p>
 						<p className="text-sm text-gray-500">
-							Last updated: January 29, 2025
+							Last updated: November 13, 2026
 						</p>
 					</div>
 				</div>

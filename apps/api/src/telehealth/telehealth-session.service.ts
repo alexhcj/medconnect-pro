@@ -205,9 +205,11 @@ export class TelehealthSessionService {
 		appointment: Appointment,
 	): Promise<TelehealthSessionRdo> {
 		const nurses = await this.sessions.listAssignedNurses(appointment.patientId);
+		const viewerPersonaKey = await this.sessions.findPersonaKey(this.tenant.require().actorUserId);
 		return toSessionRdo(session, appointment, {
 			participants: buildParticipants(appointment, nurses),
 			viewerCanEnd: this.viewerCanEnd(appointment),
+			viewerPersonaKey,
 		});
 	}
 
@@ -328,7 +330,7 @@ export class TelehealthSessionService {
 	}
 }
 
-type SessionRdoExtras = Pick<TelehealthSessionRdo, 'participants' | 'viewerCanEnd'>;
+type SessionRdoExtras = Pick<TelehealthSessionRdo, 'participants' | 'viewerCanEnd' | 'viewerPersonaKey'>;
 
 /** Provider, portal patient, then assigned nurses (SEC-013). Names never fall back to email. */
 export function buildParticipants(
@@ -369,6 +371,7 @@ export function toSessionRdo(
 		participants: extras.participants,
 		mediaExpiresAt: new Date(joinWindowExpiresAtUnix(appointment.endAt) * 1000).toISOString(),
 		viewerCanEnd: extras.viewerCanEnd,
+		viewerPersonaKey: extras.viewerPersonaKey,
 		id: session.id,
 		appointmentId: session.appointmentId,
 		practiceId: session.practiceId,

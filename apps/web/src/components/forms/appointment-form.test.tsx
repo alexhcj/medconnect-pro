@@ -101,6 +101,34 @@ describe('AppointmentForm', () => {
 		expect(getSelect('Patient')).toHaveTextContent('Jordan Brooks');
 	});
 
+	it('prefills the patient and provider from a visit wrap-up link', () => {
+		render(
+			<AppointmentForm
+				patients={patients}
+				providers={providers}
+				prefilledPatientId="demo-patient-002"
+				prefilledProviderId="demo-provider-001"
+			/>,
+		);
+
+		expect(getSelect('Patient')).toHaveTextContent('Jordan Brooks');
+		expect(getSelect('Provider')).toHaveTextContent('Dr. Jordan Ellis');
+	});
+
+	it('ignores a provider id that is not in the loaded options', () => {
+		render(
+			<AppointmentForm
+				patients={patients}
+				providers={providers}
+				prefilledPatientId="demo-patient-002"
+				prefilledProviderId="not-a-listed-provider"
+			/>,
+		);
+
+		expect(getSelect('Patient')).toHaveTextContent('Jordan Brooks');
+		expect(getSelect('Provider')).not.toHaveTextContent('Dr. Jordan Ellis');
+	});
+
 	it('fills End 30 minutes after Start and keeps a valid End', async () => {
 		const user = userEvent.setup();
 		render(<AppointmentForm patients={patients} providers={providers} />);

@@ -54,6 +54,7 @@ const NewAppointmentPage = () => {
 const NewAppointmentFormPage = () => {
 	const searchParams = useSearchParams();
 	const prefilledPatientId = searchParams.get('patientId')?.trim() ?? '';
+	const prefilledProviderId = searchParams.get('providerId')?.trim() ?? '';
 	const {session, isLoading: isSessionLoading} = useSessionStatus();
 	const canWrite = !isSessionLoading && canWriteAppointments(session?.permissions);
 	const loadOptions = canWrite;
@@ -126,6 +127,7 @@ const NewAppointmentFormPage = () => {
 				patients={patientOptions}
 				providers={providers.data}
 				prefilledPatientId={prefilledPatientId}
+				prefilledProviderId={prefilledProviderId}
 			/>
 		</FormChrome>
 	);

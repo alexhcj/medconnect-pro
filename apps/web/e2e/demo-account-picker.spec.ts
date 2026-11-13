@@ -1,4 +1,5 @@
 import {expect, test} from '@playwright/test';
+import {expectNoAxeViolations} from './helpers/axe';
 import {DEMO_EMAIL, DEMO_PASSWORD, PATIENT_EMAIL, PATIENT_PASSWORD} from './helpers/mock-auth';
 
 // QA-013: browser coverage for the FE-059 demo account picker (flag set in playwright.config.ts).
@@ -30,6 +31,15 @@ test.describe('Demo account picker on /login', () => {
 		await page.getByRole('button', {name: 'Sign in'}).click();
 		await expect(page).toHaveURL(/\/dashboard$/);
 		await expect(page.getByRole('heading', {level: 1, name: 'Dashboard'})).toBeVisible();
+	});
+
+	test('has no axe violations on the demo panel in its preview and selected states (FE-066)', async ({page}) => {
+		await expect(page.getByText('Preview: Practice admin. Tap a role to fill the sign-in form.')).toBeVisible();
+		await expectNoAxeViolations(page, ['main']);
+
+		await page.getByRole('button', {name: 'Fill sign-in as Provider'}).click();
+		await expect(page.getByText('Filled as Provider. Press Sign in.')).toBeVisible();
+		await expectNoAxeViolations(page, ['main']);
 	});
 
 	test('editing a filled field clears the selected role', async ({page}) => {

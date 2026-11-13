@@ -30,7 +30,7 @@
 	/* Text */
 	--color-text-primary: #111827;
 	--color-text-secondary: #4b5563;
-	--color-text-muted: #6b7280;
+	--color-text-muted: #646b78; /* gray-550, 5.36:1 on white, 4.87:1 on subtle, 4.93:1 on brand-subtle (FE-066) */
 	--color-text-label: #374151;
 	--color-text-placeholder: #9ca3af;
 	--color-text-inverse: #ffffff;
@@ -55,6 +55,16 @@
 	--color-focus-brand: #3b82f6;
 	--color-focus-danger: #ef4444;
 	--color-focus-neutral: #6b7280;
+
+	/* Call stage (FE-063): Figma color/stage/*, dark theme for the full-screen visit.
+	   Use as bg-(--color-stage-bg) etc.; no @theme alias so the stage stays opt-in. */
+	--color-stage-bg: #111827; /* gray-900 */
+	--color-stage-surface: #1f2937; /* gray-800 */
+	--color-stage-surface-raised: #374151; /* gray-700 */
+	--color-stage-border: #374151; /* gray-700 */
+	--color-stage-border-strong: #6b7280; /* gray-500, 3:1 or better on bg and surface (WCAG 1.4.11) */
+	--color-stage-text: #ffffff;
+	--color-stage-text-muted: #d1d5db; /* gray-300, 4.5:1 or better on bg and surface */
 
 	/* Radius — same values as Tailwind defaults; named for Figma Dev Mode */
 	--radius-none: 0px;

@@ -28,6 +28,19 @@ export async function signInAsLiveProvider(page: Page) {
 	await signIn(page, LIVE_PROVIDER_EMAIL, LIVE_PROVIDER_PASSWORD);
 }
 
+/** Live only: password sign-in, then the labeled mock MFA challenge (the fixture code, FE-028). */
+export async function signInAsMfaNurse(page: Page) {
+	await page.goto('/login');
+	await page.getByLabel('Email', {exact: true}).fill(MFA_NURSE_EMAIL);
+	await page.getByLabel('Password', {exact: true}).fill(MFA_NURSE_PASSWORD);
+	await page.getByRole('button', {name: 'Sign in'}).click();
+	await expect(page.getByRole('heading', {name: 'Verify mock MFA'})).toBeVisible();
+	await page.getByLabel('Verification code').fill(MFA_NURSE_CODE);
+	await page.getByRole('button', {name: 'Verify'}).click();
+	await expect(page).toHaveURL(/\/dashboard$/);
+	await expect(page.getByRole('heading', {level: 1, name: 'Dashboard'})).toBeVisible();
+}
+
 export async function signIn(page: Page, email: string, password: string) {
 	await page.goto('/login');
 	await page.getByLabel('Email', {exact: true}).fill(email);

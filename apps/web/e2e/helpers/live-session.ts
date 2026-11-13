@@ -8,6 +8,8 @@ import {expect, type Page} from '@playwright/test';
  */
 export const ADMIN_STATE = path.join(__dirname, '..', '.auth', 'admin.json');
 export const PROVIDER_STATE = path.join(__dirname, '..', '.auth', 'provider.json');
+export const PATIENT_STATE = path.join(__dirname, '..', '.auth', 'patient.json');
+export const NURSE_STATE = path.join(__dirname, '..', '.auth', 'nurse.json');
 
 export const nestApiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 

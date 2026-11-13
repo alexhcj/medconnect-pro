@@ -1,6 +1,6 @@
 import {expect, test, type Page} from '@playwright/test';
 import {expectNoAxeViolations} from './helpers/axe';
-import {signInAsPracticeAdmin} from './helpers/mock-auth';
+import {signInAsPatient, signInAsPracticeAdmin} from './helpers/mock-auth';
 
 const VISIT = '/dashboard/telehealth/session-demo-appointment-002';
 
@@ -114,5 +114,75 @@ test.describe('Telehealth green room interactions', () => {
 		await page.getByRole('option', {name: 'Integrated Camera'}).click();
 
 		expect(requests.filter((entry) => /camera|microphone|speaker|device|background|blur|network/i.test(entry))).toEqual([]);
+	});
+});
+
+test.describe('Telehealth green room demo persona camera (FE-065)', () => {
+	test.use({viewport: {width: 1440, height: 1024}});
+
+	test('a demo account picks its own persona, labeled as synthetic', async ({page}) => {
+		await signInAsPatient(page);
+		await page.goto(VISIT);
+		await expect(page.getByRole('heading', {level: 2, name: /^Video visit/})).toBeVisible();
+
+		const source = page.getByRole('radiogroup', {name: 'Camera source'});
+		await expect(source.getByRole('radio', {name: 'My camera'})).toBeChecked();
+		await expect(page.getByTestId('persona-demo-banner')).toBeVisible();
+
+		await source.getByRole('radio', {name: 'Demo persona camera'}).click();
+		const personas = page.getByRole('list', {name: 'Demo personas'});
+		await expect(personas.getByRole('listitem')).toHaveCount(3);
+		await expect(personas.locator('[aria-current="true"]')).toContainText('Avery Quinn');
+		await expect(personas.locator('[aria-disabled="true"]')).toHaveCount(2);
+		await expect(page.getByText('Demo · synthetic camera').first()).toBeVisible();
+		await expect(page.getByText('Your real camera stays off')).toBeVisible();
+		await expectNoAxeViolations(page, ['main']);
+
+		await page.getByRole('radio', {name: 'My camera'}).click();
+		await expect(personas).toBeHidden();
+	});
+
+	test('keyboard: arrows move the camera source and the persona is announced', async ({page}) => {
+		await signInAsPatient(page);
+		await page.goto(VISIT);
+		await page.getByRole('radio', {name: 'My camera'}).focus();
+		await page.keyboard.press('ArrowRight');
+		await expect(page.getByRole('radio', {name: 'Demo persona camera'})).toBeChecked();
+		await expect(page.locator('[aria-live="polite"]').first()).toContainText('Demo persona camera on.');
+	});
+
+	test('reduced motion and the mobile layout have no horizontal scroll', async ({page}) => {
+		await page.emulateMedia({reducedMotion: 'reduce'});
+		await page.setViewportSize({width: 390, height: 844});
+		await signInAsPatient(page);
+		await page.goto(VISIT);
+		await page.getByRole('button', {name: 'Devices'}).click();
+		await page.getByRole('radio', {name: 'Demo persona camera'}).click();
+		await expect(page.getByRole('list', {name: 'Demo personas'})).toBeVisible();
+		await expectNoHorizontalScroll(page);
+		await expectNoAxeViolations(page, ['main']);
+	});
+
+	test('joins with the persona and the local tile keeps the label', async ({page}) => {
+		await signInAsPatient(page);
+		await page.goto(VISIT);
+		await page.getByRole('radio', {name: 'Demo persona camera'}).click();
+		await expect(page.getByRole('button', {name: 'Join visit'})).toBeEnabled();
+		await page.getByRole('button', {name: 'Join visit'}).click();
+		await expect(page.getByText('Demo placeholder. Not a live video connection.')).toBeVisible();
+	});
+
+	test('sends no persona choice to the API', async ({page}) => {
+		await signInAsPatient(page);
+		await page.goto(VISIT);
+		const requests: string[] = [];
+		page.on('request', (request) => {
+			if (request.method() !== 'GET') {
+				requests.push(`${request.method()} ${request.url()} ${request.postData() ?? ''}`);
+			}
+		});
+		await page.getByRole('radio', {name: 'Demo persona camera'}).click();
+		await expect(page.getByRole('list', {name: 'Demo personas'})).toBeVisible();
+		expect(requests.filter((entry) => /persona|synthetic|camera/i.test(entry))).toEqual([]);
 	});
 });

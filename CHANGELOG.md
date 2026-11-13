@@ -6,6 +6,177 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.6.4] - 2026-11-13
+
+FE-068 legal pages stop claiming HIPAA compliance (PATCH; copy fix, no API or UX contract change).
+
+### Changed
+
+- Terms of Service and Privacy Policy now describe a synthetic demo with no real patient data and make no HIPAA
+  compliance, certification, BAA, encryption or infrastructure claim. Only implemented patterns (RBAC, tenant
+  isolation with row-level security, audit logging, document access control) are named.
+- Removed the HHS complaint details from the privacy page.
+
+### Added
+
+- `legal-pages-wording.test.tsx` fails if either page says "HIPAA compliant", "HIPAA-compliant" or
+  "HIPAA certified", or claims AES-256, pinning, VPC or SSE-KMS.
+
+## [1.6.3] - 2026-11-11
+
+FE-067 green room for later joiners (PATCH; makes the visit match what FE-062 and SEC-013 already describe).
+
+### Changed
+
+- A participant who opens a visit that is already in progress now gets the pre-join green room first (device check, test
+  sound, persona option in demo builds) and reaches the call stage only after Join. Before, only the first joiner saw it.
+  The green room shows "This visit has already started" for a later joiner. A reload during a call returns to the green
+  room. The first joiner's flow and Leave and Rejoin call are unchanged.
+- Mock mode: `?mockVisit=in_progress` opens a visit as already live (tests only), and a repeat join keeps `joinedAt`.
+
+### Added
+
+- `visitView` mapping (session state, joined-here, closed) with unit tests; mock e2e `telehealth-later-joiner.spec.ts` at
+  1440, 390 and 320 px; the live three-participant spec now asserts the green room for the patient and nurse and that no
+  meeting token is requested before Join.
+- `docs/contracts/data-contracts.md`: join is idempotent on a live visit (documents existing behaviour; no server change).
+
+### Known limitations
+
+- The line does not name who is in the call. That needs connected-participant presence from Nest, which does not exist
+  yet; it is a planned backend follow-up.
+
+## [1.6.2] - 2026-11-10
+
+FE-066 muted text contrast on subtle surfaces (PATCH, accessibility fix).
+
+### Fixed
+
+- `--color-text-muted` is darker (`#6b7280` to `#646b78`, new primitive gray/550). Muted text now measures at least 4.5:1
+  on white, canvas, subtle, brand-subtle, danger-subtle and warning-subtle surfaces (4.87:1 on subtle, was 4.39:1). The
+  `/login` demo account panel preview line failed axe `color-contrast`, which stopped the `auth` live project and so the
+  whole live suite.
+- The demo account panel's email and password rows are a list, not a `<dl>` holding buttons (axe `definition-list`). The
+  layout is unchanged.
+
+### Added
+
+- Token test for muted and secondary text contrast on every light surface; mock axe check on `/login` with the demo panel
+  in its preview and selected states.
+
+## [1.6.1] - 2026-11-10
+
+QA-014 finding in the FE-063 call stage (PATCH, accessibility fix).
+
+### Fixed
+
+- The call stage's video tile area scrolls when a status row or notice (device lost, room closing) squeezes it on narrow
+  screens. It was not reachable by keyboard (axe `scrollable-region-focusable`). It is now a labelled "Video tiles"
+  region in the tab order with a visible focus outline.
+
+### Changed
+
+- Demo persona camera: the green-room note "Your real camera stays private" now reads "Your real camera stays off",
+  to follow the SEC-013 claim wording (no "secure", "private" or "end-to-end"). The approved FE-065 Figma frame
+  still carries the old text and needs the same edit.
+- Mock mode only: `?mockState=` on the session page shows one call state (waiting, participant-left, reconnecting,
+  device-lost, poor-network, closing) so the mock e2e covers them. Live mode ignores it.
+
+## [1.6.0] - 2026-11-10
+
+M22 Telehealth 2.0: Visit experience, FE-065 demo persona camera.
+
+### Added
+
+- Demo persona camera (demo builds only, `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true`): the green room offers "My camera"
+  or "Demo persona camera". The persona is the signed-in demo account's own illustrated persona (provider, nurse or
+  patient), drawn on a canvas with a light idle motion and a mouth cue from the microphone level, and sent to Daily as
+  the video source at about 15 fps. The other two personas are shown dimmed and cannot be chosen. A "Demo · synthetic
+  camera" label stays on the preview and on the local call tile, and a demo banner explains the option. Reduced motion
+  shows a still persona. Background None, Blur and the three images are drawn into the persona instead of using
+  Daily's processor. Hosted production never renders the option.
+- `viewerPersonaKey` on the telehealth session response (the caller's own membership persona key, or null). It never
+  appears in `participants` and never changes a display name. `GET /telehealth/sessions*` and the OpenAPI document
+  carry it; `docs/contracts/data-contracts.md` describes it.
+- Three first-party persona illustrations in `apps/web/public/telehealth/personas/`, exported from the approved Figma
+  frames.
+
+### Changed
+
+- In a persona call the Devices dialog shows a note instead of the Camera select, and the real camera is released in
+  the green room preview. If the canvas or the art is unavailable the green room falls back to the real camera with a
+  status notice.
+- The Daily background processor is skipped for a custom video source.
+
+## [1.5.0] - 2026-11-10
+
+M22 Telehealth 2.0: Visit experience, FE-064 call states, session keep-alive and wrap-up.
+
+### Added
+
+- Call states on the stage with a clear next step: "Waiting for <name> to join…" (the patient waits for the
+  provider, everyone else for the patient), reconnecting, poor network with a Turn off camera action,
+  "<name> left the call." with Wait (and End visit for the host only), device access lost with Retry devices, and
+  the shipped "Live media is not configured" copy. Status changes are announced politely.
+- In-visit keep-alive: while joined, the web app sends `POST /telehealth/sessions/:id/heartbeat` about every minute
+  (also in a hidden tab), stops on Leave call, End visit, 404 and 409, and waits for the next interval on 429. It
+  also refreshes the access token quietly before it lapses, so a live visit longer than 15 minutes is not signed out.
+  A once-per-visit notice says "You'll stay signed in while you're in a live visit."
+- Room-closing notice 5 minutes before `mediaExpiresAt`, with the closing time in US format. It never takes focus.
+- Provider wrap-up (duration, who was seen in this call as seen from the browser, ended time, connection quality,
+  "Book follow-up") and a patient "Your visit has ended" screen that shows a follow-up card only when a real next
+  appointment exists.
+- "Book follow-up" opens the new-appointment form with the patient and provider prefilled (`providerId` query).
+
+### Changed
+
+- The background session-inventory poll sends `X-MCP-Activity: passive`, so it no longer refreshes the idle
+  timeout. It is the only request marked passive.
+- End visit keeps you on the page and shows the wrap-up, instead of redirecting to the lobby.
+- The session expiry banner and extension modal stay quiet during a live visit; after the call the normal 15-minute
+  idle rule applies again.
+- When Daily drops the call, the page re-reads the Nest session, so the other side moves to the visit-ended screen
+  when the host ends the visit.
+
+### Fixed
+
+- A visit longer than the 15-minute access token no longer ends in a forced sign-in during the call.
+
+## [1.4.0] - 2026-11-10
+
+M22 Telehealth 2.0: Visit experience, FE-063 full-screen call stage and controls.
+
+### Added
+
+- Full-screen dark call stage for one to three participants plus screen share, opened from the same
+  `/dashboard/telehealth/[sessionId]` URL (rendered through a portal; the dashboard behind it is inert).
+  Header with visit title, Live status, elapsed timer, network quality (bars and a Good / Fair / Poor label)
+  and the demo-data badge; picture-in-picture self view; active-speaker border and icon; per-tile mic and
+  camera state with initials when the camera is off.
+- Control bar: Microphone, Camera, Share screen, Background, Devices, Participants, Leave call, and End visit.
+  Labels never change; `aria-pressed` carries the state. Alt/Option+M and Alt/Option+V toggle the microphone
+  and camera (no single-character shortcuts); tooltips show them and open on keyboard focus.
+- At 390 px and below: Microphone, Camera, Flip camera, More and Leave call; the More sheet holds Devices,
+  Participants, Background and End visit. Share screen is hidden where the browser cannot share.
+- Devices modal (Video, Audio, Background tabs) that applies changes to the live call right away, and a
+  read-only participants panel (name, role tag, mic and camera state, weak network).
+- End visit confirmation dialog ("End this visit for everyone?"); focus starts on "Keep visit open".
+- `--color-stage-*` tokens from the Figma `color/stage/*` variables.
+- Session `participants`, `viewerCanEnd`, `mediaExpiresAt` and `joinedAt` are read from Nest.
+
+### Changed
+
+- Tile names and role tags come from the Nest roster matched by the Daily `user_id`; a renamed Daily
+  `user_name` no longer changes a tile.
+- End visit is shown from the server's `viewerCanEnd` instead of a client role list; the button reads
+  "End visit" (was "End session") and asks first. Leave call is unchanged.
+- Mock mode shows the same stage with a three-way mock roster instead of placeholder tiles.
+- Noise reduction is not shipped: Daily's current pricing for it is unconfirmed (see `docs/workflows/deploy-render.md`).
+
+### Removed
+
+- `canEndTelehealthVisit` and the client-side End visit role list; the mock-only `MediaPlaceholders` view.
+
 ## [1.3.1] - 2026-11-09
 
 M22 Telehealth 2.0: Visit experience, FE-062 fixes from the first live test.

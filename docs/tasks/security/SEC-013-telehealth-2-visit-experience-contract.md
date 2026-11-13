@@ -86,9 +86,9 @@ baseline at 1.0.1:
    (`apps/api/src/telehealth/daily-rest-adapter.ts:23`). Overrunning visits are ejected without
    warning.
 
-Design: Figma page `Telehealth 2.0 · working copies` (node 499:983) in
-https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd. The AI drafts page (364:7200) is reference
-only. Per-task frames are approved on the FE tasks, not here.
+Design: per-task Figma pages (FE-062 to FE-065) in
+https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd. The earlier working-copies and AI drafts pages
+were removed 2026-11-10. Per-task frames are approved on the FE tasks, not here.
 
 ## Scope
 

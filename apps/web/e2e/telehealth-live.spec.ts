@@ -1,62 +1,146 @@
-import {expect, test, type Page} from '@playwright/test';
-import {openDashboard, PROVIDER_STATE} from './helpers/live-session';
+import {expect, test, type Browser, type BrowserContext, type Page} from '@playwright/test';
+import {
+	mutationHeaders,
+	nestApiBase,
+	NURSE_STATE,
+	openDashboard,
+	PATIENT_STATE,
+	PROVIDER_STATE,
+} from './helpers/live-session';
 
-async function openTelehealth(page: Page) {
-	await page.getByRole('button', {name: 'Open navigation'}).click();
-	await page.getByRole('dialog').getByRole('link', {name: 'Telehealth'}).click();
-	await expect(page).toHaveURL(/\/dashboard\/telehealth$/);
+/**
+ * QA-014: the seeded in-window visit with three participants in three browser contexts (provider,
+ * Avery Quinn, her assigned MFA nurse). The local API uses the Fake Daily adapter, so this asserts
+ * UI and API behavior, not media. With no real room the stage reads "not configured", which is not a
+ * joined state, so the UI heartbeat timer never starts here; the heartbeat route is checked at the
+ * API instead, and the timer is covered by `use-visit-keepalive` unit tests and the Render run.
+ * The receptionist cannot sign in locally; that rule is in the API authorization matrix.
+ *
+ * One test on purpose: ending the visit is final until the next `seed:mock-identity`.
+ */
+const SESSION_URL = /\/dashboard\/telehealth\/([0-9a-f-]{36})$/;
+
+async function newParticipant(browser: Browser, storageState: string): Promise<{context: BrowserContext; page: Page}> {
+	const context = await browser.newContext({
+		storageState,
+		viewport: {width: 768, height: 1024},
+		permissions: ['camera', 'microphone'],
+	});
+	return {context, page: await context.newPage()};
 }
 
-test.describe('Live telehealth session shell', () => {
-	test.use({storageState: PROVIDER_STATE});
-	test.use({viewport: {width: 768, height: 1024}});
+/** Lobby -> session page -> green room -> Join. Returns the session id. */
+async function joinSeededVisit(page: Page, options: {laterJoiner?: boolean} = {}): Promise<string> {
+	const tokenRequests: string[] = [];
+	page.on('request', (request) => {
+		// The meeting token is the only way into a Daily room, so no token request means no room session.
+		if (/\/media-token/i.test(request.url())) {
+			tokenRequests.push(request.url());
+		}
+	});
+	await page.goto('/dashboard/telehealth');
+	await expect(page.getByRole('heading', {level: 1, name: 'Telehealth'})).toBeVisible();
+	// QA-015: bounded on purpose. A blocking modal (for example "Multiple Sessions Detected" when the
+	// account has a second open session) keeps this click retrying; without a limit it ran to the
+	// 120 s test timeout and surfaced in `context.close()` instead of here.
+	await page
+		.getByRole('button', {name: 'Join visit'})
+		.or(page.getByRole('link', {name: 'Join visit'}))
+		.first()
+		.click({timeout: 15_000});
+	await expect(page).toHaveURL(SESSION_URL);
+	const greenRoom = page.getByRole('heading', {level: 2, name: /^Video visit/});
+	const stage = page.getByRole('region', {name: 'Video visit', exact: true});
+	// FE-067: every participant gets the green room first, the first joiner and a later joiner alike.
+	await expect(greenRoom).toBeVisible();
+	await expect(stage).toHaveCount(0);
+	if (options.laterJoiner) {
+		await expect(page.getByText('This visit has already started', {exact: true})).toBeVisible();
+	}
+	// The green room mints no meeting token, so it cannot join a Daily room.
+	expect(tokenRequests).toEqual([]);
+	await page.getByRole('button', {name: 'Join visit', exact: true}).click();
+	await expect(stage).toBeVisible();
+	return SESSION_URL.exec(page.url())![1];
+}
 
-	test('creates, joins, and ends the seeded in-window visit as the live provider', async ({page}) => {
+async function heartbeat(page: Page, sessionId: string) {
+	return page.request.post(`${nestApiBase}/telehealth/sessions/${sessionId}/heartbeat`, {
+		headers: await mutationHeaders(page),
+	});
+}
+
+test.describe('Live telehealth visit with three participants', () => {
+	test.use({storageState: PROVIDER_STATE, viewport: {width: 768, height: 1024}});
+	test.setTimeout(120_000);
+
+	test('provider, patient and nurse share one visit; only the host ends it', async ({page, browser}) => {
+		const passiveRequests: string[] = [];
+		page.on('request', (request) => {
+			if (request.headers()['x-mcp-activity'] === 'passive') {
+				passiveRequests.push(new URL(request.url()).pathname);
+			}
+		});
+
 		await openDashboard(page);
-		await openTelehealth(page);
-
-		await expect(page.getByRole('heading', {level: 1, name: 'Telehealth'})).toBeVisible();
-		await expect(
-			page.getByText('Synthetic demo. Not a production telehealth deployment.'),
-		).toBeVisible();
-
+		await page.getByRole('button', {name: 'Open navigation'}).click();
+		await page.getByRole('dialog').getByRole('link', {name: 'Telehealth'}).click();
+		await expect(page).toHaveURL(/\/dashboard\/telehealth$/);
+		await expect(page.getByText('Synthetic demo. Not a production telehealth deployment.')).toBeVisible();
 		const visits = page.getByRole('list', {name: 'Telehealth visits'});
 		await expect(visits).toContainText('Avery Quinn');
 		await expect(visits).toContainText('Dr. Jordan Ellis');
-		await expect(visits).toContainText('Telehealth');
 
-		await page.getByRole('button', {name: 'Join visit'}).click();
-		await expect(page).toHaveURL(/\/dashboard\/telehealth\/[0-9a-f-]{36}$/);
+		const providerSessionId = await joinSeededVisit(page);
 		await expect(page).not.toHaveURL(/session-/);
-		await expect(page.getByRole('heading', {level: 1, name: 'Telehealth session'})).toBeVisible();
-		await expect(page.getByRole('heading', {level: 2, name: 'Waiting room'})).toBeVisible();
-		await expect(page.getByText('Avery Quinn')).toBeVisible();
-		await expect(page.getByText('Dr. Jordan Ellis')).toBeVisible();
 
-		await page.getByRole('button', {name: 'Join session'}).click();
-		await expect(
-			page
-				.getByText('Live media is not configured in this environment')
-				.or(page.getByText('Connected', {exact: true})),
-		).toBeVisible();
-		await expect(page.getByRole('button', {name: 'Camera'})).toBeVisible();
-		await expect(page.getByRole('button', {name: 'Microphone'})).toBeVisible();
-		await expect(page.getByRole('button', {name: 'Screen share'})).toBeVisible();
-		await expect(page.locator('iframe')).toHaveCount(0);
+		// Passive polls: the concurrent-session inventory carries the marker and nothing else does (BE-027).
+		expect(passiveRequests.length).toBeGreaterThan(0);
+		expect(new Set(passiveRequests)).toEqual(new Set(['/auth/sessions']));
 
-		await page.getByRole('button', {name: 'Leave call'}).click();
-		await expect(page.getByText('You left the call. The visit is still open.')).toBeVisible();
-		await expect(page).toHaveURL(/\/dashboard\/telehealth\/[0-9a-f-]{36}$/);
-		await page.getByRole('button', {name: 'Rejoin call'}).click();
-		await expect(
-			page
-				.getByText('Live media is not configured in this environment')
-				.or(page.getByText('Connected', {exact: true})),
-		).toBeVisible();
+		const patient = await newParticipant(browser, PATIENT_STATE);
+		const nurse = await newParticipant(browser, NURSE_STATE);
+		try {
+			const patientSessionId = await joinSeededVisit(patient.page, {laterJoiner: true});
+			const nurseSessionId = await joinSeededVisit(nurse.page, {laterJoiner: true});
+			expect(patientSessionId).toBe(providerSessionId);
+			expect(nurseSessionId).toBe(providerSessionId);
 
-		await page.getByRole('button', {name: 'End session'}).click();
-		await expect(page).toHaveURL(/\/dashboard\/telehealth$/);
-		await expect(page.getByRole('heading', {level: 1, name: 'Telehealth'})).toBeVisible();
-		await expect(page.getByRole('list', {name: 'Telehealth visits'})).toContainText('Avery Quinn');
+			// Heartbeat route: every participant gets 204 on an open visit (BE-027 / SEC-013).
+			for (const participant of [page, patient.page, nurse.page]) {
+				expect((await heartbeat(participant, providerSessionId)).status()).toBe(204);
+			}
+
+			// Host-only End visit: the provider is offered it; the patient and the nurse are not.
+			await expect(page.getByRole('button', {name: 'End visit'})).toBeVisible();
+			await expect(patient.page.getByRole('button', {name: 'End visit'})).toHaveCount(0);
+			await expect(nurse.page.getByRole('button', {name: 'End visit'})).toHaveCount(0);
+
+			// Leaving the call does not end the visit.
+			await page.getByRole('button', {name: 'Leave call'}).click();
+			await expect(page.getByText('You left the call. The visit is still open.')).toBeVisible();
+			await expect(page).toHaveURL(SESSION_URL);
+			await page.getByRole('button', {name: 'Rejoin call'}).click();
+			await expect(page.getByRole('region', {name: 'Video visit', exact: true})).toBeVisible();
+
+			await page.getByRole('button', {name: 'End visit'}).click();
+			await page
+				.getByRole('dialog', {name: 'End this visit for everyone?'})
+				.getByRole('button', {name: 'End visit'})
+				.click();
+			await expect(page.getByRole('heading', {level: 2, name: 'Visit wrap-up · Avery Quinn'})).toBeVisible();
+			await expect(page.getByRole('link', {name: 'Book follow-up'})).toBeVisible();
+
+			// The others see the visit as closed after a reload, and the heartbeat no longer keeps it alive.
+			for (const participant of [patient.page, nurse.page]) {
+				await participant.reload();
+				await expect(participant.getByRole('heading', {level: 2, name: 'Your visit has ended'})).toBeVisible();
+				await expect(participant.getByRole('region', {name: 'Video visit', exact: true})).toBeHidden();
+				expect([404, 409]).toContain((await heartbeat(participant, providerSessionId)).status());
+			}
+		} finally {
+			await patient.context.close();
+			await nurse.context.close();
+		}
 	});
 });

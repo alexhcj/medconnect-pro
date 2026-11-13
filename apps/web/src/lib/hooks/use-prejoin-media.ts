@@ -360,6 +360,25 @@ export function usePrejoinMedia({mock, mockPhase = 'ready'}: {mock: boolean; moc
 		void release().then(() => setAttempt((value) => value + 1));
 	}, [mock, release]);
 
+	/**
+	 * FE-065: while the demo persona camera is chosen the device camera is released, so the preview
+	 * really does keep the real camera off. Turning it back on restores the preview track.
+	 */
+	const setCameraEnabled = useCallback(
+		async (enabled: boolean) => {
+			const call = callRef.current;
+			if (mock || !call || call.isDestroyed()) {
+				return;
+			}
+			try {
+				await call.setLocalVideo(enabled);
+			} catch {
+				// The preview call is going away or the camera is already unavailable.
+			}
+		},
+		[mock],
+	);
+
 	const getChoices = useCallback(
 		(audioOnly: boolean): JoinChoices => ({
 			audioOnly,
@@ -387,6 +406,7 @@ export function usePrejoinMedia({mock, mockPhase = 'ready'}: {mock: boolean; moc
 		selectMicrophone,
 		selectSpeaker,
 		setBackground,
+		setCameraEnabled,
 		retry,
 		release,
 		getChoices,

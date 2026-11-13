@@ -40,6 +40,24 @@ describe('dailyJoinOptions', () => {
 		expect(dailyJoinOptions({...DEFAULT_JOIN_CHOICES, cameraId: 'cam-1', videoSource: track}, ORIGIN).videoSource).toBe(track);
 	});
 
+	it('never runs Daily background processing on a persona track (FE-065)', () => {
+		const track = {kind: 'video'} as MediaStreamTrack;
+		const options = dailyJoinOptions(
+			{audioOnly: false, microphoneId: 'mic-1', background: {kind: 'blur'}, videoSource: track},
+			ORIGIN,
+		);
+		expect(options.videoSource).toBe(track);
+		expect(options.inputSettings).toBeUndefined();
+	});
+
+	it('still joins audio only when a persona was chosen (FE-065)', () => {
+		const track = {kind: 'video'} as MediaStreamTrack;
+		expect(dailyJoinOptions({audioOnly: true, background: {kind: 'none'}, videoSource: track}, ORIGIN)).toEqual({
+			startVideoOff: true,
+			videoSource: false,
+		});
+	});
+
 	it('carries no names, room, token or appointment data', () => {
 		const text = JSON.stringify(dailyJoinOptions({...DEFAULT_JOIN_CHOICES, cameraId: 'cam-1'}, ORIGIN));
 		expect(text).not.toMatch(/token|user_name|room|appointment/i);

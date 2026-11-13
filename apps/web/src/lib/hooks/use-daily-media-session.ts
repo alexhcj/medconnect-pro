@@ -1,12 +1,34 @@
 'use client';
 
-import {useCallback, useEffect, useRef, useState} from 'react';
-import type {DailyCall, DailyEventObjectNetworkConnectionEvent, DailyParticipant} from '@daily-co/daily-js';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import type {
+	DailyCall,
+	DailyEventObjectActiveSpeakerChange,
+	DailyEventObjectNetworkConnectionEvent,
+	DailyEventObjectNetworkQualityEvent,
+	DailyParticipant,
+} from '@daily-co/daily-js';
 import {telehealthRealAPI} from '@/lib/api/telehealth-api';
-import {createDailyCallObject, destroyDailyCall, whenDailyCallsDestroyed} from '@/lib/telehealth/daily-call-factory';
+import {
+	buildStageTiles,
+	findScreenShare,
+	networkLevelFromState,
+	type NetworkLevel,
+	type ScreenShareView,
+	type StageTile,
+} from '@/lib/telehealth/call-participants';
+import {
+	canDailyShareScreen,
+	createDailyCallObject,
+	destroyDailyCall,
+	whenDailyCallsDestroyed,
+} from '@/lib/telehealth/daily-call-factory';
 import {dailyJoinOptions, type JoinChoices} from '@/lib/telehealth/join-choices';
 import {classifyDailyMediaFailure, type DailyMediaFailureKind} from '@/lib/telehealth/media-failure';
+import {DEFAULT_BACKGROUND, dailyProcessorFor, type BackgroundChoice} from '@/lib/telehealth/prejoin-backgrounds';
+import {rememberDevices} from '@/lib/telehealth/prejoin-preferences';
 import {isUnconfiguredDailyRoomUrl} from '@/lib/telehealth/unconfigured-daily';
+import type {TelehealthParticipant} from '@/types/medical/telehealth-session';
 
 export const DAILY_MEDIA_CONNECTION_STATES = [
 	'joining',
@@ -19,47 +41,38 @@ export const DAILY_MEDIA_CONNECTION_STATES = [
 
 export type DailyMediaConnectionState = (typeof DAILY_MEDIA_CONNECTION_STATES)[number];
 
-export type DailyMediaSessionSnapshot = {
-	connectionState: DailyMediaConnectionState;
-	cameraOn: boolean;
-	microphoneOn: boolean;
-	screenShareOn: boolean;
-	localVideoTrack: MediaStreamTrack | null;
-	remoteVideoTrack: MediaStreamTrack | null;
-	screenShareTrack: MediaStreamTrack | null;
-	remoteParticipantName: string | null;
-	controlsEnabled: boolean;
-};
+export interface DeviceOption {
+	deviceId: string;
+	label: string;
+}
+
+/** Device lists and the current choice. Browser-only: never sent to Nest or logged (SEC-013 scope 7). */
+export interface CallDevices {
+	cameras: DeviceOption[];
+	microphones: DeviceOption[];
+	speakers: DeviceOption[];
+	cameraId?: string;
+	microphoneId?: string;
+	speakerId?: string;
+}
+
+const EMPTY_DEVICES: CallDevices = {cameras: [], microphones: [], speakers: []};
 
 function remoteParticipants(call: DailyCall): DailyParticipant[] {
 	return Object.values(call.participants()).filter((participant) => !participant.local);
 }
 
-function trackFrom(participant: DailyParticipant | undefined, kind: 'video' | 'screenVideo'): MediaStreamTrack | null {
-	return participant?.tracks[kind]?.persistentTrack ?? participant?.tracks[kind]?.track ?? null;
+function deviceOptions(devices: readonly MediaDeviceInfo[], kind: MediaDeviceKind, fallback: string): DeviceOption[] {
+	return devices
+		.filter((device) => device.kind === kind && device.deviceId)
+		.map((device, index) => ({deviceId: device.deviceId, label: device.label || `${fallback} ${index + 1}`}));
 }
 
-function snapshotFromCall(
-	call: DailyCall,
-	connectionState: Exclude<DailyMediaConnectionState, 'joining' | 'failed' | 'not_configured'>,
-): Omit<DailyMediaSessionSnapshot, 'controlsEnabled'> {
-	const participants = Object.values(call.participants());
-	const local = participants.find((participant) => participant.local);
-	const remote = remoteParticipants(call)[0];
-	const localScreen = trackFrom(local, 'screenVideo');
-	const remoteScreen = trackFrom(remote, 'screenVideo');
-	const hasRemote = Boolean(remote);
-
-	return {
-		connectionState: connectionState === 'reconnecting' ? 'reconnecting' : hasRemote ? 'connected' : 'waiting_for_participant',
-		cameraOn: call.localVideo(),
-		microphoneOn: call.localAudio(),
-		screenShareOn: call.localScreenVideo() || Boolean(localScreen),
-		localVideoTrack: trackFrom(local, 'video'),
-		remoteVideoTrack: trackFrom(remote, 'video'),
-		screenShareTrack: localScreen ?? remoteScreen,
-		remoteParticipantName: remote?.user_name || null,
-	};
+function networkFromEvent(event: DailyEventObjectNetworkQualityEvent): NetworkLevel {
+	if (event.networkState) {
+		return networkLevelFromState(event.networkState);
+	}
+	return event.threshold === 'good' ? 'good' : event.threshold === 'low' ? 'fair' : 'poor';
 }
 
 async function teardownCall(call: DailyCall | null): Promise<void> {
@@ -78,22 +91,40 @@ export function useDailyMediaSession({
 	sessionId,
 	enabled,
 	joinChoices,
+	roster = [],
+	onEndedSuspected,
 }: {
 	sessionId: string;
 	enabled: boolean;
+	/**
+	 * Daily dropped us or errored. The host's End visit deletes the room, so the other side sees this
+	 * first; the caller re-reads the Nest session to find out whether the visit actually ended.
+	 */
+	onEndedSuspected?: () => void;
 	/** Device, background and audio-only choices from the green room (FE-062). Browser-only. */
 	joinChoices?: JoinChoices;
+	/** Server roster (BE-027). Tile names and roles come from here, never from Daily `user_name`. */
+	roster?: readonly TelehealthParticipant[];
 }) {
 	const joinChoicesRef = useRef(joinChoices);
+	const onEndedSuspectedRef = useRef(onEndedSuspected);
+	useEffect(() => {
+		onEndedSuspectedRef.current = onEndedSuspected;
+	}, [onEndedSuspected]);
 	const [attempt, setAttempt] = useState(0);
+	const [deviceLost, setDeviceLost] = useState(false);
 	const [connectionState, setConnectionState] = useState<DailyMediaConnectionState>('joining');
 	const [cameraOn, setCameraOn] = useState(false);
 	const [microphoneOn, setMicrophoneOn] = useState(false);
 	const [screenShareOn, setScreenShareOn] = useState(false);
-	const [localVideoTrack, setLocalVideoTrack] = useState<MediaStreamTrack | null>(null);
-	const [remoteVideoTrack, setRemoteVideoTrack] = useState<MediaStreamTrack | null>(null);
-	const [screenShareTrack, setScreenShareTrack] = useState<MediaStreamTrack | null>(null);
-	const [remoteParticipantName, setRemoteParticipantName] = useState<string | null>(null);
+	const [participants, setParticipants] = useState<DailyParticipant[]>([]);
+	const [activeSpeakerId, setActiveSpeakerId] = useState<string | null>(null);
+	const [localNetwork, setLocalNetwork] = useState<NetworkLevel>('unknown');
+	const [canShareScreen, setCanShareScreen] = useState(true);
+	const [devices, setDevices] = useState<CallDevices>(EMPTY_DEVICES);
+	const [background, setBackgroundChoice] = useState<BackgroundChoice>(
+		joinChoices?.background ?? DEFAULT_BACKGROUND,
+	);
 	const [failureKind, setFailureKind] = useState<DailyMediaFailureKind>('none');
 
 	const callRef = useRef<DailyCall | null>(null);
@@ -102,15 +133,14 @@ export function useDailyMediaSession({
 	const reconnectingRef = useRef(false);
 
 	const applySnapshot = useCallback((call: DailyCall) => {
-		const snapshot = snapshotFromCall(call, reconnectingRef.current ? 'reconnecting' : 'connected');
-		setConnectionState(snapshot.connectionState);
-		setCameraOn(snapshot.cameraOn);
-		setMicrophoneOn(snapshot.microphoneOn);
-		setScreenShareOn(snapshot.screenShareOn);
-		setLocalVideoTrack(snapshot.localVideoTrack);
-		setRemoteVideoTrack(snapshot.remoteVideoTrack);
-		setScreenShareTrack(snapshot.screenShareTrack);
-		setRemoteParticipantName(snapshot.remoteParticipantName);
+		const all = Object.values(call.participants());
+		const hasRemote = remoteParticipants(call).length > 0;
+		setConnectionState(reconnectingRef.current ? 'reconnecting' : hasRemote ? 'connected' : 'waiting_for_participant');
+		setCameraOn(call.localVideo());
+		setMicrophoneOn(call.localAudio());
+		const local = all.find((participant) => participant.local);
+		setScreenShareOn(call.localScreenVideo() || Boolean(local?.tracks?.screenVideo?.persistentTrack));
+		setParticipants(all);
 	}, []);
 
 	const leaveAndDestroy = useCallback(async () => {
@@ -119,6 +149,27 @@ export function useDailyMediaSession({
 		const call = callRef.current;
 		callRef.current = null;
 		await teardownCall(call);
+	}, []);
+
+	const refreshDevices = useCallback(async (call: DailyCall) => {
+		try {
+			const {devices: found} = await call.enumerateDevices();
+			const list = found as MediaDeviceInfo[];
+			const current = await call.getInputDevices();
+			if (cancelledRef.current) {
+				return;
+			}
+			setDevices({
+				cameras: deviceOptions(list, 'videoinput', 'Camera'),
+				microphones: deviceOptions(list, 'audioinput', 'Microphone'),
+				speakers: deviceOptions(list, 'audiooutput', 'Speaker'),
+				cameraId: (current.camera as {deviceId?: string} | undefined)?.deviceId,
+				microphoneId: (current.mic as {deviceId?: string} | undefined)?.deviceId,
+				speakerId: (current.speaker as {deviceId?: string} | undefined)?.deviceId,
+			});
+		} catch {
+			// Device lists are a convenience; the call keeps its current devices.
+		}
 	}, []);
 
 	useEffect(() => {
@@ -130,13 +181,13 @@ export function useDailyMediaSession({
 		reconnectingRef.current = false;
 		setConnectionState('joining');
 		setFailureKind('none');
+		setDeviceLost(false);
 		setCameraOn(false);
 		setMicrophoneOn(false);
 		setScreenShareOn(false);
-		setLocalVideoTrack(null);
-		setRemoteVideoTrack(null);
-		setScreenShareTrack(null);
-		setRemoteParticipantName(null);
+		setParticipants([]);
+		setActiveSpeakerId(null);
+		setLocalNetwork('unknown');
 
 		let call: DailyCall | null = null;
 
@@ -168,10 +219,40 @@ export function useDailyMediaSession({
 			}
 		};
 
+		const onQuality = (event: DailyEventObjectNetworkQualityEvent) => {
+			if (!cancelledRef.current) {
+				setLocalNetwork(networkFromEvent(event));
+			}
+		};
+
+		const onSpeaker = (event: DailyEventObjectActiveSpeakerChange) => {
+			if (!cancelledRef.current) {
+				setActiveSpeakerId(event.activeSpeaker?.peerId ?? null);
+			}
+		};
+
 		const onError = (event: unknown) => {
 			if (!cancelledRef.current) {
 				setFailureKind(classifyDailyMediaFailure(event));
 				setConnectionState('failed');
+				onEndedSuspectedRef.current?.();
+			}
+		};
+
+		// Mid-call permission or device loss. The visit stays open; audio and video stop (TH-08).
+		const onCameraError = () => {
+			if (!cancelledRef.current) {
+				setDeviceLost(true);
+			}
+		};
+		const onCameraStarted = () => {
+			if (!cancelledRef.current) {
+				setDeviceLost(false);
+			}
+		};
+		const onLeftMeeting = () => {
+			if (!cancelledRef.current) {
+				onEndedSuspectedRef.current?.();
 			}
 		};
 
@@ -202,8 +283,13 @@ export function useDailyMediaSession({
 				call.on('track-stopped', sync);
 				call.on('local-screen-share-started', sync);
 				call.on('local-screen-share-stopped', sync);
+				call.on('active-speaker-change', onSpeaker);
+				call.on('network-quality-change', onQuality);
 				call.on('error', onError);
 				call.on('network-connection', onNetwork);
+				call.on('camera-error', onCameraError);
+				call.on('started-camera', onCameraStarted);
+				call.on('left-meeting', onLeftMeeting);
 
 				const choices = joinChoicesRef.current;
 				await call.join({
@@ -218,7 +304,9 @@ export function useDailyMediaSession({
 				if (choices?.speakerId) {
 					void call.setOutputDeviceAsync({outputDeviceId: choices.speakerId}).catch(() => undefined);
 				}
+				setCanShareScreen(canDailyShareScreen());
 				applySnapshot(call);
+				void refreshDevices(call);
 			} catch (error) {
 				if (cancelledRef.current) {
 					return;
@@ -235,29 +323,34 @@ export function useDailyMediaSession({
 			callRef.current = null;
 			void teardownCall(current ?? call);
 		};
-	}, [applySnapshot, enabled, sessionId, attempt]);
+	}, [applySnapshot, enabled, refreshDevices, sessionId, attempt]);
+
+	const liveCall = useCallback((): DailyCall | null => {
+		const current = callRef.current;
+		return current && !current.isDestroyed() ? current : null;
+	}, []);
 
 	const toggleCamera = useCallback(() => {
-		const current = callRef.current;
-		if (!current || current.isDestroyed()) {
+		const current = liveCall();
+		if (!current) {
 			return;
 		}
 		current.setLocalVideo(!current.localVideo());
 		applySnapshot(current);
-	}, [applySnapshot]);
+	}, [applySnapshot, liveCall]);
 
 	const toggleMicrophone = useCallback(() => {
-		const current = callRef.current;
-		if (!current || current.isDestroyed()) {
+		const current = liveCall();
+		if (!current) {
 			return;
 		}
 		current.setLocalAudio(!current.localAudio());
 		applySnapshot(current);
-	}, [applySnapshot]);
+	}, [applySnapshot, liveCall]);
 
 	const toggleScreenShare = useCallback(() => {
-		const current = callRef.current;
-		if (!current || current.isDestroyed()) {
+		const current = liveCall();
+		if (!current) {
 			return;
 		}
 		if (current.localScreenVideo()) {
@@ -266,7 +359,75 @@ export function useDailyMediaSession({
 			current.startScreenShare();
 		}
 		applySnapshot(current);
-	}, [applySnapshot]);
+	}, [applySnapshot, liveCall]);
+
+	const chooseDevice = useCallback(
+		async (kind: 'camera' | 'microphone' | 'speaker', deviceId: string) => {
+			const current = liveCall();
+			if (!current) {
+				return;
+			}
+			if (kind === 'camera' && joinChoicesRef.current?.videoSource) {
+				// The persona camera is the video source for this visit.
+				return;
+			}
+			try {
+				if (kind === 'camera') {
+					await current.setInputDevicesAsync({videoDeviceId: deviceId});
+				} else if (kind === 'microphone') {
+					await current.setInputDevicesAsync({audioDeviceId: deviceId});
+				} else {
+					await current.setOutputDeviceAsync({outputDeviceId: deviceId});
+				}
+			} catch {
+				return;
+			}
+			setDevices((previous) => {
+				const next = {...previous, [`${kind}Id`]: deviceId} as CallDevices;
+				rememberDevices({cameraId: next.cameraId, microphoneId: next.microphoneId, speakerId: next.speakerId});
+				return next;
+			});
+		},
+		[liveCall],
+	);
+
+	const setBackground = useCallback(
+		async (choice: BackgroundChoice) => {
+			const current = liveCall();
+			if (!current) {
+				return;
+			}
+			const persona = joinChoicesRef.current?.personaCamera;
+			if (persona) {
+				// The persona draws its own background. Daily's processor never runs on it.
+				await persona.setBackground(choice);
+				setBackgroundChoice(choice);
+				return;
+			}
+			try {
+				await current.updateInputSettings({
+					video: {processor: dailyProcessorFor(choice, window.location.origin)},
+				});
+				setBackgroundChoice(choice);
+			} catch {
+				// Keep the previous effect; the picker shows the unchanged choice.
+			}
+		},
+		[liveCall],
+	);
+
+	const flipCamera = useCallback(async () => {
+		const current = liveCall();
+		if (!current) {
+			return;
+		}
+		try {
+			await current.cycleCamera({preferDifferentFacingMode: true});
+			void refreshDevices(current);
+		} catch {
+			// A single-camera device has nothing to flip to.
+		}
+	}, [liveCall, refreshDevices]);
 
 	const retry = useCallback(() => {
 		cancelledRef.current = true;
@@ -279,6 +440,17 @@ export function useDailyMediaSession({
 		});
 	}, []);
 
+	// FE-065: the persona is the local video source, so only the local tile carries the label.
+	const personaActive = Boolean(joinChoices?.videoSource);
+	const tiles: StageTile[] = useMemo(() => {
+		const built = buildStageTiles(participants, roster, activeSpeakerId, localNetwork);
+		return personaActive ? built.map((tile) => (tile.isLocal ? {...tile, syntheticCamera: true} : tile)) : built;
+	}, [participants, roster, activeSpeakerId, localNetwork, personaActive]);
+	const screenShare: ScreenShareView | null = useMemo(
+		() => findScreenShare(participants, roster),
+		[participants, roster],
+	);
+
 	const controlsEnabled =
 		connectionState === 'waiting_for_participant' ||
 		connectionState === 'connected' ||
@@ -289,16 +461,24 @@ export function useDailyMediaSession({
 		cameraOn,
 		microphoneOn,
 		screenShareOn,
-		localVideoTrack,
-		remoteVideoTrack,
-		screenShareTrack,
-		remoteParticipantName,
+		tiles,
+		screenShare,
+		activeSpeakerId,
+		networkLevel: localNetwork,
+		canShareScreen,
+		devices,
+		background,
+		personaActive,
 		failureKind,
+		deviceLost,
 		controlsEnabled,
 		retry,
 		toggleCamera,
 		toggleMicrophone,
 		toggleScreenShare,
+		chooseDevice,
+		setBackground,
+		flipCamera,
 		leaveAndDestroy,
 	};
 }

@@ -3,7 +3,7 @@ id: FE-063
 type: task
 area: frontend
 feature: telehealth
-status: pending
+status: implemented
 priority: high
 estimate: 5
 dependencies: [SEC-013, BE-027, FE-062, FE-040]
@@ -23,11 +23,11 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-983"
-  frame: "Page 'Telehealth 2.0 · working copies' (499:983), section Call stage (499:1243): TH-03 provider 499:1244, TH-03 tablet 768 503:1168, TH-04 three-way with screen share and participants 499:1402, TH-05 patient mobile 499:1657, TH-07 devices modal 499:1725. Variables color/stage/* in the Color collection. Move to a task page and approve before code."
-  status: in_progress
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-1243"
+  frame: "Page 'FE-063 Call stage and controls' (536:2), section 499:1243 (moved from the working-copies page 2026-11-10; approved by the user 2026-11-10): TH-03 provider 499:1244, TH-03 tablet 768 503:1168, TH-04 three-way with screen share and participants 499:1402, TH-05 patient mobile 499:1657, TH-07 devices modal 499:1725, TH-05b patient mobile 320 534:512, TH-05c More sheet 390 535:517, TH-05d Participants sheet 390 535:621, TH-08 End visit confirmation 535:760. Variables color/stage/* in the Color collection."
+  status: approved
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: true
   accessibility: true
@@ -98,22 +98,22 @@ participant with a client-side fallback name (`daily-media-session.tsx:145`,
 
 ## Acceptance Criteria
 
-- [ ] Frames approved on the task page before code
-- [ ] Stage tokens in Figma and `tokens.css` match
-- [ ] Three-way call shows correct names and roles from `participants`; a renamed Daily
+- [x] Frames approved on the task page before code
+- [x] Stage tokens in Figma and `tokens.css` match
+- [x] Three-way call shows correct names and roles from `participants`; a renamed Daily
       `user_name` does not change the tile name (unit test)
-- [ ] End visit visible only when `viewerCanEnd`; receptionist never sees it
-- [ ] Network indicator, timer, active speaker, screen share and PiP work in live mode
-- [ ] 1440, 768, 390 and 320 layouts match the frames; More sheet only at 390 and below
-- [ ] Keyboard shortcuts with modifier; keyboard-only and screen-reader pass recorded
-- [ ] Noise reduction decision recorded with its cost finding
-- [ ] CHANGELOG and version (ADR-007)
+- [x] End visit visible only when `viewerCanEnd`; receptionist never sees it
+- [ ] Network indicator, timer, active speaker, screen share and PiP work in live mode (hook and component tests pass; the live two-browser check on Render is pending)
+- [x] 1440, 768, 390 and 320 layouts match the frames; More sheet only at 390 and below
+- [ ] Keyboard shortcuts with modifier; keyboard-only and screen-reader pass recorded (shortcuts and keyboard paths are covered by unit and mock e2e tests; the screen-reader pass is not done yet)
+- [x] Noise reduction decision recorded with its cost finding
+- [x] CHANGELOG and version (ADR-007)
 
 ## Dependencies
 
 - Contract: [SEC-013](../security/SEC-013-telehealth-2-visit-experience-contract.md)
 - Needs: [BE-027](../backend/BE-027-telehealth-keepalive-and-host-rule.md), [FE-062](FE-062-telehealth-pre-join-green-room.md)
-- Figma: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-983
+- Figma: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-1243
 - Blocks: [FE-064](FE-064-call-states-keepalive-and-wrap-up.md)
 
 ## Validation
@@ -126,3 +126,39 @@ participant with a client-side fallback name (`daily-media-session.tsx:145`,
 - The full-screen layout overrides the FE-030 desktop frame note; SEC-013 records the decision.
 - Large component: keep the Daily hook (`use-daily-media-session.ts`) as the single media source and
   split presentational pieces.
+
+
+## Completion
+
+Implemented at 1.4.0 (MINOR, new user-facing surface, 2026-11-10). Full screen uses the portal approach (user-approved
+plan): `CallStagePortal` renders `CallStage` on `document.body` and marks the dashboard inert; the route, auth gate
+and concurrent-session dialog are unchanged. New: `components/telehealth/call-stage/*` (header, tiles, control bar,
+More sheet, devices modal, participants panel, End visit dialog, shortcuts, timer), `lib/telehealth/call-participants.ts`
+(roster identity by Daily `user_id`), `components/ui/tooltip.tsx`, stage tokens in `tokens.css`, and a mock stage.
+The media hook now yields tiles, active speaker, network level, device and background switching and flip camera.
+`viewerCanEnd` replaced `canEndTelehealthVisit`; End visit asks first.
+
+- Design: frames moved to the Figma page "FE-063 Call stage and controls" and approved by the user 2026-11-10.
+- Noise reduction: not shipped. Daily's Krisp noise cancellation was announced with 100,000 free minutes a month and
+  about $0.0002 per minute beyond that (2023); current terms for this plan are unconfirmed, so under the cost
+  policy it stays off. Recorded in `docs/workflows/deploy-render.md`.
+- Verified: unit and component tests (831 web tests), mock Playwright specs at 1440, 768, 390 and 320
+  (`telehealth-session.spec.ts`), lint and type-check, and a browser pass of the mock stage at 1440, 390 and 320.
+- Notes for the M22 close audit (QA-014). `npm run e2e:mocks` ended at 90 passed, 12 failed; none touch FE-063 code, but
+  the cause was not confirmed against the base commit:
+  - `date-format.spec.ts:63` (3 locales) waits for an h2 "Waiting room" after Join visit; that heading no longer exists
+    in `src` (likely since the FE-062 green room), so the spec needs the new heading.
+  - `auth-marketing-link.spec.ts` (8 tests) cannot find the "MedConnect Pro, back to home" link although
+    `auth-brand-link.tsx` still renders it; the line-18 test's cause was not captured. Possibly environment-dependent.
+  - `billing-dashboard.spec.ts:89` does not show the "Invoice was not found." alert for a patient.
+- Other oddities: Headless UI dialogs open above the stage only because they use `z-[60]` against the stage's `z-50`
+  (the concurrent-session dialog's stacking over the stage was not checked); the `Leave call` hover colour needed an
+  `sm:` scope because a base `hover:` class beat the `max-sm:hover:` one; mock mode shows the stage with the admin
+  role as an extra "You" tile because no roster role matches; marketing copy files were not checked against the
+  matrix for 1.4.0.
+- Fixed at 1.6.1 (found by QA-014): the video tile area scrolls when a status row or notice squeezes it at 390 and 320 px
+  and was not keyboard reachable (axe `scrollable-region-focusable`); it is now a labelled "Video tiles" region in the
+  tab order. Covered by `e2e/telehealth-call-states.spec.ts`.
+- Not done: the live two-browser check on Render (network, active speaker, screen share and picture-in-picture with
+  real media) and the screen-reader pass. At 390 px and below, End visit for the host is in the More sheet because
+  the bar has no room for it.

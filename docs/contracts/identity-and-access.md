@@ -384,7 +384,11 @@ BE-018 and BE-019 (policy constants in `apps/api/src/rate-limit/rate-limit.polic
   Terminating other sessions calls `POST /auth/sessions/:id/revoke` and keeps the current live
   session. Logout everywhere calls `POST /auth/logout-all`
   ([FE-036](../tasks/frontend/FE-036-live-concurrent-session-chrome.md)). The inventory poll is a
-  passive request (above). Do not add a keep-alive other than the in-visit heartbeat.
+  passive request (above). Do not add a keep-alive other than the in-visit heartbeat. The one
+  accompanying client behavior: while joined to a live visit, the client also calls
+  `POST /auth/refresh` before the 15-minute access token lapses, because the heartbeat does not
+  extend the access token ([FE-064](../tasks/frontend/FE-064-call-states-keepalive-and-wrap-up.md)).
+  It stops with the heartbeat and is bounded by the same visit and the 24-hour absolute cap.
   Idle timeout stays 15 minutes. Extension cannot pass the absolute cap.
 
 ### Session inventory (BE-023)

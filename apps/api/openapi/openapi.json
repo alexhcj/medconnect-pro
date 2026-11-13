@@ -6120,6 +6120,17 @@
             "type": "boolean",
             "example": false,
             "description": "UX hint computed from the End visit host rule for the caller (appointment provider or practice admin). POST .../end still enforces it."
+          },
+          "viewerPersonaKey": {
+            "type": "string",
+            "enum": [
+              "provider-jordan-ellis",
+              "nurse-riley-park",
+              "patient-avery-quinn"
+            ],
+            "nullable": true,
+            "example": "provider-jordan-ellis",
+            "description": "The caller's own demo persona key from their membership in the session practice (FE-065), or null. Never another participant's key. Selects the illustrated demo camera; it never changes a display name."
           }
         },
         "required": [
@@ -6138,7 +6149,8 @@
           "synthetic",
           "participants",
           "mediaExpiresAt",
-          "viewerCanEnd"
+          "viewerCanEnd",
+          "viewerPersonaKey"
         ]
       },
       "TelehealthMediaToken": {

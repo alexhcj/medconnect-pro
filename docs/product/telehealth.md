@@ -6,7 +6,8 @@ area: telehealth
 marketing_path: /platform/telehealth
 status: partial
 claim: "Appointment-linked session shell with demo Daily media when configured. Not production telehealth or HIPAA video."
-related_tasks: [FE-007, FE-014, BE-006, BE-016, FE-030, BE-021, FE-035, BE-024, FE-038]
+related_tasks:
+  [FE-007, FE-014, BE-006, BE-016, FE-030, BE-021, FE-035, BE-024, FE-038, SEC-013, DATA-007, BE-027, FE-062, FE-063, FE-064, FE-065, QA-014]
 related_docs:
   - ../01-product-requirements.md
   - ../marketing/capability-matrix.md
@@ -53,20 +54,20 @@ capabilities:
     related_tasks: [SEC-013, FE-062]
   - id: telehealth.call-controls
     name: Full-screen call stage and controls
-    status: planned
-    demo: not in the demo yet (M22)
+    status: partial
+    demo: full-screen dark stage with server-named tiles, active speaker, network indicator, devices, background effects, read-only participants and host-only End visit (1.4.0); call states (waiting, reconnecting, poor network, participant left, device access lost), a 5-minute room-closing notice, and a provider wrap-up and patient visit-ended screen (1.5.0)
     public: no
-    related_tasks: [SEC-013, BE-027, FE-063]
+    related_tasks: [SEC-013, BE-027, FE-063, FE-064]
   - id: telehealth.in-visit-keepalive
     name: Stay signed in during a live visit
-    status: planned
-    demo: not in the demo yet (M22)
+    status: partial
+    demo: heartbeat about every minute plus a quiet token refresh while joined, passive background polls (1.5.0); the 25-minute hidden-tab run is pending
     public: no
     related_tasks: [SEC-013, BE-027, FE-064]
   - id: telehealth.demo-persona
     name: Demo persona camera
-    status: planned
-    demo: not in the demo yet (M22); demo builds only
+    status: partial
+    demo: illustrated persona of the signed-in demo account as the camera source, demo builds only (1.6.0); two-browser check pending
     public: no
     related_tasks: [SEC-013, DATA-007, FE-065]
 ---
@@ -88,6 +89,6 @@ or recording.
 | `telehealth.participant-entry` | Second participant enters an open visit | shipped | lookup, then the existing waiting-room join | qualified |
 | `telehealth.chat-recording` | In-session chat, recording, and transcription | planned | not in the demo | no |
 | `telehealth.prejoin-devices` | Pre-join green room | planned | not in the demo yet (M22) | no |
-| `telehealth.call-controls` | Full-screen call stage and controls | planned | not in the demo yet (M22) | no |
-| `telehealth.in-visit-keepalive` | Stay signed in during a live visit | planned | not in the demo yet (M22) | no |
-| `telehealth.demo-persona` | Demo persona camera | planned | not in the demo yet (M22); demo builds only | no |
+| `telehealth.call-controls` | Full-screen call stage and controls | partial | full-screen stage and controls (1.4.0); call states, closing notice and wrap-up (1.5.0); live checks pending | no |
+| `telehealth.in-visit-keepalive` | Stay signed in during a live visit | partial | heartbeat and token refresh while in a live visit (1.5.0); hidden-tab run pending | no |
+| `telehealth.demo-persona` | Demo persona camera | partial | illustrated persona camera in the green room and call, demo builds only (1.6.0); two-browser check pending | no |

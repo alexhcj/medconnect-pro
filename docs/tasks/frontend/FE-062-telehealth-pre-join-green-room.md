@@ -21,8 +21,8 @@ related_docs:
 design:
   required: true
   tool: figma
-  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-983"
-  frame: "Page 'Telehealth 2.0 · working copies' (499:983), section Pre-join (499:984). Desktop 1440: ready 499:985, checking 526:343, test sound playing 526:496, background Image picker 526:943, camera blocked 503:690, no camera 503:929. Mobile 390: ready 499:1161, camera blocked 499:1203, no camera 526:664. Mobile 320: ready 526:704, camera blocked 526:746, no camera 526:786. Background images (Clinic exam room 526:1173, Nurse station 526:1174, Home living room 526:1175), generated with Figma AI; export to apps/web/public/telehealth/backgrounds/. Network row reads 'Checked after you join' unless the pre-call test runs without a meeting token. Approved by the user 2026-11-09 on the working-copies page; frames not moved to a task page."
+  file_url: "https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=552-1078"
+  frame: "Page 'FE-062 Telehealth pre-join green room' (552:1078), moved from the working-copies page 2026-11-10; section Pre-join (499:984). Desktop 1440: ready 499:985, checking 526:343, test sound playing 526:496, background Image picker 526:943, camera blocked 503:690, no camera 503:929. Mobile 390: ready 499:1161, camera blocked 499:1203, no camera 526:664. Mobile 320: ready 526:704, camera blocked 526:746, no camera 526:786. Background images (Clinic exam room 526:1173, Nurse station 526:1174, Home living room 526:1175), generated with Figma AI; export to apps/web/public/telehealth/backgrounds/. Network row reads 'Checked after you join' unless the pre-call test runs without a meeting token. Approved by the user 2026-11-09 on the working-copies page; moved to this task page 2026-11-10."
   status: approved
 implementation:
   status: in_progress
@@ -101,7 +101,7 @@ Join-before-mint stays (SEC-008): the green room runs before Nest join, so it ha
 ## Dependencies
 
 - Contract: [SEC-013](../security/SEC-013-telehealth-2-visit-experience-contract.md)
-- Figma: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=499-983
+- Figma: https://www.figma.com/design/ZJf1d3ur89UPiY7S2yiCKd/MedConnect-Pro-Design-System?node-id=552-1078
 - Blocks: [FE-063](FE-063-call-stage-and-controls.md), [FE-065](FE-065-demo-persona-camera.md)
 
 ## Validation

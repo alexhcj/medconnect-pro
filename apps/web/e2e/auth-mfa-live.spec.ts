@@ -33,5 +33,11 @@ test.describe('Live mock MFA challenge', () => {
 
 		const cookies = await context.cookies();
 		expect(cookies.some((cookie) => cookie.name === 'mcp_access')).toBe(true);
+
+		// QA-015: this sign-in is the MFA nurse's second session once `setup` signs the same account in
+		// for the telehealth spec, and two sessions open the "Multiple Sessions Detected" modal, which
+		// blocks the nurse's lobby click. End this session so `setup` holds the only one.
+		await page.getByRole('button', {name: 'Sign out'}).click();
+		await expect(page).toHaveURL(/\/login/);
 	});
 });

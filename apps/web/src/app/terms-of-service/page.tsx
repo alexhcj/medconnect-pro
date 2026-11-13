@@ -53,25 +53,34 @@ const TermsOfServicePage = () => {
 					</div>
 					<h1 className="text-3xl font-bold text-gray-900 mb-2">Terms of Service</h1>
 					<p className="text-gray-600 max-w-2xl mx-auto">
-						Please review our terms and conditions carefully. Your use of our healthcare platform
-						requires acceptance of these terms and HIPAA acknowledgment.
+						MedConnect Pro is a portfolio demo that uses synthetic data only. Please review these
+						terms before using it.
 					</p>
 					<div className="mt-4 text-sm text-gray-500">
-						Last updated: January 29, 2025
+						Last updated: November 13, 2026
 					</div>
+				</div>
+
+				<div
+					role="note"
+					className="mb-8 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"
+				>
+					<strong>Synthetic demo.</strong> This application contains no real patient data. Do not enter real
+					patient or health information. It does not claim HIPAA compliance or certification and is not suitable for real
+					patient data.
 				</div>
 
 				{/* Key Highlights */}
 				<div className="grid md:grid-cols-3 gap-4 mb-8">
 					<div className="bg-white p-4 rounded-lg border border-blue-200 shadow-sm">
 						<ShieldCheck className="h-6 w-6 text-blue-600 mb-2"/>
-						<h4 className="font-medium text-gray-900 mb-1">HIPAA Compliant</h4>
-						<p className="text-sm text-gray-600">Full compliance with healthcare privacy regulations</p>
+						<h4 className="font-medium text-gray-900 mb-1">Synthetic demo</h4>
+						<p className="text-sm text-gray-600">Synthetic data only. Do not enter real patient information.</p>
 					</div>
 					<div className="bg-white p-4 rounded-lg border border-green-200 shadow-sm">
 						<Lock className="h-6 w-6 text-green-600 mb-2"/>
-						<h4 className="font-medium text-gray-900 mb-1">Data Security</h4>
-						<p className="text-sm text-gray-600">AES-256 encryption and secure infrastructure</p>
+						<h4 className="font-medium text-gray-900 mb-1">Demonstrated patterns</h4>
+						<p className="text-sm text-gray-600">Role-based access, tenant isolation and audit logging.</p>
 					</div>
 					<div className="bg-white p-4 rounded-lg border border-purple-200 shadow-sm">
 						<Heart className="h-6 w-6 text-purple-600 mb-2"/>
@@ -101,69 +110,68 @@ const TermsOfServicePage = () => {
 
 					<CollapsibleSection
 						id="hipaa-privacy"
-						title="HIPAA Privacy & Security"
+						title="Health information in this demo"
 						icon={ShieldCheck}
 					>
 						<div className="space-y-4">
 							<div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-								<h4 className="font-medium text-blue-900 mb-2">Protected Health Information (PHI)</h4>
+								<h4 className="font-medium text-blue-900 mb-2">Synthetic records only</h4>
 								<p className="text-blue-800 text-sm">
-									We are committed to protecting your health information in accordance with HIPAA regulations.
+									All patient records in this demo are synthetic. Health-information handling is modelled to
+									demonstrate engineering patterns. It is not certified or assessed against HIPAA.
 								</p>
 							</div>
 							<p>
-								<strong>Data Collection:</strong> We collect only the minimum necessary health information required to
-								provide our services. This includes medical records, treatment plans, and billing information as
-								authorized by you or your healthcare provider.
+								<strong>Data Collection:</strong> The demo stores synthetic records, such as medical records,
+								treatment plans and billing entries, so that its workflows can be shown. Do not enter real health
+								information.
 							</p>
 							<p>
-								<strong>Data Use:</strong> Your PHI will only be used for treatment, payment, and healthcare operations
-								as defined by HIPAA. We will not sell, rent, or share your health information with third parties except
-								as required by law or with your explicit consent.
+								<strong>Data Use:</strong> Synthetic records are used only to demonstrate the product. They are not
+								sold, rented or shared.
 							</p>
 							<p>
-								<strong>Security Measures:</strong> We implement administrative, physical, and technical safeguards
-								including AES-256 encryption, secure databases with row-level security, and regular security audits.
+								<strong>Demonstrated safeguards:</strong> Role-based access control, tenant isolation with
+								PostgreSQL row-level security, and audit logging are implemented in the demo.
 							</p>
 							<p>
-								<strong>Your Rights:</strong> You have the right to access, amend, and request restrictions on your
-								health information. You may also request an accounting of disclosures and file complaints regarding our
-								privacy practices.
+								<strong>Real data:</strong> Because the demo holds no real patient data, no individual rights
+								process (access, amendment, accounting of disclosures) is operated for it.
 							</p>
 						</div>
 					</CollapsibleSection>
 
 					<CollapsibleSection
 						id="data-security"
-						title="Data Security & Technical Safeguards"
+						title="Demonstrated engineering patterns"
 						icon={Lock}
 					>
 						<div className="space-y-4">
 							<p>
-								Our platform implements enterprise-grade security measures to protect your sensitive healthcare
-								information:
+								This demo shows engineering patterns used in healthcare software. It makes no claim of compliance
+								or certification:
 							</p>
 							<div className="grid md:grid-cols-2 gap-4">
 								<div className="bg-gray-50 p-3 rounded-lg">
-									<h5 className="font-medium text-gray-900 mb-2">Encryption</h5>
+									<h5 className="font-medium text-gray-900 mb-2">Implemented in the demo</h5>
 									<ul className="text-sm text-gray-700 space-y-1">
-										<li>• AES-256 encryption at rest</li>
-										<li>• TLS 1.3 for data in transit</li>
-										<li>• Certificate pinning</li>
+										<li>• Role-based access control</li>
+										<li>• Tenant isolation with row-level security</li>
+										<li>• Audit logging and a security-events viewer</li>
+										<li>• Document access control</li>
 									</ul>
 								</div>
 								<div className="bg-gray-50 p-3 rounded-lg">
-									<h5 className="font-medium text-gray-900 mb-2">Infrastructure</h5>
+									<h5 className="font-medium text-gray-900 mb-2">Planned, not deployed</h5>
 									<ul className="text-sm text-gray-700 space-y-1">
-										<li>• AWS S3 with SSE-KMS</li>
-										<li>• VPC with private subnets</li>
-										<li>• Database audit triggers</li>
+										<li>• Production sign-in and multi-factor authentication</li>
+										<li>• Encryption and network isolation as infrastructure properties</li>
 									</ul>
 								</div>
 							</div>
 							<p>
-								<strong>Access Controls:</strong> We implement role-based access controls, multi-factor authentication,
-								and regular access reviews to ensure only authorized personnel can access your information.
+								<strong>Access Controls:</strong> The demo uses mock identity sessions and a labelled mock
+								multi-factor challenge. These demonstrate the flow and are not production authentication.
 							</p>
 						</div>
 					</CollapsibleSection>
@@ -201,8 +209,8 @@ const TermsOfServicePage = () => {
 					>
 						<div className="space-y-4">
 							<p>
-								<strong>Service Uptime:</strong> We strive to maintain 99.9% uptime but cannot guarantee uninterrupted
-								service. Scheduled maintenance will be announced in advance when possible.
+								<strong>Service Uptime:</strong> This is a demo service with no uptime commitment. It may be
+								unavailable or reset at any time.
 							</p>
 							<p>
 								<strong>Emergency Situations:</strong> This platform is not intended for emergency medical situations.

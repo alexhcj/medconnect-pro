@@ -52,6 +52,30 @@ describe('design tokens', () => {
 		}
 	});
 
+	it('keeps muted and secondary text at 4.5:1 or better on white, canvas and tinted surfaces (WCAG 1.4.3, FE-066)', () => {
+		const backgrounds = [
+			'color-bg-surface',
+			'color-bg-canvas',
+			'color-bg-subtle',
+			'color-bg-brand-subtle',
+			'color-bg-danger-subtle',
+			'color-bg-warning-subtle',
+		];
+
+		for (const name of ['color-text-muted', 'color-text-secondary']) {
+			for (const background of backgrounds) {
+				expect(contrast(token(name), token(background)), `${name} on ${background}`).toBeGreaterThanOrEqual(4.5);
+			}
+		}
+	});
+
+	it('keeps muted text quieter than secondary text', () => {
+		const surface = token('color-bg-surface');
+
+		expect(token('color-text-muted')).toBe('#646b78');
+		expect(contrast(token('color-text-muted'), surface)).toBeLessThan(contrast(token('color-text-secondary'), surface));
+	});
+
 	it('steps hover darker than the default and keeps card dividers out of the control token', () => {
 		const surface = token('color-bg-surface');
 
@@ -65,6 +89,23 @@ describe('design tokens', () => {
 	it('keeps the error and focus colours distinct from the default control border', () => {
 		expect(token('color-border-danger')).not.toBe(token('color-border-input'));
 		expect(token('color-focus-brand')).not.toBe(token('color-border-input'));
+	});
+
+	it('maps the Figma color/stage/* variables and keeps stage text and outlines readable (FE-063)', () => {
+		expect(token('color-stage-bg')).toBe('#111827');
+		expect(token('color-stage-surface')).toBe('#1f2937');
+		expect(token('color-stage-surface-raised')).toBe('#374151');
+		expect(token('color-stage-border')).toBe('#374151');
+		expect(token('color-stage-border-strong')).toBe('#6b7280');
+		expect(token('color-stage-text')).toBe('#ffffff');
+		expect(token('color-stage-text-muted')).toBe('#d1d5db');
+
+		const grounds = [token('color-stage-bg'), token('color-stage-surface')];
+		for (const ground of grounds) {
+			expect(contrast(token('color-stage-text'), ground)).toBeGreaterThanOrEqual(4.5);
+			expect(contrast(token('color-stage-text-muted'), ground)).toBeGreaterThanOrEqual(4.5);
+			expect(contrast(token('color-stage-border-strong'), ground)).toBeGreaterThanOrEqual(3);
+		}
 	});
 
 	it('maps radius, type, and space to the Figma 4px grid', () => {

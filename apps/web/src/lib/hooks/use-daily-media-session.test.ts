@@ -16,6 +16,7 @@ const {createDailyCallObject, mintMediaToken, destroyDailyCall} = vi.hoisted(() 
 vi.mock('@/lib/telehealth/daily-call-factory', () => ({
 	createDailyCallObject,
 	destroyDailyCall,
+	canDailyShareScreen: () => true,
 	whenDailyCallsDestroyed: async () => undefined,
 }));
 
@@ -29,9 +30,16 @@ import {useDailyMediaSession} from '@/lib/hooks/use-daily-media-session';
 
 const sessionId = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
 
-function participant(overrides: {local: boolean; session_id: string; user_name?: string}): DailyParticipant {
+function participant(overrides: {
+	local: boolean;
+	session_id: string;
+	user_id?: string;
+	user_name?: string;
+	networkQualityState?: DailyParticipant['networkQualityState'];
+}): DailyParticipant {
 	return {
-		user_id: overrides.session_id,
+		user_id: overrides.user_id ?? overrides.session_id,
+		networkQualityState: overrides.networkQualityState,
 		user_name: overrides.user_name ?? (overrides.local ? 'You' : 'Avery Quinn'),
 		session_id: overrides.session_id,
 		local: overrides.local,
@@ -99,6 +107,12 @@ function createFakeCall() {
 		stopScreenShare: vi.fn(() => {
 			localScreen = false;
 		}),
+		enumerateDevices: vi.fn(async () => ({devices: []})),
+		getInputDevices: vi.fn(async () => ({camera: {}, mic: {}, speaker: {}})),
+		setInputDevicesAsync: vi.fn(async () => ({})),
+		setOutputDeviceAsync: vi.fn(async () => ({})),
+		updateInputSettings: vi.fn(async () => ({})),
+		cycleCamera: vi.fn(async () => ({})),
 		on: vi.fn((event: string, handler: (event: unknown) => void) => {
 			const set = handlers.get(event) ?? new Set();
 			set.add(handler);
@@ -112,14 +126,17 @@ function createFakeCall() {
 		emit(event: string, payload: unknown = {}) {
 			handlers.get(event)?.forEach((handler) => handler(payload));
 		},
-		addRemote() {
-			participants.remote = participant({local: false, session_id: 'remote', user_name: 'Avery Quinn'});
+		addRemote(overrides: {session_id?: string; user_id?: string; user_name?: string} = {}) {
+			const session_id = overrides.session_id ?? 'remote';
+			participants[session_id] = participant({local: false, session_id, ...overrides});
 		},
 	};
 
 	return call as unknown as DailyCall & {
 		emit: (event: string, payload?: unknown) => void;
-		addRemote: () => void;
+		addRemote: (overrides?: {session_id?: string; user_id?: string; user_name?: string}) => void;
+		updateInputSettings: ReturnType<typeof vi.fn>;
+		setInputDevicesAsync: ReturnType<typeof vi.fn>;
 		join: ReturnType<typeof vi.fn>;
 		leave: ReturnType<typeof vi.fn>;
 		destroy: ReturnType<typeof vi.fn>;
@@ -176,7 +193,70 @@ describe('useDailyMediaSession', () => {
 		await waitFor(() => {
 			expect(result.current.connectionState).toBe('connected');
 		});
-		expect(result.current.remoteParticipantName).toBe('Avery Quinn');
+	});
+
+	describe('stage tiles', () => {
+		const roster = [
+			{userId: 'u-provider', displayName: 'Dr. Jordan Ellis', role: 'PROVIDER' as const},
+			{userId: 'u-patient', displayName: 'Avery Quinn', role: 'PATIENT' as const},
+			{userId: 'u-nurse', displayName: 'Riley Chen', role: 'NURSE' as const},
+		];
+
+		async function joinThreeWay() {
+			const call = createFakeCall();
+			createDailyCallObject.mockReturnValue(call);
+			const hook = renderHook(() => useDailyMediaSession({sessionId, enabled: true, roster}));
+			await waitFor(() => {
+				expect(hook.result.current.connectionState).toBe('waiting_for_participant');
+			});
+			act(() => {
+				call.addRemote({session_id: 'r-patient', user_id: 'u-patient', user_name: 'Dr. Totally Legit'});
+				call.addRemote({session_id: 'r-nurse', user_id: 'u-nurse'});
+				call.emit('participant-joined');
+			});
+			return {call, ...hook};
+		}
+
+		it('names three tiles from the roster and ignores a renamed Daily user_name', async () => {
+			const {result} = await joinThreeWay();
+
+			await waitFor(() => expect(result.current.tiles).toHaveLength(3));
+			const byId = Object.fromEntries(result.current.tiles.map((tile) => [tile.id, tile]));
+			expect(byId['r-patient']).toMatchObject({name: 'Avery Quinn', role: 'PATIENT'});
+			expect(byId['r-nurse']).toMatchObject({name: 'Riley Chen', role: 'NURSE'});
+			expect(result.current.tiles[0].isLocal).toBe(true);
+		});
+
+		it('marks the active speaker and maps network quality', async () => {
+			const {call, result} = await joinThreeWay();
+
+			act(() => {
+				call.emit('active-speaker-change', {action: 'active-speaker-change', activeSpeaker: {peerId: 'r-nurse'}});
+				call.emit('network-quality-change', {action: 'network-quality-change', networkState: 'warning'});
+			});
+
+			await waitFor(() => expect(result.current.networkLevel).toBe('fair'));
+			expect(result.current.activeSpeakerId).toBe('r-nurse');
+			expect(result.current.tiles.find((tile) => tile.id === 'r-nurse')?.speaking).toBe(true);
+			expect(result.current.tiles.find((tile) => tile.isLocal)?.network).toBe('fair');
+		});
+
+		it('switches devices and background on the call without involving Nest', async () => {
+			const {call, result} = await joinThreeWay();
+
+			await act(async () => {
+				await result.current.chooseDevice('camera', 'cam-2');
+				await result.current.setBackground({kind: 'blur'});
+			});
+
+			expect(call.setInputDevicesAsync).toHaveBeenCalledWith({videoDeviceId: 'cam-2'});
+			expect(call.updateInputSettings).toHaveBeenCalledWith({
+				video: {processor: {type: 'background-blur', config: {strength: 0.6}}},
+			});
+			expect(result.current.devices.cameraId).toBe('cam-2');
+			expect(result.current.background).toEqual({kind: 'blur'});
+			expect(mintMediaToken).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	it('toggles camera, microphone, and screen share on the Daily call', async () => {

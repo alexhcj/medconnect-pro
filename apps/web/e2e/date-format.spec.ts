@@ -60,7 +60,7 @@ test.describe(`US date format in a ${name} browser`, () => {
 			.filter({hasText: 'demo-appointment-002'})
 			.getByRole('link', {name: 'Join visit'})
 			.click();
-		await expect(page.getByRole('heading', {level: 2, name: 'Waiting room'})).toBeVisible();
+		await expect(page.getByRole('heading', {level: 2, name: /^Video visit/})).toBeVisible();
 		await expect(page.getByText(/\d{2}\/\d{2}\/\d{4}, \d{1,2}:\d{2} (AM|PM) – \d{1,2}:\d{2} (AM|PM) \S+/).first()).toBeVisible();
 	});
 

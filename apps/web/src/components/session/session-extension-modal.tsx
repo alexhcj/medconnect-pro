@@ -7,9 +7,13 @@ import {useSessionStatus} from '@/lib/hooks/use-session';
 import {useUISelectors} from '@/lib/stores/ui-store';
 import {sessionAPI} from '@/lib/api/session-api';
 import {loginUrl} from '@/lib/auth/paths';
+import {useLiveVisitActive} from '@/lib/telehealth/live-visit-flag';
 
 export function SessionExtensionModal() {
-	const {isExpiringNow, remainingTime, extendSession, isExtending} = useSessionStatus();
+	const {isExpiringNow: tokenExpiringNow, remainingTime, extendSession, isExtending} = useSessionStatus();
+	// The keep-alive loop owns the session during a live visit (FE-064); after the call this applies again.
+	const liveVisit = useLiveVisitActive();
+	const isExpiringNow = tokenExpiringNow && !liveVisit;
 	const addNotification = useUISelectors.useAddNotification();
 	const [countdownTime, setCountdownTime] = useState(0);
 

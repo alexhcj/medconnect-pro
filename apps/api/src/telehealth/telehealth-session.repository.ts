@@ -7,6 +7,7 @@ import {
 	TelehealthSession,
 	type TelehealthSessionState,
 } from '../persistence/entities/telehealth-session.entity.js';
+import type {DemoPersonaKey} from '../tenancy/persona-key.js';
 import {TenantContext} from '../tenancy/tenant-context.js';
 import {TenantMismatchError} from '../tenancy/tenant-errors.js';
 
@@ -66,6 +67,13 @@ export class TelehealthSessionRepository {
 			.andWhere('membership.role = :role', {role: 'NURSE'})
 			.andWhere('assignment.patientId = :patientId', {patientId})
 			.getMany();
+	}
+
+	/** The caller's own demo persona key in the session practice (FE-065). Null when none. */
+	async findPersonaKey(userId: string): Promise<DemoPersonaKey | null> {
+		const {practiceId} = this.tenant.require();
+		const membership = await this.rows.manager.findOne(PracticeMembership, {where: {userId, practiceId}});
+		return membership?.personaKey ?? null;
 	}
 
 	/** Attach the provider's membership in the session practice so RDOs can show a display name. */

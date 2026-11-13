@@ -2,9 +2,14 @@ import {render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
-const {playTestTone, stopTone} = vi.hoisted(() => ({playTestTone: vi.fn(), stopTone: vi.fn()}));
+const {playTestTone, stopTone, startPersonaCamera} = vi.hoisted(() => ({
+	playTestTone: vi.fn(),
+	stopTone: vi.fn(),
+	startPersonaCamera: vi.fn(),
+}));
 
 vi.mock('@/lib/api/mocks/runtime', () => ({isMockMode: () => true}));
+vi.mock('@/lib/telehealth/persona-camera', () => ({startPersonaCamera}));
 vi.mock('@/lib/telehealth/test-tone', () => ({playTestTone}));
 
 import {GreenRoom} from '@/components/telehealth/green-room';
@@ -85,6 +90,19 @@ describe('GreenRoom (mock mode)', () => {
 		);
 		expect(screen.getAllByText('Encrypted connection. This visit is not recorded.').length).toBeGreaterThan(0);
 		expect(container.textContent).not.toMatch(/\b(secure|private|end-to-end)\b/i);
+	});
+
+	it('shows and announces the already-started line only for a later joiner (FE-067)', () => {
+		renderRoom({inProgressText: 'This visit has already started'});
+		expect(screen.getByText('This visit has already started')).toBeInTheDocument();
+		expect(document.querySelector('[aria-live="polite"]')).toHaveTextContent(
+			'This visit has already started. Camera and microphone are ready.',
+		);
+	});
+
+	it('shows no already-started line by default', () => {
+		renderRoom();
+		expect(screen.queryByText(/already started/)).not.toBeInTheDocument();
 	});
 
 	it('announces status changes politely', () => {
@@ -200,5 +218,153 @@ describe('GreenRoom (mock mode)', () => {
 		expect(fetchSpy).not.toHaveBeenCalled();
 		expect(xhrSpy).not.toHaveBeenCalled();
 		expect(beaconSpy).not.toHaveBeenCalled();
+	});
+});
+
+describe('GreenRoom demo persona camera (FE-065)', () => {
+	const track = {kind: 'video', stop: vi.fn()} as unknown as MediaStreamTrack;
+	const handle = {
+		track,
+		stream: {} as MediaStream,
+		setBackground: vi.fn(async () => undefined),
+		setReducedMotion: vi.fn(),
+		stop: vi.fn(),
+	};
+
+	beforeEach(() => {
+		playTestTone.mockReset();
+		playTestTone.mockReturnValue({done: new Promise<void>(() => undefined), stop: stopTone});
+		startPersonaCamera.mockReset();
+		startPersonaCamera.mockResolvedValue(handle);
+		handle.stop.mockClear();
+		handle.setBackground.mockClear();
+		window.history.pushState({}, '', '/');
+	});
+
+	afterEach(() => {
+		vi.unstubAllEnvs();
+		vi.restoreAllMocks();
+	});
+
+	it.each([[undefined], ['false'], ['TRUE'], ['1']])(
+		'has no persona option when NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS is %s',
+		(value) => {
+			if (value !== undefined) {
+				vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', value);
+			}
+			renderRoom({personaKey: 'provider-jordan-ellis'});
+			expect(screen.queryByRole('radiogroup', {name: 'Camera source'})).not.toBeInTheDocument();
+			expect(screen.queryByText(/Demo persona camera/)).not.toBeInTheDocument();
+			expect(screen.queryByTestId('persona-demo-banner')).not.toBeInTheDocument();
+		},
+	);
+
+	it('has no persona option without a persona key even in a demo build', () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		renderRoom({personaKey: null});
+		expect(screen.queryByRole('radiogroup', {name: 'Camera source'})).not.toBeInTheDocument();
+	});
+
+	it('defaults to My camera and shows the demo banner', () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		renderRoom({personaKey: 'provider-jordan-ellis'});
+		expect(screen.getByRole('radio', {name: 'My camera'})).toBeChecked();
+		expect(screen.getByRole('radio', {name: 'Demo persona camera'})).not.toBeChecked();
+		expect(screen.getByTestId('persona-demo-banner')).toBeInTheDocument();
+		expect(startPersonaCamera).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		['provider-jordan-ellis', 'Jordan Ellis'],
+		['nurse-riley-park', 'Riley Park'],
+		['patient-avery-quinn', 'Avery Quinn'],
+	] as const)('shows %s as the only selectable persona', async (key, cardName) => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		const user = userEvent.setup();
+		renderRoom({personaKey: key, displayName: 'Name From Nest'});
+		await user.click(screen.getByRole('radio', {name: 'Demo persona camera'}));
+
+		const list = await screen.findByRole('list', {name: 'Demo personas'});
+		const items = within(list).getAllByRole('listitem');
+		expect(items).toHaveLength(3);
+		expect(items.filter((item) => item.getAttribute('aria-current') === 'true')).toHaveLength(1);
+		expect(items.filter((item) => item.getAttribute('aria-disabled') === 'true')).toHaveLength(2);
+		const own = items.find((item) => item.getAttribute('aria-current') === 'true');
+		expect(own).toHaveTextContent(cardName);
+		expect(startPersonaCamera).toHaveBeenCalledWith(expect.objectContaining({personaKey: key}));
+		// The displayed name always comes from the session, never from the persona.
+		expect(await screen.findByLabelText(/Demo persona camera preview, Name From Nest, synthetic/)).toBeInTheDocument();
+		expect(within(list).queryByRole('radio')).not.toBeInTheDocument();
+	});
+
+	it('labels the preview as synthetic and keeps the real camera off', async () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		const user = userEvent.setup();
+		renderRoom({personaKey: 'provider-jordan-ellis'});
+		await user.click(screen.getByRole('radio', {name: 'Demo persona camera'}));
+		expect((await screen.findAllByText('Demo · synthetic camera')).length).toBeGreaterThan(0);
+		expect(screen.getByText('Your real camera stays off')).toBeInTheDocument();
+		expect(document.querySelector('[aria-live="polite"]')).toHaveTextContent('Demo persona camera on.');
+		// SEC-013 scope 10: the persona copy follows the same claim wording as the rest of the room.
+		expect(document.body.textContent).not.toMatch(/\b(secure|private|end-to-end)\b/i);
+	});
+
+	it('hands the persona track to the join and keeps it running', async () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		const user = userEvent.setup();
+		const {onJoin} = renderRoom({personaKey: 'nurse-riley-park'});
+		await user.click(screen.getByRole('radio', {name: 'Demo persona camera'}));
+		await waitFor(() => expect(screen.getByRole('button', {name: 'Join visit'})).toBeEnabled());
+		await user.click(screen.getByRole('button', {name: 'Join visit'}));
+		await waitFor(() => expect(onJoin).toHaveBeenCalledTimes(1));
+		expect(onJoin.mock.calls[0][0]).toMatchObject({audioOnly: false, videoSource: track, personaCamera: handle});
+		expect(handle.stop).not.toHaveBeenCalled();
+	});
+
+	it('draws a chosen background into the persona instead of using Daily processing', async () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		const user = userEvent.setup();
+		const {onJoin} = renderRoom({personaKey: 'provider-jordan-ellis'});
+		await user.click(screen.getByRole('radio', {name: 'Demo persona camera'}));
+		await screen.findByRole('list', {name: 'Demo personas'});
+		await user.click(screen.getByRole('radio', {name: 'Blur'}));
+		expect(handle.setBackground).toHaveBeenCalledWith({kind: 'blur'});
+		await user.click(screen.getByRole('button', {name: 'Join visit'}));
+		await waitFor(() => expect(onJoin).toHaveBeenCalled());
+		expect(onJoin.mock.calls[0][0]).toMatchObject({background: {kind: 'blur'}, videoSource: track});
+	});
+
+	it('stops the persona when switching back to My camera', async () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		const user = userEvent.setup();
+		renderRoom({personaKey: 'provider-jordan-ellis'});
+		await user.click(screen.getByRole('radio', {name: 'Demo persona camera'}));
+		await screen.findByRole('list', {name: 'Demo personas'});
+		await user.click(screen.getByRole('radio', {name: 'My camera'}));
+		expect(handle.stop).toHaveBeenCalledTimes(1);
+		expect(screen.queryByRole('list', {name: 'Demo personas'})).not.toBeInTheDocument();
+	});
+
+	it('falls back to My camera with a notice when the persona cannot start', async () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		startPersonaCamera.mockRejectedValue(new Error('unsupported'));
+		const user = userEvent.setup();
+		renderRoom({personaKey: 'provider-jordan-ellis'});
+		await user.click(screen.getByRole('radio', {name: 'Demo persona camera'}));
+		const notice = await screen.findByText('Persona camera unavailable. Using your camera.', {selector: 'p'});
+		expect(notice).toHaveAttribute('role', 'status');
+		expect(screen.getByRole('radio', {name: 'My camera'})).toBeChecked();
+	});
+
+	it('sends nothing about the persona choice over the network', async () => {
+		vi.stubEnv('NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS', 'true');
+		const fetchSpy = vi.spyOn(globalThis, 'fetch');
+		const user = userEvent.setup();
+		const {onJoin} = renderRoom({personaKey: 'provider-jordan-ellis'});
+		await user.click(screen.getByRole('radio', {name: 'Demo persona camera'}));
+		await waitFor(() => expect(screen.getByRole('button', {name: 'Join visit'})).toBeEnabled());
+		await user.click(screen.getByRole('button', {name: 'Join visit'}));
+		await waitFor(() => expect(onJoin).toHaveBeenCalled());
+		expect(fetchSpy).not.toHaveBeenCalled();
 	});
 });
