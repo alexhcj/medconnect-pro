@@ -29,6 +29,9 @@ test.describe('Live OAuth sign-in (Fake OIDC adapter)', () => {
 	test('shows a generic error when the callback fails', async ({page}) => {
 		await page.goto('http://localhost:3001/auth/oauth/fake/callback?code=bad&state=bad');
 		await expect(page).toHaveURL(/\/login\?reason=oauth_failed/);
-		await expect(page.getByRole('alert')).toHaveText(/couldn't sign you in with that provider/i);
+		// Filter by text: Next's route announcer is also role="alert" once it mounts (QA-015).
+		await expect(
+			page.getByRole('alert').filter({hasText: /couldn't sign you in with that provider/i}),
+		).toBeVisible();
 	});
 });

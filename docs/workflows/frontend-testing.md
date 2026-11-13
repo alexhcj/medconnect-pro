@@ -72,7 +72,9 @@ Run procedure (repo root):
 How sign-in is handled: `auth` projects run the real sign-in specs (`auth-live`, `auth-mfa-live`,
 `auth-oauth-live`); `setup` signs in once as the practice admin and once as the live provider and
 saves the sessions under `e2e/.auth/` (gitignored); every other live spec reuses them through
-`storageState` and must not sign out; `teardown` signs all four out. `setup` also signs in the
+`storageState` and must not sign out; `teardown` signs all four out. A spec that signs in by hand as one
+of those accounts must sign out again (`auth-mfa-live` does, QA-015): a second open session opens the
+"Multiple Sessions Detected" modal, which blocks clicks on that account's pages. `setup` also signs in the
 portal patient (Avery Quinn) and the MFA nurse once each, for the three-participant visit in
 `telehealth-live.spec.ts` (QA-014). A run makes 2 practice-admin password sign-ins, 1 live-provider,
 1 patient, 2 MFA nurse (one in `auth-mfa-live`, one in `setup`), and 1 OAuth. The `app` project

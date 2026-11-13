@@ -82,9 +82,9 @@ FE-062's acceptance criteria and the SEC-013 green-room scope read as if every p
 - [x] Frames approved on the task page before code
 - [x] A patient or nurse opening a visit that is `in_session` sees the green room first, and the stage only after Join (mock e2e and shell unit tests)
 - [x] The first joiner's flow and the leave/rejoin flow behave as before (green room, call-states and session mock e2e unchanged and passing)
-- [ ] No Daily room session is created while a later joiner is in the green room (verified, not assumed). Mock e2e asserts no `media-token` request before Join; the live check is not run yet
-- [ ] Unit tests cover the state mapping; mock e2e covers a later joiner at 1440, 390 and 320 px; the live
-      three-participant spec in `telehealth-live.spec.ts` asserts the green room for the patient and nurse. Unit and mock e2e done; the live spec is edited but has not run (QA-015 times out first)
+- [x] No Daily room session is created while a later joiner is in the green room (verified, not assumed). Mock e2e asserts no `media-token` request before Join; the live spec asserts the same for the patient and nurse (`telehealth-live.spec.ts` `joinSeededVisit`, passed in two full `e2e:live` runs on 2026-11-13, QA-015). The local API uses the Fake Daily adapter, so a real Daily room is still only checked on Render
+- [x] Unit tests cover the state mapping; mock e2e covers a later joiner at 1440, 390 and 320 px; the live
+      three-participant spec in `telehealth-live.spec.ts` asserts the green room for the patient and nurse (green in two full `e2e:live` runs on 2026-11-13, QA-015)
 - [ ] Keyboard-only and screen-reader pass recorded
 - [x] CHANGELOG and version (ADR-007); `docs/product/telehealth.md` row `telehealth.prejoin-devices` stays accurate
 
@@ -142,5 +142,7 @@ connected-participant presence from Nest and a contract edit. Known limitation u
 [BE-028](../backend/BE-028-telehealth-connected-participants.md) and its frontend follow-up
 [FE-069](FE-069-green-room-named-presence-line.md) ship; mock mode keeps its mock roster. The Figma frames still show the named wording as the target.
 
-Not verified: the live three-participant spec (blocked by QA-015), the live no-Daily-session check, the two-browser run
-on Render, and the keyboard-only and screen-reader pass.
+Live three-participant spec and the live no-media-token check: green in two full `e2e:live` runs on 2026-11-13
+(QA-015 found the earlier timeout was run state, not this change).
+
+Not verified: the two-browser run on Render, and the keyboard-only and screen-reader pass.

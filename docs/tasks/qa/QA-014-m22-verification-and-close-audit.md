@@ -141,9 +141,16 @@ visit experience moved to In progress; admit, lock and chat renamed "clinical co
 "Planned 1.2.0" text (1.2.0 already shipped with M22) in the roadmap and master list, and the live e2e sign-in
 budget in `docs/workflows/frontend-testing.md`.
 
+### Live suite update (2026-11-13)
+
+FE-066 cleared the `auth` failures and [QA-015](QA-015-telehealth-live-three-participant-timeout.md) fixed the
+telehealth timeout (the MFA nurse's second session opened the multiple-sessions modal). `npm run e2e:live` is now
+green in full on a fresh seed twice in a row (37 passed, 37 passed). The live half of "Mock and live e2e suites
+green twice in a row" is met; the second green mock run is still owed.
+
 ### Still to do
 
-Second green mock run and two green live runs; the Render checklist with dates (three browsers, persona
+Second green mock run (the two live runs are done, see above); the Render checklist with dates (three browsers, persona
 cameras, screen share, network indicator, leave and rejoin, room-expiry notice, 25-minute hidden-tab visit);
 keyboard, VoiceOver, 200% zoom, reduced-motion and dark-stage contrast passes; moving verified registry rows to
 `shipped`; `/platform/telehealth` copy and QA-012 screenshots after that; removing "Nurse (name pending)" from

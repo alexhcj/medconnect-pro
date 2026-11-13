@@ -40,11 +40,14 @@ async function joinSeededVisit(page: Page, options: {laterJoiner?: boolean} = {}
 	});
 	await page.goto('/dashboard/telehealth');
 	await expect(page.getByRole('heading', {level: 1, name: 'Telehealth'})).toBeVisible();
+	// QA-015: bounded on purpose. A blocking modal (for example "Multiple Sessions Detected" when the
+	// account has a second open session) keeps this click retrying; without a limit it ran to the
+	// 120 s test timeout and surfaced in `context.close()` instead of here.
 	await page
 		.getByRole('button', {name: 'Join visit'})
 		.or(page.getByRole('link', {name: 'Join visit'}))
 		.first()
-		.click();
+		.click({timeout: 15_000});
 	await expect(page).toHaveURL(SESSION_URL);
 	const greenRoom = page.getByRole('heading', {level: 2, name: /^Video visit/});
 	const stage = page.getByRole('region', {name: 'Video visit', exact: true});
