@@ -45,8 +45,8 @@ application login URL. Do not add `/sign-in`.
 
 ## Outside marketing chrome
 
-`/privacy-policy` and `/terms-of-service` remain outside the marketing layout. They currently
-claim HIPAA. Rewriting them is not an M8 marketing task.
+`/privacy-policy` and `/terms-of-service` remain outside the marketing layout. They describe a synthetic
+demo and make no HIPAA claim (FE-068). Rewriting them as real legal terms is not an M8 marketing task.
 
 ## Next.js mapping
 

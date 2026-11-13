@@ -281,7 +281,7 @@ side panel). Contract task to come. Release version set when M22 closes (1.2.0 s
 - INFRA-023 — Render usage and preview build-filter follow-ups (in progress; docs only; hours reading 2026-11-09 to 2026-11-16)
 - FE-066 — Muted text contrast on subtle surfaces (shipped at 1.6.2; found by the QA-014 live run; cleared the `auth` live failures)
 - FE-067 — Green room for later joiners (implemented at 1.6.3; found by QA-014; a later joiner now gets the green room first; live three-participant check waits on QA-015; naming who is in the call needs a presence follow-up)
-- FE-068 — Remove "HIPAA compliant" claims from the legal pages (pending; found by the QA-014 wording sweep)
+- FE-068 — Remove "HIPAA compliant" claims from the legal pages (shipped at 1.6.4; found by the QA-014 wording sweep; copy and a wording test only)
 - BE-028 — Telehealth connected participants (pending; Nest reports who is connected so the green room can name them; follows FE-067)
 - FE-069 — Green room named presence line (pending; blocked by BE-028; needs Figma frames for several connected people and the fallback line first)
 - QA-015 — Telehealth live three-participant spec times out (pending; found by the FE-066 live run; blocks a green `e2e:live`)

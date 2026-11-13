@@ -3,7 +3,7 @@ id: FE-068
 type: task
 area: frontend
 feature: security
-status: pending
+status: shipped
 priority: high
 estimate: 1
 dependencies: []
@@ -15,7 +15,7 @@ related_docs:
     ../qa/QA-014-m22-verification-and-close-audit.md,
   ]
 implementation:
-  status: not_started
+  status: complete
 validation:
   responsive: false
   accessibility: false
@@ -72,11 +72,11 @@ so VPC, private subnet and AES-256 statements also describe infrastructure that 
 
 ## Acceptance Criteria
 
-- [ ] Every listed claim is reworded or removed, with the decision recorded in Completion
-- [ ] The two pages say plainly that this is a synthetic demo with no real patient data
-- [ ] A unit test asserts none of the forbidden phrases appear on either page
-- [ ] `docs/marketing/capability-matrix.md` still holds (no new claim)
-- [ ] CHANGELOG and version (ADR-007)
+- [x] Every listed claim is reworded or removed, with the decision recorded in Completion
+- [x] The two pages say plainly that this is a synthetic demo with no real patient data
+- [x] A unit test asserts none of the forbidden phrases appear on either page
+- [x] `docs/marketing/capability-matrix.md` still holds (no new claim; only the synced-release line changed)
+- [x] CHANGELOG and version (ADR-007)
 
 ## Dependencies
 
@@ -98,3 +98,30 @@ After 1.0.0: copy fix → PATCH.
 ## Roadmap
 
 Standalone, found by the QA-014 wording sweep. Not part of M22.
+
+## Completion
+
+Implemented 2026-11-13 at 1.6.4. Lint, type-check and the new spec pass. Both pages were read in the browser pane (all Terms sections open, all eight privacy tabs): no forbidden phrase, no console errors. The only "Covered Entity" is the negation "is not a Covered Entity".
+
+Decisions (T = terms-of-service, P = privacy-policy):
+
+| Claim | Decision |
+| --- | --- |
+| T intro "HIPAA acknowledgment"; P overview and notice "in compliance with HIPAA" | Reworded: synthetic demo, no compliance or certification claim |
+| T "HIPAA Compliant" card, "Full compliance"; P subtitle "HIPAA Compliant" | Replaced with "Synthetic demo" / "MedConnect Pro demo - synthetic data only" |
+| T "AES-256" (card, safeguards, encryption list); P TDE card | Removed; production encryption listed as planned, not deployed |
+| T and P TLS 1.3 and "Certificate pinning" | Removed (security rules forbid presenting pinning as a feature) |
+| T "VPC with private subnets", "AWS S3 with SSE-KMS"; P VPC and SSE-KMS cards | Removed; AWS production is paused |
+| T "row-level security, regular security audits" | Kept RLS (true, shipped); dropped audits |
+| T "enterprise-grade", multi-factor and access reviews; P penetration testing, background checks, monitoring | Removed or restated as the labelled mock MFA and planned items |
+| T "99.9% uptime" | Replaced with no uptime commitment |
+| P "HIPAA-compliant service providers", BAAs signed | Replaced: no BAAs, no real patient data shared |
+| P "Covered Entity", Privacy/Security Rule compliance, breach notification commitments | Replaced with a demo notice, modelled patterns and a no-real-data statement |
+| P JWT card | Replaced with mock IdP sessions and HttpOnly cookies |
+| P HHS OCR complaint details (Q3) | Removed |
+| P/T contact block, footer name and address (Q2) | Left unchanged by decision |
+
+Files: both pages, `apps/web/src/app/legal-pages-wording.test.tsx` (source scan for forbidden phrases plus render
+checks for the synthetic-demo notice). Page structure, section ids and tabs are unchanged. No other legal pages exist
+under `apps/web/src/app`; no links to these routes exist in the app. Capability matrix and `docs/product/` rows are
+unchanged. The negated wording uses "does not claim HIPAA compliance" so the forbidden-phrase test stays literal.

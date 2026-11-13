@@ -6,6 +6,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) as defined in
 [ADR-007](docs/decisions/ADR-007-semantic-versioning.md).
 
+## [1.6.4] - 2026-11-13
+
+FE-068 legal pages stop claiming HIPAA compliance (PATCH; copy fix, no API or UX contract change).
+
+### Changed
+
+- Terms of Service and Privacy Policy now describe a synthetic demo with no real patient data and make no HIPAA
+  compliance, certification, BAA, encryption or infrastructure claim. Only implemented patterns (RBAC, tenant
+  isolation with row-level security, audit logging, document access control) are named.
+- Removed the HHS complaint details from the privacy page.
+
+### Added
+
+- `legal-pages-wording.test.tsx` fails if either page says "HIPAA compliant", "HIPAA-compliant" or
+  "HIPAA certified", or claims AES-256, pinning, VPC or SSE-KMS.
+
 ## [1.6.3] - 2026-11-11
 
 FE-067 green room for later joiners (PATCH; makes the visit match what FE-062 and SEC-013 already describe).
