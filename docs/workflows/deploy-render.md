@@ -37,8 +37,10 @@ or `RATE_LIMIT_KEY_SECRET`.
 
 Free web services sleep after about 15 minutes without inbound traffic and use an ephemeral disk.
 Free Postgres expires 30 days after creation, then has a 14-day grace period before deletion. It
-has no backups and is limited to one database per workspace. The database applied on 2026-10-14
-expires on 2026-11-13. Upgrade it to a paid plan before that date to keep the data. The smallest
+has no backups and is limited to one database per workspace. The current database was created on
+2026-11-13 and expires on 2026-12-13. It replaced the first one (2026-10-14), which expired; see
+[Replace an expired Free database](#replace-an-expired-free-database). Upgrade it to a paid plan
+before the expiry date to keep the data. The smallest
 paid Postgres compute plan is about $6 per month, plus storage at about $0.30 per GB. A Starter
 web service (`0.5c-512mb`) is about $7 per month and is still 512 MB of RAM. It removes spin-down.
 It does not fix an out-of-memory failure; that needs a larger plan. Re-check
@@ -248,6 +250,28 @@ the internal URL stays the same.
 
 Suspending or deleting the Render services does not change the AWS Terraform. Deleting the Free
 database deletes the synthetic data.
+
+### Replace an expired Free database
+
+An expired Free database is suspended and cannot be dumped. When its data is only the seed, replace
+it instead of upgrading. The workspace allows one Free database, so delete the old one first.
+
+1. Delete `medconnect-postgres` (Settings → Delete Database). The dialog warns that the Blueprint
+   will recreate it; that is the intent.
+2. Blueprint `medconnect-pro` → Manual sync. The plan should list only "Create database
+   `medconnect-postgres`" and "Update `DATABASE_ADMIN_URL`" for `medconnect-api`. Approve it.
+   Do not create the database by hand: it would not be linked to the Blueprint, and the next sync
+   would try to create a second Free database.
+3. Set `SEED_ON_DEPLOY=true` on `medconnect-api`. The sync also redeploys the API; one start runs
+   `ensureAppRole`, all migrations and the seed. Check the logs for the `[MockIdentity] Seeded`
+   line and a passing `/health`.
+4. Set `SEED_ON_DEPLOY` back to `false` and let the API redeploy.
+5. Clear the new database's inbound IP rules (Networking → delete `0.0.0.0/0` → Save). A new
+   database starts open to the internet.
+6. Update the expiry date in [What the Blueprint creates](#what-the-blueprint-creates).
+
+`APP_ROLE_PASSWORD` stays on the service, so the API keeps working with the new app role. Demo
+sessions and interviewer edits are lost.
 
 ## Rollback
 
